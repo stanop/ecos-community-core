@@ -110,7 +110,7 @@ public class Journals {
      */
     public List<Journal> getJournal() {
         if (journal == null) {
-            journal = new ArrayList<Journal>();
+            journal = new ArrayList<>();
         }
         return this.journal;
     }
@@ -203,7 +203,7 @@ public class Journals {
          */
         public List<Import> getImport() {
             if (_import == null) {
-                _import = new ArrayList<Import>();
+                _import = new ArrayList<>();
             }
             return this._import;
         }

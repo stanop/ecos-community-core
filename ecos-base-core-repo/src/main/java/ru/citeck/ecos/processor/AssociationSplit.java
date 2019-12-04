@@ -47,7 +47,7 @@ public class AssociationSplit extends AbstractAssociationSplit
 		} else {
 			assocs = nodeService.getTargetAssocs(nodeRef, assocName);
 		}
-		List<Object> results = new ArrayList<Object>(assocs.size());
+		List<Object> results = new ArrayList<>(assocs.size());
 		if(source) {
 			for(AssociationRef assoc : assocs) {
 				results.add(assoc.getSourceRef());

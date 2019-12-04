@@ -42,7 +42,7 @@ public class FlowableScriptTaskListener extends FlowableScriptBase implements Ta
             }
         }
 
-        /** Set result value */
+        /* Set result value */
         if(this.resultVariable != null) {
             delegateTask.setVariable(this.resultVariable.getExpressionText(), result);
         }
@@ -55,7 +55,7 @@ public class FlowableScriptTaskListener extends FlowableScriptBase implements Ta
      * @return Script model map
      */
     protected Map<String, Object> getInputMap(DelegateTask delegateTask, String runAsUser) {
-        HashMap<String, Object> scriptModel = new HashMap<String, Object>(1);
+        HashMap<String, Object> scriptModel = new HashMap<>(1);
 
         NodeRef personNode = getPersonNode(runAsUser);
         if (personNode != null) {
@@ -65,7 +65,7 @@ public class FlowableScriptTaskListener extends FlowableScriptBase implements Ta
         scriptModel.put(TASK_BINDING_NAME, delegateTask);
         scriptModel.put(EXECUTION_BINDING_NAME, delegateTask);
 
-        /** Variables */
+        /* Variables */
         Map<String, Object> variables = delegateTask.getVariables();
 
         for (Map.Entry<String, Object> varEntry : variables.entrySet()) {

@@ -30,7 +30,7 @@ public class FlowableScriptExecutionListener extends FlowableDelegateExecutionSc
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        /** Set result value */
+        /* Set result value */
         if(this.resultVariable != null) {
             execution.setVariable(this.resultVariable.getExpressionText(), result);
         }

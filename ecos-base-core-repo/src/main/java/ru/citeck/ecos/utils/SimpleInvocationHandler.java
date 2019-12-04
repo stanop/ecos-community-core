@@ -30,7 +30,7 @@ public abstract class SimpleInvocationHandler implements InvocationHandler {
     private Map<String, List<Method>> methodMap;
     
     public SimpleInvocationHandler() {
-        methodMap = new TreeMap<String, List<Method>>();
+        methodMap = new TreeMap<>();
     }
     
     @Override
@@ -45,7 +45,7 @@ public abstract class SimpleInvocationHandler implements InvocationHandler {
     protected List<Method> getOverloadedMethods(String methodName) {
         List<Method> overloadedMethods = methodMap.get(methodName);
         if(overloadedMethods == null) {
-            overloadedMethods = new LinkedList<Method>();
+            overloadedMethods = new LinkedList<>();
             methodMap.put(methodName, overloadedMethods);
             
             Method[] methods = this.getClass().getMethods();

@@ -64,7 +64,7 @@ public class TUserEventListener
      */
     public List<Object> getAuthorizedRoleRefs() {
         if (authorizedRoleRefs == null) {
-            authorizedRoleRefs = new ArrayList<Object>();
+            authorizedRoleRefs = new ArrayList<>();
         }
         return this.authorizedRoleRefs;
     }

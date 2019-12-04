@@ -115,7 +115,7 @@ public class ConfiscateServiceImpl implements ConfiscateService
 		String owner = ownableService.getOwner(nodeRef);
 		boolean inherits = permissionService.getInheritParentPermissions(nodeRef);
 		
-		Map<QName,Serializable> properties = new HashMap<QName,Serializable>(1);
+		Map<QName,Serializable> properties = new HashMap<>(1);
 		properties.put(GrantModel.PROP_OWNER, owner);
 		properties.put(GrantModel.PROP_INHERITS, inherits);
 		nodeService.addAspect(nodeRef, GrantModel.ASPECT_CONFISCATED, properties);

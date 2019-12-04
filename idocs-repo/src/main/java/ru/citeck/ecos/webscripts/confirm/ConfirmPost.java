@@ -70,7 +70,7 @@ public class ConfirmPost extends DeclarativeWebScript {
             return null;
         }
 
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
         model.put("success", true);
 
         return model;

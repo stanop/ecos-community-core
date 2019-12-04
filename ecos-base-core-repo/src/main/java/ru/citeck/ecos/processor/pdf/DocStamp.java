@@ -83,7 +83,7 @@ public class DocStamp extends AbstractDataBundleLine
 		String appendIDTo = super.evaluateExpression(appendStringTo, input.getModel()).toString();
 
 		// get stamp stream:
-		List<DataBundle> stampInputs = new ArrayList<DataBundle>(1);
+		List<DataBundle> stampInputs = new ArrayList<>(1);
 		stampInputs.add(new DataBundle(input.getModel()));
 		List<DataBundle> stampOutputs = stampProcessor.process(stampInputs);
 		

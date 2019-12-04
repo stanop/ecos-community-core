@@ -19,7 +19,6 @@
 package ru.citeck.ecos.confirm;
 
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.version.Version;
 import org.json.JSONException;
 
 /**

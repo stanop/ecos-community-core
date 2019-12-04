@@ -5,7 +5,6 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespaceException;
-import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -59,18 +58,18 @@ public class NodeChildAssociationsGet extends DeclarativeWebScript {
         if (!StringUtils.isEmpty(childNamesValue)) {
             childNames = childNamesValue.split(DELIMITER);
         }
-        /** Load node reference */
+        /* Load node reference */
         NodeRef nodeRef = new NodeRef(nodeRefUuid);
         if (!nodeService.exists(nodeRef) || StringUtils.isEmpty(assocType)) {
             return new HashMap<>();
         }
         Map<String, Object> result = new HashMap<>();
         result.put("nodeExists", true);
-        /** Load association */
+        /* Load association */
         QName assocQName = parseQName(assocType);
         List<ChildAssociationRef> associations = getChildAssociations(nodeRef, assocQName);
         result.put("childAssociations", buildChildAssociations(nodeRef, associations, childNames));
-        /** Load associations of child associations */
+        /* Load associations of child associations */
         return result;
     }
 
@@ -85,7 +84,7 @@ public class NodeChildAssociationsGet extends DeclarativeWebScript {
                                                              String[] childNames) {
         List<ChildAssociationDto> childAssociationDtos = new ArrayList<>(associations.size());
         Set<QName> childQNames = parseQNames(childNames);
-        /** Build associations */
+        /* Build associations */
         for (ChildAssociationRef childAssociationRef : associations) {
             NodeRef childNodeRef = childAssociationRef.getChildRef();
             if (childNodeRef == null) {
@@ -97,7 +96,7 @@ public class NodeChildAssociationsGet extends DeclarativeWebScript {
             String downloadURL = RepoUtils.getDownloadURL(childNodeRef, nodeService);
             associationDto.setContentUrl(downloadURL);
             associationDto.setProperties(transformProperties(nodeService.getProperties(childNodeRef)));
-            /** Child associations */
+            /* Child associations */
             List<ChildAssociationRef> childChildAssociationRefs = getChildAssociations(childNodeRef, childQNames);
             List<AbstractMap.SimpleEntry<QName, ChildAssociationDto>> dtoAccos = new ArrayList<>();
             for (ChildAssociationRef childChildAssocRef : childChildAssociationRefs) {

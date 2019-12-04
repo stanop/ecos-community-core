@@ -33,13 +33,13 @@ public class HistoryEventTitleMapperServiceImpl implements HistoryEventTitleMapp
         Collection<HistoryEventTitleMapper> mappers = ApplicationContextProvider.getBeans(HistoryEventTitleMapper.class);
         if (mappers != null) {
             for (HistoryEventTitleMapper mapper : mappers) {
-                /** Simple title-object pairs */
+                /* Simple title-object pairs */
                 if (mapper.getTitlePairs() != null) {
                     for (HistoryEventTitlePairDto dto : mapper.getTitlePairs()) {
                         objectTitleMap.put(dto.getObjectQName(), dto.getTitlePropertyQName());
                     }
                 }
-                /** Complex title-object pairs */
+                /* Complex title-object pairs */
                 if (mapper.getTitleListPairs() != null) {
                     for (HistoryEventTitlePairListDto dto : mapper.getTitleListPairs()) {
                         objectTitleListMap.put(dto.getObjectQName(), dto.getTitles());

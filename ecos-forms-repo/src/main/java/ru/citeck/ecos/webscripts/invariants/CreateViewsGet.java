@@ -72,7 +72,7 @@ public class CreateViewsGet extends DeclarativeWebScript {
             }
         }
         
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
         model.put(MODEL_VIEWS, existingViewClasses);
         return model;
     }

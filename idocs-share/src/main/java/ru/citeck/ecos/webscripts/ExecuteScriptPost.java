@@ -9,7 +9,6 @@ import ru.citeck.ecos.utils.ValueConverter;
 
 import java.io.*;
 import java.util.*;
-import java.util.function.Consumer;
 
 public class ExecuteScriptPost  extends AbstractWebScript {
 

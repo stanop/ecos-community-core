@@ -117,7 +117,7 @@ public class Stage
      */
     public List<JAXBElement<? extends TPlanItemDefinition>> getPlanItemDefinition() {
         if (planItemDefinition == null) {
-            planItemDefinition = new ArrayList<JAXBElement<? extends TPlanItemDefinition>>();
+            planItemDefinition = new ArrayList<>();
         }
         return this.planItemDefinition;
     }
@@ -146,7 +146,7 @@ public class Stage
      */
     public List<TExitCriterion> getExitCriterion() {
         if (exitCriterion == null) {
-            exitCriterion = new ArrayList<TExitCriterion>();
+            exitCriterion = new ArrayList<>();
         }
         return this.exitCriterion;
     }

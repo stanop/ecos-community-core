@@ -20,7 +20,6 @@ package ru.citeck.ecos.workflow.confirm;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,7 +45,7 @@ import org.alfresco.service.cmr.security.AuthorityService;
 import ru.citeck.ecos.model.ConfirmWorkflowModel;
 import ru.citeck.ecos.workflow.listeners.ListenerUtils;
 
-public class ConfirmHelper 
+public class ConfirmHelper
 {
 	private NodeService nodeService;
 	private VersionService versionService;
@@ -54,37 +53,37 @@ public class ConfirmHelper
 	private WorkflowQNameConverter qNameConverter;
 	private PersonService personService;
 	private AuthorityService authorityService;
-	
-	public NodeRef getCurrentVersionRef(NodeRef nodeRef, boolean createIfUnversioned) 
+
+	public NodeRef getCurrentVersionRef(NodeRef nodeRef, boolean createIfUnversioned)
 	{
 		Version currentVersion = versionService.getCurrentVersion(nodeRef);
 		if(currentVersion == null) {
 			if(!createIfUnversioned) {
 				return null;
 			}
-			
-			Map<QName, Serializable> properties = new HashMap<QName, Serializable>(2);
+
+			Map<QName, Serializable> properties = new HashMap<>(2);
 			properties.put(ContentModel.PROP_AUTO_VERSION, true);
 			properties.put(ContentModel.PROP_AUTO_VERSION_PROPS, false);
 			versionService.ensureVersioningEnabled(nodeRef, properties);
-			
+
 			currentVersion = versionService.getCurrentVersion(nodeRef);
 			if(currentVersion == null) {
 				return null;
 			}
 		}
-		
+
 		return currentVersion.getFrozenStateNodeRef();
 	}
-	
+
 	public NodeRef getCurrentVersionRef(NodeRef nodeRef) {
 		return getCurrentVersionRef(nodeRef, false);
 	}
-	
+
 	public Set<NodeRef> getCurrentVersionRefs(NodeRef workflowPackage) {
 		List<ChildAssociationRef> packageItems = nodeService.getChildAssocs(workflowPackage, WorkflowModel.ASSOC_PACKAGE_CONTAINS, RegexQNamePattern.MATCH_ALL);
-		
-		HashSet<NodeRef> versions = new HashSet<NodeRef>();
+
+		HashSet<NodeRef> versions = new HashSet<>();
 		for(ChildAssociationRef item : packageItems) {
 			NodeRef nodeRef = item.getChildRef();
 			NodeRef versRef = getCurrentVersionRef(nodeRef, true);
@@ -92,12 +91,12 @@ public class ConfirmHelper
 		}
 		return versions;
 	}
-	
+
 	public Set<NodeRef> getCurrentVersionRefs(DelegateExecution execution) {
 		NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(execution);
 		return getCurrentVersionRefs(workflowPackage);
 	}
-	
+
 	public void saveConfirmableVersion(DelegateExecution execution) {
 		Set<NodeRef> versions = getCurrentVersionRefs(execution);
 		execution.setVariable(qNameConverter.mapQNameToName(ConfirmWorkflowModel.PROP_CONFIRMABLE_VERSION), versions);
@@ -125,14 +124,14 @@ public class ConfirmHelper
 	public void saveConfirmDecision(NodeRef workflowPackage, String confirmerRole, String confirmTaskId) {
 	    // create confirm decision object
 		Set<NodeRef> confirmVersions = this.getCurrentVersionRefs(workflowPackage);
-		ArrayList<NodeRef> confirmVersionsValue = new ArrayList<NodeRef>(confirmVersions.size());
+		ArrayList<NodeRef> confirmVersionsValue = new ArrayList<>(confirmVersions.size());
 		confirmVersionsValue.addAll(confirmVersions);
-		
-		Map<QName,Serializable> confirmDecisionProperties = new HashMap<QName,Serializable>();
+
+		Map<QName,Serializable> confirmDecisionProperties = new HashMap<>();
 		confirmDecisionProperties.put(ConfirmWorkflowModel.PROP_CONFIRM_TASK_ID, confirmTaskId);
 		confirmDecisionProperties.put(ConfirmWorkflowModel.PROP_CONFIRM_VERSIONS, confirmVersionsValue);
 		confirmDecisionProperties.put(ConfirmWorkflowModel.PROP_CONFIRM_ROLE, confirmerRole);
-		
+
 		// decision is saved as decision-<confirmRole>
 		QName assocName = getConfirmDecisionAssocName(confirmerRole);
 
@@ -150,27 +149,27 @@ public class ConfirmHelper
 		}
 
 		// finally save confirm decision
-		nodeService.createNode(workflowPackage, 
-				ConfirmWorkflowModel.ASSOC_CONFIRM_DECISIONS, 
-				assocName, 
-				ConfirmWorkflowModel.TYPE_CONFIRM_DECISION, 
+		nodeService.createNode(workflowPackage,
+				ConfirmWorkflowModel.ASSOC_CONFIRM_DECISIONS,
+				assocName,
+				ConfirmWorkflowModel.TYPE_CONFIRM_DECISION,
 				confirmDecisionProperties);
     }
 
 	public ConfirmDecision getConfirmDecision(DelegateExecution execution, String confirmerRole) {
 		NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(execution);
-		
+
 		QName assocName = getConfirmDecisionAssocName(confirmerRole);
-		
+
 		List<ChildAssociationRef> decisionAssocs = nodeService.getChildAssocs(workflowPackage, ConfirmWorkflowModel.ASSOC_CONFIRM_DECISIONS, assocName);
 		if(decisionAssocs.isEmpty()) {
 			return null;
 		}
-		
+
 		NodeRef confirmDecision = decisionAssocs.get(0).getChildRef();
 		return new ConfirmDecision(confirmDecision, nodeService, workflowService);
 	}
-	
+
 	public List<ConfirmDecision> getConfirmDecisions(DelegateExecution execution) {
         NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(execution);
         return getConfirmDecisions(workflowPackage);
@@ -178,7 +177,7 @@ public class ConfirmHelper
 
     private List<ConfirmDecision> getConfirmDecisions(NodeRef workflowPackage) {
         List<ChildAssociationRef> decisionAssocs = nodeService.getChildAssocs(workflowPackage, ConfirmWorkflowModel.ASSOC_CONFIRM_DECISIONS, RegexQNamePattern.MATCH_ALL);
-        List<ConfirmDecision> confirmDecisions = new ArrayList<ConfirmDecision>(decisionAssocs.size());
+        List<ConfirmDecision> confirmDecisions = new ArrayList<>(decisionAssocs.size());
         for(ChildAssociationRef decisionAssoc : decisionAssocs) {
             NodeRef confirmDecision = decisionAssoc.getChildRef();
             confirmDecisions.add(new ConfirmDecision(confirmDecision, nodeService, workflowService));
@@ -187,7 +186,7 @@ public class ConfirmHelper
     }
 
     public List<ConfirmDecision> getLatestConfirmDecisions(NodeRef document) {
-        Map<String, ConfirmDecision> latestDecisions = new HashMap<String, ConfirmDecision>();
+        Map<String, ConfirmDecision> latestDecisions = new HashMap<>();
         List<ChildAssociationRef> workflowPackageRefs = nodeService.getParentAssocs(document, WorkflowModel.ASSOC_PACKAGE_CONTAINS, RegexQNamePattern.MATCH_ALL);
         for(ChildAssociationRef workflowPackageRef : workflowPackageRefs) {
             NodeRef workflowPackage = workflowPackageRef.getParentRef();
@@ -196,7 +195,7 @@ public class ConfirmHelper
                 ConfirmDecision latestDecision = latestDecisions.get(workflowDecision.getConfirmerRole());
                 // NOTE: if confirm date is null, this task is not yet commited
                 // and thus it is the latest one
-                if(latestDecision == null 
+                if(latestDecision == null
                 || workflowDecision.getConfirmDate() == null
                 || latestDecision.getConfirmDate() != null
                 && workflowDecision.getConfirmDate().after(latestDecision.getConfirmDate())) {
@@ -204,14 +203,14 @@ public class ConfirmHelper
                 }
             }
         }
-        List<ConfirmDecision> decisions = new ArrayList<ConfirmDecision>(latestDecisions.size());
+        List<ConfirmDecision> decisions = new ArrayList<>(latestDecisions.size());
         decisions.addAll(latestDecisions.values());
         return decisions;
     }
 
     public Set<String> getLatestConfirmers(NodeRef document) {
         List<ConfirmDecision> decisions = getLatestConfirmDecisions(document);
-        Set<String> confirmers = new HashSet<String>(decisions.size());
+        Set<String> confirmers = new HashSet<>(decisions.size());
         for(ConfirmDecision decision : decisions) {
             confirmers.add(decision.getConfirmerRole());
         }
@@ -220,7 +219,7 @@ public class ConfirmHelper
 
     public Set<String> getLatestConfirmers(NodeRef document, String confirmOutcome) {
         List<ConfirmDecision> decisions = getLatestConfirmDecisions(document);
-        Set<String> confirmers = new HashSet<String>(decisions.size());
+        Set<String> confirmers = new HashSet<>(decisions.size());
         for(ConfirmDecision decision : decisions) {
             if(confirmOutcome.equals(decision.getConfirmOutcome())) {
                 confirmers.add(decision.getConfirmerRole());
@@ -233,7 +232,7 @@ public class ConfirmHelper
 		QName assocName = QName.createQName(ConfirmWorkflowModel.NAMESPACE, "decision-" + confirmerRole);
 		return assocName;
 	}
-	
+
 	public void setServiceRegistry(ServiceRegistry services) {
 		this.nodeService = services.getNodeService();
 		this.versionService = services.getVersionService();
@@ -242,18 +241,14 @@ public class ConfirmHelper
 		this.personService = services.getPersonService();
 		this.authorityService = services.getAuthorityService();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public boolean isLatestVersionConfirmedByAll(DelegateExecution execution) {
 		Set<NodeRef> currentVersions = getCurrentVersionRefs(execution);
-		Set<NodeRef> confirmableVersions = (Set<NodeRef>) execution.getVariable(qNameConverter.mapQNameToName(ConfirmWorkflowModel.PROP_CONFIRMABLE_VERSION));
-		NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(execution);
-		List<ChildAssociationRef> packageItems = nodeService.getChildAssocs(workflowPackage, WorkflowModel.ASSOC_PACKAGE_CONTAINS, RegexQNamePattern.MATCH_ALL);
-		
-		HashSet<NodeRef> versions = new HashSet<NodeRef>();
+
 		List<ConfirmDecision> confirmDecisions = getConfirmDecisions(execution);
 		boolean versionIsLatest = true;
-		ArrayList<NodeRef> confirmerForOldVersions = new ArrayList<NodeRef>(confirmDecisions.size());
+		ArrayList<NodeRef> confirmerForOldVersions = new ArrayList<>(confirmDecisions.size());
 		for(int i=0; i< confirmDecisions.size(); i++)
 		{
 			ConfirmDecision confirmDecision = confirmDecisions.get(i);

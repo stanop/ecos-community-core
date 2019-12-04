@@ -189,7 +189,7 @@ public class FlowableRestProxy extends AbstractWebScript {
             url = url.substring(0, url.length() - 1);
         }
 
-        if (!url.contains("?") && url.indexOf(".", url.lastIndexOf("/")) == -1) {
+        if (!url.contains("?") && url.indexOf('.', url.lastIndexOf('/')) == -1) {
             url = url + "/";
         }
 

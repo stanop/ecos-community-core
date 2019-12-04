@@ -160,7 +160,7 @@ public class Case
      */
     public List<TCaseParameter> getInput() {
         if (input == null) {
-            input = new ArrayList<TCaseParameter>();
+            input = new ArrayList<>();
         }
         return this.input;
     }
@@ -189,7 +189,7 @@ public class Case
      */
     public List<TCaseParameter> getOutput() {
         if (output == null) {
-            output = new ArrayList<TCaseParameter>();
+            output = new ArrayList<>();
         }
         return this.output;
     }
