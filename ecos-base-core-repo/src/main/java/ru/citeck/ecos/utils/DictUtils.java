@@ -24,9 +24,9 @@ import java.util.concurrent.TimeUnit;
 public class DictUtils {
 
     public static final QName QNAME = QName.createQName("", "dictUtils");
+    private static final int CACHE_AGE_SECONDS = 600;
 
     private static String TXN_CONSTRAINTS_CACHE = DictUtils.class.getName();
-    private static int CACHE_AGE_SECONDS = 600;
 
     private DictionaryService dictionaryService;
     private NamespaceService namespaceService;
