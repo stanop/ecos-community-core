@@ -52,7 +52,7 @@ public class OverdueNotificationJob extends AbstractLockedJob
         final WorkflowService workflowService = (WorkflowService) data.get(PARAM_WORKFLOW_SERVICE);
         final NotificationSender<WorkflowTask> sender = (NotificationSender<WorkflowTask>) data.get(PARAM_NOTIFICATION_SENDER);
 
-		Integer sent = AuthenticationUtil.runAs(new RunAsWork<Integer>() {
+        Integer sent = AuthenticationUtil.runAs(new RunAsWork<Integer>() {
 
             @Override
             public Integer doWork() throws Exception {
