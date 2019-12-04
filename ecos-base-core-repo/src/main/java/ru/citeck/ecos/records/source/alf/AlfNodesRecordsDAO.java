@@ -114,6 +114,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             Map<QName, JsonNode> contentProps = new HashMap<>();
             Map<QName, Set<NodeRef>> assocs = new HashMap<>();
             Map<QName, JsonNode> childAssocEformFiles = new HashMap<>();
+            Map<QName, JsonNode> attachmentAssocEformFiles = new HashMap<>();
 
             NodeRef nodeRef = null;
             if (record.getId().getId().startsWith("workspace://SpacesStore/")) {
@@ -177,11 +178,12 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
                         JsonNode value = fields.path(name);
 
-                        if (assocDef instanceof ChildAssociationDefinition
-                                && contentFileHelper.isFileFromEformFormat(value)) {
-
-                            childAssocEformFiles.put(fieldName, value);
-
+                        if (contentFileHelper.isFileFromEformFormat(value)) {
+                            if (assocDef instanceof ChildAssociationDefinition) {
+                                childAssocEformFiles.put(fieldName, value);
+                            } else {
+                                attachmentAssocEformFiles.put(fieldName, value);
+                            }
                         } else {
 
                             Set<NodeRef> nodeRefs = null;
@@ -239,8 +241,10 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
             contentProps.forEach((name, value) -> contentFileHelper.processPropFileContent(finalNodeRef, name, value));
             assocs.forEach((name, value) -> nodeUtils.setAssocs(finalNodeRef, value, name, true));
-            childAssocEformFiles.forEach((qName, jsonNodes) -> contentFileHelper.processChildAssocFilesContent(
-                    qName, jsonNodes, finalNodeRef));
+            childAssocEformFiles.forEach((qName, jsonNodes) -> contentFileHelper.processAssocFilesContent(
+                    qName, jsonNodes, finalNodeRef, true));
+            attachmentAssocEformFiles.forEach((qName, jsonNodes) -> contentFileHelper.processAssocFilesContent(
+                    qName, jsonNodes, finalNodeRef, false));
         }
 
         return result;
