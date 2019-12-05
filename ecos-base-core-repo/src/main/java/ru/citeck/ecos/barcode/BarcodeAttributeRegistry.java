@@ -1,6 +1,8 @@
 package ru.citeck.ecos.barcode;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.netflix.servo.util.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -35,24 +37,21 @@ public class BarcodeAttributeRegistry {
 
     public String getAttribute(RecordRef recordRef) {
 
-        String ecosType = recordsService.getAttribute(recordRef, "_etype").asText();
+        JsonNode ecosTypeJson = recordsService.getAttribute(recordRef, "_etype?id");
+        String ecosType = ecosTypeJson.isTextual() ? ecosTypeJson.asText() : "";
 
-        String result = null;
-        while (result == null) {
-
-            if (ecosType.contains(SLASH_DELIMITER)) {
-                result = registry.get(ecosType);
-            } else {
-                result = registry.get(ecosType);
-                result = result == null ? DEFAULT_VALUE : result;
-            }
-
-            if (result == null) {
-                ecosType = this.splitAndGet(ecosType);
-            }
+        if (StringUtils.isBlank(ecosType)) {
+            return DEFAULT_VALUE;
+        } else {
+            ecosType = RecordRef.valueOf(ecosType).getId();
         }
 
-        return result;
+        String result = registry.get(ecosType);
+        if (StringUtils.isBlank(result)) {
+            result = registry.get(splitAndGet(ecosType));
+        }
+
+        return StringUtils.isBlank(result) ? DEFAULT_VALUE : result;
     }
 
     private String splitAndGet(String ecosType) {
