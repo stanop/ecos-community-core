@@ -182,23 +182,24 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
                             if (attDef instanceof PropertyDefinition) {
 
-                                DataTypeDefinition dataType = ((PropertyDefinition) attDef).getDataType();
+                                PropertyDefinition propertyDefinition = (PropertyDefinition) attDef;
+                                DataTypeDefinition dataType = propertyDefinition.getDataType();
                                 QName typeName = dataType != null ? dataType.getName() : null;
 
-                                if (DataTypeDefinition.TEXT.equals(typeName) ||
-                                        DataTypeDefinition.MLTEXT.equals(typeName)) {
+                                if (DataTypeDefinition.TEXT.equals(typeName)) {
+                                    QName container = propertyDefinition.getContainerClass().getName();
 
-                                    QName parent = dictUtils.getPropDef(null, field)
-                                            .getContainerClass().getName();
-
-                                    List<String> values = this.getPropertyValuesByConstraintsFromField(parent, field, valueStr);
+                                    List<String> values = this.getPropertyValuesByConstraintsFromField(container, field, valueStr);
                                     if (values.size() != 0) {
                                         query.any(field, new ArrayList<>(values));
                                     } else {
                                         query.value(field, "*" + valueStr + "*");
                                     }
+                                } else if (DataTypeDefinition.MLTEXT.equals(typeName)) {
+
+                                    query.value(field, "*" + valueStr + "*");
                                 } else if (DataTypeDefinition.CATEGORY.equals(typeName)) {
-                                    searchAssocByText(valuePred, query);
+                                    addNodeRefSearchTerms(query, field, DataTypeDefinition.CATEGORY, valueStr);
                                 } else {
                                     query.value(field, valueStr);
                                 }
@@ -208,7 +209,7 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                                 if (NodeRef.isNodeRef(valueStr)) {
                                     query.value(field, valueStr);
                                 } else {
-                                    searchAssocByText(valuePred, query);
+                                    addNodeRefSearchTerms(query, field, attDef.getName(), valueStr);
                                 }
                             }
                             break;
@@ -261,9 +262,9 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
         }
     }
 
-    private List<String> getPropertyValuesByConstraintsFromField(QName parent, QName field, String inputValue) {
+    private List<String> getPropertyValuesByConstraintsFromField(QName container, QName field, String inputValue) {
 
-        Map<String, String> mapping = dictUtils.getPropertyDisplayNameMappingWithChildren(parent, field);
+        Map<String, String> mapping = dictUtils.getPropertyDisplayNameMappingWithChildren(container, field);
 
         return mapping.entrySet().stream()
                 .filter(e -> e.getKey().contains(inputValue) || e.getValue().contains(inputValue))
@@ -271,84 +272,68 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                 .collect(Collectors.toList());
     }
 
-    private void searchAssocByText(ValuePredicate predicate, FTSQuery query) {
+    private void addNodeRefSearchTerms(FTSQuery query, QName field, QName targetTypeName, String value) {
 
-        String attribute = predicate.getAttribute();
-        Object value = predicate.getValue();
-        String valueStr = value.toString();
-
-        ClassAttributeDefinition attDef = dictUtils.getAttDefinition(attribute);
-        QName field = getQueryField(attDef);
-
-        FTSQuery innerQuery = FTSQuery.createRaw();
-        innerQuery.maxItems(QUERY_MAX_ITEMS_BATCH_SIZE);
-
-        ClassDefinition targetClass = null;
-        if (attDef instanceof AssociationDefinition) {
-
-            targetClass = ((AssociationDefinition) attDef).getTargetClass();
-            innerQuery.type(targetClass.getName());
+        if (NodeRef.isNodeRef(value)) {
+            query.value(field, value);
         } else {
 
-            QName targetName = ((PropertyDefinition) attDef).getDataType().getName();
-            if (targetName.getLocalName().equals("category")) {
-                innerQuery.type(ContentModel.TYPE_CATEGORY);
-            }
-        }
+            TypeDefinition targetType = dictUtils.getTypeDefinition(targetTypeName);
+            if (targetType != null) {
 
-        String assocVal = "*" + valueStr + "*";
+                FTSQuery innerQuery = FTSQuery.createRaw();
+                innerQuery.maxItems(QUERY_MAX_ITEMS_BATCH_SIZE);
+                innerQuery.type(targetTypeName);
 
-        Map<QName, Serializable> attributes = new HashMap<>();
-        attributes.put(ContentModel.PROP_TITLE, assocVal);
-        attributes.put(ContentModel.PROP_NAME, assocVal);
-
-        if (targetClass != null) {
-
-            if (targetClass.getName().equals(ContentModel.TYPE_PERSON)) {
-                attributes.put(ContentModel.PROP_USERNAME, assocVal);
-                attributes.put(ContentModel.PROP_USER_USERNAME, assocVal);
-                attributes.put(ContentModel.PROP_FIRSTNAME, assocVal);
-                attributes.put(ContentModel.PROP_LASTNAME, assocVal);
-            }
-
-
-            Map<QName, PropertyDefinition> props = new HashMap<>(targetClass.getProperties());
-            targetClass.getDefaultAspects(true)
-                    .forEach(a -> props.putAll(a.getProperties()));
-
-            props.forEach((name, def) -> {
-
-                QName dataType = def.getDataType().getName();
-
-                if (DataTypeDefinition.TEXT.equals(dataType)
-                        || DataTypeDefinition.MLTEXT.equals(dataType)) {
-
-                    String ns = def.getName().getNamespaceURI();
-
-                    if (!ns.equals(NamespaceService.SYSTEM_MODEL_1_0_URI)
-                            && !ns.equals(NamespaceService.CONTENT_MODEL_1_0_URI)) {
-
-                        attributes.put(def.getName(), assocVal);
-                    }
+                if (targetType.getName().getLocalName().equals("category")) {
+                    innerQuery.type(ContentModel.TYPE_CATEGORY);
                 }
-            });
-        }
 
-        if (!attributes.isEmpty()) {
+                String assocVal = "*" + value + "*";
+                Map<QName, Serializable> attributes = new HashMap<>();
+                attributes.put(ContentModel.PROP_TITLE, assocVal);
+                attributes.put(ContentModel.PROP_NAME, assocVal);
 
-            innerQuery.and().values(attributes, BinOperator.OR, false);
+                if (targetTypeName.equals(ContentModel.TYPE_PERSON)) {
+                    attributes.put(ContentModel.PROP_USERNAME, assocVal);
+                    attributes.put(ContentModel.PROP_USER_USERNAME, assocVal);
+                    attributes.put(ContentModel.PROP_FIRSTNAME, assocVal);
+                    attributes.put(ContentModel.PROP_LASTNAME, assocVal);
+                }
 
-            List<NodeRef> assocs = innerQuery.query(searchService);
 
-            if (assocs.size() > 0) {
-                query.any(field, new ArrayList<>(assocs));
-            } else {
-                query.value(field, valueStr);
+                Map<QName, PropertyDefinition> props = new HashMap<>(targetType.getProperties());
+                targetType.getDefaultAspects(true).forEach(a -> props.putAll(a.getProperties()));
+                props.forEach((name, def) -> {
+
+                    QName dataType = def.getDataType().getName();
+
+                    if (DataTypeDefinition.TEXT.equals(dataType) || DataTypeDefinition.MLTEXT.equals(dataType)) {
+
+                        String ns = def.getName().getNamespaceURI();
+                        if (!ns.equals(NamespaceService.SYSTEM_MODEL_1_0_URI)
+                                && !ns.equals(NamespaceService.CONTENT_MODEL_1_0_URI)) {
+
+                            attributes.put(def.getName(), assocVal);
+                        }
+                    }
+                });
+
+                if (!attributes.isEmpty()) {
+
+                    innerQuery.and().values(attributes, BinOperator.OR, false);
+
+                    List<NodeRef> assocs = innerQuery.query(searchService);
+                    if (assocs.size() > 0) {
+                        query.any(field, new ArrayList<>(assocs));
+                    } else {
+                        query.value(field, value);
+                    }
+
+                } else {
+                    query.value(field, value);
+                }
             }
-
-        } else {
-
-            query.value(field, valueStr);
         }
     }
 

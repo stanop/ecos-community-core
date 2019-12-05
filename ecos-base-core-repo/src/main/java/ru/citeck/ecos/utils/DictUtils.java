@@ -1,7 +1,9 @@
 package ru.citeck.ecos.utils;
 
-import ecos.com.google.common.cache.Cache;
 import ecos.com.google.common.cache.CacheBuilder;
+import ecos.com.google.common.cache.CacheLoader;
+import ecos.com.google.common.cache.LoadingCache;
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
 import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
@@ -14,30 +16,60 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 @Component
+@Slf4j
 public class DictUtils {
 
     public static final QName QNAME = QName.createQName("", "dictUtils");
     private static final int CACHE_AGE_SECONDS = 600;
-
-    private static String TXN_CONSTRAINTS_CACHE = DictUtils.class.getName();
+    private static final String TXN_CONSTRAINTS_CACHE = DictUtils.class.getName();
 
     private DictionaryService dictionaryService;
     private NamespaceService namespaceService;
     private MessageService messageService;
 
-    private Cache<QName, Map<String, String>> cachedDisplayNameMapping;
+    private LoadingCache<Pair<QName, QName>, Map<String, String>> cachedDisplayNameMapping;
+
+    @Autowired
+    public DictUtils(ServiceRegistry serviceRegistry) {
+        dictionaryService = serviceRegistry.getDictionaryService();
+        messageService = serviceRegistry.getMessageService();
+        namespaceService = serviceRegistry.getNamespaceService();
+        this.cachedDisplayNameMapping = CacheBuilder.newBuilder()
+                .expireAfterWrite(CACHE_AGE_SECONDS, TimeUnit.SECONDS)
+                .build(CacheLoader.from(this::configureCacheDisplayNameMapping));
+    }
+
+    private Map<String, String> configureCacheDisplayNameMapping(Pair<QName, QName> key) {
+        Map<String, String> result = new HashMap<>();
+        QName container = key.getFirst();
+        QName field = key.getSecond();
+
+        Collection<QName> subClasses = this.getSubClasses(container, false);
+        for (QName subClass : subClasses) {
+            Map<String, String> childMapping = this.getPropertyDisplayNameMapping(subClass, field);
+            if (childMapping != null) {
+                result.putAll(childMapping);
+            }
+        }
+
+        Map<String, String> fieldMapping = getPropertyDisplayNameMapping(field);
+        if (fieldMapping != null) {
+            result.putAll(fieldMapping);
+        }
+
+        return result;
+    }
 
     /**
      * Search property definition in specified container or associated default aspects
+     *
      * @param containerName aspect or type name. If null then default property definition will be returned
-     * @param propertyName property name. Must be not null
+     * @param propertyName  property name. Must be not null
      * @return property definition or null if definition not found
      * @throws NullPointerException if propertyName is null
      */
@@ -142,33 +174,18 @@ public class DictUtils {
         });
     }
 
-    public Map<String, String> getPropertyDisplayNameMappingWithChildren(QName parent, QName field) {
-
-        Cache<QName, Map<String, String>> cache = this.getCachedMapping();
-
-        return cache.asMap().computeIfAbsent(parent, n -> {
-
-            Map<String, String> result = new HashMap<>();
-
-            Map<String, String> parentMapping = this.getPropertyDisplayNameMapping(parent, field);
-            if (parentMapping != null) {
-                result.putAll(parentMapping);
-            }
-
-            Collection<QName> children = this.getChildClassNames(parent, false);
-            for (QName child : children) {
-                Map<String, String> childMapping = this.getPropertyDisplayNameMapping(child, field);
-                if (childMapping != null) {
-                    result.putAll(childMapping);
-                }
-            }
-
-            return result;
-        });
+    public Map<String, String> getPropertyDisplayNameMappingWithChildren(QName container, QName field) {
+        try {
+            return cachedDisplayNameMapping.get(new Pair<>(container, field));
+        } catch (ExecutionException e) {
+            log.error("Cannot get 'displayName' mapping of property from cache", e);
+            return Collections.emptyMap();
+        }
     }
 
     /**
      * Returns a list of constraints for the specified property
+     *
      * @param propertyName property name. Must be not null
      * @return list of values constraint or null
      * @throws NullPointerException if propertyName is null
@@ -195,34 +212,21 @@ public class DictUtils {
         return null;
     }
 
-    public Cache<QName, Map<String, String>> getCachedMapping() {
-        if (cachedDisplayNameMapping == null) {
-            synchronized (DictUtils.class) {
-                if (cachedDisplayNameMapping == null) {
-                    this.cachedDisplayNameMapping = CacheBuilder.newBuilder()
-                            .expireAfterWrite(CACHE_AGE_SECONDS, TimeUnit.SECONDS)
-                            .build();
-                }
-            }
-        }
-        return this.cachedDisplayNameMapping;
+    public TypeDefinition getTypeDefinition(QName targetType) {
+        return dictionaryService.getType(targetType);
     }
 
-    public Collection<QName> getChildClassNames(QName className, boolean recursive) {
+    public Collection<QName> getSubClasses(QName className, boolean recursive) {
         ClassDefinition classDef = dictionaryService.getClass(className);
-        if(classDef == null) {
-            throw new IllegalArgumentException("Class is not registered: " + className);
-        } else if(classDef.isAspect()) {
-            return dictionaryService.getSubAspects(className, recursive);
+        if (classDef == null) {
+            log.warn("Class is not registered: " + className);
+            return Collections.singletonList(className);
+        } else if (classDef.isAspect()) {
+            Collection<QName> subAspects = dictionaryService.getSubAspects(className, recursive);
+            subAspects.add(className);
+            return subAspects;
         } else {
             return dictionaryService.getSubTypes(className, recursive);
         }
-    }
-
-    @Autowired
-    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        dictionaryService = serviceRegistry.getDictionaryService();
-        messageService = serviceRegistry.getMessageService();
-        namespaceService = serviceRegistry.getNamespaceService();
     }
 }
