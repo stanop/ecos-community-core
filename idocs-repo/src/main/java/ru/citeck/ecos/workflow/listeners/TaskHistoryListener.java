@@ -52,9 +52,11 @@ import java.util.Map;
 
 public class TaskHistoryListener extends AbstractTaskListener {
 
+    public static final String VAR_ADDITIONAL_EVENT_PROPERTIES = "event_additionalProperties";
+
     private static final Log logger = LogFactory.getLog(TaskHistoryListener.class);
 
-    public static final String VAR_ADDITIONAL_EVENT_PROPERTIES = "event_additionalProperties";
+    private static final String ALF_PREFIX = "alf_";
     private static final String ACTIVITI_PREFIX = ActivitiConstants.ENGINE_ID + "$";
     private static final Map<String, String> eventNames;
 
@@ -162,7 +164,12 @@ public class TaskHistoryListener extends AbstractTaskListener {
         String taskTitleProp = qNameConverter.mapQNameToName(CiteckWorkflowModel.PROP_TASK_TITLE);
         eventProperties.put(HistoryModel.PROP_TASK_TITLE, (String) task.getVariable(taskTitleProp));
 
-        eventProperties.put(HistoryModel.PROP_TASK_FORM_KEY, ListenerUtils.getTaskFormKey(task));
+        String taskFormKey = ListenerUtils.getTaskFormKey(task);
+        if (StringUtils.isNotBlank(taskFormKey) && !StringUtils.startsWith(taskFormKey, ALF_PREFIX)) {
+            taskFormKey = ALF_PREFIX + taskFormKey;
+        }
+
+        eventProperties.put(HistoryModel.PROP_TASK_FORM_KEY, taskFormKey);
         eventProperties.put(HistoryModel.PROP_WORKFLOW_INSTANCE_ID, ACTIVITI_PREFIX + task.getProcessInstanceId());
         eventProperties.put(HistoryModel.PROP_WORKFLOW_DESCRIPTION, (Serializable) task.getExecution().getVariable(
                 VAR_DESCRIPTION));
