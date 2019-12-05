@@ -67,8 +67,8 @@
 
         <flowable.version>6.4.1</flowable.version>
         <ecos.flowable.version>1.5.0</ecos.flowable.version>
-        <ecos.records.version>1.8.0</ecos.records.version>
-        <ecos.apps.lib.version>1.2.0-SNAPSHOT</ecos.apps.lib.version>
+        <ecos.records.version>1.11.0-SNAPSHOT</ecos.records.version>
+        <ecos.apps.lib.version>1.2.0</ecos.apps.lib.version>
         <spring.retry.version>1.2.4.RELEASE</spring.retry.version>
 
         <web.compression.skip>false</web.compression.skip>
