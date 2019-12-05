@@ -502,41 +502,33 @@ require([
     };
 
     function isShouldDisplayFormsForUser() {
-        return Citeck.Records.get("ecos-config@default-ui-main-menu").load(".str").then(function(result) {
-            if (result == "left") {
-                return isShouldDisplayForms();
-            }
-            return false;
-        });
+        return Citeck.Records.get("ecos-config@default-ui-main-menu").load(".str")
+            .then(result => result === "left" ? isShouldDisplayForms() : false);
     }
 
     function isShouldDisplayForms() {
-        return Citeck.Records.get("ecos-config@default-ui-new-forms-access-groups")
-            .load(".str").then(function(groupsInOneString) {
+        return Citeck.Records.get("ecos-config@default-ui-new-forms-access-groups").load(".str")
+            .then((groupsInOneString) => {
 
+                console.log(groupsInOneString);
                 if (!groupsInOneString) {
                     return false;
                 }
 
-                var groups = groupsInOneString.split(',');
-                var results = [];
-                for(var groupsCounter = 0; groupsCounter < groups.length; ++groupsCounter) {
-                    results.push(isCurrentUserInGroup(groups[groupsCounter]));
-                }
-                return Promise.all(results).then(function (values) {
-                    return values.indexOf(false) == -1;
-                });
+                const groups = groupsInOneString.split(',');
+                const results = [];
+
+                groups.forEach(group => results.push(isCurrentUserInGroup(group)));
+                return Promise.all(results).then(values => values.indexOf(true) !== -1);
             });
     }
 
     function isCurrentUserInGroup(group) {
-        var currentPersonName = Alfresco.constants.USERNAME;
+        const currentPersonName = Alfresco.constants.USERNAME;
         return Citeck.Records.queryOne({
             "query": 'TYPE:"cm:authority" AND =cm:authorityName:"' + group + '"',
             "language": "fts-alfresco"
-        }, 'cm:member[].cm:userName').then(function (usernames) {
-            return (usernames || []).indexOf(currentPersonName) != -1
-        });
+        }, 'cm:member[].cm:userName').then(usernames => (usernames || []).indexOf(currentPersonName) !== -1);
     }
 
     Citeck.forms.parseCreateArguments = function (createArgs) {
