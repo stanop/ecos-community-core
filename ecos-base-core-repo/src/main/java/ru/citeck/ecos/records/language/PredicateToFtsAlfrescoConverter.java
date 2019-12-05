@@ -41,7 +41,7 @@ import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.EQ;
 public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
     private static final Log logger = LogFactory.getLog(PredicateToFtsAlfrescoConverter.class);
-    private static final String COMMA_DELIMER = ",";
+    private static final String COMMA_DELIMITER = ",";
     private static final int QUERY_MAX_ITEMS_BATCH_SIZE = 20;
 
     private DictUtils dictUtils;
@@ -152,9 +152,9 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                     }
 
                     // accepting multiple values by comma
-                    if (valueStr.contains(COMMA_DELIMER) &&
+                    if (valueStr.contains(COMMA_DELIMITER) &&
                             (valuePred.getType().equals(EQ) || valuePred.getType().equals(CONTAINS))) {
-                        String[] values = valueStr.split(COMMA_DELIMER);
+                        String[] values = valueStr.split(COMMA_DELIMITER);
                         ComposedPredicate orPredicate = new OrPredicate();
                         for (String s : values) {
                             orPredicate.addPredicate(new ValuePredicate(valuePred.getAttribute(), valuePred.getType(), s));
