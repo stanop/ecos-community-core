@@ -71,6 +71,7 @@ public class HistoryService {
     private static final String DOCUMENT_ID = "documentId";
     private static final String EVENT_TYPE = "eventType";
     private static final String COMMENTS = "comments";
+    private static final String LAST_TASK_COMMENT = "lastTaskComment";
     private static final String VERSION = "version";
     private static final String CREATION_TIME = "creationTime";
     private static final String USERNAME = "username";
@@ -284,6 +285,7 @@ public class HistoryService {
         requestParams.put(HISTORY_EVENT_ID, UUID.randomUUID().toString());
         requestParams.put(EVENT_TYPE, properties.get(HistoryModel.PROP_NAME));
         requestParams.put(COMMENTS, properties.get(HistoryModel.PROP_TASK_COMMENT));
+        requestParams.put(LAST_TASK_COMMENT, properties.get(HistoryModel.PROP_LAST_TASK_COMMENT));
         requestParams.put(TASK_ROLE, properties.get(HistoryModel.PROP_TASK_ROLE));
         requestParams.put(TASK_OUTCOME, properties.get(HistoryModel.PROP_TASK_OUTCOME));
         QName taskType = (QName) properties.get(HistoryModel.PROP_TASK_TYPE);

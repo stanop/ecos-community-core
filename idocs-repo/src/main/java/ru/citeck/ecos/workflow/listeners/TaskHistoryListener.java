@@ -78,6 +78,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
     private WorkflowQNameConverter qNameConverter;
     private String VAR_OUTCOME_PROPERTY_NAME;
     private String VAR_COMMENT;
+    private String VAR_LAST_COMMENT;
     private String VAR_DESCRIPTION;
     private WorkflowDocumentResolverRegistry documentResolverRegistry;
 
@@ -106,8 +107,9 @@ public class TaskHistoryListener extends AbstractTaskListener {
         }
         String taskOutcome = (String) task.getVariable(qNameConverter.mapQNameToName(outcomeProperty));
 
-        // task comment
+        // comments
         String taskComment = (String) task.getVariable(VAR_COMMENT);
+        String lastTaskComment = (String) task.getVariable(VAR_LAST_COMMENT);
 
         // task attachments
         ArrayList<NodeRef> taskAttachments = ListenerUtils.getTaskAttachments(task);
@@ -156,6 +158,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
         eventProperties.put(HistoryModel.PROP_TASK_TYPE, taskType);
         eventProperties.put(HistoryModel.PROP_TASK_OUTCOME, taskOutcome);
         eventProperties.put(HistoryModel.PROP_TASK_COMMENT, taskComment);
+        eventProperties.put(HistoryModel.PROP_LAST_TASK_COMMENT, lastTaskComment);
         eventProperties.put(HistoryModel.PROP_TASK_ATTACHMENTS, taskAttachments);
         eventProperties.put(HistoryModel.PROP_TASK_POOLED_ACTORS, pooledActors);
         eventProperties.put(HistoryModel.PROP_TASK_ROLE, roleName);
@@ -222,6 +225,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
         qNameConverter = new WorkflowQNameConverter(namespaceService);
         VAR_OUTCOME_PROPERTY_NAME = qNameConverter.mapQNameToName(WorkflowModel.PROP_OUTCOME_PROPERTY_NAME);
         VAR_COMMENT = qNameConverter.mapQNameToName(WorkflowModel.PROP_COMMENT);
+        VAR_LAST_COMMENT = qNameConverter.mapQNameToName(CiteckWorkflowModel.PROP_LASTCOMMENT);
         VAR_DESCRIPTION = qNameConverter.mapQNameToName(WorkflowModel.PROP_WORKFLOW_DESCRIPTION);
     }
 
