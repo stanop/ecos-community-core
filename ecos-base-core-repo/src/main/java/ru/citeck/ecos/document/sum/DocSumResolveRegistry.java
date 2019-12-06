@@ -47,7 +47,7 @@ public class DocSumResolveRegistry implements ApplicationContextAware {
         });
     }
 
-    public DocSumResolver get(NodeRef document) {
+    DocSumResolver get(NodeRef document) {
         QName type = nodeService.getType(document);
         return resolvers.get(type);
     }

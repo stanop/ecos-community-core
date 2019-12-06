@@ -16,8 +16,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.document.sum.DocSumResolveRegistry;
-import ru.citeck.ecos.document.sum.DocSumResolver;
+import ru.citeck.ecos.document.sum.DocSumService;
 import ru.citeck.ecos.predicate.model.ComposedPredicate;
 import ru.citeck.ecos.records.RecordConstants;
 import ru.citeck.ecos.records.models.AuthorityDTO;
@@ -66,7 +65,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     private final AuthorityService authorityService;
     private final WorkflowTaskRecordsUtils workflowTaskRecordsUtils;
     private final OwnerService ownerService;
-    private final DocSumResolveRegistry docSumResolveRegistry;
+    private final DocSumService docSumService;
     private final WorkflowUtils workflowUtils;
     private final AuthorityUtils authorityUtils;
     private final NamespaceService namespaceService;
@@ -76,7 +75,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     public WorkflowTaskRecords(EcosTaskService ecosTaskService,
                                WorkflowTaskRecordsUtils workflowTaskRecordsUtils,
                                AuthorityService authorityService, OwnerService ownerService,
-                               DocSumResolveRegistry docSumResolveRegistry,
+                               DocSumService docSumService,
                                WorkflowUtils workflowUtils, AuthorityUtils authorityUtils,
                                NamespaceService namespaceService,
                                DictionaryService dictionaryService) {
@@ -87,7 +86,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         this.workflowTaskRecordsUtils = workflowTaskRecordsUtils;
         this.authorityService = authorityService;
         this.ownerService = ownerService;
-        this.docSumResolveRegistry = docSumResolveRegistry;
+        this.docSumService = docSumService;
         this.workflowUtils = workflowUtils;
         this.authorityUtils = authorityUtils;
     }
@@ -549,8 +548,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     String ref = getDocumentRef().getId();
                     if (NodeRef.isNodeRef(ref)) {
                         NodeRef document = new NodeRef(ref);
-                        DocSumResolver resolver = docSumResolveRegistry.get(document);
-                        return resolver.resolve(document);
+                        return docSumService.getSum(document);
                     }
                     return null;
             }

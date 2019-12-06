@@ -44,7 +44,7 @@ public class TaskEventListener extends AbstractTaskListener {
     protected void notifyImpl(DelegateTask task) {
         if (emitRequired(task)) {
             if (eventConnection == null) {
-                throw new RuntimeException("Sending event if required, but connection to event server is not enabled. " +
+                throw new RuntimeException("Sending event is required, but connection to event server is not enabled. " +
                         "Check you configs.");
             }
             eventFactory.fromActivitiTask(task)
