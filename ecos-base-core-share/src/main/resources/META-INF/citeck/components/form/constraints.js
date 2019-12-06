@@ -482,15 +482,15 @@ require([
         const isShouldDisplay = isShouldDisplayFormsForUser();
 
         Promise.all([isFormsEnabled, isShouldDisplay]).then(function (values) {
-            let keyForm = null;
+            let formRef = null;
             if (values.includes(true)) {
                 require(['ecosui!ecos-form-utils'], function(utils) {
                     utils.default.hasForm(recordRef, formKey).then(function (result) {
-                        keyForm = result ? recordRef : null;
+                        formRef = result ? recordRef : null;
                     });
                 });
             }
-            showForm(keyForm);
+            showForm(formKey);
         }).catch(function (e) {
             console.error(e);
             showForm(null);
