@@ -9,6 +9,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import ru.citeck.ecos.predicate.PredicateService;
 import ru.citeck.ecos.predicate.model.*;
 import ru.citeck.ecos.querylang.QueryLangConverter;
 import ru.citeck.ecos.querylang.QueryLangService;
+import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.search.AssociationIndexPropertyRegistry;
 import ru.citeck.ecos.search.ftsquery.BinOperator;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
@@ -27,9 +29,14 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
+import static ru.citeck.ecos.model.ClassificationModel.PROP_DOCUMENT_KIND;
+import static ru.citeck.ecos.model.ClassificationModel.PROP_DOCUMENT_TYPE;
 import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.CONTAINS;
 import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.EQ;
 
@@ -37,7 +44,9 @@ import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.EQ;
 public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
     private static final Log logger = LogFactory.getLog(PredicateToFtsAlfrescoConverter.class);
-    private static final String COMMA_DELIMER = ",";
+    private static final String COMMA_DELIMITER = ",";
+    private static final String SLASH_DELIMITER = "/";
+    private static final String WORKSPACE_PREFIX = "workspace://SpacesStore/";
 
     private DictUtils dictUtils;
     private SearchService searchService;
@@ -113,9 +122,10 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                     break;
                 case "TYPE":
                 case "_type":
-
                     consumeQName(valueStr, query::type);
-
+                    break;
+                case "_etype":
+                    handleETypeAttribute(query, valueStr);
                     break;
                 case "ASPECT":
                 case "aspect":
@@ -148,9 +158,9 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                     }
 
                     // accepting multiple values by comma
-                    if (valueStr.contains(COMMA_DELIMER) &&
+                    if (valueStr.contains(COMMA_DELIMITER) &&
                             (valuePred.getType().equals(EQ) || valuePred.getType().equals(CONTAINS))) {
-                        String[] values = valueStr.split(COMMA_DELIMER);
+                        String[] values = valueStr.split(COMMA_DELIMITER);
                         ComposedPredicate orPredicate = new OrPredicate();
                         for (String s : values) {
                             orPredicate.addPredicate(new ValuePredicate(valuePred.getAttribute(), valuePred.getType(), s));
@@ -298,6 +308,32 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
         } else {
             throw new RuntimeException("Unknown predicate type: " + predicate);
+        }
+    }
+
+    private void handleETypeAttribute(FTSQuery query, String value) {
+
+        RecordRef recordRef = RecordRef.valueOf(value);
+        String recordId = recordRef.getId();
+
+        String documentTypeValue;
+        String documentKindValue = null;
+
+        int slashIndex = recordId.indexOf(SLASH_DELIMITER);
+        if (slashIndex != -1) {
+            String firstPartOfRecordId = recordId.substring(0, slashIndex);
+            documentTypeValue = WORKSPACE_PREFIX + firstPartOfRecordId;
+
+            String secondPartOfRecordId = recordId.substring(slashIndex + 1);
+            documentKindValue = WORKSPACE_PREFIX + secondPartOfRecordId;
+        } else {
+            documentTypeValue = WORKSPACE_PREFIX + recordId;
+        }
+
+        query.value(PROP_DOCUMENT_TYPE, documentTypeValue);
+        if (StringUtils.isNotEmpty(documentKindValue)) {
+            query.and();
+            query.value(PROP_DOCUMENT_KIND, documentKindValue);
         }
     }
 
