@@ -48,8 +48,7 @@ public class ReportWithAttachmentSender extends AbstractNotificationSender<Array
 	
 	@Override
 	protected NodeRef getNotificationTemplate(ArrayList<Map<String, Serializable>> item) {
-		String key=null;
-		return getNotificationTemplate(key);
+		return getNotificationTemplate((String) null);
 	}
 	
 	@Override

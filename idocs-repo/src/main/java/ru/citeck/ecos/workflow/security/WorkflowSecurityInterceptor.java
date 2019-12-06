@@ -104,7 +104,6 @@ public class WorkflowSecurityInterceptor extends SimpleMethodInterceptor {
     private boolean hasUserAnyStatus(String username, WorkflowTask task, Set<WorkflowUserStatus> statuses) {
         Map<QName, Serializable> taskProperties = task.getProperties();
         String ownerName = (String) taskProperties.get(ContentModel.PROP_OWNER);
-        NodeRef userNodeRef = null;
 
         if(statuses.contains(WorkflowUserStatus.OWNER)) {
             if(username.equals(ownerName)) {
@@ -118,9 +117,10 @@ public class WorkflowSecurityInterceptor extends SimpleMethodInterceptor {
             }
         }
 
-        if(statuses.contains(WorkflowUserStatus.INITIATOR)) {
-            if(userNodeRef == null) userNodeRef = personService.getPerson(username);
-            if(task.getPath().getInstance().getInitiator().equals(userNodeRef)) {
+        NodeRef userNodeRef = null;
+        if (statuses.contains(WorkflowUserStatus.INITIATOR)) {
+            userNodeRef = personService.getPerson(username);
+            if (task.getPath().getInstance().getInitiator().equals(userNodeRef)) {
                 return true;
             }
         }

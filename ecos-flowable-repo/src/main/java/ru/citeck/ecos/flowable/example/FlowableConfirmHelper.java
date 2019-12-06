@@ -253,14 +253,12 @@ public class FlowableConfirmHelper {
 
     public void saveConfirmersForOldVersions(DelegateExecution execution, ArrayList<NodeRef> confirmerForOldVersions) {
         execution.setVariable(qNameConverter.mapQNameToName(ConfirmWorkflowModel.ASSOC_CONFIRMERS), confirmerForOldVersions);
-        if(confirmerForOldVersions.size()>0)
-        {
-            String precedenceLine = confirmerForOldVersions.get(0).toString();
-            for(int i=1; i<confirmerForOldVersions.size(); i++)
-            {
-                precedenceLine += "|"+confirmerForOldVersions.get(i).toString();
+        if (confirmerForOldVersions.size() > 0) {
+            StringBuilder precedenceLine = new StringBuilder(confirmerForOldVersions.get(0).toString());
+            for (int i = 1; i < confirmerForOldVersions.size(); i++) {
+                precedenceLine.append("|").append(confirmerForOldVersions.get(i).toString());
             }
-            execution.setVariable(qNameConverter.mapQNameToName(ConfirmWorkflowModel.PROP_PRECEDENCE), precedenceLine);
+            execution.setVariable(qNameConverter.mapQNameToName(ConfirmWorkflowModel.PROP_PRECEDENCE), precedenceLine.toString());
         }
     }
 }

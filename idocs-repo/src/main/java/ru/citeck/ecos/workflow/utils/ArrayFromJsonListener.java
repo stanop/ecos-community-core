@@ -64,8 +64,7 @@ public class ArrayFromJsonListener extends AbstractExecutionListener {
 			element = path;
 		}
 		else if (pos == 0) {
-			if (path.length() > 0)
-				pathRest = path.substring(1);
+			pathRest = path.substring(1);
 		}
 		else {
 			element = path.substring(0, pos);

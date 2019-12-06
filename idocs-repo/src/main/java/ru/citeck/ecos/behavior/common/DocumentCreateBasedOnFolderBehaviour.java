@@ -120,7 +120,7 @@ public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies
             if(evaluateConditions)
             {
                 SearchParameters sp = new SearchParameters();
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 sb.append("PATH:\"").append(createCpecialFolderPath).append("\"");
                 sp.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
                 sp.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
@@ -152,7 +152,7 @@ public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies
                 if(parents.get(0)!=null)
                     initialParentFolder = parents.get(0).getParentRef();
                 SearchParameters sp = new SearchParameters();
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 sb.append("PATH:\"").append(supAgreementParentFolderPath).append("\"");
                 sp.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
                 sp.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
