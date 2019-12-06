@@ -70,7 +70,7 @@ public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies
 
     public void init() {
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, className,
-//			new OrderedBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT, order));
+//            new OrderedBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT, order));
                 new JavaBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT));
 
         policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnCreateChildAssociationPolicy.QNAME, className,
@@ -178,87 +178,87 @@ public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies
                     FileInfo newParentFolder = fileFolderService.create(defaultParentFolder, oldName.replace("/","_")+"_", folderQName);
                     NodeRef parentFolderNodeRef = newParentFolder.getNodeRef();
                     fileFolderService.move(nodeRef, parentFolderNodeRef, nodeService.getProperty(nodeRef, ContentModel.PROP_NAME).toString());
-					nodeService.setProperty(parentFolderNodeRef, ContentModel.PROP_NAME, oldName.replace("/","_"));
-					if(cpecialParentFolderNodeRef!=null)
-					{
-						FileInfo movedFile = fileFolderService.moveFrom(parentFolderNodeRef, initialParentFolder, cpecialParentFolderNodeRef, nodeService.getProperty(parentFolderNodeRef, ContentModel.PROP_NAME).toString());
-						logger.debug("movedFile.getNodeRef() "+movedFile.getNodeRef());
-					}
-					logger.debug("folder created with name "+parentFolderNodeRef);
-				}
-				catch(FileNotFoundException e)
-				{
-					logger.error("File not found");
-				}
-				catch(FileExistsException e)
-				{
-					logger.error("File already exist");
-				}
-			}
-		}
-	}
+                    nodeService.setProperty(parentFolderNodeRef, ContentModel.PROP_NAME, oldName.replace("/","_"));
+                    if(cpecialParentFolderNodeRef!=null)
+                    {
+                        FileInfo movedFile = fileFolderService.moveFrom(parentFolderNodeRef, initialParentFolder, cpecialParentFolderNodeRef, nodeService.getProperty(parentFolderNodeRef, ContentModel.PROP_NAME).toString());
+                        logger.debug("movedFile.getNodeRef() "+movedFile.getNodeRef());
+                    }
+                    logger.debug("folder created with name "+parentFolderNodeRef);
+                }
+                catch(FileNotFoundException e)
+                {
+                    logger.error("File not found");
+                }
+                catch(FileExistsException e)
+                {
+                    logger.error("File already exist");
+                }
+            }
+        }
+    }
 
-	@Override
-	public void onCreateChildAssociation(ChildAssociationRef childAssociationRef, boolean isNew) {
-		logger.debug("onCreateChildAssociation event");
-		NodeRef nodeParentSource = null;
-		NodeRef nodeTarget = childAssociationRef.getChildRef();
-		NodeRef nodeSource = childAssociationRef.getParentRef();
-		if(DmsModel.ASSOC_SUPPLEMENARY_FILES.equals(childAssociationRef.getTypeQName()))
-		{
-			for(ChildAssociationRef parent : nodeService.getParentAssocs(nodeSource))
-			{
-				if(nodeService.exists(parent.getParentRef()) && folderQName!=null && folderQName.equals(nodeService.getType(parent.getParentRef())))
-				{
-					nodeParentSource = parent.getParentRef();
-					break;
-				}
-			}
-			if(nodeParentSource!=null && nodeService.exists(nodeParentSource) && nodeTarget!=null && nodeService.exists(nodeTarget))
-			{
-				try
-				{
-					nodeService.addChild(nodeParentSource, nodeTarget, ContentModel.ASSOC_CONTAINS, nodeService.getPrimaryParent(nodeTarget).getQName());
-					logger.debug("added new child to node "+nodeParentSource);
-				}
-				catch(DuplicateChildNodeNameException e)
-				{
-					logger.error("DuplicateChildNodeNameException: Duplicate child name not allowed");
-				}
-				catch(CyclicChildRelationshipException e)
-				{
-					logger.error("CyclicChildRelationshipException: Node has been pasted into its own tree");
-				}
-				catch(AssociationExistsException e)
-				{
-					logger.error("AssociationExistsException: Association Already Exists");
-				}
-			}
-		}
-	}
+    @Override
+    public void onCreateChildAssociation(ChildAssociationRef childAssociationRef, boolean isNew) {
+        logger.debug("onCreateChildAssociation event");
+        NodeRef nodeParentSource = null;
+        NodeRef nodeTarget = childAssociationRef.getChildRef();
+        NodeRef nodeSource = childAssociationRef.getParentRef();
+        if(DmsModel.ASSOC_SUPPLEMENARY_FILES.equals(childAssociationRef.getTypeQName()))
+        {
+            for(ChildAssociationRef parent : nodeService.getParentAssocs(nodeSource))
+            {
+                if(nodeService.exists(parent.getParentRef()) && folderQName!=null && folderQName.equals(nodeService.getType(parent.getParentRef())))
+                {
+                    nodeParentSource = parent.getParentRef();
+                    break;
+                }
+            }
+            if(nodeParentSource!=null && nodeService.exists(nodeParentSource) && nodeTarget!=null && nodeService.exists(nodeTarget))
+            {
+                try
+                {
+                    nodeService.addChild(nodeParentSource, nodeTarget, ContentModel.ASSOC_CONTAINS, nodeService.getPrimaryParent(nodeTarget).getQName());
+                    logger.debug("added new child to node "+nodeParentSource);
+                }
+                catch(DuplicateChildNodeNameException e)
+                {
+                    logger.error("DuplicateChildNodeNameException: Duplicate child name not allowed");
+                }
+                catch(CyclicChildRelationshipException e)
+                {
+                    logger.error("CyclicChildRelationshipException: Node has been pasted into its own tree");
+                }
+                catch(AssociationExistsException e)
+                {
+                    logger.error("AssociationExistsException: Association Already Exists");
+                }
+            }
+        }
+    }
 
-	@Override
-	public void onUpdateProperties(final NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after)
-	{
-		logger.debug("onUpdateProperties event");
-		if(nodeService.exists(nodeRef) && nameDetermineProp!=null)
-		{
-			Object propBefore = (Object) before.get(nameDetermineProp);
-			Object propAfter = (Object) after.get(nameDetermineProp);
-			NodeRef currentParentFolder = null;
-			if((propBefore!=null && !propBefore.equals(propAfter)) || (propBefore==null && propAfter!=null))
-			{
-				for(ChildAssociationRef parent : nodeService.getParentAssocs(nodeRef))
-				{
-					if(nodeService.exists(parent.getParentRef()) && folderQName!=null && folderQName.equals(nodeService.getType(parent.getParentRef())))
-					{
-						currentParentFolder = parent.getParentRef();
-						break;
-					}
-				}
-				if(currentParentFolder!=null && nodeService.exists(currentParentFolder))
-				{
-					nodeService.setProperty(currentParentFolder, ContentModel.PROP_NAME, propAfter.toString());
+    @Override
+    public void onUpdateProperties(final NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after)
+    {
+        logger.debug("onUpdateProperties event");
+        if(nodeService.exists(nodeRef) && nameDetermineProp!=null)
+        {
+            Object propBefore = (Object) before.get(nameDetermineProp);
+            Object propAfter = (Object) after.get(nameDetermineProp);
+            NodeRef currentParentFolder = null;
+            if((propBefore!=null && !propBefore.equals(propAfter)) || (propBefore==null && propAfter!=null))
+            {
+                for(ChildAssociationRef parent : nodeService.getParentAssocs(nodeRef))
+                {
+                    if(nodeService.exists(parent.getParentRef()) && folderQName!=null && folderQName.equals(nodeService.getType(parent.getParentRef())))
+                    {
+                        currentParentFolder = parent.getParentRef();
+                        break;
+                    }
+                }
+                if(currentParentFolder!=null && nodeService.exists(currentParentFolder))
+                {
+                    nodeService.setProperty(currentParentFolder, ContentModel.PROP_NAME, propAfter.toString());
                 }
             }
         }

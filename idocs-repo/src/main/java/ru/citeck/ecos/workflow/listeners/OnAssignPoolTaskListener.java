@@ -33,38 +33,37 @@ import ru.citeck.ecos.notification.NotificationSender;
  */
 public class OnAssignPoolTaskListener implements TaskListener 
 {
-	protected ServiceRegistry serviceRegistry;
-	protected WorkflowService workflowService;
-	protected NotificationSender<WorkflowTask> sender;
-	protected boolean enabled;
+    protected ServiceRegistry serviceRegistry;
+    protected WorkflowService workflowService;
+    protected NotificationSender<WorkflowTask> sender;
+    protected boolean enabled;
 
     @Override
-	public void notify(DelegateTask task) {
-		if(enabled)
-		{
-			workflowService = serviceRegistry.getWorkflowService();
-			WorkflowTask wftask = workflowService.getTaskById("activiti$"+task.getId());
-			if(task.getAssignee() == null && wftask != null) {
-				sender.sendNotification(wftask);
-			}
-		}
-	}
-	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-		this.serviceRegistry = serviceRegistry;
-	}
-	/**
-	 * Set NotificationSender.
-	 * @param sender
-	 */
-	public void setSender(NotificationSender<WorkflowTask> sender) {
-		this.sender = sender;
-	}
-	/**
-	* enabled
-	* @param true or false
-	*/
-	public void setEnabled(Boolean enabled) {
-    	this.enabled = enabled.booleanValue();
+    public void notify(DelegateTask task) {
+        if (enabled) {
+            workflowService = serviceRegistry.getWorkflowService();
+            WorkflowTask wftask = workflowService.getTaskById("activiti$" + task.getId());
+            if (task.getAssignee() == null && wftask != null) {
+                sender.sendNotification(wftask);
+            }
+        }
+    }
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
+    }
+    /**
+     * Set NotificationSender.
+     * @param sender
+     */
+    public void setSender(NotificationSender<WorkflowTask> sender) {
+        this.sender = sender;
+    }
+    /**
+    * enabled
+    * @param true or false
+    */
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled.booleanValue();
     }
 
 }
