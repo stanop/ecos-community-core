@@ -336,7 +336,7 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
             query.and();
             query.value(PROP_DOCUMENT_KIND, documentKindValue);
         }
-        query.open();
+        query.close();
     }
 
     private boolean isNodeRefAtt(ClassAttributeDefinition attDef) {
