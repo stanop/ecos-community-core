@@ -512,7 +512,7 @@ require([
                     const results = [];
 
                     groups.forEach(function (group) {
-                        results.push(isCurrentUserInGroup.call(this, group))
+                        results.push(isCurrentUserInGroup(group));
                     });
                     return Promise.all(results).then(function (values) {
                         return values.includes(true);
