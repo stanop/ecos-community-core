@@ -53,15 +53,12 @@ export default class {
         const checkJournalsAvailability = () => {
             return Citeck.Records.get("ecos-config@default-ui-new-journals-access-groups")
                 .load(".str").then(groupsInOneString => {
-
-                    if (!groupsInOneString) {
-                        return false;
-                    }
-
-                    const groups = groupsInOneString.split(',');
-                    const results = [];
-                    groups.forEach(group => results.push(isCurrentUserInGroup.call(this, group)));
-                    return Promise.all(results).then(values => values.includes(true));
+                    return !!groupsInOneString ? () => {
+                        const groups = groupsInOneString.split(',');
+                        const results = [];
+                        groups.forEach(group => results.push(isCurrentUserInGroup.call(this, group)));
+                        return Promise.all(results).then(values => values.includes(true));
+                    } : false;
                 });
         };
         const checkJournalsAvailabilityForUser = () => {

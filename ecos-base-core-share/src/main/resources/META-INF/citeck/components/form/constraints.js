@@ -479,22 +479,18 @@ require([
         } else {
             isFormsEnabled = Promise.resolve(true);
         }
-        var isShouldDisplay = isShouldDisplayFormsForUser();
+        const isShouldDisplay = isShouldDisplayFormsForUser();
 
         Promise.all([isFormsEnabled, isShouldDisplay]).then(function (values) {
-            if (values[0] || values[1]) {
+            let keyForm = null;
+            if (values.includes(true)) {
                 require(['ecosui!ecos-form-utils'], function(utils) {
                     utils.default.hasForm(recordRef, formKey).then(function (result) {
-                        if (result) {
-                            showForm(recordRef);
-                        } else {
-                            showForm(null);
-                        }
+                        keyForm = result ? recordRef : null;
                     });
                 });
-            } else {
-                showForm(null);
             }
+            showForm(keyForm);
         }).catch(function (e) {
             console.error(e);
             showForm(null);
@@ -503,23 +499,25 @@ require([
 
     function isShouldDisplayFormsForUser() {
         return Citeck.Records.get("ecos-config@default-ui-main-menu").load(".str")
-            .then(result => result === "left" ? isShouldDisplayForms() : false);
+            .then(function (result) {
+                return result === "left" ? isShouldDisplayForms() : false;
+            });
     }
 
     function isShouldDisplayForms() {
         return Citeck.Records.get("ecos-config@default-ui-new-forms-access-groups").load(".str")
-            .then((groupsInOneString) => {
+            .then(function (groupsInOneString) {
+                return !!groupsInOneString ? function () {
+                    const groups = groupsInOneString.split(',');
+                    const results = [];
 
-                console.log(groupsInOneString);
-                if (!groupsInOneString) {
-                    return false;
-                }
-
-                const groups = groupsInOneString.split(',');
-                const results = [];
-
-                groups.forEach(group => results.push(isCurrentUserInGroup(group)));
-                return Promise.all(results).then(values => values.indexOf(true) !== -1);
+                    groups.forEach(function (group) {
+                        results.push(isCurrentUserInGroup.call(this, group))
+                    });
+                    return Promise.all(results).then(function (values) {
+                        return values.includes(true);
+                    });
+                } : false;
             });
     }
 
@@ -528,7 +526,9 @@ require([
         return Citeck.Records.queryOne({
             "query": 'TYPE:"cm:authority" AND =cm:authorityName:"' + group + '"',
             "language": "fts-alfresco"
-        }, 'cm:member[].cm:userName').then(usernames => (usernames || []).indexOf(currentPersonName) !== -1);
+        }, 'cm:member[].cm:userName').then(function (usernames) {
+            return usernames.includes(currentPersonName);
+        });
     }
 
     Citeck.forms.parseCreateArguments = function (createArgs) {
