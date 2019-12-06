@@ -48,9 +48,9 @@ export default class {
             return Citeck.Records.queryOne({
                 "query": `TYPE:"cm:authority" AND =cm:authorityName:"${group}"`,
                 "language": "fts-alfresco"
-            }, 'cm:member[].cm:userName').then(usernames => (usernames || []).indexOf(currentPersonName) !== -1);
+            }, 'cm:member[].cm:userName').then(usernames => usernames.includes(currentPersonName));
         };
-        const checkJournalsAvailability = function isShouldDisplayJournals() {
+        const checkJournalsAvailability = () => {
             return Citeck.Records.get("ecos-config@default-ui-new-journals-access-groups")
                 .load(".str").then(groupsInOneString => {
 
@@ -61,10 +61,10 @@ export default class {
                     const groups = groupsInOneString.split(',');
                     const results = [];
                     groups.forEach(group => results.push(isCurrentUserInGroup.call(this, group)));
-                    return Promise.all(results).then(values => values.indexOf(true) !== -1);
+                    return Promise.all(results).then(values => values.includes(true));
                 });
         };
-        const checkJournalsAvailabilityForUser = function isShouldDisplayJournalForUser() {
+        const checkJournalsAvailabilityForUser = () => {
             return Citeck.Records.get("ecos-config@default-ui-main-menu").load(".str")
                 .then(result => result === "left" ? checkJournalsAvailability.call(this) : false);
         };
@@ -74,7 +74,7 @@ export default class {
         const isJournalAvailibleForUser = checkJournalsAvailabilityForUser.call(this);
 
         return Promise.all([isNewJournalPageEnable, isJournalAvailibleForUser])
-            .then(values => values.indexOf(true) !== -1);
+            .then(values => values.includes(true));
     };
 
     getSitesForUser = username => {
