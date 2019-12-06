@@ -544,9 +544,6 @@
         <datasource>eapps/module</datasource>
         <predicate>{"t": "eq", "att": "type", "val": "dashboard"}</predicate>
         <create>
-            <variant title="Create Dashboard">
-                <recordRef>eapps/module@dashboard$</recordRef>
-            </variant>
             <variant title="Upload Dashboard">
                 <recordRef>eapps/module@dashboard$</recordRef>
                 <formKey>ecos-module-upload</formKey>
