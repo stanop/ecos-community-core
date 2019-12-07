@@ -1,5 +1,6 @@
 import { generateSearchTerm, getCurrentLocale } from './util';
 import MenuApi from 'ecosui!menu-api';
+import { checkFunctionalAvailabilityForUser } from 'ecosui!user-in-groups-list-helper';
 
 function handleErrors(response) {
     if (!response.ok) {
@@ -43,13 +44,7 @@ export default class {
     };
 
     getNewJournalsPageEnable = () => {
-        const isCurrentUserInGroup = group => {
-            const currentPersonName = Alfresco.constants.USERNAME;
-            return Citeck.Records.queryOne({
-                "query": `TYPE:"cm:authority" AND =cm:authorityName:"${group}"`,
-                "language": "fts-alfresco"
-            }, 'cm:member[].cm:userName').then(usernames => usernames.includes(currentPersonName));
-        };
+
         const checkJournalsAvailability = () => {
             return Citeck.Records.get("ecos-config@default-ui-new-journals-access-groups")
                 .load(".str").then(groupsInOneString => {
@@ -61,14 +56,8 @@ export default class {
                     } : false;
                 });
         };
-        const checkJournalsAvailabilityForUser = () => {
-            return Citeck.Records.get("ecos-config@default-ui-main-menu").load(".str")
-                .then(result => result === "left" ? checkJournalsAvailability.call(this) : false);
-        };
-
-
         const isNewJournalPageEnable = Citeck.Records.get('ecos-config@new-journals-page-enable').load('.bool');
-        const isJournalAvailibleForUser = checkJournalsAvailabilityForUser.call(this);
+        const isJournalAvailibleForUser = checkFunctionalAvailabilityForUser("default-ui-new-journals-access-groups");
 
         return Promise.all([isNewJournalPageEnable, isJournalAvailibleForUser])
             .then(values => values.includes(true));

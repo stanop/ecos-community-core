@@ -19,8 +19,9 @@
 
 require([
     'ecosui!ecos-records',
-    'ecosui!react-dom'
-], function(Records, ReactDOM) {
+    'ecosui!react-dom',
+    'ecosui!user-in-groups-list-helper'
+], function(Records, ReactDOM, checkFunctionalAvailabilityHelper) {
 
     if (typeof Citeck == "undefined") Citeck = {};
     Citeck.forms = Citeck.forms || {};
@@ -479,9 +480,10 @@ require([
         } else {
             isFormsEnabled = Promise.resolve(true);
         }
-        const isShouldDisplay = isShouldDisplayFormsForUser();
+        const isShouldDisplayFormsForUser = checkFunctionalAvailabilityHelper
+            .checkFunctionalAvailabilityForUser("default-ui-new-forms-access-groups");
 
-        Promise.all([isFormsEnabled, isShouldDisplay]).then(function (values) {
+        Promise.all([isFormsEnabled, isShouldDisplayFormsForUser]).then(function (values) {
             let formRef = null;
             if (values.includes(true)) {
                 require(['ecosui!ecos-form-utils'], function(utils) {
@@ -490,46 +492,12 @@ require([
                     });
                 });
             }
-            showForm(formKey);
+            showForm(formRef);
         }).catch(function (e) {
             console.error(e);
             showForm(null);
         });
     };
-
-    function isShouldDisplayFormsForUser() {
-        return Citeck.Records.get("ecos-config@default-ui-main-menu").load(".str")
-            .then(function (result) {
-                return result === "left" ? isShouldDisplayForms() : false;
-            });
-    }
-
-    function isShouldDisplayForms() {
-        return Citeck.Records.get("ecos-config@default-ui-new-forms-access-groups").load(".str")
-            .then(function (groupsInOneString) {
-                return !!groupsInOneString ? function () {
-                    const groups = groupsInOneString.split(',');
-                    const results = [];
-
-                    groups.forEach(function (group) {
-                        results.push(isCurrentUserInGroup(group));
-                    });
-                    return Promise.all(results).then(function (values) {
-                        return values.includes(true);
-                    });
-                } : false;
-            });
-    }
-
-    function isCurrentUserInGroup(group) {
-        const currentPersonName = Alfresco.constants.USERNAME;
-        return Citeck.Records.queryOne({
-            "query": 'TYPE:"cm:authority" AND =cm:authorityName:"' + group + '"',
-            "language": "fts-alfresco"
-        }, 'cm:member[].cm:userName').then(function (usernames) {
-            return usernames.includes(currentPersonName);
-        });
-    }
 
     Citeck.forms.parseCreateArguments = function (createArgs) {
         if (!createArgs) {
