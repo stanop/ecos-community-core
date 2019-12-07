@@ -274,6 +274,9 @@ public class AlfNodeRecord implements MetaValue {
             default:
 
                 Attribute nodeAtt = node.attribute(name);
+                if (nodeAtt == null) {
+                    return Collections.emptyList();
+                }
                 if (Attribute.Type.UNKNOWN.equals(nodeAtt.type())) {
                     Optional<QName> attQname = context.getQName(name).map(GqlQName::getQName);
                     if (attQname.isPresent()) {
