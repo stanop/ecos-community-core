@@ -484,15 +484,17 @@ require([
             .checkFunctionalAvailabilityForUser("default-ui-new-forms-access-groups");
 
         Promise.all([isFormsEnabled, isShouldDisplayFormsForUser]).then(function (values) {
-            let formRef = null;
             if (values.includes(true)) {
                 require(['ecosui!ecos-form-utils'], function(utils) {
                     utils.default.hasForm(recordRef, formKey).then(function (result) {
-                        formRef = result ? recordRef : null;
+                        if (result) {
+                            showForm(recordRef);
+                        } else {
+                            showForm(null);
+                        }
                     });
                 });
             }
-            showForm(formRef);
         }).catch(function (e) {
             console.error(e);
             showForm(null);
