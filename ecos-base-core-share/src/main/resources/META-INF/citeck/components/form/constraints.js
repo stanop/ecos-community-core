@@ -494,6 +494,8 @@ require([
                         }
                     });
                 });
+            } else {
+                showForm(null);
             }
         }).catch(function (e) {
             console.error(e);
