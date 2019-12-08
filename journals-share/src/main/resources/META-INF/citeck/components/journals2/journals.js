@@ -1470,13 +1470,6 @@ JournalsWidget
     .property('newJournalsPageEnable', b)
 
     .computed('fullscreenLink', function() {
-        const checkJournalsAvailabilityForUser = function () {
-            return Citeck.Records.get("ecos-config@default-ui-main-menu").load(".str")
-                .then(function (result) {
-                    return result === "left" ? checkJournalsAvailability.call(this) : false;
-                });
-        };
-
         var self = this;
         var newJournalsPageEnable = this.newJournalsPageEnable();
         
@@ -1519,9 +1512,9 @@ JournalsWidget
 
             Promise.all([isNewJournalsPageEnable, isJournalAvailibleForUser])
                 .then(function (values) {
-                    return self.newJournalsPageEnable(values.includes(true));
+                    self.newJournalsPageEnable(values.includes(true));
                 })
-                .catch(() => {});
+                .catch(function () {});
         } else if (newJournalsPageEnable === true) {
             link = menuApi.getNewJournalPageUrl({
                 listId: journalsList.id(),
