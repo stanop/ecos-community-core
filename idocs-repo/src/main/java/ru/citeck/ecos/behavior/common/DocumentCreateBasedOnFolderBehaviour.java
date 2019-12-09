@@ -18,10 +18,8 @@
  */
 package ru.citeck.ecos.behavior.common;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.ArrayList;
 import java.io.Serializable;
 
 import org.alfresco.model.ContentModel;
@@ -34,7 +32,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
@@ -123,7 +120,7 @@ public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies
             if(evaluateConditions)
             {
                 SearchParameters sp = new SearchParameters();
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 sb.append("PATH:\"").append(createCpecialFolderPath).append("\"");
                 sp.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
                 sp.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
@@ -155,7 +152,7 @@ public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies
                 if(parents.get(0)!=null)
                     initialParentFolder = parents.get(0).getParentRef();
                 SearchParameters sp = new SearchParameters();
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 sb.append("PATH:\"").append(supAgreementParentFolderPath).append("\"");
                 sp.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
                 sp.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);

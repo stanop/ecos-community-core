@@ -19,7 +19,6 @@
 package ru.citeck.ecos.model;
 
 import org.alfresco.service.namespace.QName;
-import org.alfresco.service.namespace.QNamePattern;
 
 public final class CDLModel {
 

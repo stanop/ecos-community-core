@@ -69,12 +69,9 @@ public class BusinessCalendar extends GregorianCalendar {
 
 	public boolean isBusinessDay()
 	{
-		if(this.get(DAY_OF_WEEK)==1 || this.get(DAY_OF_WEEK)==7)
-		{
+		if (this.get(DAY_OF_WEEK) == Calendar.SUNDAY || this.get(DAY_OF_WEEK) == Calendar.SATURDAY) {
 			return mapContainsDate(extraWorkingDays, this);
-		}
-		else
-		{
+		} else {
 			return !mapContainsDate(extraDayOff, this);
 		}
 		//return false;
@@ -116,7 +113,7 @@ public class BusinessCalendar extends GregorianCalendar {
 
 	public Map<Date, Date> fillDateSet(String remark)
 	{
-		Map<Date, Date> dateSet = new HashMap<Date, Date>();
+		Map<Date, Date> dateSet = new HashMap<>();
 		String search_query = "TYPE:\""+BusinessCalendarModel.TYPE_CALENDAR+"\" AND @bcal\\:remark:\""+remark+"\"";
 		//if (log.isDebugEnabled())
 			log.debug("   Search query: " + search_query);

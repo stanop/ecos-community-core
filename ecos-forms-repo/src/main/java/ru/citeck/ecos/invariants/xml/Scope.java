@@ -86,7 +86,7 @@ public class Scope {
      */
     public List<Object> getScoped() {
         if (scoped == null) {
-            scoped = new ArrayList<Object>();
+            scoped = new ArrayList<>();
         }
         return this.scoped;
     }

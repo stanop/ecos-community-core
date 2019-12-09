@@ -32,7 +32,7 @@ public class SimpleMethodInterceptor implements MethodInterceptor {
     private Map<String, List<Method>> methodMap;
     
     public SimpleMethodInterceptor() {
-        methodMap = new TreeMap<String, List<Method>>();
+        methodMap = new TreeMap<>();
     }
     
     @Override
@@ -59,7 +59,7 @@ public class SimpleMethodInterceptor implements MethodInterceptor {
     protected List<Method> getOverloadedMethods(String methodName) {
         List<Method> overloadedMethods = methodMap.get(methodName);
         if(overloadedMethods == null) {
-            overloadedMethods = new LinkedList<Method>();
+            overloadedMethods = new LinkedList<>();
             methodMap.put(methodName, overloadedMethods);
             
             Method[] methods = this.getClass().getMethods();

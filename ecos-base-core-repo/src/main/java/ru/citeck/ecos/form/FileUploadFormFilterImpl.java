@@ -69,7 +69,7 @@ public class FileUploadFormFilterImpl extends AbstractFilter<Object, NodeRef> im
 	private MimetypeService mimetypeService;
 	private VersionService versionService;
 	private CheckOutCheckInService checkOutCheckInService;
-	private Map<QName, Integer> sizeLimits = new HashMap<QName, Integer>();
+	private Map<QName, Integer> sizeLimits = new HashMap<>();
 
 	@Override
 	public void beforePersist(Object item, FormData data) {
@@ -152,7 +152,7 @@ public class FileUploadFormFilterImpl extends AbstractFilter<Object, NodeRef> im
 							historyDescriptionText = (String) data.getFieldData(FormConstants.HISTORY_DESCRIPTION_FIELD).getValue();
 						}
 
-						Map<String, Serializable> versionProperties = new HashMap<String, Serializable>(3);
+						Map<String, Serializable> versionProperties = new HashMap<>(3);
 						versionProperties.put(VersionModel.PROP_DESCRIPTION, I18NUtil.getMessage(historyDescriptionText != null ? historyDescriptionText : MESSAGE_FILE_UPLOADED));
 						RepoUtils.setUniqueOriginalName(persistedObject, EMPTY_EXTENSION, nodeService, mimetypeService);
 						RepoUtils.createVersion(persistedObject, versionProperties, nodeService, versionService);
@@ -223,7 +223,7 @@ public class FileUploadFormFilterImpl extends AbstractFilter<Object, NodeRef> im
 	}
 
 	protected void ensureVersioningEnabled(final NodeRef nodeRef) {
-		Map<QName, Serializable> versionProperties = new HashMap<QName, Serializable>();
+		Map<QName, Serializable> versionProperties = new HashMap<>();
 		versionProperties.put(ContentModel.PROP_AUTO_VERSION, true);
 		versionProperties.put(ContentModel.PROP_AUTO_VERSION_PROPS, false);
 		versionService.ensureVersioningEnabled(nodeRef, versionProperties);

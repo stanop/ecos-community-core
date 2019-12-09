@@ -28,7 +28,6 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
@@ -90,7 +89,7 @@ public class GroupSubTypeDAOImpl implements GroupSubTypeDAO {
 	
 	@Override
 	public List<NodeRef> getAllSubTypes() {
-		List<NodeRef> all = new ArrayList<NodeRef>();
+		List<NodeRef> all = new ArrayList<>();
 		List<ChildAssociationRef> children = nodeService.getChildAssocs(rootNode, assocName, RegexQNamePattern.MATCH_ALL);
 		for(ChildAssociationRef child : children) {
 			all.add(child.getChildRef());
@@ -104,13 +103,13 @@ public class GroupSubTypeDAOImpl implements GroupSubTypeDAO {
 		if(existing != null) {
 			return existing;
 		}
-		Map<QName, Serializable> properties = new HashMap<QName, Serializable>();
+		Map<QName, Serializable> properties = new HashMap<>();
 		properties.put(ContentModel.PROP_NAME, name);
 		ChildAssociationRef child = nodeService.createNode(rootNode, assocName, QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, name), typeName, properties);
 		if(child == null) {
 			return null;
 		}
-		nodeService.addAspect(child.getChildRef(), aspectName, new HashMap<QName, Serializable>());
+		nodeService.addAspect(child.getChildRef(), aspectName, new HashMap<>());
 		return child.getChildRef();
 	}
 	

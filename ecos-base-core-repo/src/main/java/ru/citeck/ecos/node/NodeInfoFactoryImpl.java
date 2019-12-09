@@ -195,10 +195,10 @@ class NodeInfoFactoryImpl implements NodeInfoFactory {
     public void persist(NodeRef nodeRef, NodeInfo nodeInfo, boolean full) {
 
         // firstly get classes requirements:
-        QName originalType = nodeService.getType(nodeRef),
-                requiredType = getRequiredType(nodeRef, originalType, nodeInfo.getType());
-        Set<QName> originalAspects = nodeService.getAspects(nodeRef),
-                requiredAspects = nodeInfo.getAspects() != null ? new HashSet<>(nodeInfo.getAspects()) : new HashSet<>();
+        QName originalType = nodeService.getType(nodeRef);
+        QName requiredType = getRequiredType(nodeRef, originalType, nodeInfo.getType());
+        Set<QName> originalAspects = nodeService.getAspects(nodeRef);
+        Set<QName> requiredAspects = nodeInfo.getAspects() != null ? new HashSet<>(nodeInfo.getAspects()) : new HashSet<>();
 
         Map<QName, Serializable> properties = nodeInfo.getProperties();
         Map<QName, List<NodeRef>> targetAssocs = nodeInfo.getTargetAssocs();
@@ -335,7 +335,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory {
             parent = nodeInfo.getParent();
             parentAssoc = nodeInfo.getParentAssoc();
 
-            if (parent == null || parentAssoc == null || nodeType == null) {
+            if (parent == null || parentAssoc == null) {
                 throw new IllegalArgumentException("Either nodeRef, or parent/parentAssoc/type should be specified");
             }
 

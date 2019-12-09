@@ -5,7 +5,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.namespace.InvalidQNameException;
-import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -13,7 +12,6 @@ import ru.citeck.ecos.cmmn.CMMNUtils;
 import ru.citeck.ecos.cmmn.CmmnExportImportException;
 import ru.citeck.ecos.cmmn.model.CaseRoles;
 import ru.citeck.ecos.cmmn.model.Role;
-import ru.citeck.ecos.cmmn.service.CaseImportService;
 import ru.citeck.ecos.model.ICaseRoleModel;
 
 import java.io.Serializable;

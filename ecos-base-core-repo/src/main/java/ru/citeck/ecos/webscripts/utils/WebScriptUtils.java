@@ -40,7 +40,7 @@ public class WebScriptUtils {
      */
     public static Map<String,String> getParameterMap(WebScriptRequest req) {
         String[] keys = req.getParameterNames();
-        Map<String,String> args = new HashMap<String,String>(keys.length);
+        Map<String,String> args = new HashMap<>(keys.length);
         for(String key : keys) {
             args.put(key, req.getParameter(key));
         }

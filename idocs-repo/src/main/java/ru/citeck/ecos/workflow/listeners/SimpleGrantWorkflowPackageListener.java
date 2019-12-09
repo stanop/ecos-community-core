@@ -71,7 +71,7 @@ public class SimpleGrantWorkflowPackageListener implements TaskListener {
     }
 
     private Set<String> getTaskActors(DelegateTask task) {
-        Set<String> actors = new HashSet<String>();
+        Set<String> actors = new HashSet<>();
 
         String actor = task.getAssignee();
         if (actor != null) {

@@ -22,7 +22,7 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
     private RemoteRestoreCaseModelService remoteRestoreCaseModelService;
 
     public void startActivity(Object stageRef) {
-        /** Call restore activity */
+        /* Call restore activity */
         if (stageRef instanceof String) {
             String stageRefUUID = (String) stageRef;
             if (((String) stageRef).startsWith(RemoteRestoreCaseModelService.RESTORE_CASE_MODEL_UUID)) {
@@ -31,7 +31,7 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
                 return;
             }
         }
-        /** Call common activity */
+        /* Call common activity */
         NodeRef ref = JavaScriptImplUtils.getNodeRef(stageRef);
         caseActivityService.startActivity(ref);
     }

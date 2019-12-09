@@ -68,7 +68,7 @@ public abstract class Edge
      */
     public List<Point> getWaypoint() {
         if (waypoint == null) {
-            waypoint = new ArrayList<Point>();
+            waypoint = new ArrayList<>();
         }
         return this.waypoint;
     }

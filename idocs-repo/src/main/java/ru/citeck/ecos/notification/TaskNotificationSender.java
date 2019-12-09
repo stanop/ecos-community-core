@@ -94,7 +94,7 @@ class TaskNotificationSender extends AbstractNotificationSender<WorkflowTask> {
 
     @Override
     protected Collection<String> getNotificationRecipients(WorkflowTask task) {
-        Set<String> recipients = new HashSet<String>();
+        Set<String> recipients = new HashSet<>();
         // add default recipients:
         if(defaultRecipients != null) {
             recipients.addAll(defaultRecipients);
@@ -141,7 +141,7 @@ class TaskNotificationSender extends AbstractNotificationSender<WorkflowTask> {
     // get notification template arguments for the task
     @Override
     protected Map<String, Serializable> getNotificationArgs(WorkflowTask task) {
-        Map<String, Serializable> args = new HashMap<String, Serializable>();
+        Map<String, Serializable> args = new HashMap<>();
         args.put(ARG_TASK, this.getTaskInfo(task));
         args.put(ARG_WORKFLOW, this.getWorkflowInfo(task.getPath().getInstance()));
         return args;
@@ -149,12 +149,12 @@ class TaskNotificationSender extends AbstractNotificationSender<WorkflowTask> {
 
     // build task model
     private Serializable getTaskInfo(WorkflowTask task) {
-        HashMap<String, Object> taskInfo = new HashMap<String, Object>();
+        HashMap<String, Object> taskInfo = new HashMap<>();
         taskInfo.put(ARG_TASK_ID, task.getId());
         taskInfo.put(ARG_TASK_NAME, task.getName());
         taskInfo.put(ARG_TASK_TITLE, task.getTitle());
         taskInfo.put(ARG_TASK_DESCRIPTION, task.getDescription());
-        HashMap<String, Serializable> properties = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> properties = new HashMap<>();
         taskInfo.put(ARG_TASK_PROPERTIES, properties);
         for(Map.Entry<QName, Serializable> entry : task.getProperties().entrySet()) {
             properties.put(qNameConverter.mapQNameToName(entry.getKey()), entry.getValue());
@@ -164,11 +164,11 @@ class TaskNotificationSender extends AbstractNotificationSender<WorkflowTask> {
 
     // build workflow model
     private Serializable getWorkflowInfo(WorkflowInstance workflow) {
-        HashMap<String, Object> workflowInfo = new HashMap<String, Object>();
+        HashMap<String, Object> workflowInfo = new HashMap<>();
         workflowInfo.put(ARG_WORKFLOW_ID, workflow.getId());
 
         NodeRef wfPackage = workflow.getWorkflowPackage();
-        ArrayList<Object> docsInfo = new ArrayList<Object>();
+        ArrayList<Object> docsInfo = new ArrayList<>();
         workflowInfo.put(ARG_WORKFLOW_DOCUMENTS, docsInfo);
         if (wfPackage == null) {
             return workflowInfo;

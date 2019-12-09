@@ -206,7 +206,7 @@ public class Journal {
      */
     public List<Option> getOption() {
         if (option == null) {
-            option = new ArrayList<Option>();
+            option = new ArrayList<>();
         }
         return this.option;
     }

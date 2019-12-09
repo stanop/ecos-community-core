@@ -44,7 +44,7 @@ public class ExecuteSearchQuery extends AbstractDataBundleLine {
         CriteriaSearchResults results = searchService.query(searchCriteria, language);
         List<NodeRef> nodeRefs = results.getResults();
 
-        HashMap<String, Object> newModel = new HashMap<String, Object>();
+        HashMap<String, Object> newModel = new HashMap<>();
         newModel.putAll(model);
         newModel.put("language", language);
         newModel.put("hasMore", results.hasMore());

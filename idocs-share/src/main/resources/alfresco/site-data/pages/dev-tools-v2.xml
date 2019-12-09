@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<page>
+    <id>dev-tools</id>
+    <page-type>dev-tools</page-type>
+    <title>Developer tools</title>
+    <description>Developer tools</description>
+    <template-instance>dev-tools</template-instance>
+    <authentication>admin</authentication>
+</page>

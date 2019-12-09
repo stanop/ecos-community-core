@@ -28,7 +28,7 @@ public class FlowableBeansContextSetListener implements ApplicationListener<Cont
      */
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        /** Refresh engine */
+        /* Refresh engine */
         ProcessEngine processEngine = (ProcessEngine) ApplicationContextProvider.getBean("flowableEngine");
         if (processEngine != null) {
             refreshEngineBeans(processEngine);
@@ -41,19 +41,19 @@ public class FlowableBeansContextSetListener implements ApplicationListener<Cont
      */
     private void refreshEngineBeans(ProcessEngine processEngine) {
         Map<Object, Object> beans = processEngine.getProcessEngineConfiguration().getBeans();
-        /** Global execution listeners */
+        /* Global execution listeners */
         Map<String, GlobalExecutionListener> executionListenerMap = ApplicationContextProvider.getApplicationContext().
                 getBeansOfType(GlobalExecutionListener.class);
         for (String key : executionListenerMap.keySet()) {
             beans.put(key, executionListenerMap.get(key));
         }
-        /** Global task listeners */
+        /* Global task listeners */
         Map<String, GlobalTaskListener> taskListenerMap = ApplicationContextProvider.getApplicationContext().
                 getBeansOfType(GlobalTaskListener.class);
         for (String key : taskListenerMap.keySet()) {
             beans.put(key, taskListenerMap.get(key));
         }
-        /** Script services */
+        /* Script services */
         Map<String, BaseScopableProcessorExtension> servicesMap = ApplicationContextProvider.getApplicationContext().
                 getBeansOfType(BaseScopableProcessorExtension.class);
         for (BaseScopableProcessorExtension extension : servicesMap.values()) {
