@@ -20,6 +20,7 @@ package ru.citeck.ecos.behavior.orgstruct;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 import org.alfresco.repo.node.NodeServicePolicies;
@@ -70,8 +71,7 @@ public class SubGroupBehaviour implements
                                    Map<QName, Serializable> before, Map<QName, Serializable> after) {
         Object oldType = before.get(subGroupTypeProp);
         Object newType = after.get(subGroupTypeProp);
-        if (oldType == null && newType == null
-                || oldType != null && newType != null && oldType.equals(newType)) {
+        if (Objects.equals(oldType, newType)) {
             return;
         }
 

@@ -85,8 +85,7 @@ public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolici
 				if(nodeService.exists(docNode) && allowedDocTypes!=null && allowedDocTypes.size()>0 && allowedDocTypes.contains(nodeService.getType(docNode)) && !nodeTarget.equals(docNode))
 				{
 					QName folderType = nodeService.getType(nodeSource);
-					if(folderType!=null && className!=null && folderType.equals(className))
-					{
+					if (folderType != null && folderType.equals(className)) {
 						try
 						{
 							List<ChildAssociationRef> existingAssocs = nodeService.getChildAssocs(docNode, DmsModel.ASSOC_SUPPLEMENARY_FILES, RegexQNamePattern.MATCH_ALL);

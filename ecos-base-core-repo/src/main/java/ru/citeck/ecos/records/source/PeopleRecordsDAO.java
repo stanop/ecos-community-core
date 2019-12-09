@@ -206,9 +206,8 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
 
         @Override
         public Object getAttribute(String name, MetaField field) {
-            switch (name) {
-                case "list":
-                    return new ArrayList<>(getAuthorities());
+            if ("list".equals(name)) {
+                return new ArrayList<>(getAuthorities());
             }
             return null;
         }

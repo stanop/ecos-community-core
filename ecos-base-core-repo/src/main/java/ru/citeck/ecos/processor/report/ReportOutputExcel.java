@@ -195,7 +195,7 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
                                 }
                             } else if ("Double".equals(dataType)) {
                                 try {
-                                    Double val = Double.parseDouble(valStr);
+                                    double val = Double.parseDouble(valStr);
                                     newCell.setCellStyle(doubleCellStyle);
                                     newCell.setCellType(Cell.CELL_TYPE_NUMERIC);
                                     newCell.setCellValue(val);

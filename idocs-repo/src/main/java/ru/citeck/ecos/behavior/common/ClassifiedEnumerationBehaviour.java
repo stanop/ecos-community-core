@@ -39,6 +39,8 @@ import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
 import ru.citeck.ecos.service.CiteckServices;
 
+import java.util.Objects;
+
 public class ClassifiedEnumerationBehaviour implements NodeServicePolicies.OnCreateNodePolicy {
     private PolicyComponent policyComponent;
     private NodeService nodeService;
