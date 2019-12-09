@@ -17,8 +17,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.events.data.dto.EventDTO;
-import ru.citeck.ecos.events.data.dto.task.TaskEventDTO;
+import ru.citeck.ecos.events.data.dto.EventDto;
+import ru.citeck.ecos.events.data.dto.pasrse.EventDtoFactory;
+import ru.citeck.ecos.events.data.dto.task.TaskEventDto;
 import ru.citeck.ecos.events.data.dto.task.TaskEventType;
 import ru.citeck.ecos.history.HistoryService;
 import ru.citeck.ecos.history.TaskHistoryUtils;
@@ -41,7 +42,6 @@ import java.util.stream.Collectors;
 public class EventFactory {
 
     private static final Map<String, String> activitiEventNames;
-    private static final String TASK_FORM_KEY = "formKey";
     private static final String ACTIVITI_PREFIX = ActivitiConstants.ENGINE_ID + "$";
     private static final String ALFRESCO_SOURCE = "alfresco@";
 
@@ -87,7 +87,7 @@ public class EventFactory {
         VAR_DESCRIPTION = qNameConverter.mapQNameToName(WorkflowModel.PROP_WORKFLOW_DESCRIPTION);
     }
 
-    public Optional<EventDTO> fromActivitiTask(DelegateTask task) {
+    public Optional<EventDto> fromActivitiTask(DelegateTask task) {
 
         String eventName = activitiEventNames.get(task.getEventName());
         if (eventName == null) {
@@ -95,7 +95,7 @@ public class EventFactory {
             return Optional.empty();
         }
 
-        TaskEventDTO dto = new TaskEventDTO();
+        TaskEventDto dto = new TaskEventDto();
         dto.setType(eventName);
         dto.setId(UUID.randomUUID().toString());
 
@@ -105,7 +105,7 @@ public class EventFactory {
             dto.setDocId(ALFRESCO_SOURCE + document.toString());
         }
 
-        QName taskType = QName.createQName((String) getTaskFormKey(task),
+        QName taskType = QName.createQName(ListenerUtils.getTaskFormKey(task),
                 namespaceService);
         dto.setTaskType(taskType.toString());
 
@@ -169,26 +169,7 @@ public class EventFactory {
         dto.setAssignee(assignee);
         dto.setInitiator(StringUtils.isNotBlank(assignee) ? assignee : HistoryService.SYSTEM_USER);
 
-        return Optional.of(dto);
-    }
-
-    private String getTaskFormKey(DelegateTask task) {
-        String formKey = task.getFormKey();
-        if (StringUtils.isNotBlank(formKey)) {
-            return formKey;
-        }
-
-        formKey = (String) task.getVariable(ActivitiConstants.PROP_TASK_FORM_KEY);
-        if (StringUtils.isNotBlank(formKey)) {
-            return formKey;
-        }
-
-        formKey = (String) task.getVariable(TASK_FORM_KEY);
-        if (StringUtils.isNotBlank(formKey)) {
-            return formKey;
-        }
-
-        throw new RuntimeException("Failed get taskForm, from task: " + task.getId());
+        return Optional.of(EventDtoFactory.toEventDto(dto));
     }
 
     private String getTaskOutcome(DelegateTask task) {

@@ -52,9 +52,11 @@ import java.util.Map;
 
 public class TaskHistoryListener extends AbstractTaskListener {
 
+    public static final String VAR_ADDITIONAL_EVENT_PROPERTIES = "event_additionalProperties";
+
     private static final Log logger = LogFactory.getLog(TaskHistoryListener.class);
 
-    public static final String VAR_ADDITIONAL_EVENT_PROPERTIES = "event_additionalProperties";
+    private static final String ALF_PREFIX = "alf_";
     private static final String ACTIVITI_PREFIX = ActivitiConstants.ENGINE_ID + "$";
     private static final Map<String, String> eventNames;
 
@@ -75,6 +77,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 
     private WorkflowQNameConverter qNameConverter;
     private String VAR_OUTCOME_PROPERTY_NAME, VAR_COMMENT, VAR_DESCRIPTION;
+    private String VAR_LAST_COMMENT;
     private WorkflowDocumentResolverRegistry documentResolverRegistry;
 
     /* (non-Javadoc)
@@ -102,8 +105,9 @@ public class TaskHistoryListener extends AbstractTaskListener {
         }
         String taskOutcome = (String) task.getVariable(qNameConverter.mapQNameToName(outcomeProperty));
 
-        // task comment
+        // comments
         String taskComment = (String) task.getVariable(VAR_COMMENT);
+        String lastTaskComment = (String) task.getVariable(VAR_LAST_COMMENT);
 
         // task attachments
         ArrayList<NodeRef> taskAttachments = ListenerUtils.getTaskAttachments(task);
@@ -152,6 +156,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
         eventProperties.put(HistoryModel.PROP_TASK_TYPE, taskType);
         eventProperties.put(HistoryModel.PROP_TASK_OUTCOME, taskOutcome);
         eventProperties.put(HistoryModel.PROP_TASK_COMMENT, taskComment);
+        eventProperties.put(HistoryModel.PROP_LAST_TASK_COMMENT, lastTaskComment);
         eventProperties.put(HistoryModel.PROP_TASK_ATTACHMENTS, taskAttachments);
         eventProperties.put(HistoryModel.PROP_TASK_POOLED_ACTORS, pooledActors);
         eventProperties.put(HistoryModel.PROP_TASK_ROLE, roleName);
@@ -160,6 +165,12 @@ public class TaskHistoryListener extends AbstractTaskListener {
         String taskTitleProp = qNameConverter.mapQNameToName(CiteckWorkflowModel.PROP_TASK_TITLE);
         eventProperties.put(HistoryModel.PROP_TASK_TITLE, (String) task.getVariable(taskTitleProp));
 
+        String taskFormKey = ListenerUtils.getTaskFormKey(task);
+        if (StringUtils.isNotBlank(taskFormKey) && !StringUtils.startsWith(taskFormKey, ALF_PREFIX)) {
+            taskFormKey = ALF_PREFIX + taskFormKey;
+        }
+
+        eventProperties.put(HistoryModel.PROP_TASK_FORM_KEY, taskFormKey);
         eventProperties.put(HistoryModel.PROP_WORKFLOW_INSTANCE_ID, ACTIVITI_PREFIX + task.getProcessInstanceId());
         eventProperties.put(HistoryModel.PROP_WORKFLOW_DESCRIPTION, (Serializable) task.getExecution().getVariable(
                 VAR_DESCRIPTION));
@@ -212,6 +223,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
         qNameConverter = new WorkflowQNameConverter(namespaceService);
         VAR_OUTCOME_PROPERTY_NAME = qNameConverter.mapQNameToName(WorkflowModel.PROP_OUTCOME_PROPERTY_NAME);
         VAR_COMMENT = qNameConverter.mapQNameToName(WorkflowModel.PROP_COMMENT);
+        VAR_LAST_COMMENT = qNameConverter.mapQNameToName(CiteckWorkflowModel.PROP_LASTCOMMENT);
         VAR_DESCRIPTION = qNameConverter.mapQNameToName(WorkflowModel.PROP_WORKFLOW_DESCRIPTION);
     }
 

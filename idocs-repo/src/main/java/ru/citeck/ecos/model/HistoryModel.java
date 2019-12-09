@@ -56,12 +56,14 @@ public final class HistoryModel {
     public static final QName PROP_TASK_TYPE = QName.createQName(EVENT_NAMESPACE, "taskType");
     public static final QName PROP_TASK_OUTCOME = QName.createQName(EVENT_NAMESPACE, "taskOutcome");
     public static final QName PROP_TASK_COMMENT = QName.createQName(EVENT_NAMESPACE, "taskComment");
+    public static final QName PROP_LAST_TASK_COMMENT = QName.createQName(EVENT_NAMESPACE, "lastTaskComment");
     public static final QName PROP_TASK_POOLED_ACTORS = QName.createQName(EVENT_NAMESPACE, "taskPooledActors");
     public static final QName PROP_TASK_ATTACHMENTS = QName.createQName(EVENT_NAMESPACE, "taskAttachments");
     public static final QName PROP_TASK_ROLE = QName.createQName(EVENT_NAMESPACE, "taskRole");
     public static final QName PROP_CASE_TASK = QName.createQName(EVENT_NAMESPACE, "caseTask");
     public static final QName PROP_TASK_DUE_DATE = QName.createQName(EVENT_NAMESPACE, "taskDueDate");
     public static final QName PROP_TASK_TITLE = QName.createQName(EVENT_NAMESPACE, "taskTitle");
+    public static final QName PROP_TASK_FORM_KEY = QName.createQName(EVENT_NAMESPACE, "taskFormKey");
     public static final QName INITIATOR = QName.createQName(EVENT_NAMESPACE, "initiator_added");
 
     public static final QName PROP_WORKFLOW_INSTANCE_ID = QName.createQName(EVENT_NAMESPACE, "workflowInstanceId");

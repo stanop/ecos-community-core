@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+    <id>deputy</id>
+    <title>Deputy page for a User</title>
+    <title-id>page.deputy.title</title-id>
+    <description>Deputy page for a User</description>
+    <description-id>page.deputy.description</description-id>
+    <template-instance>deputy</template-instance>
+    <authentication>user</authentication>
+</page>
