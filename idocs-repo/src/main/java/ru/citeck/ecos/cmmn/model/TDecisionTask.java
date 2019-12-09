@@ -77,7 +77,7 @@ public class TDecisionTask
      */
     public List<TParameterMapping> getParameterMapping() {
         if (parameterMapping == null) {
-            parameterMapping = new ArrayList<TParameterMapping>();
+            parameterMapping = new ArrayList<>();
         }
         return this.parameterMapping;
     }

@@ -51,7 +51,7 @@ public class SelectTemplate extends AbstractDataBundleLine{
 	@Override
 	public DataBundle process(DataBundle input) {
 		Map<String,Object> model = input.needModel();
-		Map<String,Object> newModel = new HashMap<String, Object>();
+		Map<String,Object> newModel = new HashMap<>();
 		newModel.putAll(model);
 
 		String nodeRefStr = evaluateExpression(nodeExpr, model).toString();

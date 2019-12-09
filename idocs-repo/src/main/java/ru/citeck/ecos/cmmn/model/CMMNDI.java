@@ -65,7 +65,7 @@ public class CMMNDI {
      */
     public List<CMMNDiagram> getCMMNDiagram() {
         if (cmmnDiagram == null) {
-            cmmnDiagram = new ArrayList<CMMNDiagram>();
+            cmmnDiagram = new ArrayList<>();
         }
         return this.cmmnDiagram;
     }
@@ -94,7 +94,7 @@ public class CMMNDI {
      */
     public List<CMMNStyle> getCMMNStyle() {
         if (cmmnStyle == null) {
-            cmmnStyle = new ArrayList<CMMNStyle>();
+            cmmnStyle = new ArrayList<>();
         }
         return this.cmmnStyle;
     }

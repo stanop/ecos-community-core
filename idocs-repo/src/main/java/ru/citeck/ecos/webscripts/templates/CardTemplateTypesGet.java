@@ -39,7 +39,7 @@ public class CardTemplateTypesGet extends DeclarativeWebScript {
 
 	protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
 		List<NodeRef> types = cardTemplateService.getTemplateTypes();
-		Map<String, Object> results = new HashMap<String, Object>();
+		Map<String, Object> results = new HashMap<>();
 		results.put("types", types);
 		return results;
 	}

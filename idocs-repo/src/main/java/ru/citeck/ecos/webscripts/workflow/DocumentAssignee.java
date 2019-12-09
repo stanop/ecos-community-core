@@ -50,7 +50,7 @@ public class DocumentAssignee extends BaseAbstractWebscript {
 	}
 
 	private List<String> getDocumentAssignees(NodeRef nodeRef) {
-		Set<String> authorities = new HashSet<String>();
+		Set<String> authorities = new HashSet<>();
 		List<WorkflowInstance> workflows = workflowService.getWorkflowsForContent(nodeRef, true);
 		for (WorkflowInstance workflow : workflows) {
 			WorkflowTaskQuery workflowTaskQuery = new WorkflowTaskQuery();
@@ -64,7 +64,7 @@ public class DocumentAssignee extends BaseAbstractWebscript {
 				}
 			}
 		}
-		return new ArrayList<String>(authorities);
+		return new ArrayList<>(authorities);
 	}
 
 	private void buildResult(List<String> assigneeList,

@@ -186,7 +186,7 @@ public class OrgStructServiceImpl implements OrgStructService
 		// look for the branches "breadth first"
 
 		Set<String> groupsToVisit = authorityService.getContainingAuthorities(null, userName, true);
-		Set<String> visitedGroups = new TreeSet<String>();
+		Set<String> visitedGroups = new TreeSet<>();
 
 		while(groupsToVisit.size() > 0) {
 			Set<String> currentGroups = new TreeSet<>(groupsToVisit);

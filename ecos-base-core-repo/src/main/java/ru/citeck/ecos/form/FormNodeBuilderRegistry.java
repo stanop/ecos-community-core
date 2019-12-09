@@ -31,7 +31,7 @@ public class FormNodeBuilderRegistry {
 	private DictionaryService dictionaryService;
 	private NamespaceService namespaceService;
 	
-	private Map<String, FormNodeBuilder> registry = new HashMap<String, FormNodeBuilder>();
+	private Map<String, FormNodeBuilder> registry = new HashMap<>();
 	
 	public void addFormNodeBuilder(String typeName, FormNodeBuilder builder) {
 		registry.put(typeName, builder);

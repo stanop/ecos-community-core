@@ -134,7 +134,7 @@ import java.util.stream.Collectors;
                 resultCardModes.add(mostSuitableCardMode);
             }
         }
-        Collections.sort(resultCardModes, new PropertyValueComparator(nodeService, CardletModel.PROP_CARD_MODE_ORDER));
+        resultCardModes.sort(new PropertyValueComparator(nodeService, CardletModel.PROP_CARD_MODE_ORDER));
         return resultCardModes;
     }
 

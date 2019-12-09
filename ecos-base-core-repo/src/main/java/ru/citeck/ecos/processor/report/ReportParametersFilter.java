@@ -105,7 +105,7 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
         if (o != null) {
             if (o instanceof JSONArray) {
                 JSONArray arr = (JSONArray) o;
-                List<Object> list = new ArrayList<Object>();
+                List<Object> list = new ArrayList<>();
 
                 for (int i = 0; i < arr.length(); i++) {
                     try {
@@ -117,7 +117,7 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
                 return list;
             } else if (o instanceof JSONObject) {
                 JSONObject obj = (JSONObject) o;
-                Map<String, Object> map = new HashMap<String, Object>();
+                Map<String, Object> map = new HashMap<>();
                 Iterator keys = obj.sortedKeys();
 
                 while (keys.hasNext()) {

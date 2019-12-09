@@ -2,7 +2,6 @@ package ru.citeck.ecos.behavior.idocs;
 
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
-import ru.citeck.ecos.behavior.JavaBehaviour;
 import ru.citeck.ecos.behavior.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
@@ -11,11 +10,6 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.citeck.ecos.model.ProductsAndServicesModel;
-import ru.citeck.ecos.utils.RepoUtils;
-
-import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Roman Makarskiy

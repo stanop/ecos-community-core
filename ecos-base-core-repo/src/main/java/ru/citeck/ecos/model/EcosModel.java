@@ -22,6 +22,7 @@ public interface EcosModel {
     QName ASPECT_HAS_AMOUNT = QName.createQName(ECOS_NAMESPACE, "hasAmount");
     QName ASPECT_HAS_VAT = QName.createQName(ECOS_NAMESPACE, "hasVAT");
     QName ASPECT_HAS_ADDITIONAL_PERSON_PROPERTIES = QName.createQName(ECOS_NAMESPACE, "hasAdditionalPersonProperties");
+    QName ASPECT_HAS_HR_PROPERTIES = QName.createQName(ECOS_NAMESPACE, "hasHrProperties");
 
     //Properties
     QName PROP_DOCUMENT_NUMBER = QName.createQName(ECOS_NAMESPACE, "documentNumber");
@@ -45,6 +46,10 @@ public interface EcosModel {
     QName PROP_USER_INILA = QName.createQName(ECOS_NAMESPACE, "inila");
     QName PROP_USER_INN = QName.createQName(ECOS_NAMESPACE, "inn");
     QName PROP_TYPE_OF_EMPLOYMENT = QName.createQName(ECOS_NAMESPACE, "typeOfEmployment");
+    QName PROP_COUNTRY_CODE = QName.createQName(ECOS_NAMESPACE, "countryCode");
+    QName PROP_SUPERVISOR_ID = QName.createQName(ECOS_NAMESPACE, "supervisorId");
+    QName PROP_SUPERVISOR_NAME = QName.createQName(ECOS_NAMESPACE, "supervisorName");
+    QName PROP_HR_MANAGER_ID = QName.createQName(ECOS_NAMESPACE, "hrManagerId");
 
     //Associations
     QName ASSOC_RESPONSIBLE = QName.createQName(ECOS_NAMESPACE, "responsible");

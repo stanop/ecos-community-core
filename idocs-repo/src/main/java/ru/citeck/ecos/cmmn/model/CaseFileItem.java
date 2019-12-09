@@ -215,7 +215,7 @@ public class CaseFileItem
      */
     public List<Object> getTargetRefs() {
         if (targetRefs == null) {
-            targetRefs = new ArrayList<Object>();
+            targetRefs = new ArrayList<>();
         }
         return this.targetRefs;
     }

@@ -33,7 +33,6 @@ import java.util.ArrayList;
  */
 public class TaskOriginalOwnerListener implements TaskListener, ApplicationContextAware {
 
-    private AvailabilityServiceImpl availabilityService;
     private ApplicationContext applicationContext;
 
     // NOTE: we have to import delegate listener by name
@@ -49,8 +48,9 @@ public class TaskOriginalOwnerListener implements TaskListener, ApplicationConte
         this.delegateListenerName = delegateListenerName;
     }
 
+    @Deprecated
     public void setAvailabilityService(AvailabilityServiceImpl availabilityService) {
-        this.availabilityService = availabilityService;
+        // not used
     }
 
     @Override

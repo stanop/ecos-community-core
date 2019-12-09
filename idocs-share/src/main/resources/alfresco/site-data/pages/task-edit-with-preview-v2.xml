@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<page>
+    <title>Task Edit</title>
+    <title-id>page.taskEdit.title</title-id>
+    <description>Page for editing task details</description>
+    <description-id>page.taskEdit.description</description-id>
+    <template-instance>workflow-details-with-preview</template-instance>
+    <authentication>user</authentication>
+    <components>
+
+        <!-- Data Header -->
+        <component>
+            <region-id>data-header</region-id>
+            <url>/components/workflow/task-edit-header</url>
+        </component>
+
+        <!-- Data Form -->
+        <component>
+            <region-id>data-form</region-id>
+            <url>/components/form</url>
+            <properties>
+                <itemKind>task</itemKind>
+                <itemId>{taskId}</itemId>
+                <mode>edit</mode>
+                <formUI>true</formUI>
+                <submitType>json</submitType>
+                <showCaption>true</showCaption>
+                <showCancelButton>true</showCancelButton>
+            </properties>
+        </component>
+
+        <!-- Data Loader -->
+        <component>
+            <region-id>data-loader</region-id>
+            <url>/components/data/data-loader</url>
+            <properties>
+                <url>api/task-instances/{taskId}?detailed=true</url>
+                <eventName>taskDetailedData</eventName>
+                <eventData>data</eventData>
+            </properties>
+        </component>
+
+        <!-- Uploaders -->
+        <component>
+            <region-id>html-upload</region-id>
+            <url>/components/upload/html-upload</url>
+        </component>
+        <component>
+            <region-id>flash-upload</region-id>
+            <url>/components/upload/flash-upload</url>
+        </component>
+        <component>
+            <region-id>file-upload</region-id>
+            <url>/components/upload/file-upload</url>
+        </component>
+
+        <component>
+            <region-id>web-preview</region-id>
+            <url>/components/preview/web-preview</url>
+            <properties>
+                <nodeRef>{nodeRef}</nodeRef>
+            </properties>
+        </component>
+
+        <component>
+            <region-id>document-metadata</region-id>
+            <url>/components/document-details/document-metadata</url>
+            <properties>
+                <nodeRef>{nodeRef}</nodeRef>
+            </properties>
+        </component>
+
+        <component>
+            <region-id>node-actions</region-id>
+            <url>/citeck/components/document-details/node-actions</url>
+            <properties>
+                <nodeRef>{nodeRef}</nodeRef>
+                <header>header.document-actions</header>
+                <view>browse</view>
+                <actionLinkClass>action-link-custom</actionLinkClass>
+            </properties>
+        </component>
+
+        <component>
+            <region-id>actions-common</region-id>
+            <url>/components/documentlibrary/actions-common</url>
+            <properties>
+                <nodeRef>{nodeRef}</nodeRef>
+            </properties>
+        </component>
+
+    </components>
+</page>

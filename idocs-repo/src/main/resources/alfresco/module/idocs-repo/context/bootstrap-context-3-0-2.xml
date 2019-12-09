@@ -55,7 +55,7 @@
     <bean id="idocs.module-component.country-iso3166" parent="idocs.import-spaces.3-0-2"
           depends-on="idocs.dictionaryBootstrap">
         <property name="name" value="country-iso3166"/>
-        <property name="description" value="Country iso3166 Journals"/>
+        <property name="description" value="Countries Journals"/>
         <property name="dependsOn">
             <list>
                 <ref bean="idocs.module-component.journals-meta-root"/>

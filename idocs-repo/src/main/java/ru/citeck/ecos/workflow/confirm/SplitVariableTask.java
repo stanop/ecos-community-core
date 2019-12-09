@@ -39,11 +39,11 @@ public class SplitVariableTask implements ExecutionListener {
 		String sourceValue = (String) execution.getVariable(sourceVariableName);
 		ArrayList<String> target = null;
 		if(sourceValue.length() == 0) {
-			target = new ArrayList<String>();
+			target = new ArrayList<>();
 		} else {
 			String separatorString = (String) separator.getValue(execution);
 			String[] parts = sourceValue.split("\\" + separatorString);
-			target = new ArrayList<String>(parts.length);
+			target = new ArrayList<>(parts.length);
 			target.addAll(Arrays.asList(parts));
 		}
 		// remove empty values

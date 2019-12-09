@@ -21,7 +21,6 @@ package ru.citeck.ecos.behavior.history;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
@@ -34,9 +33,6 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
-import org.alfresco.service.cmr.dictionary.AssociationDefinition;
-import org.alfresco.service.cmr.repository.AssociationRef;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
 
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.model.HistoryModel;
@@ -70,7 +66,7 @@ public class HistoricalBehaviour implements
 		if(!nodeService.exists(nodeRef)) {
 			return;
 		}
-		Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>(7);
+		Map<QName, Serializable> eventProperties = new HashMap<>(7);
 		eventProperties.put(HistoryModel.PROP_NAME, NODE_CREATED);
 		eventProperties.put(HistoryModel.ASSOC_DOCUMENT, nodeRef);
 		Serializable initiator = nodeService.getProperty(nodeRef, ContentModel.PROP_CREATOR);
@@ -85,7 +81,7 @@ public class HistoricalBehaviour implements
 			return;
 		}
 
-		Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>(7);
+		Map<QName, Serializable> eventProperties = new HashMap<>(7);
 		eventProperties.put(HistoryModel.PROP_NAME, NODE_UPDATED);
 		eventProperties.put(HistoryModel.ASSOC_DOCUMENT, nodeRef);
 		eventProperties.put(HistoryModel.PROP_DOCUMENT_VERSION, nodeDetails.getProperties().get(ContentModel.PROP_VERSION_LABEL));

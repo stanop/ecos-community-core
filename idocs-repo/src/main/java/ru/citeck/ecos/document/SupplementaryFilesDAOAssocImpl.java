@@ -53,7 +53,7 @@ public class SupplementaryFilesDAOAssocImpl extends SupplementaryFilesDAOAbstrac
 	@Override
 	public List<NodeRef> getSupplementaryFiles(NodeRef document) {
 		List<AssociationRef> assocs = nodeService.getTargetAssocs(document, assocTypeQName.getQName());
-		List<NodeRef> files = new ArrayList<NodeRef>(assocs.size());
+		List<NodeRef> files = new ArrayList<>(assocs.size());
 		for(AssociationRef assoc : assocs) {
 			NodeRef file = assoc.getTargetRef();
 			if(file.getStoreRef().equals(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE)) {
@@ -66,7 +66,7 @@ public class SupplementaryFilesDAOAssocImpl extends SupplementaryFilesDAOAbstrac
 	@Override
 	public List<NodeRef> getParentFiles(NodeRef document) {
 		List<AssociationRef> assocs = nodeService.getSourceAssocs(document, assocTypeQName.getQName());
-		List<NodeRef> files = new ArrayList<NodeRef>(assocs.size());
+		List<NodeRef> files = new ArrayList<>(assocs.size());
 		for(AssociationRef assoc : assocs) {
 			NodeRef file = assoc.getSourceRef();
 			if(file.getStoreRef().equals(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE)) {

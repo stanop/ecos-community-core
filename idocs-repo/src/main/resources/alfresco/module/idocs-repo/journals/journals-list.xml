@@ -105,6 +105,19 @@
             <header key="idocs:crrDate" default="true" />
         </headers>
     </journal>
+    <journal id="currency-rates-internal">
+        <option name="type">idocs:currencyRateInternalRecord</option>
+        <option name="doubleClickId">nodeRef</option>
+        <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="createVariantRedirectionMethod">back</option>
+        <headers>
+            <header key="idocs:crrInternalBaseCurrency" default="true" />
+            <header key="idocs:crrInternalTargetCurrency" default="true" />
+            <header key="idocs:crrInternalValue" default="true" />
+            <header key="idocs:crrInternalMonth" default="true" />
+            <header key="idocs:crrInternalYear" default="true" />
+        </headers>
+    </journal>
     <journal id="bank-accounts">
         <option name="type">idocs:bankAccount</option>
         <option name="doubleClickId">nodeRef</option>
@@ -326,6 +339,7 @@
         <headers>
             <header key="idocs:legalFormName" default="true"/>
             <header key="idocs:legalFormDescription" default="true"/>
+            <header key="idocs:legalFormCountry" default="true"/>
         </headers>
     </journal>
 
@@ -349,9 +363,19 @@
         <option name="createVariantRedirectionMethod">back</option>
         <headers>
             <header key="cm:title" default="true"/>
-            <header key="idocs:countryISO3166Alpha2" default="true"/>
-            <header key="idocs:countryISO3166Alpha3" default="true"/>
-            <header key="idocs:countryISO3166Number" default="true"/>
+            <header key="idocs:countryISO3166Name" default="true"/>
+            <header key="idocs:countryISO31661Code" default="true"/>
+        </headers>
+    </journal>
+
+    <journal id="groups-of-countries">
+        <option name="type">idocs:groupOfCountries</option>
+        <option name="doubleClickId">nodeRef</option>
+        <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="createVariantRedirectionMethod">back</option>
+        <headers>
+            <header key="idocs:gocName" default="true"/>
+            <header key="idocs:gocCountries" default="true"/>
         </headers>
     </journal>
 
@@ -513,6 +537,76 @@
             <header key="name" default="true" />
             <header key="description" default="true" />
             <header key="types" default="true" />
+        </headers>
+    </journal>
+
+    <journal id="ecos-dashboards">
+        <datasource>eapps/module</datasource>
+        <predicate>{"t": "eq", "att": "type", "val": "dashboard"}</predicate>
+        <create>
+            <variant title="Upload Dashboard">
+                <recordRef>eapps/module@dashboard$</recordRef>
+                <formKey>ecos-module-upload</formKey>
+            </variant>
+        </create>
+        <option name="actionFormatter">
+            [
+                {
+                    buttonClass: 'custom-button-edit',
+                    onclick: {
+                        fn: function () {
+                            Citeck.forms.eform(oRecord.getData('nodeRef'), {});
+                        }
+                    }
+                },
+                {
+                    buttonClass: 'custom-button-download',
+                    onclick: {
+                        fn: function () {
+                            var record = Citeck.Records.get(oRecord.getData('nodeRef'));
+                            record.load({ module_id: 'module_id', json:'.json' }, true).then(data => {
+                                Citeck.utils.downloadText(JSON.stringify(data.json), data.module_id + '.json', 'text/json');
+                            });
+                        }
+                    }
+                },
+                {
+                    buttonClass: 'custom-button-remove',
+                    onclick: {
+                        fn: function () {
+
+                            var recordId = oRecord.getData('nodeRef');
+
+                            Alfresco.util.PopupManager.displayPrompt({
+                                title: Alfresco.util.message("message.confirm.delete.title"),
+                                text: Alfresco.util.message("message.confirm.delete"),
+                                buttons: [
+                                    {
+                                        text: Alfresco.util.message("button.delete"),
+                                        handler: function () {
+                                            this.destroy();
+                                            Citeck.Records.remove([recordId]);
+                                        }
+                                    },
+                                    {
+                                        text: Alfresco.util.message("button.cancel"),
+                                        handler: function () {
+                                            this.destroy();
+                                        },
+                                        isDefault: true
+                                    }
+                                ]
+                            });
+                        }
+                    }
+                }
+            ]
+        </option>
+        <headers>
+            <header key="module_id" default="true" />
+            <header key="key" default="true" />
+            <header key="user" default="true" />
+            <header key="type" default="true" />
         </headers>
     </journal>
 

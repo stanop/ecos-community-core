@@ -128,7 +128,7 @@ public class NodeInfo implements Serializable
 	
 	public void setProperty(QName propertyName, Serializable value) {
 		if(properties == null) {
-			properties = new HashMap<QName,Serializable>();
+			properties = new HashMap<>();
 		}
 		properties.put(propertyName, value);
 	}
@@ -268,11 +268,11 @@ public class NodeInfo implements Serializable
 	
     private static Map<QName, List<NodeRef>> createAssociations(Map<QName, List<NodeRef>> assocs, List<NodeRef> targetRefs, QName associationName) {
 		if(assocs == null) {
-			assocs = new HashMap<QName,List<NodeRef>>();
+			assocs = new HashMap<>();
 		}
 		List<NodeRef> nodes = assocs.get(associationName);
 		if(nodes == null) {
-			nodes = new ArrayList<NodeRef>();
+			nodes = new ArrayList<>();
 			assocs.put(associationName, nodes);
 		}
 		for(NodeRef targetRef : targetRefs) {
@@ -285,9 +285,9 @@ public class NodeInfo implements Serializable
 
     private static Map<QName, List<NodeRef>> setAssociations(Map<QName, List<NodeRef>> assocs, List<NodeRef> targetRefs, QName associationName) {
         if(assocs == null) {
-            assocs = new HashMap<QName,List<NodeRef>>();
+            assocs = new HashMap<>();
         }
-        assocs.put(associationName, new ArrayList<NodeRef>(targetRefs));
+        assocs.put(associationName, new ArrayList<>(targetRefs));
         return assocs;
     }
 

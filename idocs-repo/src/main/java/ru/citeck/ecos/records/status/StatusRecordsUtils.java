@@ -70,17 +70,17 @@ class StatusRecordsUtils {
         this.namespaceService = namespaceService;
     }
 
-    RecordsQueryResult<StatusDTO> getAllExistingStatuses(String type) {
-        RecordsQueryResult<StatusDTO> existingCaseStatuses = getAllExistingCaseStatuses(type);
-        if (existingCaseStatuses != null && existingCaseStatuses.getTotalCount() > 0) {
+    RecordsQueryResult<StatusRecord> getAllExistingStatuses(String type) {
+        RecordsQueryResult<StatusRecord> existingCaseStatuses = getAllExistingCaseStatuses(type);
+        if (existingCaseStatuses.getTotalCount() > 0) {
             return existingCaseStatuses;
         } else {
             return getAllExistingDocumentStatuses(type);
         }
     }
 
-    private RecordsQueryResult<StatusDTO> getAllExistingCaseStatuses(String type) {
-        RecordsQueryResult<StatusDTO> result = new RecordsQueryResult<>();
+    private RecordsQueryResult<StatusRecord> getAllExistingCaseStatuses(String type) {
+        RecordsQueryResult<StatusRecord> result = new RecordsQueryResult<>();
 
         RecordsQuery findAllAvailableQuery = new RecordsQuery();
         findAllAvailableQuery.setLanguage(DistinctQuery.LANGUAGE);
@@ -100,10 +100,14 @@ class StatusRecordsUtils {
 
         RecordsQueryResult<DistinctValue> values = recordsService.queryRecords(findAllAvailableQuery,
                 DistinctValue.class);
-        List<StatusDTO> statuses = values.getRecords().stream().map(value -> {
-            String ref = value.getValue();
-            return getByStatusRef(new NodeRef(ref));
-        }).collect(Collectors.toList());
+        List<StatusRecord> statuses = values.getRecords()
+                .stream()
+                .map(value -> {
+                    String ref = value.getValue();
+                    return getByStatusRef(new NodeRef(ref));
+                })
+                .map(StatusRecord::new)
+                .collect(Collectors.toList());
 
         result.setRecords(statuses);
         result.setTotalCount(statuses.size());
@@ -111,8 +115,8 @@ class StatusRecordsUtils {
         return result;
     }
 
-    private RecordsQueryResult<StatusDTO> getAllExistingDocumentStatuses(String type) {
-        RecordsQueryResult<StatusDTO> result = new RecordsQueryResult<>();
+    private RecordsQueryResult<StatusRecord> getAllExistingDocumentStatuses(String type) {
+        RecordsQueryResult<StatusRecord> result = new RecordsQueryResult<>();
 
         String constraintKey = typeToConstraintMapping.getMapping().get(type);
         if (StringUtils.isBlank(constraintKey)) {
@@ -129,14 +133,18 @@ class StatusRecordsUtils {
         @SuppressWarnings("unchecked")
         List<String> allowedValues = (List<String>) parameters.get(CONSTRAINT_ALLOWED_VALUES);
 
-        List<StatusDTO> statuses = allowedValues.stream().map(this::getByNameDocumentStatus).collect(Collectors.toList());
+        List<StatusRecord> statuses = allowedValues.
+                stream()
+                .map(this::getByNameDocumentStatus)
+                .map(StatusRecord::new)
+                .collect(Collectors.toList());
 
         result.setRecords(statuses);
 
         return result;
     }
 
-    RecordsQueryResult<StatusDTO> getAllAvailableToChangeStatuses(RecordRef recordRef) {
+    RecordsQueryResult<StatusRecord> getAllAvailableToChangeStatuses(RecordRef recordRef) {
         if (recordRef == null || StringUtils.isBlank(recordRef.getId())) {
             throw new IllegalArgumentException("You mus specify a record to find comments");
         }
@@ -150,7 +158,7 @@ class StatusRecordsUtils {
         return new RecordsQueryResult<>();
     }
 
-    RecordsQueryResult<StatusDTO> getStatusByRecord(RecordRef recordRef) {
+    RecordsQueryResult<StatusRecord> getStatusByRecord(RecordRef recordRef) {
         if (recordRef == null || StringUtils.isBlank(recordRef.getId())) {
             throw new IllegalArgumentException("You mus specify a record to find comments");
         }
@@ -161,9 +169,10 @@ class StatusRecordsUtils {
         }
 
         StatusDTO dto = getDocumentStatus(new NodeRef(id));
+        StatusRecord statusRecord = new StatusRecord(dto);
 
-        RecordsQueryResult<StatusDTO> result = new RecordsQueryResult<>();
-        result.setRecords(Collections.singletonList(dto));
+        RecordsQueryResult<StatusRecord> result = new RecordsQueryResult<>();
+        result.setRecords(Collections.singletonList(statusRecord));
         result.setTotalCount(1);
         return result;
     }

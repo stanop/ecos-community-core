@@ -28,7 +28,7 @@ public class AssociationIndexPropertyRegistry {
 
     private static final String INDEX_PROP_SUFFIX = "_added";
     
-    private Map<QName, QName> indexProperties = new HashMap<QName, QName>();
+    private Map<QName, QName> indexProperties = new HashMap<>();
     
     public QName getAssociationIndexProperty(QName assocName) {
         QName explicitlyRegistered = indexProperties.get(assocName);

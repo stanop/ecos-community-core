@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="idocs.import-spaces.3-16-0" abstract="true" parent="idocs.import-spaces">
+        <property name="sinceVersion" value="3.16.0" />
+        <property name="appliesFromVersion" value="3.16.0" />
+    </bean>
+
+    <bean id="idocs.import-scripts.3-16-0" abstract="true" parent="idocs.import-scripts">
+        <property name="sinceVersion" value="3.16.0" />
+        <property name="appliesFromVersion" value="3.16.0" />
+    </bean>
+
+    <bean id="idocs.module-component.rename-countries-journal" parent="idocs.import-scripts.3-16-0">
+        <property name="executeOnceOnly" value="true" />
+        <property name="name" value="rename-countries-journal" />
+        <property name="description" value="rename-countries-journal" />
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/rename-countries-journal.js"/>
+    </bean>
+
+    <bean id="idocs.module-component.rename-currency-rates-journal" parent="idocs.import-scripts.3-16-0">
+        <property name="executeOnceOnly" value="true" />
+        <property name="name" value="rename-currency-rates-journal" />
+        <property name="description" value="rename-currency-rates-journal" />
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/rename-currency-rates-journal.js"/>
+    </bean>
+
+    <bean id="idocs.module-component.defaultNewFormsAccess" parent="idocs.import-spaces.3-15-0">
+        <property name="name" value="default-ui-new-forms-access-groups" />
+        <property name="description" value="default-ui-new-forms-access-groups" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/configs/default-ui-new-forms-access-groups</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.defaultNewJournalsAccess" parent="idocs.import-spaces.3-15-0">
+        <property name="name" value="default-ui-new-journals-access-groups" />
+        <property name="description" value="default-ui-new-journals-access-groups" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/configs/default-ui-new-journals-access-groups</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.dashboards-journal" parent="idocs.import-spaces.3-16-0" depends-on="idocs.dictionaryBootstrap">
+        <property name="name" value="idocs.module-component.dashboards-journal" />
+        <property name="description" value="idocs.module-component.dashboards-journal" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root" />
+                <ref bean="idocs.module-component.system-journals-list" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/form/ecos-dashboards-journal</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/system/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/form/ecos-dashboards-journal</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+</beans>

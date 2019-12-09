@@ -525,6 +525,10 @@
         <property name="dictionaryService" ref="DictionaryService"/>
     </bean>
 
+    <bean id="record.event.propertiesBehaviour" class="ru.citeck.ecos.behavior.record.event.RecordEventAttributesBehaviour"
+          init-method="init" abstract="true">
+    </bean>
+
     <bean id="history.historicalAssocsBehaviour" class="ru.citeck.ecos.behavior.history.HistoricalAssocsBehaviour" init-method="init" abstract="true">
         <property name="policyComponent" ref="policyComponent"/>
         <property name="nodeService" ref="nodeService"/>
