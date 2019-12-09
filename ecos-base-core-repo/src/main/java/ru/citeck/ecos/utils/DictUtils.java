@@ -32,22 +32,36 @@ public class DictUtils {
     private NamespaceService namespaceService;
     private MessageService messageService;
 
-    private LoadingCache<Pair<QName, QName>, Map<String, String>> cachedDisplayNameMapping;
+    private LoadingCache<Pair<QName, QName>, Map<String, String>> cachedDisplayNameMappingWithChildren;
 
     @Autowired
     public DictUtils(ServiceRegistry serviceRegistry) {
         dictionaryService = serviceRegistry.getDictionaryService();
         messageService = serviceRegistry.getMessageService();
         namespaceService = serviceRegistry.getNamespaceService();
-        this.cachedDisplayNameMapping = CacheBuilder.newBuilder()
+        this.cachedDisplayNameMappingWithChildren = CacheBuilder.newBuilder()
                 .expireAfterWrite(CACHE_AGE_SECONDS, TimeUnit.SECONDS)
                 .build(CacheLoader.from(this::configureCacheDisplayNameMapping));
     }
 
     private Map<String, String> configureCacheDisplayNameMapping(Pair<QName, QName> key) {
         Map<String, String> result = new HashMap<>();
-        QName container = key.getFirst();
+
         QName field = key.getSecond();
+        if (field == null) {
+            log.warn("'field' it's required argument for compute cache entry");
+            return Collections.emptyMap();
+        }
+
+        QName container = key.getFirst();
+        if (container == null) {
+            PropertyDefinition propertyDefinition = dictionaryService.getProperty(field);
+            container = propertyDefinition.getContainerClass().getName();
+            if (container == null) {
+                log.warn("'container' not found for compute cache entry");
+                return Collections.emptyMap();
+            }
+        }
 
         Collection<QName> subClasses = this.getSubClasses(container, false);
         for (QName subClass : subClasses) {
@@ -69,7 +83,7 @@ public class DictUtils {
      * Search property definition in specified container or associated default aspects
      *
      * @param containerName aspect or type name. If null then default property definition will be returned
-     * @param propertyName  property name. Must be not null
+     * @param propertyName property name. Must be not null
      * @return property definition or null if definition not found
      * @throws NullPointerException if propertyName is null
      */
@@ -176,9 +190,10 @@ public class DictUtils {
 
     public Map<String, String> getPropertyDisplayNameMappingWithChildren(QName container, QName field) {
         try {
-            return cachedDisplayNameMapping.get(new Pair<>(container, field));
+            return cachedDisplayNameMappingWithChildren.get(new Pair<>(container, field));
         } catch (ExecutionException e) {
-            log.error("Cannot get 'displayName' mapping of property from cache", e);
+            log.error("Cannot get cached 'displayName' mapping. \n" +
+                    "Args: 'container': " + container + " 'field': " + field, e);
             return Collections.emptyMap();
         }
     }
@@ -212,8 +227,11 @@ public class DictUtils {
         return null;
     }
 
-    public TypeDefinition getTypeDefinition(QName targetType) {
-        return dictionaryService.getType(targetType);
+    public TypeDefinition getTypeDefinition(QName typeName) {
+        if (typeName == null) {
+            return null;
+        }
+        return dictionaryService.getType(typeName);
     }
 
     public Collection<QName> getSubClasses(QName className, boolean recursive) {
@@ -223,8 +241,9 @@ public class DictUtils {
             return Collections.singletonList(className);
         } else if (classDef.isAspect()) {
             Collection<QName> subAspects = dictionaryService.getSubAspects(className, recursive);
-            subAspects.add(className);
-            return subAspects;
+            Set<QName> subAspectsSet = new HashSet<>(subAspects);
+            subAspectsSet.add(className);
+            return subAspectsSet;
         } else {
             return dictionaryService.getSubTypes(className, recursive);
         }
