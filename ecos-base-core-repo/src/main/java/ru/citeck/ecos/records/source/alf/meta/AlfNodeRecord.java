@@ -13,7 +13,7 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.action.node.NodeActionsService;
-import ru.citeck.ecos.apps.app.module.type.type.action.ActionDto;
+import ru.citeck.ecos.apps.app.module.type.ui.action.ActionModule;
 import ru.citeck.ecos.attr.prov.VirtualScriptAttributes;
 import ru.citeck.ecos.document.sum.DocSumService;
 import ru.citeck.ecos.graphql.AlfGqlContext;
@@ -248,7 +248,7 @@ public class AlfNodeRecord implements MetaValue {
             case RecordConstants.ATT_ACTIONS:
 
                 NodeActionsService nodeActionsService = context.getService("nodeActionsService");
-                List<ActionDto> actions = nodeActionsService.getNodeActions(nodeRef);
+                List<ActionModule> actions = nodeActionsService.getNodeActions(nodeRef);
                 attribute = MetaUtils.toMetaValues(actions, context, field);
                 break;
 
