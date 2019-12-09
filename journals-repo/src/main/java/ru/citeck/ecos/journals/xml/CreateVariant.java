@@ -118,7 +118,7 @@ public class CreateVariant {
      */
     public List<Option> getAttribute() {
         if (attribute == null) {
-            attribute = new ArrayList<Option>();
+            attribute = new ArrayList<>();
         }
         return this.attribute;
     }

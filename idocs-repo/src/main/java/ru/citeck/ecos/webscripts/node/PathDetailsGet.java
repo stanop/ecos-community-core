@@ -90,7 +90,7 @@ public class PathDetailsGet extends BaseAbstractWebscript {
     protected void executeInternal(WebScriptRequest request, WebScriptResponse response) throws Exception {
         NodeRef nodeRef = new NodeRef(request.getParameter(PARAM_NODE_REF));
         NodeRef rootNodeRef = getRootNodeRef(request);
-        List<JSONObject> path = new ArrayList<JSONObject>();
+        List<JSONObject> path = new ArrayList<>();
         if (nodeService.exists(nodeRef) && (nodeService.exists(rootNodeRef))) {
             rootNodeName = nodeService.getProperty(rootNodeRef, ContentModel.PROP_NAME).toString();
             escapePath = PathUtil.getDisplayPath(nodeService.getPath(rootNodeRef), false) + "/" + rootNodeName;
@@ -137,7 +137,7 @@ public class PathDetailsGet extends BaseAbstractWebscript {
         pathItem.put("nodeRef", nodeRef);
         pathItem.put("displayPath", getDisplayPath(nodeRef, nodeName));
         pathItem.put("showLink", permissionService.hasPermission(nodeRef, PermissionService.READ).equals(AccessStatus.ALLOWED));
-        List<JSONObject> pathItems = isNonRootNode(nodeRef, nodeName) ? getPathItems(getParent(nodeRef)) : new ArrayList<JSONObject>();
+        List<JSONObject> pathItems = isNonRootNode(nodeRef, nodeName) ? getPathItems(getParent(nodeRef)) : new ArrayList<>();
         pathItems.add(pathItem);
         return pathItems;
     }

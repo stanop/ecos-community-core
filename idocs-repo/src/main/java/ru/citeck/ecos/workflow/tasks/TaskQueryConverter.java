@@ -40,7 +40,7 @@ public class TaskQueryConverter implements QueryParameterConverter {
     @Override
     public Map<String, Object> convert(Object parameters) {
         TaskQueryImpl taskQuery = (TaskQueryImpl) parameters;
-        Map<String, Object> parametersMap = new HashMap<String, Object>();
+        Map<String, Object> parametersMap = new HashMap<>();
         List<String> candidateGroups = taskQuery.getCandidateGroups();
         if (candidateGroups != null && !candidateGroups.isEmpty()) {
             parametersMap.put("candidateGroups", candidateGroups);

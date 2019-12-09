@@ -66,7 +66,7 @@ public class Items {
      */
     public List<Object> getItemsChildren() {
         if (itemsChildren == null) {
-            itemsChildren = new ArrayList<Object>();
+            itemsChildren = new ArrayList<>();
         }
         return this.itemsChildren;
     }

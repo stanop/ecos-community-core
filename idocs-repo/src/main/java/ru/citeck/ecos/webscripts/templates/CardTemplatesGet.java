@@ -43,7 +43,7 @@ public class CardTemplatesGet extends DeclarativeWebScript {
 	protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
         String nodeRefStr = req.getParameter(PARAM_NODEREF);
 		NodeRef nodeRef = new NodeRef(nodeRefStr);
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         List<NodeRef> templates = Collections.emptyList();
         if (nodeService.exists(nodeRef)) {
             QName documentType = nodeService.getType(nodeRef);

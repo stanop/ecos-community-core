@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<page>
+   <title>Completed Workflows</title>
+   <title-id>page.completedWorkflows.title</title-id>
+   <description>Completed workflows initiated by the current user</description>
+   <description-id>page.completedWorkflows.description</description-id>
+   <template-instance>completed-workflows</template-instance>
+   <authentication>user</authentication>
+</page>

@@ -18,8 +18,6 @@
  */
 package ru.citeck.ecos.behavior.common;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -34,7 +32,6 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,7 +42,6 @@ import org.alfresco.service.namespace.RegexQNamePattern;
 import ru.citeck.ecos.document.SupplementaryFilesDAO;
 import org.alfresco.service.cmr.repository.CyclicChildRelationshipException;
 import org.alfresco.service.cmr.repository.DuplicateChildNodeNameException;
-import org.alfresco.service.cmr.repository.AssociationRef;
 
 public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolicies.OnCreateChildAssociationPolicy {
 	// common properties
@@ -74,8 +70,7 @@ public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolici
 	@Override
 	public void onCreateChildAssociation(ChildAssociationRef childAssociationRef, boolean isNew) {
 		logger.debug("onCreateChildAssociation event");
-		NodeRef nodeNewSource = null;
-		List<NodeRef> suppFiles = new ArrayList<NodeRef>();
+		List<NodeRef> suppFiles = new ArrayList<>();
 		NodeRef nodeTarget = childAssociationRef.getChildRef(); //supp file
 		if(nodeService.exists(nodeTarget) && (ignoredTypes==null || !ignoredTypes.contains(nodeService.getType(nodeTarget))))
 		{
@@ -89,7 +84,6 @@ public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolici
 				NodeRef docNode = child.getChildRef();
 				if(nodeService.exists(docNode) && allowedDocTypes!=null && allowedDocTypes.size()>0 && allowedDocTypes.contains(nodeService.getType(docNode)) && !nodeTarget.equals(docNode))
 				{
-					String nameTemplate = null;
 					QName folderType = nodeService.getType(nodeSource);
 					if (folderType != null && folderType.equals(className)) {
 						try

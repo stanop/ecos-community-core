@@ -151,7 +151,7 @@ public abstract class AbstractNumberFormProcessor<ItemType> extends FilteredForm
 		}
 		
 		String[] values = valueString.split("[,]");
-		List<NodeRef> nodes = new ArrayList<NodeRef>(values.length);
+		List<NodeRef> nodes = new ArrayList<>(values.length);
 		for(String value : values) {
 			if(NodeRef.isNodeRef(value)) {
 				nodes.add(new NodeRef(value));

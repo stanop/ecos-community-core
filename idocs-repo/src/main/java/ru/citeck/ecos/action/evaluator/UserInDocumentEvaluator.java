@@ -45,7 +45,6 @@ public class UserInDocumentEvaluator extends ComparePropertyValueEvaluator {
     public static final String NAME = "user-in-document";
     public static final String PARAM_USER = "userName";
 
-    PersonService personService;
     NamespaceService namespaceService;
 
     /**
@@ -84,8 +83,9 @@ public class UserInDocumentEvaluator extends ComparePropertyValueEvaluator {
         paramList.add(new ParameterDefinitionImpl(PARAM_PROPERTY, DataTypeDefinition.TEXT, true, getParamDisplayLabel(PARAM_PROPERTY), false));
     }
 
+    @Deprecated
     public void setPersonService(PersonService personService) {
-        this.personService = personService;
+        // not used
     }
 
     public void setNamespaceService(NamespaceService namespaceService) {

@@ -22,8 +22,6 @@ import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.workflow.WorkflowService;
-import org.alfresco.service.cmr.workflow.WorkflowTask;
-import org.alfresco.model.ContentModel;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 

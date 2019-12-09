@@ -32,8 +32,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.OwnableService;
 import org.alfresco.service.cmr.security.PersonService;
-import org.alfresco.service.namespace.QName;
-import org.alfresco.service.cmr.repository.AssociationRef;
 
 import ru.citeck.ecos.security.NodeOwnerDAO;
 
@@ -93,7 +91,7 @@ public class DocumentNotificationSender extends AbstractNotificationSender<NodeR
 
 	@Override
 	protected Collection<String> getNotificationRecipients(NodeRef item) {
-		Set<String> recipients = new HashSet<String>();
+		Set<String> recipients = new HashSet<>();
 		// add default recipients:
 		if(defaultRecipients != null) {
 			recipients.addAll(defaultRecipients);

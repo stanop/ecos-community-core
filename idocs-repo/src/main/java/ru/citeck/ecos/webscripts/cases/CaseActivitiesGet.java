@@ -36,14 +36,14 @@ public class CaseActivitiesGet extends CaseActivityGet {
      */
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
-        /** Load node reference */
+        /* Load node reference */
         String nodeRefUuid = req.getParameter(PARAM_DOCUMENT_NODE_REF);
         if (nodeRefUuid == null) {
             return Collections.emptyMap();
         }
         nodeRefUuid = nodeRefUuid.startsWith(WORKSPACE_PREFIX) ? nodeRefUuid : (WORKSPACE_PREFIX + nodeRefUuid);
         NodeRef nodeRef = new NodeRef(nodeRefUuid);
-        /** Load and transform data */
+        /* Load and transform data */
         Map<String, Object> resultMap = new HashMap<>();
         if (areCaseModelsSent(nodeRef)) {
             List<CaseModelDto> caseModels = remoteCaseModelService.getCaseModelsByNodeRef(nodeRef, false);
@@ -120,7 +120,7 @@ public class CaseActivitiesGet extends CaseActivityGet {
         objectNode.putNull("actualEndDate");
         objectNode.putNull("expectedPerformTime");
 
-        /** Flags */
+        /* Flags */
         objectNode.put("startable", true);
         objectNode.put("stoppable", false);
         objectNode.put("editable", false);

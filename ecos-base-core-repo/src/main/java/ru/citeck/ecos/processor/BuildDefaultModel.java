@@ -54,7 +54,7 @@ public class BuildDefaultModel extends AbstractDataBundleLine
 		
 		Map<String,Object> defaultModel = templateService.buildDefaultModel(person, companyHome, userHome, null, null);
 		
-		Map<String,Object> newModel = new HashMap<String,Object>(model.size() + defaultModel.size());
+		Map<String,Object> newModel = new HashMap<>(model.size() + defaultModel.size());
 		newModel.putAll(model);
 		newModel.putAll(defaultModel);
 		

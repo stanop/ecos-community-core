@@ -3,7 +3,6 @@ package ru.citeck.ecos.service;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.service.cmr.repository.MimetypeService;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.apache.commons.io.IOUtils;
 import ru.citeck.ecos.processor.CompositeDataBundleProcessor;
 import ru.citeck.ecos.processor.DataBundle;
 import ru.citeck.ecos.processor.DataBundleProcessor;
@@ -75,7 +74,7 @@ public class DataBundleProcessorService {
     private DataBundle getInputBundle(
             NodeRef document, String templateType, Format format, Map<String, Object> additionalArgs) {
 
-        Map<String, Object> model = new HashMap<String, Object>(3);
+        Map<String, Object> model = new HashMap<>(3);
         Map<String, Object> argsMap = new HashMap<>();
         argsMap.put("nodeRef", document.toString());
         argsMap.put("templateType", templateType);

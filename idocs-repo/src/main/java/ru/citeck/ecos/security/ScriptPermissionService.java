@@ -22,11 +22,6 @@ import org.alfresco.repo.jscript.BaseScopableProcessorExtension;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
-import org.alfresco.service.cmr.security.AccessPermission;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  *

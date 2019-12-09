@@ -91,7 +91,7 @@ public abstract class TCmmnElement {
     @XmlSchemaType(name = "ID")
     protected String id;
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Gets the value of the documentation property.
@@ -117,7 +117,7 @@ public abstract class TCmmnElement {
      */
     public List<TDocumentation> getDocumentation() {
         if (documentation == null) {
-            documentation = new ArrayList<TDocumentation>();
+            documentation = new ArrayList<>();
         }
         return this.documentation;
     }

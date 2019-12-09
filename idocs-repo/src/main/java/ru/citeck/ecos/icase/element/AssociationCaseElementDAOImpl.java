@@ -426,7 +426,8 @@ public class AssociationCaseElementDAOImpl extends AbstractCaseElementDAO<Assocs
     private class BehaviourEnvironment {
         AssociationType associationType;
         QName requiredType;
-        NodeRef caseRef, element;
+        NodeRef caseRef;
+        NodeRef element;
         AssocsConfigDto config;
 
         public BehaviourEnvironment(AssociationRef assocRef, AssocsConfigDto config) {

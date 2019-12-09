@@ -72,7 +72,7 @@ public class TPlanningTable
      */
     public List<JAXBElement<? extends TTableItem>> getTableItem() {
         if (tableItem == null) {
-            tableItem = new ArrayList<JAXBElement<? extends TTableItem>>();
+            tableItem = new ArrayList<>();
         }
         return this.tableItem;
     }
@@ -101,7 +101,7 @@ public class TPlanningTable
      */
     public List<TApplicabilityRule> getApplicabilityRule() {
         if (applicabilityRule == null) {
-            applicabilityRule = new ArrayList<TApplicabilityRule>();
+            applicabilityRule = new ArrayList<>();
         }
         return this.applicabilityRule;
     }

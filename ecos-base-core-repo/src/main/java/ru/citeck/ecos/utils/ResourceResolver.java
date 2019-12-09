@@ -50,7 +50,7 @@ public class ResourceResolver extends ServletContextResourcePatternResolver {
 	public List<String> getResources(String... locationPatterns) throws IOException
 	{
 		logger.debug("Got location patterns: " + Arrays.toString(locationPatterns));
-		LinkedList<String> result = new LinkedList<String>();
+		LinkedList<String> result = new LinkedList<>();
 		for (String locationPattern : locationPatterns)
 		{
 			Resource[] resourcesForPattern = getResources(locationPattern);
