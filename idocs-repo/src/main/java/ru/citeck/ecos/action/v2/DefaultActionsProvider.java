@@ -5,8 +5,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AccessStatus;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import ru.citeck.ecos.apps.app.module.type.type.action.ActionDto;
+import ru.citeck.ecos.apps.app.module.type.ui.action.ActionModule;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
 
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
  *
  * @author Roman Makarskiy
  */
-@Component
+//@Component
 public class DefaultActionsProvider implements NodeActionsV2Provider {
 
     private static final String HAS_CONTENT_PATTERN = ".has(n:\"_content\")";
@@ -30,22 +29,22 @@ public class DefaultActionsProvider implements NodeActionsV2Provider {
     private static final String DOWNLOAD_KEY = "dao.download";
     private static final String DELETE_KEY = "dao.delete";
 
-    private static final List<ActionDto> ACTIONS;
+    private static final List<ActionModule> ACTIONS;
 
     static {
-        ActionDto view = new ActionDto();
+        ActionModule view = new ActionModule();
         view.setType("view");
         view.setKey(VIEW_KEY);
 
-        ActionDto edit = new ActionDto();
+        ActionModule edit = new ActionModule();
         edit.setType("edit");
         edit.setKey(EDIT_KEY);
 
-        ActionDto delete = new ActionDto();
+        ActionModule delete = new ActionModule();
         delete.setType("delete");
         delete.setKey(DELETE_KEY);
 
-        ActionDto download = new ActionDto();
+        ActionModule download = new ActionModule();
         download.setType("download");
         download.setKey(DOWNLOAD_KEY);
 
@@ -62,10 +61,10 @@ public class DefaultActionsProvider implements NodeActionsV2Provider {
     }
 
     @Override
-    public List<ActionDto> getActions(NodeRef nodeRef) {
+    public List<ActionModule> getActions(NodeRef nodeRef) {
         return ACTIONS
                 .stream()
-                .filter(actionDto -> actionIsRequired(actionDto, nodeRef))
+                .filter(ActionModule -> actionIsRequired(ActionModule, nodeRef))
                 .collect(Collectors.toList());
     }
 
@@ -74,7 +73,7 @@ public class DefaultActionsProvider implements NodeActionsV2Provider {
         return "dto";
     }
 
-    private boolean actionIsRequired(ActionDto action, NodeRef nodeRef) {
+    private boolean actionIsRequired(ActionModule action, NodeRef nodeRef) {
         if (nodeRef == null) {
             return false;
         }

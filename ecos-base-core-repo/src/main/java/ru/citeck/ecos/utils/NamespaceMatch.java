@@ -21,6 +21,8 @@ package ru.citeck.ecos.utils;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.QNamePattern;
 
+import java.util.Objects;
+
 public class NamespaceMatch implements QNamePattern {
     
     private final String requiredNamespace;
@@ -33,8 +35,7 @@ public class NamespaceMatch implements QNamePattern {
     public boolean isMatch(QName qname) {
         if(qname == null) return false;
         String namespace = qname.getNamespaceURI();
-        return requiredNamespace == namespace
-            || requiredNamespace != null && requiredNamespace.equals(namespace);
+        return Objects.equals(requiredNamespace, namespace);
     }
     
 }

@@ -9,6 +9,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import ru.citeck.ecos.predicate.PredicateService;
 import ru.citeck.ecos.predicate.model.*;
 import ru.citeck.ecos.querylang.QueryLangConverter;
 import ru.citeck.ecos.querylang.QueryLangService;
+import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.search.AssociationIndexPropertyRegistry;
 import ru.citeck.ecos.search.ftsquery.BinOperator;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
@@ -34,6 +36,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static ru.citeck.ecos.model.ClassificationModel.PROP_DOCUMENT_KIND;
+import static ru.citeck.ecos.model.ClassificationModel.PROP_DOCUMENT_TYPE;
 import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.CONTAINS;
 import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.EQ;
 
@@ -42,6 +46,8 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
     private static final Log logger = LogFactory.getLog(PredicateToFtsAlfrescoConverter.class);
     private static final String COMMA_DELIMITER = ",";
+    private static final String SLASH_DELIMITER = "/";
+    private static final String WORKSPACE_PREFIX = "workspace://SpacesStore/";
     private static final int INNER_QUERY_MAX_ITEMS = 20;
 
     private DictUtils dictUtils;
@@ -63,6 +69,7 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
         this.predicateService = predicateService;
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.associationIndexPropertyRegistry = associationIndexPropertyRegistry;
+
         queryLangService.register(this,
                 PredicateService.LANGUAGE_PREDICATE,
                 SearchService.LANGUAGE_FTS_ALFRESCO);
@@ -117,9 +124,10 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                     break;
                 case "TYPE":
                 case "_type":
-
                     consumeQName(valueStr, query::type);
-
+                    break;
+                case "_etype":
+                    handleETypeAttribute(query, valueStr);
                     break;
                 case "ASPECT":
                 case "aspect":
@@ -264,6 +272,34 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
         } else {
             throw new RuntimeException("Unknown predicate type: " + predicate);
         }
+    }
+
+    private void handleETypeAttribute(FTSQuery query, String value) {
+
+        RecordRef recordRef = RecordRef.valueOf(value);
+        String recordId = recordRef.getId();
+
+        String documentTypeValue;
+        String documentKindValue = null;
+
+        int slashIndex = recordId.indexOf(SLASH_DELIMITER);
+        if (slashIndex != -1) {
+            String firstPartOfRecordId = recordId.substring(0, slashIndex);
+            documentTypeValue = WORKSPACE_PREFIX + firstPartOfRecordId;
+
+            String secondPartOfRecordId = recordId.substring(slashIndex + 1);
+            documentKindValue = WORKSPACE_PREFIX + secondPartOfRecordId;
+        } else {
+            documentTypeValue = WORKSPACE_PREFIX + recordId;
+        }
+
+        query.open();
+        query.value(PROP_DOCUMENT_TYPE, documentTypeValue);
+        if (StringUtils.isNotEmpty(documentKindValue)) {
+            query.and();
+            query.value(PROP_DOCUMENT_KIND, documentKindValue);
+        }
+        query.close();
     }
 
     private List<String> getPropertyValuesByConstraintsFromField(QName container, QName field, String inputValue) {

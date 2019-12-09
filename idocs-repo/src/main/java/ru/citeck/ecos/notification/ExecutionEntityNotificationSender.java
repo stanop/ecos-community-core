@@ -18,17 +18,10 @@
  */
 package ru.citeck.ecos.notification;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import java.util.Set;
-
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.notification.EMailNotificationProvider;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
 import org.alfresco.service.ServiceRegistry;
@@ -36,15 +29,16 @@ import org.alfresco.service.cmr.notification.NotificationContext;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.TemplateService;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.alfresco.service.cmr.repository.TemplateService;
-import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
-
 import ru.citeck.ecos.security.NodeOwnerDAO;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Notification sender for tasks (ItemType = ExecutionEntity).
@@ -219,7 +213,6 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 				if(template!=null && nodeService.exists(template))
 				{
                     recipient.addAll(getRecipients(task, template, getDocsInfo()));
-					String from = null;
 					String notificationProviderName = EMailNotificationProvider.NAME;
 					if(subjectTemplates!=null)
 					{
@@ -246,15 +239,11 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 					}
 					for(String to : recipient) {
 						notificationContext.addTo(to);
-						
 					}
 					notificationContext.setSubject(subject);
 					setBodyTemplate(notificationContext, template);
 					notificationContext.setTemplateArgs(getNotificationArgs(task));
 					notificationContext.setAsyncNotification(getAsyncNotification());
-					if (null != from) {
-						notificationContext.setFrom(from);
-					}
 					// send
 					logger.debug("Send notification");
 					services.getNotificationService().sendNotification(notificationProviderName, notificationContext);

@@ -18,15 +18,10 @@
  */
 package ru.citeck.ecos.notification;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
-
-import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Notification Sender for documents (ItemType = NodeRef).
@@ -48,8 +43,7 @@ public class ReportWithAttachmentSender extends AbstractNotificationSender<Array
 	
 	@Override
 	protected NodeRef getNotificationTemplate(ArrayList<Map<String, Serializable>> item) {
-		String key=null;
-		return getNotificationTemplate(key);
+		return getNotificationTemplate((String) null);
 	}
 	
 	@Override

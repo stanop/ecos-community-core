@@ -18,14 +18,6 @@
  */
 package ru.citeck.ecos.workflow.confirm;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.activiti.engine.delegate.DelegateExecution;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.workflow.WorkflowModel;
@@ -34,16 +26,18 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.security.AuthorityService;
+import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.version.Version;
 import org.alfresco.service.cmr.version.VersionService;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
-import org.alfresco.service.cmr.security.PersonService;
-import org.alfresco.service.cmr.security.AuthorityService;
-
 import ru.citeck.ecos.model.ConfirmWorkflowModel;
 import ru.citeck.ecos.workflow.listeners.ListenerUtils;
+
+import java.io.Serializable;
+import java.util.*;
 
 public class ConfirmHelper
 {
@@ -274,14 +268,12 @@ public class ConfirmHelper
 
     public void saveConfirmersForOldVersions(DelegateExecution execution, ArrayList<NodeRef> confirmerForOldVersions) {
         execution.setVariable(qNameConverter.mapQNameToName(ConfirmWorkflowModel.ASSOC_CONFIRMERS), confirmerForOldVersions);
-		if(confirmerForOldVersions.size()>0)
-		{
-			String precedenceLine = confirmerForOldVersions.get(0).toString();
-			for(int i=1; i<confirmerForOldVersions.size(); i++)
-			{
-				precedenceLine += "|"+confirmerForOldVersions.get(i).toString();
+		if (confirmerForOldVersions.size()>0) {
+			StringBuilder precedenceLine = new StringBuilder(confirmerForOldVersions.get(0).toString());
+			for (int i=1; i<confirmerForOldVersions.size(); i++) {
+				precedenceLine.append("|").append(confirmerForOldVersions.get(i).toString());
 			}
-			execution.setVariable(qNameConverter.mapQNameToName(ConfirmWorkflowModel.PROP_PRECEDENCE), precedenceLine);
+			execution.setVariable(qNameConverter.mapQNameToName(ConfirmWorkflowModel.PROP_PRECEDENCE), precedenceLine.toString());
 		}
     }
 

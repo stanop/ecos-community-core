@@ -5,6 +5,7 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.barcode.exception.UnsupportedBarcodeTypeException;
@@ -52,6 +53,10 @@ public class BarcodeService {
             barcodePropertyValue = nodeUtils.getProperty(nodeRef, propertyQName);
         } catch (Exception e) {
             throw new BarcodeInputException(e);
+        }
+
+        if (StringUtils.isEmpty(barcodePropertyValue)) {
+            throw new BarcodeInputException("Not possible get property with value to generate barcode with nodeRef");
         }
 
         return getBarcodeAsBase64FromContent(barcodePropertyValue, width, height, format);

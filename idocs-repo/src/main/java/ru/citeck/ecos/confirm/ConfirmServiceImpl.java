@@ -30,7 +30,6 @@ import org.alfresco.service.namespace.QName;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import ru.citeck.ecos.confirm.ConfirmConfigService;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -189,25 +188,25 @@ public class ConfirmServiceImpl implements ConfirmService {
 	}
 
 	private String serialize(JSONObject consideredVersions) throws JSONException {
-        String records = "";
+        StringBuilder records = new StringBuilder();
         List<String> partNames = confirmConfigService.getParts();
         for (int i = 0; i < consideredVersions.length(); i++) {
-            String parts = "";
+            StringBuilder parts = new StringBuilder();
             JSONArray names = consideredVersions.names();
             int innerObjectLength = consideredVersions.getJSONObject(names.getString(i)).length();
             int length = (partNames.size() <= innerObjectLength) ? partNames.size() : innerObjectLength;
             for (int j = 0; j < length; j++) {
-                parts += consideredVersions.getJSONObject(names.getString(i)).getString(partNames.get(j));
+                parts.append(consideredVersions.getJSONObject(names.getString(i)).getString(partNames.get(j)));
                 if (j != length - 1) {
-                    parts += confirmConfigService.getPartSeparator();
+                    parts.append(confirmConfigService.getPartSeparator());
                 }
             }
-            records += parts;
+            records.append(parts);
             if (i != consideredVersions.length() - 1) {
-                records += confirmConfigService.getRecordSeparator();
+                records.append(confirmConfigService.getRecordSeparator());
             }
         }
-        return records;
+        return records.toString();
     }
 
     private JSONObject deserialize(String prop) throws JSONException {

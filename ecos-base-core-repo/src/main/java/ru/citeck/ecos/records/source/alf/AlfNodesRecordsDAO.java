@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.*;
-import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
@@ -20,10 +22,10 @@ import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.model.InvariantsModel;
 import ru.citeck.ecos.records.source.alf.file.AlfNodeContentFileHelper;
-import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
 import ru.citeck.ecos.records.source.alf.search.AlfNodesSearch;
 import ru.citeck.ecos.records.source.dao.RecordsActionExecutor;
+import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
@@ -114,6 +116,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             Map<QName, JsonNode> contentProps = new HashMap<>();
             Map<QName, Set<NodeRef>> assocs = new HashMap<>();
             Map<QName, JsonNode> childAssocEformFiles = new HashMap<>();
+            Map<QName, JsonNode> attachmentAssocEformFiles = new HashMap<>();
 
             NodeRef nodeRef = null;
             if (record.getId().getId().startsWith("workspace://SpacesStore/")) {
@@ -177,11 +180,12 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
                         JsonNode value = fields.path(name);
 
-                        if (assocDef instanceof ChildAssociationDefinition
-                                && contentFileHelper.isFileFromEformFormat(value)) {
-
-                            childAssocEformFiles.put(fieldName, value);
-
+                        if (contentFileHelper.isFileFromEformFormat(value)) {
+                            if (assocDef instanceof ChildAssociationDefinition) {
+                                childAssocEformFiles.put(fieldName, value);
+                            } else {
+                                attachmentAssocEformFiles.put(fieldName, value);
+                            }
                         } else {
 
                             Set<NodeRef> nodeRefs = null;
@@ -239,8 +243,10 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
             contentProps.forEach((name, value) -> contentFileHelper.processPropFileContent(finalNodeRef, name, value));
             assocs.forEach((name, value) -> nodeUtils.setAssocs(finalNodeRef, value, name, true));
-            childAssocEformFiles.forEach((qName, jsonNodes) -> contentFileHelper.processChildAssocFilesContent(
-                    qName, jsonNodes, finalNodeRef));
+            childAssocEformFiles.forEach((qName, jsonNodes) -> contentFileHelper.processAssocFilesContent(
+                    qName, jsonNodes, finalNodeRef, true));
+            attachmentAssocEformFiles.forEach((qName, jsonNodes) -> contentFileHelper.processAssocFilesContent(
+                    qName, jsonNodes, finalNodeRef, false));
         }
 
         return result;
