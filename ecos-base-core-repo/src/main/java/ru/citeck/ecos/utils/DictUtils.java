@@ -28,17 +28,18 @@ public class DictUtils {
     private static final int CACHE_AGE_SECONDS = 600;
     private static final String TXN_CONSTRAINTS_CACHE = DictUtils.class.getName();
 
-    private DictionaryService dictionaryService;
-    private NamespaceService namespaceService;
-    private MessageService messageService;
+    private final DictionaryService dictionaryService;
+    private final NamespaceService namespaceService;
+    private final MessageService messageService;
 
-    private LoadingCache<Pair<QName, QName>, Map<String, String>> cachedDisplayNameMappingWithChildren;
+    private final LoadingCache<Pair<QName, QName>, Map<String, String>> cachedDisplayNameMappingWithChildren;
 
     @Autowired
     public DictUtils(ServiceRegistry serviceRegistry) {
         dictionaryService = serviceRegistry.getDictionaryService();
         messageService = serviceRegistry.getMessageService();
         namespaceService = serviceRegistry.getNamespaceService();
+
         this.cachedDisplayNameMappingWithChildren = CacheBuilder.newBuilder()
                 .expireAfterWrite(CACHE_AGE_SECONDS, TimeUnit.SECONDS)
                 .build(CacheLoader.from(this::configureCacheDisplayNameMapping));

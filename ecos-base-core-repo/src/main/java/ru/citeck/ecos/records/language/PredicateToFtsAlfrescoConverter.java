@@ -50,11 +50,11 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
     private static final String WORKSPACE_PREFIX = "workspace://SpacesStore/";
     private static final int INNER_QUERY_MAX_ITEMS = 20;
 
-    private DictUtils dictUtils;
-    private SearchService searchService;
-    private PredicateService predicateService;
-    private NamespaceService namespaceService;
-    private AssociationIndexPropertyRegistry associationIndexPropertyRegistry;
+    private final DictUtils dictUtils;
+    private final SearchService searchService;
+    private final PredicateService predicateService;
+    private final NamespaceService namespaceService;
+    private final AssociationIndexPropertyRegistry associationIndexPropertyRegistry;
 
     @Autowired
     public PredicateToFtsAlfrescoConverter(DictUtils dictUtils,
@@ -306,8 +306,14 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
         Map<String, String> mapping = dictUtils.getPropertyDisplayNameMappingWithChildren(container, field);
 
+        String inputInLowerCase = inputValue.toLowerCase();
+
         return mapping.entrySet().stream()
-                .filter(e -> e.getKey().contains(inputValue) || e.getValue().contains(inputValue))
+                .filter(e -> {
+                    String key = e.getKey().toLowerCase();
+                    String value = e.getValue().toLowerCase();
+                    return key.contains(inputInLowerCase) || value.contains(inputInLowerCase);
+                })
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
@@ -384,11 +390,8 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
             } else {
                 return false;
             }
-        } else if (attDef instanceof AssociationDefinition) {
-            return true;
-        }
+        } else return attDef instanceof AssociationDefinition;
 
-        return false;
     }
 
     private String toValidNodeRef(String value) {
