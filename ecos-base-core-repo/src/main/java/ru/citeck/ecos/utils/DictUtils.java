@@ -59,12 +59,12 @@ public class DictUtils {
             PropertyDefinition propertyDefinition = dictionaryService.getProperty(field);
             if (propertyDefinition == null) {
                 log.warn("Return empty mapping because 'propertyDefinition' was null " +
-                        "for field with value: " + field.getLocalName());
+                        "for field with value: " + field);
                 return Collections.emptyMap();
             }
             ClassDefinition classDefinition = propertyDefinition.getContainerClass();
             if (classDefinition == null) {
-                log.warn("Return empty mapping because 'classDefinition' was null");
+                log.warn("Return empty mapping because 'classDefinition' was null. 'field' value: "+ field);
                 return Collections.emptyMap();
             } else {
                 container = classDefinition.getName();
