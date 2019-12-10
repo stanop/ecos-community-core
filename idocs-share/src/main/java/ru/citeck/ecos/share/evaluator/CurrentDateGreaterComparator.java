@@ -18,14 +18,14 @@
  */
 package ru.citeck.ecos.share.evaluator;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import org.alfresco.util.ISO8601DateFormat;
 import org.alfresco.web.evaluator.Comparator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONObject;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * It expected date in ISO-8601 format in argument of 

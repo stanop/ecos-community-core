@@ -19,8 +19,6 @@
 package ru.citeck.ecos.history;
 
 import org.alfresco.model.ContentModel;
-import org.alfresco.repo.batch.BatchProcessWorkProvider;
-import org.alfresco.repo.batch.BatchProcessor;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
@@ -38,7 +36,10 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.config.EcosConfigService;
-import ru.citeck.ecos.model.*;
+import ru.citeck.ecos.model.ActivityModel;
+import ru.citeck.ecos.model.HistoryModel;
+import ru.citeck.ecos.model.ICaseModel;
+import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.utils.TransactionUtils;
 

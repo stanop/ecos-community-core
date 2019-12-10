@@ -18,14 +18,6 @@
  */
 package ru.citeck.ecos.workflow.security;
 
-import java.io.Serializable;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -35,8 +27,10 @@ import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.cmr.workflow.WorkflowTaskState;
 import org.alfresco.service.namespace.QName;
-
 import ru.citeck.ecos.utils.SimpleMethodInterceptor;
+
+import java.io.Serializable;
+import java.util.*;
 
 public class WorkflowSecurityInterceptor extends SimpleMethodInterceptor {
     

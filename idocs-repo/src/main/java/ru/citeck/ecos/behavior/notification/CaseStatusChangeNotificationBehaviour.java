@@ -3,10 +3,10 @@ package ru.citeck.ecos.behavior.notification;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.policy.Behaviour;
-import ru.citeck.ecos.behavior.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.behavior.OrderedBehaviour;
 import ru.citeck.ecos.icase.CaseStatusPolicies;
 import ru.citeck.ecos.model.ICaseModel;
 

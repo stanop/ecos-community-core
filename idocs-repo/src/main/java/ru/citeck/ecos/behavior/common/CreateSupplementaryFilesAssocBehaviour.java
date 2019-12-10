@@ -18,26 +18,23 @@
  */
 package ru.citeck.ecos.behavior.common;
 
-import java.util.List;
-import java.util.ArrayList;
-
 import org.alfresco.model.ContentModel;
-import org.alfresco.service.cmr.repository.*;
-import ru.citeck.ecos.model.DmsModel;
 import org.alfresco.repo.node.NodeServicePolicies;
-import ru.citeck.ecos.behavior.JavaBehaviour;
-import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
-import org.alfresco.service.namespace.QName;
+import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-
+import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.namespace.QName;
+import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.alfresco.service.namespace.RegexQNamePattern;
+import ru.citeck.ecos.behavior.JavaBehaviour;
 import ru.citeck.ecos.document.SupplementaryFilesDAO;
-import org.alfresco.service.cmr.repository.CyclicChildRelationshipException;
-import org.alfresco.service.cmr.repository.DuplicateChildNodeNameException;
+import ru.citeck.ecos.model.DmsModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolicies.OnCreateChildAssociationPolicy {
 	// common properties

@@ -11,7 +11,9 @@ import ru.citeck.ecos.menu.dto.Element;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver {
 

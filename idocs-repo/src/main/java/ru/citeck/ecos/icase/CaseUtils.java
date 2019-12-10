@@ -18,9 +18,6 @@
  */
 package ru.citeck.ecos.icase;
 
-import java.io.Serializable;
-import java.util.*;
-
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.model.FileFolderService;
 import org.alfresco.service.cmr.model.FileInfo;
@@ -33,13 +30,15 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
-
 import ru.citeck.ecos.icase.element.CaseElementDAO;
 import ru.citeck.ecos.icase.element.CaseElementService;
 import ru.citeck.ecos.icase.element.CaseElementServiceImpl;
 import ru.citeck.ecos.icase.element.config.ElementConfigDto;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.utils.RepoUtils;
+
+import java.io.Serializable;
+import java.util.*;
 
 public class CaseUtils {
 
