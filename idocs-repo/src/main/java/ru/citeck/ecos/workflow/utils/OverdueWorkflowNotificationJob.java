@@ -57,23 +57,23 @@ public class OverdueWorkflowNotificationJob extends AbstractLockedJob
             query.setOrderBy(new OrderBy[] { OrderBy.TaskDue_Asc });
             List<WorkflowTask> tasks = workflowService.queryTasks(query);
             Date now = new Date();
-            int sent1 = 0;
-            for(WorkflowTask task : tasks) {
+            int count = 0;
+            for (WorkflowTask task : tasks) {
                 Date dueDate = task.getPath().getInstance().getDueDate();
-                if(dueDate != null)
-                {
+                if (dueDate != null) {
                     dueDate.setHours(23); // use 23:59, not 00:00
                     dueDate.setMinutes(59);
-                        if(dueDate.before(now)) {
-                            logger.info("Send notification");
-                            sender.sendNotification(task);
-                            sent1++;
-                        }
+                    if (dueDate.before(now)) {
+                        logger.info("Send notification");
+                        sender.sendNotification(task);
+                        count++;
+                    }
                 }
             }
-            return sent1;
+            return count;
         }, AuthenticationUtil.getSystemUserName());
-        if(logger.isInfoEnabled()) {
+
+        if (logger.isInfoEnabled()) {
             logger.info("Sent notifications for " + sent + " overdue tasks");
         }
     }
