@@ -44,18 +44,6 @@ export default class {
     };
 
     getNewJournalsPageEnable = () => {
-
-        const checkJournalsAvailability = () => {
-            return Citeck.Records.get("ecos-config@default-ui-new-journals-access-groups")
-                .load(".str").then(groupsInOneString => {
-                    return !!groupsInOneString ? () => {
-                        const groups = groupsInOneString.split(',');
-                        const results = [];
-                        groups.forEach(group => results.push(isCurrentUserInGroup.call(this, group)));
-                        return Promise.all(results).then(values => values.includes(true));
-                    } : false;
-                });
-        };
         const isNewJournalPageEnable = Citeck.Records.get('ecos-config@new-journals-page-enable').load('.bool');
         const isJournalAvailibleForUser = checkFunctionalAvailabilityForUser("default-ui-new-journals-access-groups");
 
