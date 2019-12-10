@@ -198,7 +198,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             if (propDef != null) {
 
                 QName typeName = propDef.getDataType().getName();
-                if (ADD_CMD_PREFIX.equals(addOrRemoveCmd) || REMOVE_CMD_PREFIX.equals(addOrRemoveCmd)) {
+                if (addOrRemoveCmd != null) {
                     logger.warn("Attribute action " + addOrRemoveCmd + " is not supported for node properties." +
                             " Atttribute: " + name);
                     continue;
@@ -224,6 +224,11 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 if (assocDef != null) {
 
                     if (contentFileHelper.isFileFromEformFormat(fieldValue)) {
+                        if (addOrRemoveCmd != null) {
+                            logger.warn("Attribute action " + addOrRemoveCmd + " is not supported for fileFromEformFormat." +
+                                    " Atttribute: " + name);
+                            continue;
+                        }
                         if (assocDef instanceof ChildAssociationDefinition) {
                             childAssocEformFiles.put(fieldName, fieldValue);
                         } else {
@@ -309,9 +314,9 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         if (name.startsWith(ADD_CMD_PREFIX)) {
             return name.substring(ADD_CMD_PREFIX.length());
         } else if (name.startsWith(REMOVE_CMD_PREFIX)) {
-            return  name.substring(REMOVE_CMD_PREFIX.length());
+            return name.substring(REMOVE_CMD_PREFIX.length());
         } else {
-            return  name;
+            return name;
         }
     }
 
