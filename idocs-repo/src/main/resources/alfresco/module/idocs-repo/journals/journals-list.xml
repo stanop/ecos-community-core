@@ -395,13 +395,13 @@
 
     <journal id="ecos-types">
         <datasource>eapps/module</datasource>
-        <predicate>{"t": "eq", "att": "type", "val": "type"}</predicate>
+        <predicate>{"t": "eq", "att": "type", "val": "model/type"}</predicate>
         <create>
             <variant title="Create Type">
-                <recordRef>eapps/module@type$</recordRef>
+                <recordRef>eapps/module@model/type$</recordRef>
             </variant>
             <variant title="Upload Type">
-                <recordRef>eapps/module@type$</recordRef>
+                <recordRef>eapps/module@model/type$</recordRef>
                 <formKey>ecos-module-upload</formKey>
             </variant>
         </create>
@@ -469,13 +469,13 @@
 
     <journal id="ecos-sections">
         <datasource>eapps/module</datasource>
-        <predicate>{"t": "eq", "att": "type", "val": "section"}</predicate>
+        <predicate>{"t": "eq", "att": "type", "val": "model/section"}</predicate>
         <create>
             <variant title="Create Section">
-                <recordRef>eapps/module@section$</recordRef>
+                <recordRef>eapps/module@model/section$</recordRef>
             </variant>
             <variant title="Upload Section">
-                <recordRef>eapps/module@section$</recordRef>
+                <recordRef>eapps/module@model/section$</recordRef>
                 <formKey>ecos-module-upload</formKey>
             </variant>
         </create>
