@@ -26,8 +26,8 @@ public class AddNewCommentNotificationBehaviour extends AbstractICaseDocumentNot
     private String documentNamespace;
     private String documentType;
 
-    private final static String PARAM_COMMENT_CREATOR_NAME = "commentCreatorName";
-    private final static String PARAM_COMMENT = "comment";
+    private static final String PARAM_COMMENT_CREATOR_NAME = "commentCreatorName";
+    private static final String PARAM_COMMENT = "comment";
 
     private static Log logger = LogFactory.getLog(AddNewCommentNotificationBehaviour.class);
 
