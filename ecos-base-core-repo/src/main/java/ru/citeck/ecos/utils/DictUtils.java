@@ -50,17 +50,24 @@ public class DictUtils {
 
         QName field = key.getSecond();
         if (field == null) {
-            log.warn("'field' it's required argument for compute cache entry");
+            log.warn("Return empty mapping because 'field' was null");
             return Collections.emptyMap();
         }
 
         QName container = key.getFirst();
         if (container == null) {
             PropertyDefinition propertyDefinition = dictionaryService.getProperty(field);
-            container = propertyDefinition.getContainerClass().getName();
-            if (container == null) {
-                log.warn("'container' not found for compute cache entry");
+            if (propertyDefinition == null) {
+                log.warn("Return empty mapping because 'propertyDefinition' was null " +
+                        "for field with value: " + field.getLocalName());
                 return Collections.emptyMap();
+            }
+            ClassDefinition classDefinition = propertyDefinition.getContainerClass();
+            if (classDefinition == null) {
+                log.warn("Return empty mapping because 'classDefinition' was null");
+                return Collections.emptyMap();
+            } else {
+                container = classDefinition.getName();
             }
         }
 

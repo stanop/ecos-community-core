@@ -332,7 +332,7 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
         FTSQuery innerQuery = FTSQuery.createRaw();
         innerQuery.maxItems(INNER_QUERY_MAX_ITEMS);
-        innerQuery.type(targetTypeName);
+
 
         Map<QName, Serializable> attributes = new HashMap<>();
 
@@ -342,6 +342,8 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
         attributes.put(ContentModel.PROP_NAME, assocVal);
 
         if (targetTypeName != null) {
+
+            innerQuery.type(targetTypeName);
 
             if (targetTypeName.equals(ContentModel.TYPE_PERSON)) {
                 attributes.put(ContentModel.PROP_USERNAME, assocVal);
@@ -410,8 +412,9 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
             } else {
                 return false;
             }
-        } else return attDef instanceof AssociationDefinition;
-
+        } else {
+            return attDef instanceof AssociationDefinition;
+        }
     }
 
     private String toValidNodeRef(String value) {
