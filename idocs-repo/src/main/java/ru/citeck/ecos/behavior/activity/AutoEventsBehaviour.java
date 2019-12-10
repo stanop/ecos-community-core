@@ -1,8 +1,10 @@
 package ru.citeck.ecos.behavior.activity;
 
 import org.alfresco.model.ContentModel;
-import org.alfresco.repo.node.NodeServicePolicies.*;
-import org.alfresco.repo.policy.Behaviour.*;
+import org.alfresco.repo.node.NodeServicePolicies.OnCreateChildAssociationPolicy;
+import org.alfresco.repo.node.NodeServicePolicies.OnDeleteChildAssociationPolicy;
+import org.alfresco.repo.node.NodeServicePolicies.OnUpdatePropertiesPolicy;
+import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -10,7 +12,7 @@ import org.alfresco.service.namespace.QName;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.behavior.base.AbstractBehaviour;
 import ru.citeck.ecos.behavior.base.PolicyMethod;
-import ru.citeck.ecos.icase.activity.CaseActivityPolicies.*;
+import ru.citeck.ecos.icase.activity.CaseActivityPolicies.OnChildrenIndexChangedPolicy;
 import ru.citeck.ecos.icase.activity.CaseActivityService;
 import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.EventModel;
@@ -30,8 +32,6 @@ public class AutoEventsBehaviour extends AbstractBehaviour
                                             OnCreateChildAssociationPolicy,
                                             OnDeleteChildAssociationPolicy,
                                             OnUpdatePropertiesPolicy {
-
-    private static final QName TYPE_ACTIVITY = ActivityModel.TYPE_ACTIVITY;
 
     private CaseActivityService caseActivityService;
 

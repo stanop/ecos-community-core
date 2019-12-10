@@ -42,9 +42,6 @@ public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolici
 	protected NodeService nodeService;
 	protected ServiceRegistry services;
 	protected DictionaryService dictionaryService;
-	private TemplateService templateService;
-	private String nodeVariable;
-	private String templateEngine;
 	private SupplementaryFilesDAO supplFilesDAO;
 
 	// distinct properties
@@ -124,20 +121,23 @@ public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolici
 		this.nodeService = nodeService;
 	}
 
+	@Deprecated
 	public void setTemplateService(TemplateService templateService) {
-		this.templateService = templateService;
+		// not used
 	}
 
 	public void setClassName(QName className) {
 		this.className = className;
 	}
 
+	@Deprecated
 	public void setTemplateEngine(String templateEngine) {
-		this.templateEngine = templateEngine;
+		// not used
 	}
 
+	@Deprecated
 	public void setNodeVariable(String nodeVariable) {
-		this.nodeVariable = nodeVariable;
+		// not used
 	}
 
 	public void setAllowedDocTypes(List<QName> allowedDocTypes) {

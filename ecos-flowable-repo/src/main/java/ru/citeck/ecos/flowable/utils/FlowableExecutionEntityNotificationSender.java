@@ -43,7 +43,6 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
     public static final String ARG_WORKFLOW_PROPERTIES = "properties";
     public static final String ARG_WORKFLOW_DOCUMENTS = "documents";
 
-    private Map<String, Map<String, List<String>>> taskSubscribers;
     protected WorkflowQNameConverter qNameConverter;
     protected PersonService personService;
     protected AuthenticationService authenticationService;
@@ -68,8 +67,9 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
     /**
      * Recipients provided as parameter taskSubscribers: "task name"-{"doc type1"-"recepient field1", ...}
      */
+    @Deprecated
     public void setTaskSubscribers(Map<String, Map<String, List<String>>> taskSubscribers) {
-        this.taskSubscribers = taskSubscribers;
+        // not used
     }
 
     // get notification template arguments for the task

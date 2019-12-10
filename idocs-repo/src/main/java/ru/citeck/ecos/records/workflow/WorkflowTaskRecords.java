@@ -1,6 +1,7 @@
 package ru.citeck.ecos.records.workflow;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Getter;
 import lombok.Setter;
@@ -455,7 +456,13 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             }
 
             if (documentInfo.has(name)) {
-                return new InnerMetaValue(documentInfo.get(name));
+                JsonNode node = documentInfo.get(name);
+                if (node instanceof ArrayNode) {
+                    List<InnerMetaValue> result = new ArrayList<>();
+                    node.forEach(jsonNode -> result.add(new InnerMetaValue(jsonNode)));
+                    return result;
+                }
+                return new InnerMetaValue(node);
             }
 
             if (RecordConstants.ATT_FORM_KEY.equals(name)) {

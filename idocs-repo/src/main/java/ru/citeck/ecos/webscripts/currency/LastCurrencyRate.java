@@ -25,7 +25,6 @@ public class LastCurrencyRate extends DeclarativeWebScript {
     private static final String BASE_CURRENCY_PARAM_NAME = "baseCurrency";
     private static final String TARGET_CURRENCY_PARAM_NAME = "targetCurrency";
     private static final String DATE_PARAM_NAME = "date";
-    private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     private static final String QUERY_TEMPLATE = "TYPE:\"idocs:currencyRateRecord\"" +
             " AND @idocs\\:crrBaseCurrency_added:\"%s\"" +
