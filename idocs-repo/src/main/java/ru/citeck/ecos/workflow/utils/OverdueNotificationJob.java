@@ -41,8 +41,8 @@ public class OverdueNotificationJob extends AbstractLockedJob
 {
     private static Log logger = LogFactory.getLog(OverdueNotificationJob.class);
 
-	private static final Object PARAM_NOTIFICATION_SENDER = "NotificationSender";
-	private static final Object PARAM_WORKFLOW_SERVICE = "WorkflowService";
+    private static final Object PARAM_NOTIFICATION_SENDER = "NotificationSender";
+    private static final Object PARAM_WORKFLOW_SERVICE = "WorkflowService";
 
     @Override
     public void executeJob(JobExecutionContext context) throws JobExecutionException {

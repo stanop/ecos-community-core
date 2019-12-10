@@ -55,19 +55,19 @@ public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies
     protected ServiceRegistry services;
     protected FileFolderService fileFolderService;
 
-	// distinct properties
-	protected QName className;
-	protected QName folderQName;
-	protected QName nameDetermineProp;
-	protected boolean createCpecialFolder;
-	protected String createCpecialFolderPath;
-	protected String supAgreementParentFolderPath;
-	protected Map <QName, String> createCpecialFolderConditions;
-	
-	private static final Log logger = LogFactory.getLog(DocumentCreateBasedOnFolderBehaviour.class);
+    // distinct properties
+    protected QName className;
+    protected QName folderQName;
+    protected QName nameDetermineProp;
+    protected boolean createCpecialFolder;
+    protected String createCpecialFolderPath;
+    protected String supAgreementParentFolderPath;
+    protected Map <QName, String> createCpecialFolderConditions;
 
-	public void init() {
-		policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, className,
+    private static final Log logger = LogFactory.getLog(DocumentCreateBasedOnFolderBehaviour.class);
+
+    public void init() {
+        policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, className,
                 new JavaBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT));
 
         policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnCreateChildAssociationPolicy.QNAME, className,
