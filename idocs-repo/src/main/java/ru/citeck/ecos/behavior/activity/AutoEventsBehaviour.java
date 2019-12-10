@@ -33,6 +33,8 @@ public class AutoEventsBehaviour extends AbstractBehaviour
                                             OnDeleteChildAssociationPolicy,
                                             OnUpdatePropertiesPolicy {
 
+    private static final QName TYPE_ACTIVITY = ActivityModel.TYPE_ACTIVITY;
+
     private CaseActivityService caseActivityService;
 
     @Override
