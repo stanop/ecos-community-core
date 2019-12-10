@@ -58,8 +58,7 @@ public class DictUtils {
         if (container == null) {
             PropertyDefinition propertyDefinition = dictionaryService.getProperty(field);
             if (propertyDefinition == null) {
-                log.warn("Return empty mapping because 'propertyDefinition' was null " +
-                        "for field with value: " + field);
+                log.warn("Return empty mapping because 'propertyDefinition' was null. 'field' value: " + field);
                 return Collections.emptyMap();
             }
             ClassDefinition classDefinition = propertyDefinition.getContainerClass();
