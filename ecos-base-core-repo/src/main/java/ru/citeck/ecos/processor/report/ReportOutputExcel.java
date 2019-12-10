@@ -26,7 +26,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import ru.citeck.ecos.processor.AbstractDataBundleLine;
 import ru.citeck.ecos.processor.DataBundle;
 import ru.citeck.ecos.processor.ProcessorConstants;
-import ru.citeck.ecos.template.TemplateNodeService;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -42,21 +41,13 @@ import java.util.Map;
  */
 public class ReportOutputExcel extends AbstractDataBundleLine {
     
-    private final static String NAMESPACE_BEGIN = "" + QName.NAMESPACE_BEGIN;
-    
     private static final String REPORT_DATA = "reportData";
     private static final String REPORT_TITLE = "reportTitle";
     private static final String REPORT_COLUMNS = "reportColumns";
     private static final String COLUMN_TITLE = "title";
-    private static final String COLUMN_ATTR = "attribute";
-    private static final String COLUMN_DATE_FORMAT = "dateFormat";
-    private static final String ROW_NUM = "rowNum";
-    private static final String DEFAULT_DATE_FORMAT = "dd.MM.yyyy HH:mm";
     private static final String XLSX_MIMETYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     
     private String template;
-    
-    private TemplateNodeService templateNodeService;
     
     @Override
     public DataBundle process(DataBundle input) {

@@ -90,7 +90,6 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 	public static final String ARG_WORKFLOW_ID = "id";
 	public static final String ARG_WORKFLOW_PROPERTIES = "properties";
 	public static final String ARG_WORKFLOW_DOCUMENTS = "documents";
-	private Map<String, Map<String,List<String>>> taskSubscribers;
 	protected WorkflowQNameConverter qNameConverter;
 	protected PersonService personService;
 	protected AuthenticationService authenticationService;
@@ -110,14 +109,15 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 		this.qNameConverter = new WorkflowQNameConverter(namespaceService);
 		this.authenticationService = serviceRegistry.getAuthenticationService();
 		this.personService = serviceRegistry.getPersonService();
-	}	
-	
+	}
+
 	/**
 	* Recipients provided as parameter taskSubscribers: "task name"-{"doc type1"-"recepient field1", ...}
 	* @param task subscribers
 	*/
+	@Deprecated
 	public void setTaskSubscribers(Map<String, Map<String,List<String>>> taskSubscribers) {
-    	this.taskSubscribers = taskSubscribers;
+    	// not used
     }
 
   // get notification template arguments for the task

@@ -62,8 +62,6 @@ public class DocStamp extends AbstractDataBundleLine
 	private Boolean foreground;
 	private String appendStringTo;
 	private String appendStringFrom;
-	private String appendIDFrom;
-	private String appendIDTo;
 	private float leftMargin;
     private static final Log logger = LogFactory.getLog(DocStamp.class);
 	

@@ -22,22 +22,18 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.alfresco.model.ContentModel;
+import org.alfresco.service.cmr.repository.*;
 import ru.citeck.ecos.model.DmsModel;
 import org.alfresco.repo.node.NodeServicePolicies;
 import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
-import org.alfresco.service.cmr.repository.AssociationExistsException;
-import org.alfresco.service.cmr.repository.TemplateService;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import ru.citeck.ecos.document.SupplementaryFilesDAO;
 import org.alfresco.service.cmr.repository.CyclicChildRelationshipException;
@@ -49,9 +45,6 @@ public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolici
 	protected NodeService nodeService;
 	protected ServiceRegistry services;
 	protected DictionaryService dictionaryService;
-	private TemplateService templateService;
-	private String nodeVariable;
-	private String templateEngine;
 	private SupplementaryFilesDAO supplFilesDAO;
 
 	// distinct properties
@@ -131,20 +124,23 @@ public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolici
 		this.nodeService = nodeService;
 	}
 
+	@Deprecated
 	public void setTemplateService(TemplateService templateService) {
-		this.templateService = templateService;
+		// not used
 	}
 
 	public void setClassName(QName className) {
 		this.className = className;
 	}
 
+	@Deprecated
 	public void setTemplateEngine(String templateEngine) {
-		this.templateEngine = templateEngine;
+		// not used
 	}
 
+	@Deprecated
 	public void setNodeVariable(String nodeVariable) {
-		this.nodeVariable = nodeVariable;
+		// not used
 	}
 
 	public void setAllowedDocTypes(List<QName> allowedDocTypes) {
