@@ -19,7 +19,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.model.AssociationModel;
 import ru.citeck.ecos.node.DisplayNameService;
 
 import java.io.Serializable;
@@ -199,15 +198,9 @@ public class NodeUtils {
                 } else {
                     for (NodeRef removeRef : toRemove) {
                         nodeService.removeAssociation(nodeRef, removeRef, assocName);
-                        if (assocDef.getName().equals(AssociationModel.ASSOC_ASSOCIATED_WITH)) {
-                            nodeService.removeAssociation(removeRef, nodeRef, assocName);
-                        }
                     }
                     for (NodeRef addRef : toAdd) {
                         nodeService.createAssociation(nodeRef, addRef, assocName);
-                        if (assocDef.getName().equals(AssociationModel.ASSOC_ASSOCIATED_WITH)) {
-                            nodeService.createAssociation(addRef, nodeRef, assocName);
-                        }
                     }
                 }
 
