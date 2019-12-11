@@ -1,0 +1,6 @@
+{
+    "id": "contracts-cat-doctype-payment",
+    "name": "Счет",
+    "parent": "model/type$base",
+    "inheritActions": true
+}
