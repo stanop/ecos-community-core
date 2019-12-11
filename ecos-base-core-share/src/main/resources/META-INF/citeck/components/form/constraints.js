@@ -480,7 +480,7 @@ require([
         } else {
             isFormsEnabled = Promise.resolve(true);
         }
-        const isShouldDisplayFormsForUser = checkFunctionalAvailabilityHelper
+        var isShouldDisplayFormsForUser = checkFunctionalAvailabilityHelper
             .checkFunctionalAvailabilityForUser("default-ui-new-forms-access-groups");
 
         Promise.all([isFormsEnabled, isShouldDisplayFormsForUser]).then(function (values) {
