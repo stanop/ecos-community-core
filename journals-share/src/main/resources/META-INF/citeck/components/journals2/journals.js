@@ -1506,8 +1506,8 @@ JournalsWidget
         if (newJournalsPageEnable === null) {
             self.newJournalsPageEnable(false);
 
-            const isNewJournalsPageEnable = Citeck.Records.get('ecos-config@new-journals-page-enable').load('.bool');
-            const isJournalAvailibleForUser =checkFunctionalAvailabilityHelper
+            var isNewJournalsPageEnable = Citeck.Records.get('ecos-config@new-journals-page-enable').load('.bool');
+            var isJournalAvailibleForUser =checkFunctionalAvailabilityHelper
                 .checkFunctionalAvailabilityForUser("default-ui-new-journals-access-groups");
 
             Promise.all([isNewJournalsPageEnable, isJournalAvailibleForUser])
