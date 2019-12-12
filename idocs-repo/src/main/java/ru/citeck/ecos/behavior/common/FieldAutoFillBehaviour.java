@@ -82,23 +82,20 @@ public class FieldAutoFillBehaviour implements
     }
 
     private String getObjectFromTemplate(final NodeRef nodeRef, final String template) {
-        if (template == null) {return null;}
-        return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<String>() {
-            @Override
-            public String doWork() throws Exception {
-                HashMap<String, Object> model = new HashMap<>(1);
-                model.put(nodeVariable, nodeRef);
-                return templateService.processTemplateString(templateEngine, template, model);
-            }
+        if (template == null) {
+            return null;
+        }
+        return AuthenticationUtil.runAsSystem(() -> {
+            HashMap<String, Object> model = new HashMap<>(1);
+            model.put(nodeVariable, nodeRef);
+            return templateService.processTemplateString(templateEngine, template, model);
         });
     }
 
     private Void setProperty(final NodeRef nodeRef, final QName property, final String value) {
-        return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-            public Void doWork() throws Exception {
-                nodeService.setProperty(nodeRef, property, value);
-                return null;
-            }
+        return AuthenticationUtil.runAsSystem(() -> {
+            nodeService.setProperty(nodeRef, property, value);
+            return null;
         });
     }
 

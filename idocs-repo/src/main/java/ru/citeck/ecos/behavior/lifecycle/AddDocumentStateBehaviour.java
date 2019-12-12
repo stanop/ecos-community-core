@@ -70,20 +70,16 @@ public class AddDocumentStateBehaviour implements NodeServicePolicies.OnCreateNo
     }
 
     private void startLifecycle(final NodeRef nodeRef) {
-        if(!nodeService.exists(nodeRef)) {
+        if (!nodeService.exists(nodeRef)) {
             return;
         }
 
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-            @Override
-            public Object doWork() throws Exception {
-                nodeService.setProperty(nodeRef,
-                        LifeCycleModel.PROP_STATE, START_STATE);
-                return null;
-            }
+        AuthenticationUtil.runAsSystem(() -> {
+            nodeService.setProperty(nodeRef, LifeCycleModel.PROP_STATE, START_STATE);
+            return null;
         });
         boolean transited = lifeCycleService.doTransition(nodeRef, LifeCycleModel.CONSTR_AUTOMATIC_TRANSITION);
-        if(!transited) {
+        if (!transited) {
             lifeCycleService.doTimerTransition(nodeRef);
         }
     }
