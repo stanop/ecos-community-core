@@ -112,4 +112,11 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.rename-ecos-types-journal" parent="idocs.import-scripts.3-16-0">
+        <property name="executeOnceOnly" value="true" />
+        <property name="name" value="rename-ecos-types-journal.js" />
+        <property name="description" value="rename-ecos-types-journal.js" />
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/rename-ecos-types-journal.js"/>
+    </bean>
+
 </beans>
