@@ -164,7 +164,7 @@ public class EcosFormServiceImpl implements EcosFormService {
 
     public static class FormKeys {
 
-        @MetaAtt(RecordConstants.ATT_FORM_KEY)
+        @MetaAtt(RecordConstants.ATT_FORM_KEY + "[]?str")
         @Getter @Setter private List<String> keys;
     }
 
