@@ -205,9 +205,8 @@ public class RepoUtils {
         else
             assocs = nodeService.getParentAssocs(nodeRef, assocType, RegexQNamePattern.MATCH_ALL);
         for (ChildAssociationRef assoc : assocs) {
-            if (primary != null) {
-                if (primary && !assoc.isPrimary())
-                    continue;
+            if (primary != null && primary && !assoc.isPrimary()) {
+                continue;
             }
             NodeRef pr = assoc.getParentRef();
             if (pr == null)

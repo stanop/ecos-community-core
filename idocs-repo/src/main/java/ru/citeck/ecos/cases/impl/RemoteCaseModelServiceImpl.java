@@ -200,13 +200,11 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         fillBaseNodeInfo(caseModelRef, objectNode);
         /* Document id */
         ChildAssociationRef parentAssoc = nodeService.getPrimaryParent(caseModelRef);
-        if (parentAssoc != null) {
-            if (parentAssoc.getParentRef() != null) {
-                if (dictionaryService.isSubClass(
-                        nodeService.getType(parentAssoc.getParentRef()),
-                        IdocsModel.TYPE_DOC)) {
-                    objectNode.put("documentId", parentAssoc.getParentRef().getId());
-                }
+        if (parentAssoc != null && parentAssoc.getParentRef() != null) {
+            if (dictionaryService.isSubClass(
+                    nodeService.getType(parentAssoc.getParentRef()),
+                    IdocsModel.TYPE_DOC)) {
+                objectNode.put("documentId", parentAssoc.getParentRef().getId());
             }
         }
         /* Case info */

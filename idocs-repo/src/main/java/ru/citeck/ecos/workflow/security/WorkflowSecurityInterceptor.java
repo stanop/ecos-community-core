@@ -99,16 +99,12 @@ public class WorkflowSecurityInterceptor extends SimpleMethodInterceptor {
         Map<QName, Serializable> taskProperties = task.getProperties();
         String ownerName = (String) taskProperties.get(ContentModel.PROP_OWNER);
 
-        if(statuses.contains(WorkflowUserStatus.OWNER)) {
-            if(username.equals(ownerName)) {
-                return true;
-            }
+        if (statuses.contains(WorkflowUserStatus.OWNER) && username.equals(ownerName)) {
+            return true;
         }
         
-        if(statuses.contains(WorkflowUserStatus.ADMIN)) {
-            if(authorityService.isAdminAuthority(username)) {
-                return true;
-            }
+        if (statuses.contains(WorkflowUserStatus.ADMIN) && authorityService.isAdminAuthority(username)) {
+            return true;
         }
 
         NodeRef userNodeRef = null;

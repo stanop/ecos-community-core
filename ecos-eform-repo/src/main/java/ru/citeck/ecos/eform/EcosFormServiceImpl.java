@@ -123,11 +123,9 @@ public class EcosFormServiceImpl implements EcosFormService {
             for (FormProvider provider : providers) {
 
                 EcosFormModel form = provider.getFormById(model.getId());
-                if (form != null) {
-                    if (provider instanceof MutableFormProvider) {
-                        ((MutableFormProvider) provider).save(model);
-                        return model.getId();
-                    }
+                if (form != null && provider instanceof MutableFormProvider) {
+                    ((MutableFormProvider) provider).save(model);
+                    return model.getId();
                 }
             }
         } else {
