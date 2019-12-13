@@ -232,23 +232,20 @@ public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies
     public void onUpdateProperties(final NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after)
     {
         logger.debug("onUpdateProperties event");
-        if(nodeService.exists(nodeRef) && nameDetermineProp!=null)
-        {
+        if (nodeService.exists(nodeRef) && nameDetermineProp != null) {
             Object propBefore = (Object) before.get(nameDetermineProp);
             Object propAfter = (Object) after.get(nameDetermineProp);
             NodeRef currentParentFolder = null;
-            if(!Objects.equals(propBefore, propAfter))
-            {
-                for(ChildAssociationRef parent : nodeService.getParentAssocs(nodeRef))
-                {
-                    if(nodeService.exists(parent.getParentRef()) && folderQName!=null && folderQName.equals(nodeService.getType(parent.getParentRef())))
-                    {
+            if (!Objects.equals(propBefore, propAfter)) {
+                for (ChildAssociationRef parent : nodeService.getParentAssocs(nodeRef)) {
+                    if (nodeService.exists(parent.getParentRef()) && folderQName != null
+                        && folderQName.equals(nodeService.getType(parent.getParentRef()))) {
                         currentParentFolder = parent.getParentRef();
                         break;
                     }
                 }
-                if(currentParentFolder!=null && nodeService.exists(currentParentFolder))
-                {
+
+                if (currentParentFolder != null && nodeService.exists(currentParentFolder)) {
                     nodeService.setProperty(currentParentFolder, ContentModel.PROP_NAME, propAfter.toString());
                 }
             }
