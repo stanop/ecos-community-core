@@ -135,10 +135,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 documentProps.set(getEcmFieldName(n), v);
             }
             if (n.startsWith(OUTCOME_PREFIX)) {
-                if (v.isBoolean()) {
-                    if  (v.asBoolean()) {
-                        outcome[0] = n.substring(OUTCOME_PREFIX.length());
-                    }
+                if (v.isBoolean() && v.asBoolean()) {
+                    outcome[0] = n.substring(OUTCOME_PREFIX.length());
                 }
             } else {
 
