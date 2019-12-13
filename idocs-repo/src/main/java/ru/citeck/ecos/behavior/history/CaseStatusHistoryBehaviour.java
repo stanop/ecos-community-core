@@ -69,12 +69,7 @@ public class CaseStatusHistoryBehaviour implements CaseStatusPolicies.OnCaseStat
         model.put(KEY_STATUS_AFTER, caseStatusAfter);
         model.put(KEY_STATUS_BEFORE, caseStatusBefore);
 
-        return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<String>() {
-            @Override
-            public String doWork() throws Exception {
-            return String.valueOf(scriptService.executeScriptString(messageScript, model));
-            }
-        });
+        return AuthenticationUtil.runAsSystem(() -> String.valueOf(scriptService.executeScriptString(messageScript, model)));
     }
 
     private boolean isInterestedTransition(NodeRef caseRef, NodeRef before, NodeRef after) {

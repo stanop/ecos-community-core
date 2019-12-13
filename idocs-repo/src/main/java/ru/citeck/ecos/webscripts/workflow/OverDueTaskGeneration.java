@@ -176,10 +176,8 @@ public class OverDueTaskGeneration extends AbstractWebScript {
             NodeRef object = (NodeRef) groupIdRef.get(0);
             String property = (String) serviceRegistry.getNodeService()
                     .getProperty(object, ContentModel.PROP_AUTHORITY_NAME);
-            String authorityDisplayName = serviceRegistry.getAuthorityService().getAuthorityDisplayName(property);
-            assignee = authorityDisplayName;
+            assignee = serviceRegistry.getAuthorityService().getAuthorityDisplayName(property);
         }
-
 
         //int overDueDays = new Date().getDate() - task.getDueDate().getDate();
 

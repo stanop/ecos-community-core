@@ -40,7 +40,7 @@ import ru.citeck.ecos.utils.LazyQName;
  * - get: gets all specified child-associations
  * - add: moves file to document
  * - remove: removes child-association
- * 
+ *
  * @author Sergey Tiunov
  */
 public class SupplementaryFilesDAOChildImpl extends SupplementaryFilesDAOAbstractImpl implements SupplementaryFilesDAO
@@ -51,15 +51,14 @@ public class SupplementaryFilesDAOChildImpl extends SupplementaryFilesDAOAbstrac
 	private String aspectTypeName;
 	private LazyQName assocTypeQName;
 	private LazyQName aspectTypeQName;
-	
 	private NodeService nodeService;
 	private NamespaceService namespaceService;
-	
+
 	public void init() {
 		this.assocTypeQName = new LazyQName(namespaceService, assocTypeName);
 		this.aspectTypeQName = new LazyQName(namespaceService, aspectTypeName);
 	}
-	
+
 	@Override
 	public List<NodeRef> getSupplementaryFiles(NodeRef document) {
 		List<ChildAssociationRef> assocs = nodeService.getChildAssocs(document, assocTypeQName.getQName(), RegexQNamePattern.MATCH_ALL);
@@ -85,7 +84,7 @@ public class SupplementaryFilesDAOChildImpl extends SupplementaryFilesDAOAbstrac
 		}
 		return files;
 	}
-	
+
 	@Override
 	public void addSupplementaryFiles(final NodeRef document, List<NodeRef> files) {
 		if(files.size() > 0 && !nodeService.hasAspect(document, aspectTypeQName.getQName())) {

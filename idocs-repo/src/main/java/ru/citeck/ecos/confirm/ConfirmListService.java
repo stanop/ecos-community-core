@@ -67,23 +67,22 @@ public class ConfirmListService
 
     public Map<String, Object> getModel(NodeRef document) throws Exception {
     	Map<String, Object> model = new HashMap<>();
-    	
     	if(!nodeService.exists(document)) {
     		throw new Exception("There are no document with NodeRef:" + document);
     	}
-    	
+
     	// find document workflows
     	List<WorkflowInstance> workflows = new ArrayList<>();
     	workflows.addAll(workflowService.getWorkflowsForContent(document, true));
     	workflows.addAll(workflowService.getWorkflowsForContent(document, false));
-    	
+
     	// find the latest workflow of specified type
     	WorkflowInstance latestWorkflow = null;
     	for(WorkflowInstance workflow : workflows) {
     		if(!workflowNames.contains(workflow.getDefinition().getName())) {
     			continue;
     		}
-    		if(latestWorkflow == null || latestWorkflow.getStartDate().before(workflow.getStartDate())) 
+    		if(latestWorkflow == null || latestWorkflow.getStartDate().before(workflow.getStartDate()))
     		{
     			latestWorkflow = workflow;
     		}
@@ -106,13 +105,13 @@ public class ConfirmListService
             model.put(FIELD_INITIATOR, initiator);
             model.put(FIELD_INITIATOR_GROUPS, groups);
         }
-    	
+
     	model.put(FIELD_DOCUMENT, document);
-    	
+
 		return model;
-    	
+
     }
-	
+
 	// filter tasks by assignee
 	private Collection<WorkflowTask> filterTasks(Collection<WorkflowTask> tasks) {
 		Map<String,WorkflowTask> latestTasks = new HashMap<>();
@@ -153,24 +152,23 @@ public class ConfirmListService
 		for(WorkflowTask task : tasks) {
 			Map<QName, Serializable> taskProperties = task.getProperties();
 			Map<String,Object> taskModel = new HashMap<>();
-			
 			// role
 			Collection pooledActors = (Collection) taskProperties.get(WorkflowModel.ASSOC_POOLED_ACTORS);
 			Object role = pooledActors.isEmpty() ? null : pooledActors.iterator().next();
 			taskModel.put(FIELD_ROLE, role);
-			
+
 			// assignee
 			String assigneeUserName = (String) taskProperties.get(ContentModel.PROP_OWNER);
 			NodeRef assignee = assigneeUserName != null ?
 				personService.getPerson(assigneeUserName) : null;
 			taskModel.put(FIELD_ASSIGNEE, assignee);
-			
+
 			// completion date
 			taskModel.put(FIELD_DATE, taskProperties.get(WorkflowModel.PROP_COMPLETION_DATE));
-			
+
 			// comment
 			taskModel.put(FIELD_COMMENT, taskProperties.get(WorkflowModel.PROP_COMMENT));
-			
+
 			// calculate outcome:
 			QName outcomePropertyName = (QName) taskProperties.get(WorkflowModel.PROP_OUTCOME_PROPERTY_NAME);
 			if(outcomePropertyName == null) {
@@ -178,7 +176,7 @@ public class ConfirmListService
 			}
 			String outcome = (String) taskProperties.get(outcomePropertyName);
 			taskModel.put(FIELD_OUTCOME, outcome);
-			
+
 			// try to localize outcome
 			PropertyDefinition outcomePropertyDefinition = dictionaryService.getProperty(outcomePropertyName);
 			if(outcomePropertyDefinition != null) {
@@ -217,7 +215,7 @@ public class ConfirmListService
 			}
 		}
 	}
-	
+
 	public void setNodeService(NodeService nodeService) {
 		this.nodeService = nodeService;
 	}

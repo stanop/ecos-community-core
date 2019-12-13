@@ -18,36 +18,29 @@
  */
 package ru.citeck.ecos.behavior.common;
 
-import java.util.Map;
-import java.util.List;
-import java.io.Serializable;
-
 import org.alfresco.model.ContentModel;
-import ru.citeck.ecos.model.DmsModel;
 import org.alfresco.repo.node.NodeServicePolicies;
-import ru.citeck.ecos.behavior.JavaBehaviour;
-import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.namespace.QName;
+import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.repository.StoreRef;
-import org.alfresco.service.cmr.search.SearchParameters;
-import org.alfresco.service.cmr.search.SearchService;
-import org.alfresco.service.cmr.search.ResultSet;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
-import org.alfresco.service.cmr.repository.AssociationExistsException;
+import org.alfresco.service.cmr.model.FileExistsException;
 import org.alfresco.service.cmr.model.FileFolderService;
 import org.alfresco.service.cmr.model.FileInfo;
-import org.alfresco.service.cmr.model.FileExistsException;
 import org.alfresco.service.cmr.model.FileNotFoundException;
-import org.alfresco.service.cmr.repository.CyclicChildRelationshipException;
-import org.alfresco.service.cmr.repository.DuplicateChildNodeNameException;
-//import ru.citeck.ecos.behavior.OrderedBehaviour;
+import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.search.ResultSet;
+import org.alfresco.service.cmr.search.SearchParameters;
+import org.alfresco.service.cmr.search.SearchService;
+import org.alfresco.service.namespace.QName;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.behavior.JavaBehaviour;
+import ru.citeck.ecos.model.DmsModel;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnCreateChildAssociationPolicy, NodeServicePolicies.OnUpdatePropertiesPolicy {
     // common properties
@@ -66,11 +59,9 @@ public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies
     protected Map <QName, String> createCpecialFolderConditions;
 
     private static final Log logger = LogFactory.getLog(DocumentCreateBasedOnFolderBehaviour.class);
-    private int order = 65;
 
     public void init() {
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, className,
-//            new OrderedBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT, order));
                 new JavaBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT));
 
         policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnCreateChildAssociationPolicy.QNAME, className,
@@ -102,7 +93,7 @@ public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies
                         QName property = (QName) entry.getKey();
                         String value = (String) entry.getValue();
                         String actualValue = (String) nodeService.getProperty(nodeRef,property);
-                        if(actualValue!=null && !actualValue.equals(value) || actualValue==null && value!=null)
+                        if(!Objects.equals(actualValue, value))
                         {
                             evaluateConditions = false;
                         }
@@ -120,7 +111,7 @@ public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies
             if(evaluateConditions)
             {
                 SearchParameters sp = new SearchParameters();
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 sb.append("PATH:\"").append(createCpecialFolderPath).append("\"");
                 sp.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
                 sp.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
@@ -152,7 +143,7 @@ public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies
                 if(parents.get(0)!=null)
                     initialParentFolder = parents.get(0).getParentRef();
                 SearchParameters sp = new SearchParameters();
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 sb.append("PATH:\"").append(supAgreementParentFolderPath).append("\"");
                 sp.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
                 sp.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
@@ -246,7 +237,7 @@ public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies
             Object propBefore = (Object) before.get(nameDetermineProp);
             Object propAfter = (Object) after.get(nameDetermineProp);
             NodeRef currentParentFolder = null;
-            if((propBefore!=null && !propBefore.equals(propAfter)) || (propBefore==null && propAfter!=null))
+            if(!Objects.equals(propBefore, propAfter))
             {
                 for(ChildAssociationRef parent : nodeService.getParentAssocs(nodeRef))
                 {

@@ -19,10 +19,7 @@ class CurrencyFactory {
                 currency = new CurrencyUsd(locale);
                 break;
             }
-            case "RUB": {
-                currency = new CurrencyRub(locale);
-                break;
-            }
+            case "RUB":
             case "RUR": {
                 currency = new CurrencyRub(locale);
                 break;

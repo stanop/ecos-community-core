@@ -19,8 +19,6 @@
 package ru.citeck.ecos.history;
 
 import org.alfresco.model.ContentModel;
-import org.alfresco.repo.batch.BatchProcessWorkProvider;
-import org.alfresco.repo.batch.BatchProcessor;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
@@ -38,7 +36,10 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.config.EcosConfigService;
-import ru.citeck.ecos.model.*;
+import ru.citeck.ecos.model.ActivityModel;
+import ru.citeck.ecos.model.HistoryModel;
+import ru.citeck.ecos.model.ICaseModel;
+import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.utils.TransactionUtils;
 
@@ -71,6 +72,7 @@ public class HistoryService {
     private static final String DOCUMENT_ID = "documentId";
     private static final String EVENT_TYPE = "eventType";
     private static final String COMMENTS = "comments";
+    private static final String LAST_TASK_COMMENT = "lastTaskComment";
     private static final String VERSION = "version";
     private static final String CREATION_TIME = "creationTime";
     private static final String USERNAME = "username";
@@ -184,15 +186,14 @@ public class HistoryService {
             properties.remove(HistoryModel.ASSOC_DOCUMENT);
 
             //sorting in history for assocs
-            Date now = creationDate;
             if ("assoc.added".equals(properties.get(HistoryModel.PROP_NAME))) {
-                now.setTime(now.getTime() + 1000);
+                creationDate.setTime(creationDate.getTime() + 1000);
             }
             if ("node.created".equals(properties.get(HistoryModel.PROP_NAME))
                     || "node.updated".equals(properties.get(HistoryModel.PROP_NAME))) {
-                now.setTime(now.getTime() - 5000);
+                creationDate.setTime(creationDate.getTime() - 5000);
             }
-            properties.put(HistoryModel.PROP_DATE, now);
+            properties.put(HistoryModel.PROP_DATE, creationDate);
             QName assocName = QName.createQName(HistoryModel.HISTORY_NAMESPACE, "event." + properties.get(HistoryModel.PROP_NAME));
 
             QName assocType;
@@ -284,6 +285,7 @@ public class HistoryService {
         requestParams.put(HISTORY_EVENT_ID, UUID.randomUUID().toString());
         requestParams.put(EVENT_TYPE, properties.get(HistoryModel.PROP_NAME));
         requestParams.put(COMMENTS, properties.get(HistoryModel.PROP_TASK_COMMENT));
+        requestParams.put(LAST_TASK_COMMENT, properties.get(HistoryModel.PROP_LAST_TASK_COMMENT));
         requestParams.put(TASK_ROLE, properties.get(HistoryModel.PROP_TASK_ROLE));
         requestParams.put(TASK_OUTCOME, properties.get(HistoryModel.PROP_TASK_OUTCOME));
         QName taskType = (QName) properties.get(HistoryModel.PROP_TASK_TYPE);

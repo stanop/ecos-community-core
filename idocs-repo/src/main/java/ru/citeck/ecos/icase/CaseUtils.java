@@ -18,13 +18,6 @@
  */
 package ru.citeck.ecos.icase;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.model.FileFolderService;
 import org.alfresco.service.cmr.model.FileInfo;
@@ -37,13 +30,15 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
-
 import ru.citeck.ecos.icase.element.CaseElementDAO;
 import ru.citeck.ecos.icase.element.CaseElementService;
 import ru.citeck.ecos.icase.element.CaseElementServiceImpl;
 import ru.citeck.ecos.icase.element.config.ElementConfigDto;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.utils.RepoUtils;
+
+import java.io.Serializable;
+import java.util.*;
 
 public class CaseUtils {
 
@@ -193,7 +188,7 @@ public class CaseUtils {
         List<NodeRef> configs = getConfigs(caseNodeRef, caseElementService);
         for (NodeRef config : configs) {
             Serializable prop = nodeService.getProperty(config, propertyName);
-            if (prop == null && value == null || prop != null && prop.equals(value)) {
+            if (Objects.equals(prop, value)) {
                 result = config;
                 break;
             }
@@ -208,7 +203,7 @@ public class CaseUtils {
         List<NodeRef> result = new LinkedList<>();
         for (NodeRef config : configs) {
             Serializable configValue = nodeService.getProperty(config, propertyName);
-            if (configValue == null && requiredValue == null || configValue != null && configValue.equals(requiredValue)) {
+            if (Objects.equals(configValue, requiredValue)) {
                 result.add(config);
             }
         }

@@ -72,24 +72,18 @@ public class NewCommentNotificationService {
             final String commentLink,
             final String author,
             final String subscribersString) {
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-            @Override
-            public Object doWork() throws Exception {
-                notificationService.sendNotification(
-                        EMailNotificationProvider.NAME,
-                        getNewCommentNotification(nodeRef, comment, commentLink, author, subscribersString)
-                );
-                return null;
-            }
+        AuthenticationUtil.runAsSystem(() -> {
+            notificationService.sendNotification(
+                    EMailNotificationProvider.NAME,
+                    getNewCommentNotification(nodeRef, comment, commentLink, author, subscribersString)
+            );
+            return null;
         });
     }
 
     private NotificationContext getNewCommentNotification(String nodeRefId, String comment,
                                                           String commentLink, String author, String subscribersString) {
         NodeRef nodeRef = new NodeRef(nodeRefId);
-        if (null == nodeRef) {
-            throw new IllegalArgumentException();
-        }
         NotificationContext notificationContext = new NotificationContext();
         notificationContext.setSubject("Уведомление");
         
@@ -127,9 +121,7 @@ public class NewCommentNotificationService {
     }
 
     private Set<String> getNotificationListeners(NodeRef nodeRef) {
-        Set<String> authorities = new HashSet<>();
-        authorities.addAll(getNodeOwners(nodeRef));
-        return authorities;
+        return new HashSet<>(getNodeOwners(nodeRef));
     }
 
     private List<String> getNodeOwners(NodeRef nodeRef) {

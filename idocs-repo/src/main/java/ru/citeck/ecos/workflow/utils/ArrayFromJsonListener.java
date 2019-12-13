@@ -18,17 +18,16 @@
  */
 package ru.citeck.ecos.workflow.utils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.Expression;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
 import ru.citeck.ecos.workflow.listeners.AbstractExecutionListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 
@@ -64,8 +63,7 @@ public class ArrayFromJsonListener extends AbstractExecutionListener {
 			element = path;
 		}
 		else if (pos == 0) {
-			if (path.length() > 0)
-				pathRest = path.substring(1);
+			pathRest = path.substring(1);
 		}
 		else {
 			element = path.substring(0, pos);

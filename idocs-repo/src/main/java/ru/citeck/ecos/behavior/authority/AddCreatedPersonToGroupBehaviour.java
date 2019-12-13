@@ -17,7 +17,7 @@ import java.util.List;
 
 public class AddCreatedPersonToGroupBehaviour extends AbstractBehaviour implements NodeServicePolicies.OnCreateNodePolicy {
 
-    private final static Logger logger = Logger.getLogger(AddCreatedPersonToGroupBehaviour.class);
+    private static final Logger logger = Logger.getLogger(AddCreatedPersonToGroupBehaviour.class);
 
     @Autowired
     private AuthorityService authorityService;

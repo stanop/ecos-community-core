@@ -488,9 +488,7 @@ public class LuceneQuery implements SearchQueryBuilder {
                 case NODEREF_CONTAINS:
                     return dictionaryService.getProperty(fieldQName) != null && !dictionaryService.getProperty(fieldQName).isMultiValued();
                 case STRING_EQUALS:
-                    return true;
                 case NUMBER_EQUALS:
-                    return true;
                 case DATE_EQUALS:
                     return true;
                 default:
@@ -744,7 +742,7 @@ public class LuceneQuery implements SearchQueryBuilder {
                 QueryElement queryElement = (QueryElement) o;
 
                 if (criterion != queryElement.criterion) return false;
-                return field != null ? field.equals(queryElement.field) : queryElement.field == null;
+                return Objects.equals(field, queryElement.field);
             }
 
             @Override

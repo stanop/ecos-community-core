@@ -18,8 +18,7 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
-import org.springframework.stereotype.Component;
-import ru.citeck.ecos.apps.app.module.type.type.action.ActionDto;
+import ru.citeck.ecos.apps.app.module.type.ui.action.ActionModule;
 import ru.citeck.ecos.model.CDLModel;
 import ru.citeck.ecos.model.DmsModel;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
@@ -31,7 +30,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-@Component
+//@Component
 public class CardTemplateActionsProvider implements NodeActionsV2Provider {
 
     private static final String URL = "/share/proxy/alfresco/citeck/print/metadata-printpdf" +
@@ -93,7 +92,7 @@ public class CardTemplateActionsProvider implements NodeActionsV2Provider {
     }
 
     @Override
-    public List<ActionDto> getActions(NodeRef nodeRef) {
+    public List<ActionModule> getActions(NodeRef nodeRef) {
 
         if (!nodeService.exists(nodeRef)) {
             return Collections.emptyList();
@@ -103,7 +102,7 @@ public class CardTemplateActionsProvider implements NodeActionsV2Provider {
 
         List<NodeRef> templatesForDocType = templateService.getTemplatesForDocType(type);
 
-        List<ActionDto> result = new ArrayList<>();
+        List<ActionModule> result = new ArrayList<>();
 
         for (NodeRef template : templatesForDocType) {
 
@@ -113,17 +112,14 @@ public class CardTemplateActionsProvider implements NodeActionsV2Provider {
             if (templateType == null || templateType.isEmpty())  {
                 continue;
             }
-
-            result.add(createDownloadAction(nodeRef, templateType, "html"));
-            result.add(createDownloadAction(nodeRef, templateType, "pdf"));
         }
 
         return result;
     }
 
-    private ActionDto createDownloadAction(NodeRef nodeRef, String templateType, String format) {
+    private ActionModule createDownloadAction(NodeRef nodeRef, String templateType, String format) {
 
-        ActionDto action = new ActionDto();
+        ActionModule action = new ActionModule();
 
         action.setName(templateType);
 

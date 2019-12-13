@@ -410,7 +410,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
             boolean conditionResult = checkCondition(nodeRef, condition);
             if(!conditionResult) return false;
         }
-        
+
         return true;
     }
 
@@ -444,8 +444,8 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                 if (actionCondition != null) {
                     ActionConditionDefinition actionConditionDefinition = actionService.getActionConditionDefinition(actionCondition.getActionConditionDefinitionName());
                     for (String paramName : condition.getParamsNames()) {
-                        actionCondition.setParameterValue(paramName, 
-                                convertParameterValue(actionConditionDefinition, 
+                        actionCondition.setParameterValue(paramName,
+                                convertParameterValue(actionConditionDefinition,
                                         paramName, condition.getParam(paramName)));
                     }
 
@@ -482,8 +482,8 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                 if (alfrescoAction != null) {
                     ActionDefinition actionDefinition = actionService.getActionDefinition(alfrescoAction.getActionDefinitionName());
                     for (String paramName : action.getParamsNames()) {
-                        alfrescoAction.setParameterValue(paramName, 
-                                convertParameterValue(actionDefinition, 
+                        alfrescoAction.setParameterValue(paramName,
+                                convertParameterValue(actionDefinition,
                                         paramName, action.getParam(paramName)));
                     }
 

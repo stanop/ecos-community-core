@@ -1,11 +1,14 @@
 package ru.citeck.ecos.records.workflow;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Getter;
 import lombok.Setter;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.service.cmr.dictionary.*;
+import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
@@ -453,7 +456,13 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             }
 
             if (documentInfo.has(name)) {
-                return new InnerMetaValue(documentInfo.get(name));
+                JsonNode node = documentInfo.get(name);
+                if (node instanceof ArrayNode) {
+                    List<InnerMetaValue> result = new ArrayList<>();
+                    node.forEach(jsonNode -> result.add(new InnerMetaValue(jsonNode)));
+                    return result;
+                }
+                return new InnerMetaValue(node);
             }
 
             if (RecordConstants.ATT_FORM_KEY.equals(name)) {

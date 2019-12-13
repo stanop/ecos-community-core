@@ -43,7 +43,6 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
     public static final String ARG_WORKFLOW_PROPERTIES = "properties";
     public static final String ARG_WORKFLOW_DOCUMENTS = "documents";
 
-    private Map<String, Map<String, List<String>>> taskSubscribers;
     protected WorkflowQNameConverter qNameConverter;
     protected PersonService personService;
     protected AuthenticationService authenticationService;
@@ -68,8 +67,9 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
     /**
      * Recipients provided as parameter taskSubscribers: "task name"-{"doc type1"-"recepient field1", ...}
      */
+    @Deprecated
     public void setTaskSubscribers(Map<String, Map<String, List<String>>> taskSubscribers) {
-        this.taskSubscribers = taskSubscribers;
+        // not used
     }
 
     // get notification template arguments for the task
@@ -134,7 +134,6 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
                 NodeRef template = getNotificationTemplate(task);
                 if (template != null && nodeService.exists(template)) {
                     recipient.addAll(getRecipients(task, template, getDocsInfo()));
-                    String from = null;
                     String notificationProviderName = EMailNotificationProvider.NAME;
                     if (subjectTemplates != null) {
                         String processDef = task.getProcessDefinitionId();
@@ -159,9 +158,6 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
                     setBodyTemplate(notificationContext, template);
                     notificationContext.setTemplateArgs(getNotificationArgs(task));
                     notificationContext.setAsyncNotification(getAsyncNotification());
-                    if (null != from) {
-                        notificationContext.setFrom(from);
-                    }
                     // send
                     logger.debug("Send notification");
                     services.getNotificationService().sendNotification(notificationProviderName, notificationContext);
