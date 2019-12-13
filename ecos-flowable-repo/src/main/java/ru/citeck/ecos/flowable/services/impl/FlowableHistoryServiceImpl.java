@@ -240,30 +240,30 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
     private HistoricTaskInstanceQuery buildTaskQuery(WorkflowTaskQuery workflowTaskQuery) {
         HistoricTaskInstanceQuery taskInstanceQuery = historyService.createHistoricTaskInstanceQuery();
 
-        /** Process id */
+        /* Process id */
         if (workflowTaskQuery.getProcessId() != null) {
             taskInstanceQuery = taskInstanceQuery.processInstanceId(workflowTaskQuery.getProcessId());
         }
 
-        /** Process name */
+        /* Process name */
         if (workflowTaskQuery.getProcessName() != null) {
             taskInstanceQuery = taskInstanceQuery.processDefinitionKey(
                     workflowTaskQuery.getProcessName().toPrefixString(serviceRegistry.getNamespaceService()));
         }
 
-        /** Task id */
+        /* Task id */
         if (workflowTaskQuery.getTaskId() != null) {
             taskInstanceQuery = taskInstanceQuery.taskId(workflowTaskQuery.getTaskId());
         }
 
-        /** Task name */
+        /* Task name */
         if (workflowTaskQuery.getTaskName() != null) {
             taskInstanceQuery = taskInstanceQuery.taskDefinitionKey(
                     workflowTaskQuery.getTaskName().toPrefixString(serviceRegistry.getNamespaceService())
             );
         }
 
-        /** Active */
+        /* Active */
         if (workflowTaskQuery.isActive() != null) {
             if (workflowTaskQuery.isActive()) {
                 taskInstanceQuery = taskInstanceQuery.processUnfinished();
@@ -271,7 +271,7 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
                 taskInstanceQuery = taskInstanceQuery.processFinished();
             }
         }
-        /** State */
+        /* State */
         if (workflowTaskQuery.getTaskState() != null) {
             if (workflowTaskQuery.getTaskState() == WorkflowTaskState.IN_PROGRESS) {
                 taskInstanceQuery = taskInstanceQuery.unfinished();

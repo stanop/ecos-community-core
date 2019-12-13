@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Abstract entity dto
@@ -110,7 +111,7 @@ public class AbstractEntityDto implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AbstractEntityDto that = (AbstractEntityDto) o;
-        return nodeUUID != null ? nodeUUID.equals(that.nodeUUID) : that.nodeUUID == null;
+        return Objects.equals(nodeUUID, that.nodeUUID);
     }
 
     @Override

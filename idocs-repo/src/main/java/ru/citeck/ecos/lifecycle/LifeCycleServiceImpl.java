@@ -50,7 +50,6 @@ import org.alfresco.service.cmr.action.ActionService;
 import org.alfresco.service.cmr.action.ParameterDefinition;
 import org.alfresco.service.cmr.action.ParameterizedItemDefinition;
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.ContentData;
 import org.alfresco.service.cmr.repository.ContentReader;
@@ -100,15 +99,15 @@ public class LifeCycleServiceImpl implements LifeCycleService {
 
     ContentService contentService;
 
-    private Map<String, LifeCycleFormat> formats = new TreeMap<String, LifeCycleFormat>();
+    private Map<String, LifeCycleFormat> formats = new TreeMap<>();
 
-    private Map<QName, LifeCycleDefinition> definitions = new HashMap<QName, LifeCycleDefinition>();
+    private Map<QName, LifeCycleDefinition> definitions = new HashMap<>();
 
-    private Map<QName, NodeRef> deployedRepoDefinitions = new HashMap<QName, NodeRef>();
+    private Map<QName, NodeRef> deployedRepoDefinitions = new HashMap<>();
 
     @Override
     public boolean doTransition(NodeRef nodeRef, String eventType) {
-        Set<String> filters = new HashSet<String>();
+        Set<String> filters = new HashSet<>();
         filters.add(eventType);
 
         List<LifeCycleTransition> transitions = getTransitionsByEventTypesAndTrueConditions(nodeRef, filters);
@@ -190,12 +189,12 @@ public class LifeCycleServiceImpl implements LifeCycleService {
             return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Boolean>() {
                 @Override
                 public Boolean doWork() throws Exception {
-                    Set<String> filters = new HashSet<String>();
+                    Set<String> filters = new HashSet<>();
                     filters.add(processEvent);
 
                     List<LifeCycleTransition> transitionsForType = getTransitionsByEventTypesAndTrueConditions(nodeRef, filters);
 
-                    List<LifeCycleTransition> transitionsForProcess = new ArrayList<LifeCycleTransition>();
+                    List<LifeCycleTransition> transitionsForProcess = new ArrayList<>();
 
                     if (processType != null) {
 	                    for (LifeCycleTransition transition : transitionsForType) {
@@ -245,12 +244,12 @@ public class LifeCycleServiceImpl implements LifeCycleService {
             return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Boolean>() {
                 @Override
                 public Boolean doWork() throws Exception {
-                    Set<String> filters = new HashSet<String>();
+                    Set<String> filters = new HashSet<>();
                     filters.add(LifeCycleModel.CONSTR_TRANSITION_ON_SIGNAL);
 
                     List<LifeCycleTransition> transitionsForType = getTransitionsByEventTypesAndTrueConditions(nodeRef, filters);
 
-                    List<LifeCycleTransition> transitionsForSignal = new ArrayList<LifeCycleTransition>();
+                    List<LifeCycleTransition> transitionsForSignal = new ArrayList<>();
 
                     if (signalId != null) {
 	                    for (LifeCycleTransition transition : transitionsForType) {
@@ -287,15 +286,15 @@ public class LifeCycleServiceImpl implements LifeCycleService {
         return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Boolean>() {
             @Override
             public Boolean doWork() throws Exception {
-		        Set<String> filters = new HashSet<String>();
+		        Set<String> filters = new HashSet<>();
 		        filters.add(LifeCycleModel.CONSTR_TIMER_TRANSITION);
 
 		        if (getTransitionsByDocStateEventTypes(nodeRef, filters).size() > 0)
-		            nodeService.addAspect(nodeRef, LifeCycleModel.ASPECT_HAS_TIMER, new HashMap<QName, Serializable>());
+		            nodeService.addAspect(nodeRef, LifeCycleModel.ASPECT_HAS_TIMER, new HashMap<>());
 
 		        List<LifeCycleTransition> transitionsForType = getTransitionsByEventTypesAndTrueConditions(nodeRef, filters);
 
-		        List<LifeCycleTransition> transitionsWhenTimeElapsed = new ArrayList<LifeCycleTransition>();
+		        List<LifeCycleTransition> transitionsWhenTimeElapsed = new ArrayList<>();
 
 		        for (LifeCycleTransition transition : transitionsForType) {
 		            try {
@@ -342,7 +341,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
     }
 
     private LifeCycleTransition chooseRightTransition(NodeRef nodeRef, List<LifeCycleTransition> transitions) {
-        List<LifeCycleTransition> possibleTransitions = new ArrayList<LifeCycleTransition>();
+        List<LifeCycleTransition> possibleTransitions = new ArrayList<>();
 
         for (LifeCycleTransition transition : transitions) {
             if (checkConditions(nodeRef, transition))
@@ -370,7 +369,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
 
     private LifeCycleState chooseAppropriateStateDef(List<LifeCycleState> stateList, String eventParamName,
     		Object eventParamValue, String compareType, NodeRef nodeRef) {
-    	List<LifeCycleState> filteredStateList = new ArrayList<LifeCycleState>();
+    	List<LifeCycleState> filteredStateList = new ArrayList<>();
 
     	if ((stateList != null) && (eventParamName != null) && (eventParamValue != null)) {
 	    	for (LifeCycleState state : stateList) {
@@ -411,7 +410,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
             boolean conditionResult = checkCondition(nodeRef, condition);
             if(!conditionResult) return false;
         }
-        
+
         return true;
     }
 
@@ -445,8 +444,8 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                 if (actionCondition != null) {
                     ActionConditionDefinition actionConditionDefinition = actionService.getActionConditionDefinition(actionCondition.getActionConditionDefinitionName());
                     for (String paramName : condition.getParamsNames()) {
-                        actionCondition.setParameterValue(paramName, 
-                                convertParameterValue(actionConditionDefinition, 
+                        actionCondition.setParameterValue(paramName,
+                                convertParameterValue(actionConditionDefinition,
                                         paramName, condition.getParam(paramName)));
                     }
 
@@ -483,8 +482,8 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                 if (alfrescoAction != null) {
                     ActionDefinition actionDefinition = actionService.getActionDefinition(alfrescoAction.getActionDefinitionName());
                     for (String paramName : action.getParamsNames()) {
-                        alfrescoAction.setParameterValue(paramName, 
-                                convertParameterValue(actionDefinition, 
+                        alfrescoAction.setParameterValue(paramName,
+                                convertParameterValue(actionDefinition,
                                         paramName, action.getParam(paramName)));
                     }
 
@@ -516,7 +515,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
     }
 
     private Map<String, Object> fillModel(NodeRef nodeRef) {
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
 
         model.put("document", nodeRef);
         String userName = AuthenticationUtil.getFullyAuthenticatedUser();
@@ -568,7 +567,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
 
     @Override
     public List<LifeCycleTransition> getAvailableUserEvents(NodeRef nodeRef) {
-        Set<String> filters = new HashSet<String>();
+        Set<String> filters = new HashSet<>();
         filters.add(LifeCycleModel.CONSTR_USER_TRANSITION);
         filters.add(LifeCycleModel.CONSTR_TRANSITION_ON_START_PROCESS);
 
@@ -581,7 +580,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
         LifeCycleDefinition lcd = getLifeCycleDefinitionByDocRef(nodeRef);
 
         if (lcd == null)
-        	return new ArrayList<LifeCycleTransition>();
+        	return new ArrayList<>();
 
         return LifeCycleHelper.getTransitionsByFromStateId(lcd, state);
     }
@@ -605,7 +604,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
 		                    query
 		            );
 
-		            result = new ArrayList<NodeRef>(rows.length());
+		            result = new ArrayList<>(rows.length());
 
 		            for (ResultSetRow row : rows) {
 		                result.add(row.getNodeRef());
@@ -621,7 +620,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
     }
 
     private List<LifeCycleTransition> getTransitionsByEventTypesAndTrueConditions(NodeRef nodeRef, Set<String> filters) {
-    	List<LifeCycleTransition> result = new ArrayList<LifeCycleTransition>();
+    	List<LifeCycleTransition> result = new ArrayList<>();
     	List<LifeCycleTransition> transitionsForThisType = getTransitionsByDocStateEventTypes(nodeRef, filters);
 
         for (LifeCycleTransition transition : transitionsForThisType) {
@@ -647,7 +646,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
         LifeCycleDefinition lcd = getLifeCycleDefinitionByDocRef(nodeRef);
 
         if (lcd == null)
-        	return new ArrayList<LifeCycleTransition>();
+        	return new ArrayList<>();
 
         List<LifeCycleTransition> transitionsForThisState = LifeCycleHelper.getTransitionsByFromStateId(lcd, state);
 
@@ -658,7 +657,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
     	LifeCycleDefinition lcd = getLifeCycleDefinitionByDocRef(nodeRef);
 
     	if (lcd == null)
-        	return new ArrayList<LifeCycleState>();
+        	return new ArrayList<>();
 
     	List<LifeCycleState> statesForStateId = LifeCycleHelper.getStatesByStateId(lcd, stateId);
 
@@ -734,7 +733,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
         List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(companyHome,
                 Collections.singleton(LifeCycleModel.TYPE_LIFECYCLE_DEFINITION));
 
-        List<NodeRef> repoDefinitions = new ArrayList<NodeRef>(childAssocs.size());
+        List<NodeRef> repoDefinitions = new ArrayList<>(childAssocs.size());
 
         for (ChildAssociationRef childAssoc : childAssocs)
             repoDefinitions.add(childAssoc.getChildRef());
@@ -747,7 +746,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
         NodeRef companyHome = repositoryHelper.getCompanyHome();
         List<ChildAssociationRef> childAssocs = nodeService.getChildAssocsByPropertyValue(companyHome, LifeCycleModel.PROP_DOC_TYPE, docType);
 
-        List<NodeRef> repoDefinitions = new ArrayList<NodeRef>(childAssocs.size());
+        List<NodeRef> repoDefinitions = new ArrayList<>(childAssocs.size());
 
         for (ChildAssociationRef childAssoc : childAssocs)
             repoDefinitions.add(childAssoc.getChildRef());
@@ -811,11 +810,11 @@ public class LifeCycleServiceImpl implements LifeCycleService {
         else
             repoDefinitions = getStoredLifeCycleDefinitionsByDocType(requiredDocType);
 
-        List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> result = new ArrayList<>();
 
         for (NodeRef nodeRef : repoDefinitions) {
             if (nodeRef != null) {
-                Map<String, Object> lcdHeaders = new HashMap<String, Object>();
+                Map<String, Object> lcdHeaders = new HashMap<>();
 
                 String format = (String) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_LIFECYCLE_FORMAT);
                 QName docType = (QName) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_DOC_TYPE);
@@ -855,7 +854,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
     public NodeRef storeLifeCycleDefinition(final NodeRef nodeRef, final String content, final String formatName,
             final QName docType, final String title, final Boolean enabled) {
 
-        final Map<QName, Serializable> properties = new HashMap<QName, Serializable>();
+        final Map<QName, Serializable> properties = new HashMap<>();
 
         if (formatName != null)
             properties.put(LifeCycleModel.PROP_LIFECYCLE_FORMAT, formatName);
@@ -937,7 +936,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
 
     public Set<QName> getDocumentTypesWithLifeCycleDefinitions() {
         List<NodeRef> repoDefinitions = getStoredLifeCycleDefinitions();
-        Set<QName> docTypes = new HashSet<QName>();
+        Set<QName> docTypes = new HashSet<>();
 
         for (NodeRef repoNodeRef : repoDefinitions) {
             QName docType = (QName) nodeService.getProperty(repoNodeRef, LifeCycleModel.PROP_DOC_TYPE);

@@ -18,17 +18,10 @@
  */
 package ru.citeck.ecos.notification;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import java.util.Set;
-
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.notification.EMailNotificationProvider;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
 import org.alfresco.service.ServiceRegistry;
@@ -36,15 +29,16 @@ import org.alfresco.service.cmr.notification.NotificationContext;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.TemplateService;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.alfresco.service.cmr.repository.TemplateService;
-import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
-
 import ru.citeck.ecos.security.NodeOwnerDAO;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Notification sender for tasks (ItemType = ExecutionEntity).
@@ -90,7 +84,6 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 	public static final String ARG_WORKFLOW_ID = "id";
 	public static final String ARG_WORKFLOW_PROPERTIES = "properties";
 	public static final String ARG_WORKFLOW_DOCUMENTS = "documents";
-	private Map<String, Map<String,List<String>>> taskSubscribers;
 	protected WorkflowQNameConverter qNameConverter;
 	protected PersonService personService;
 	protected AuthenticationService authenticationService;
@@ -110,19 +103,20 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 		this.qNameConverter = new WorkflowQNameConverter(namespaceService);
 		this.authenticationService = serviceRegistry.getAuthenticationService();
 		this.personService = serviceRegistry.getPersonService();
-	}	
-	
+	}
+
 	/**
 	* Recipients provided as parameter taskSubscribers: "task name"-{"doc type1"-"recepient field1", ...}
 	* @param task subscribers
 	*/
+	@Deprecated
 	public void setTaskSubscribers(Map<String, Map<String,List<String>>> taskSubscribers) {
-    	this.taskSubscribers = taskSubscribers;
+    	// not used
     }
 
   // get notification template arguments for the task
 	protected Map<String, Serializable> getNotificationArgs(ExecutionEntity task) {
-		Map<String, Serializable> args = new HashMap<String, Serializable>();
+		Map<String, Serializable> args = new HashMap<>();
 		//args.put(ARG_TASK, getTaskInfo(task));
 		args.put(ARG_WORKFLOW, getWorkflowInfo(task));
 		String userName = authenticationService.getCurrentUserName();
@@ -152,10 +146,10 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 	}*/
 	
 	private Serializable getWorkflowInfo(ExecutionEntity task) {
-		HashMap<String, Object> workflowInfo = new HashMap<String, Object>();
+		HashMap<String, Object> workflowInfo = new HashMap<>();
 		//workflowInfo.put(ARG_WORKFLOW_ID, "activiti$" +task.getId());
 		workflowInfo.put(ARG_WORKFLOW_ID, task.getId());
-		HashMap<String, Serializable> properties = new HashMap<String, Serializable>();
+		HashMap<String, Serializable> properties = new HashMap<>();
 		workflowInfo.put(ARG_WORKFLOW_PROPERTIES, properties);
 		for(Map.Entry<String, Object> entry : task.getVariables().entrySet()) {
 			if(entry.getValue()!=null)
@@ -182,7 +176,7 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 	{
 		String subject = null;
 		NodeRef workflowPackage = null;
-		Vector<String> recipient = new Vector<String>();
+		Vector<String> recipient = new Vector<>();
 		//ExecutionEntity executionEntity = ((ExecutionEntity)task.getExecution()).getProcessInstance();
 		ActivitiScriptNode scriptNode = (ActivitiScriptNode)task.getVariable("bpm_package");
 		if (scriptNode != null)
@@ -219,18 +213,17 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 				if(template!=null && nodeService.exists(template))
 				{
                     recipient.addAll(getRecipients(task, template, getDocsInfo()));
-					String from = null;
 					String notificationProviderName = EMailNotificationProvider.NAME;
 					if(subjectTemplates!=null)
 					{
 						String processDef = task.getProcessDefinitionId();
-						String wfkey = "activiti$"+processDef.substring(0,processDef.indexOf(":"));
+						String wfkey = "activiti$"+processDef.substring(0,processDef.indexOf(':'));
 						if(subjectTemplates.containsKey(wfkey))
 						{
 							Map<String,String> taskSubjectTemplate = subjectTemplates.get(wfkey);
 							if(taskSubjectTemplate.containsKey(qNameConverter.mapQNameToName(nodeService.getType(getDocsInfo()))))
 							{
-								HashMap<String,Object> model = new HashMap<String,Object>(1);
+								HashMap<String,Object> model = new HashMap<>(1);
 								model.put(nodeVariable, getDocsInfo());
 								subject = templateService.processTemplateString(templateEngine, taskSubjectTemplate.get(qNameConverter.mapQNameToName(nodeService.getType(getDocsInfo()))), model);
 							}
@@ -246,15 +239,11 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 					}
 					for(String to : recipient) {
 						notificationContext.addTo(to);
-						
 					}
 					notificationContext.setSubject(subject);
 					setBodyTemplate(notificationContext, template);
 					notificationContext.setTemplateArgs(getNotificationArgs(task));
 					notificationContext.setAsyncNotification(getAsyncNotification());
-					if (null != from) {
-						notificationContext.setFrom(from);
-					}
 					// send
 					logger.debug("Send notification");
 					services.getNotificationService().sendNotification(notificationProviderName, notificationContext);
@@ -267,7 +256,7 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 	public NodeRef getNotificationTemplate(ExecutionEntity task)
 	{
 		String processDef = task.getProcessDefinitionId();
-		String wfkey = "activiti$"+processDef.substring(0,processDef.indexOf(":"));
+		String wfkey = "activiti$"+processDef.substring(0,processDef.indexOf(':'));
 		String tkey = (String)task.getVariableLocal("taskFormKey");
 		logger.debug("template for notification "+getNotificationTemplate(wfkey, tkey));
 		return getNotificationTemplate(wfkey, tkey, nodeService.getType(getDocsInfo()));

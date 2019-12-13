@@ -77,12 +77,12 @@ public class FlowableProcessDefinitionServiceImpl implements FlowableProcessDefi
             DOMParser parser = new DOMParser();
             parser.parse(inputSource);
             Document document = parser.getDocument();
-            /** Get processes dom-elements */
+            /* Get processes dom-elements */
             NodeList elements = document.getElementsByTagName("process");
             if (elements.getLength() < 1) {
                 throw new IllegalArgumentException("The input stream does not contain a process definition!");
             }
-            /** Get id element */
+            /* Get id element */
             NamedNodeMap attributes = elements.item(0).getAttributes();
             Node idAttrib = attributes.getNamedItem("id");
             if (idAttrib == null) {

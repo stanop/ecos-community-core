@@ -92,7 +92,6 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
     public static final String ARG_WORKFLOW_PROPERTIES = "properties";
     public static final String ARG_WORKFLOW_DOCUMENTS = "documents";
     private static final String ARG_RECIPIENTS_FROM_ROLE = "iCase_Role";
-    private Map<String, Map<String, List<String>>> taskSubscribers;
     protected WorkflowQNameConverter qNameConverter;
     protected PersonService personService;
     protected AuthenticationService authenticationService;
@@ -100,7 +99,6 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
     protected boolean sendToOwner;
     protected boolean mandatoryFieldsFilled = true;
     private NodeOwnerDAO nodeOwnerDAO;
-    private Map<String, Map<String, String>> taskProperties;
     private Map<String, Boolean> checkAssignee;
     private Map<String, List<String>> additionRecipients;
     private Map<String, List<String>> supervisors;
@@ -127,8 +125,9 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
      *
      * @param taskSubscribers subscribers
      */
+    @Deprecated
     public void setTaskSubscribers(Map<String, Map<String, List<String>>> taskSubscribers) {
-        this.taskSubscribers = taskSubscribers;
+        // not used
     }
 
     // get notification template arguments for the task
@@ -206,12 +205,9 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
      */
     @Override
     public void sendNotification(final DelegateTask task) {
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-            @Override
-            public Void doWork() throws Exception {
-                send(task);
-                return null;
-            }
+        AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
+            send(task);
+            return null;
         });
     }
 
@@ -377,7 +373,7 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 
     public NodeRef getNotificationTemplate(DelegateTask task) {
         String processDef = task.getProcessDefinitionId();
-        String wfkey = "activiti$" + processDef.substring(0, processDef.indexOf(":"));
+        String wfkey = "activiti$" + processDef.substring(0, processDef.indexOf(':'));
         String tkey = (String) task.getVariableLocal("taskFormKey");
         return getNotificationTemplate(wfkey, tkey);
     }
@@ -395,8 +391,9 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
         this.nodeOwnerDAO = nodeOwnerDAO;
     }
 
+    @Deprecated
     public void setTaskProperties(Map<String, Map<String, String>> taskProperties) {
-        this.taskProperties = taskProperties;
+        // not used
     }
 
     public void setAdditionRecipients(Map<String, List<String>> additionRecipients) {

@@ -47,12 +47,12 @@ public class NodeByPathGet extends DeclarativeWebScript {
 			status.setCode(Status.STATUS_BAD_REQUEST, "Parameter path is mandatory");
 			return null;
 		}
-		String newPath = "";
+		StringBuilder newPath = new StringBuilder();
 		Search search = new Search();
 		String[] parts = path.split("/");
 		for(int i = 1; i < parts.length; i++) {
 			String[] prefixParts = parts[i].split(":");
-			newPath += "/" + prefixParts[0] + ":" + search.ISO9075Encode(prefixParts[1]);
+			newPath.append("/").append(prefixParts[0]).append(":").append(search.ISO9075Encode(prefixParts[1]));
 		}
 		String query = "PATH:\"" + newPath + "\"";
 		ResultSet nodes = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE,
@@ -61,7 +61,7 @@ public class NodeByPathGet extends DeclarativeWebScript {
 			status.setCode(Status.STATUS_INTERNAL_SERVER_ERROR, "Nodes length > 1: " + nodes.length());
 			return null;
 		}
-		Map<String, Object> result = new HashMap<String, Object>();
+		Map<String, Object> result = new HashMap<>();
 		if(nodes.length() == 0) {
 			result.put("found", false);
 			return result;

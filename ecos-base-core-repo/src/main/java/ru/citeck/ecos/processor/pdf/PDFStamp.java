@@ -72,7 +72,7 @@ public class PDFStamp extends AbstractDataBundleLine
 		InputStream pdfInputStream = input.getInputStream();
 
 		// get stamp stream:
-		List<DataBundle> stampInputs = new ArrayList<DataBundle>(1);
+		List<DataBundle> stampInputs = new ArrayList<>(1);
 		stampInputs.add(new DataBundle(input.getModel()));
 		List<DataBundle> stampOutputs = stampProcessor.process(stampInputs);
 		

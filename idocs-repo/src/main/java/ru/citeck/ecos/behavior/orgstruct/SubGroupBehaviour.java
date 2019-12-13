@@ -18,14 +18,9 @@
  */
 package ru.citeck.ecos.behavior.orgstruct;
 
-import java.io.Serializable;
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.alfresco.repo.node.NodeServicePolicies;
-import ru.citeck.ecos.behavior.JavaBehaviour;
-import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
+import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.dictionary.AspectDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -33,9 +28,14 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import ru.citeck.ecos.behavior.JavaBehaviour;
 import ru.citeck.ecos.model.OrgStructModel;
 import ru.citeck.ecos.orgstruct.OrgMetaService;
+
+import java.io.Serializable;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 
 public class SubGroupBehaviour implements
         NodeServicePolicies.OnUpdatePropertiesPolicy,
@@ -70,8 +70,7 @@ public class SubGroupBehaviour implements
                                    Map<QName, Serializable> before, Map<QName, Serializable> after) {
         Object oldType = before.get(subGroupTypeProp);
         Object newType = after.get(subGroupTypeProp);
-        if (oldType == null && newType == null
-                || oldType != null && newType != null && oldType.equals(newType)) {
+        if (Objects.equals(oldType, newType)) {
             return;
         }
 

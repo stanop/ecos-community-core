@@ -43,7 +43,7 @@ public class ConstructSearchQuery extends AbstractDataBundleLine {
         ContentReader contentReader = helper.getContentReader(input);
         String criteria = contentReader.getContentString();
         SearchCriteria searchCriteria = parser.parse(evaluateExpression(criteria, model));
-        HashMap<String, Object> newModel = new HashMap<String, Object>();
+        HashMap<String, Object> newModel = new HashMap<>();
         newModel.putAll(model);
 
         newModel.put("searchCriteria", searchCriteria);

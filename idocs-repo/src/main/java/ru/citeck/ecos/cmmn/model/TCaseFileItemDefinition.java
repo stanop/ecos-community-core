@@ -82,7 +82,7 @@ public class TCaseFileItemDefinition
      */
     public List<TProperty> getProperty() {
         if (property == null) {
-            property = new ArrayList<TProperty>();
+            property = new ArrayList<>();
         }
         return this.property;
     }

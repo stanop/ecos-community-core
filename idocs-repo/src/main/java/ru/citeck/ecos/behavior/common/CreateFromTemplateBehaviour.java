@@ -75,7 +75,7 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
             return;
         }
 
-        Set<NodeRef> tags = new HashSet<NodeRef>();
+        Set<NodeRef> tags = new HashSet<>();
 
         List<AssociationRef> associations = nodeService.getTargetAssocs(childAssocRef.getChildRef(), RegexQNamePattern.MATCH_ALL);
         for (AssociationRef association : associations) {
@@ -194,7 +194,7 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
     {
         NodeRef template = null;
         if (!tags.isEmpty()) {
-            SearchParameters sp = new SearchParameters();
+
             StringBuilder sb = new StringBuilder();
             sb.append("TYPE:\"").append(DmsModel.TYPE_TEMPLATE).append("\" AND (");
             for (NodeRef tag : tags) {

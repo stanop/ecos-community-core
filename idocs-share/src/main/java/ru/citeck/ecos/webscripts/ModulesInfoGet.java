@@ -58,11 +58,11 @@ public class ModulesInfoGet extends DeclarativeWebScript
     {
 		try {
 			Resource[] moduleDescriptors = resourceResolver.getResources("classpath:alfresco/module/*/module.properties");
-			List<Object> modules = new ArrayList<Object>(moduleDescriptors.length);
+			List<Object> modules = new ArrayList<>(moduleDescriptors.length);
 			for(int i = 0; i < moduleDescriptors.length; i++) {
 				Properties moduleProperties = new Properties();
 				moduleProperties.load(moduleDescriptors[i].getInputStream());
-				Map<String,Object> module = new TreeMap<String,Object>();
+				Map<String,Object> module = new TreeMap<>();
 				module.put(KEY_ID, moduleProperties.getProperty(PROP_ID));
 				module.put(KEY_TITLE, moduleProperties.getProperty(PROP_TITLE));
 				module.put(KEY_DESCRIPTION, moduleProperties.getProperty(PROP_DESCRIPTION));
@@ -72,7 +72,7 @@ public class ModulesInfoGet extends DeclarativeWebScript
 				modules.add(module);
 			}
 			
-			Map<String,Object> model = new TreeMap<String,Object>();
+			Map<String,Object> model = new TreeMap<>();
 			model.put(KEY_MODULES, modules);
 			return model;
 			

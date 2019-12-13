@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<page>
+   <title>Start specified workflow</title>
+   <title-id>page.startWorkflow.title</title-id>
+   <description>Page for starting specified workflow</description>
+   <description-id>page.startWorkflow.description</description-id>
+   <template-instance>start-specified-workflow</template-instance>
+   <authentication>user</authentication>
+</page>

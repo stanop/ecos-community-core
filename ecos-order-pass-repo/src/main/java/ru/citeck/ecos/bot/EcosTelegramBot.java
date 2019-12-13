@@ -347,8 +347,8 @@ public class EcosTelegramBot extends TelegramLongPollingBot {
 
             UserChatKey that = (UserChatKey) o;
 
-            if (userId != null ? !userId.equals(that.userId) : that.userId != null) return false;
-            return chatId != null ? chatId.equals(that.chatId) : that.chatId == null;
+            if (!Objects.equals(userId, that.userId)) return false;
+            return Objects.equals(chatId, that.chatId);
         }
 
         @Override

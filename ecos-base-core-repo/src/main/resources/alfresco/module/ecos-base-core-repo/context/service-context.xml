@@ -442,4 +442,6 @@
         <property name="extensionName" value="base64Image"/>
     </bean>
 
+    <bean id="core.barcode-attribute.type-to-property.mappingRegistry" class="ru.citeck.ecos.spring.registry.MappingRegistry"/>
+
 </beans>

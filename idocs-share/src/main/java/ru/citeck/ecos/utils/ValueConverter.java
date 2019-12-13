@@ -66,7 +66,7 @@ public class ValueConverter {
                 } else {
                     // convert Scriptable object of values to a Map of objects
                     Object[] propIds = values.getIds();
-                    Map<String, Object> propValues = new HashMap<String, Object>(propIds.length);
+                    Map<String, Object> propValues = new HashMap<>(propIds.length);
                     for (Object propId : propIds) {
                         // work on each key in turn
                         // we are only interested in keys that indicate a list of values
@@ -98,7 +98,7 @@ public class ValueConverter {
         } else if (value.getClass().isArray()) {
             // convert back a list of Java values
             int length = Array.getLength(value);
-            ArrayList<Object> list = new ArrayList<Object>(length);
+            ArrayList<Object> list = new ArrayList<>(length);
             for (int i = 0; i < length; i++) {
                 list.add(convertValueForJava(Array.get(value, i)));
             }

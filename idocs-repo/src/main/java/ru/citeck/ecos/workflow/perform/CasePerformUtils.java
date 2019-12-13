@@ -1,7 +1,6 @@
 package ru.citeck.ecos.workflow.perform;
 
 import org.activiti.engine.delegate.VariableScope;
-import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.task.IdentityLink;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.jscript.ScriptNode;

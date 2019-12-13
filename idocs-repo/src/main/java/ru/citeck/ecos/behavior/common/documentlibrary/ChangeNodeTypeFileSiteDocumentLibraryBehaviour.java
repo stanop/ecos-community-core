@@ -48,13 +48,10 @@ public class ChangeNodeTypeFileSiteDocumentLibraryBehaviour implements NodeServi
         if (!nodeService.exists(nodeRef)) {
             return;
         }
-        Boolean changeType = AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Boolean>() {
-            @Override
-            public Boolean doWork() throws Exception {
-                SiteInfo siteInfo = siteService.getSite(nodeRef);
-                return nodeService.getType(nodeRef).isMatch(ContentModel.TYPE_CONTENT)
-                        && isNodeInDocumentLibraryOnFileSite(siteInfo, nodeRef);
-            }
+        Boolean changeType = AuthenticationUtil.runAsSystem(() -> {
+            SiteInfo siteInfo = siteService.getSite(nodeRef);
+            return nodeService.getType(nodeRef).isMatch(ContentModel.TYPE_CONTENT)
+                    && isNodeInDocumentLibraryOnFileSite(siteInfo, nodeRef);
         });
 
         if (changeType) {

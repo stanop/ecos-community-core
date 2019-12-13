@@ -61,12 +61,9 @@ public class UpdateCasePerformAssignees implements CaseRolePolicies.OnRoleAssign
 
     @Override
     public void onCaseRolesAssigneesChanged(NodeRef caseRef) {
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-            @Override
-            public Void doWork() throws Exception {
-                updateTasks();
-                return null;
-            }
+        AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
+            updateTasks();
+            return null;
         });
     }
 

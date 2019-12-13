@@ -18,17 +18,17 @@
  */
 package ru.citeck.ecos.webscripts.document;
 
-import java.util.Collection;
-
 import org.alfresco.model.ContentModel;
-import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.WebScriptResponse;
-
 import ru.citeck.ecos.document.SupplementaryFilesDAO;
 import ru.citeck.ecos.webscripts.common.BaseAbstractWebscript;
+
+import java.util.Collection;
 
 public class SupplementaryFilesGet extends BaseAbstractWebscript {
 
@@ -50,17 +50,20 @@ public class SupplementaryFilesGet extends BaseAbstractWebscript {
 		JSONArray array = new JSONArray();
 		result.put("data", array);
 
-		String targetRefs = "";
+		StringBuilder targetRefs = new StringBuilder();
 		int i = 0;
 		
 		for (NodeRef ref : files) {
-			if (i==files.size()-1) targetRefs = targetRefs + ref;
-			else targetRefs = targetRefs + ref+",";
+			if (i==files.size()-1) {
+				targetRefs.append(ref);
+			} else {
+				targetRefs.append(ref).append(",");
+			}
 			i++;
 		}
 		if (files.isEmpty()) {
 			JSONObject data = new JSONObject();
-			data.put("targetRefs",targetRefs);
+			data.put("targetRefs", targetRefs.toString());
 			array.put(data);
 		}
 		for (NodeRef ref : files) {
@@ -68,7 +71,7 @@ public class SupplementaryFilesGet extends BaseAbstractWebscript {
 			data.put("title",
 					nodeService.getProperty(ref, ContentModel.PROP_NAME));
 			data.put("nodeRef", ref);
-			data.put("targetRefs", targetRefs);
+			data.put("targetRefs", targetRefs.toString());
 			array.put(data);
 
 		}

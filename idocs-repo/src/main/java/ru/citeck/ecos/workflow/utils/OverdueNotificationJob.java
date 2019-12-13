@@ -21,7 +21,6 @@ package ru.citeck.ecos.workflow.utils;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.security.authentication.AuthenticationUtil.RunAsWork;
 import org.alfresco.repo.workflow.WorkflowModel;
-import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.cmr.workflow.WorkflowTaskQuery;
@@ -44,7 +43,6 @@ public class OverdueNotificationJob extends AbstractLockedJob
 
     private static final Object PARAM_NOTIFICATION_SENDER = "NotificationSender";
     private static final Object PARAM_WORKFLOW_SERVICE = "WorkflowService";
-    private static final Object PARAM_SERVICE = "ServiceRegistry";
 
     @Override
     public void executeJob(JobExecutionContext context) throws JobExecutionException {
@@ -52,7 +50,6 @@ public class OverdueNotificationJob extends AbstractLockedJob
 
         final WorkflowService workflowService = (WorkflowService) data.get(PARAM_WORKFLOW_SERVICE);
         final NotificationSender<WorkflowTask> sender = (NotificationSender<WorkflowTask>) data.get(PARAM_NOTIFICATION_SENDER);
-        final ServiceRegistry services = (ServiceRegistry) data.get(PARAM_SERVICE);
 
         Integer sent = AuthenticationUtil.runAs(new RunAsWork<Integer>() {
 

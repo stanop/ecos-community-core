@@ -39,9 +39,12 @@ public final class IdocsModel {
     public static final QName TYPE_LEGAL_ENTITY = QName.createQName(IDOCS_NAMESPACE, "legalEntity");
     public static final QName TYPE_CURRENCY = QName.createQName(IDOCS_NAMESPACE, "currency");
     public static final QName TYPE_CURRENCY_RATE_RECORD = QName.createQName(IDOCS_NAMESPACE, "currencyRateRecord");
+    public static final QName TYPE_CURRENCY_RATE_INTERNAL_RECORD = QName.createQName(IDOCS_NAMESPACE, "currencyRateInternalRecord");
     public static final QName TYPE_CURRENCY_RATES_XML = QName.createQName(IDOCS_NAMESPACE, "currencyRatesXML");
     public static final QName TYPE_ABSTRACT_ATTORNEY = QName.createQName(IDOCS_NAMESPACE, "abstractAttorney");
     public static final QName TYPE_CONTRACTOR = QName.createQName(IDOCS_NAMESPACE, "contractor");
+    public static final QName TYPE_COUNTRY = QName.createQName(IDOCS_NAMESPACE, "countryISO3166");
+    public static final QName TYPE_GROUP_OF_COUNTRIES = QName.createQName(IDOCS_NAMESPACE, "groupOfCountries");
 
     // aspects
     public static final QName ASPECT_LIFECYCLE = QName.createQName(IDOCS_NAMESPACE, "lifeCycle");
@@ -77,6 +80,9 @@ public final class IdocsModel {
     public static final QName PROP_CRR_VALUE = QName.createQName(IDOCS_NAMESPACE, "crrValue");
     public static final QName PROP_CRR_DATE = QName.createQName(IDOCS_NAMESPACE, "crrDate");
     public static final QName PROP_CRR_SYNC_DATE = QName.createQName(IDOCS_NAMESPACE, "crrSyncDate");
+    public static final QName PROP_CRR_INTERNAL_VALUE = QName.createQName(IDOCS_NAMESPACE, "crrInternalValue");
+    public static final QName PROP_CRR_INTERNAL_MONTH = QName.createQName(IDOCS_NAMESPACE, "crrInternalMonth");
+    public static final QName PROP_CRR_INTERNAL_YEAR = QName.createQName(IDOCS_NAMESPACE, "crrInternalYear");
     public static final QName PROP_CURRENCY_NAME_RU = QName.createQName(IDOCS_NAMESPACE, "currencyNameRu");
     public static final QName PROP_CURRENCY_CATALOG_CODE = QName.createQName(IDOCS_NAMESPACE, "currencyCatalogCode");
     public static final QName PROP_DIADOC_BOX_ID = QName.createQName(IDOCS_NAMESPACE, "diadocBoxId");
@@ -93,8 +99,12 @@ public final class IdocsModel {
     public static final QName PROP_CUSTOM_FORM_ACTION_DATA = QName.createQName(IDOCS_NAMESPACE, "customFormActionData");
     public static final QName PROP_USE_NEW_HISTORY = QName.createQName(IDOCS_NAMESPACE, "useNewHistory");
     public static final QName PROP_ENG_ORGANIZATION_NAME = QName.createQName(IDOCS_NAMESPACE, "engOrganizationName");
+    public static final QName PROP_ORGANIZATION_NAME = QName.createQName(IDOCS_NAMESPACE, "organizationName");
     public static final QName PROP_MANAGER_GROUP = QName.createQName(IDOCS_NAMESPACE, "managerGroup");
     public static final QName PROP_MANAGER_PERMISSION = QName.createQName(IDOCS_NAMESPACE, "managerPermission");
+    public static final QName PROP_COUNTRY_ISO3166_NAME = QName.createQName(IDOCS_NAMESPACE, "countryISO3166Name");
+    public static final QName PROP_COUNTRY_ISO3166_CODE = QName.createQName(IDOCS_NAMESPACE, "countryISO31661Code");
+    public static final QName PROP_GOC_NAME = QName.createQName(IDOCS_NAMESPACE, "gocName");
 
     //assocs
     public static final QName ASSOC_GENERAL_DIRECTOR = QName.createQName(IDOCS_NAMESPACE, "generalDirector");
@@ -105,9 +115,14 @@ public final class IdocsModel {
     public static final QName ASSOC_INITIATOR = QName.createQName(IDOCS_NAMESPACE, "initiator");
     public static final QName ASSOC_LEGAL_FORM = QName.createQName(IDOCS_NAMESPACE, "legalForm");
     public static final QName ASSOC_LEGAL_ENTITY = QName.createQName(IDOCS_NAMESPACE, "legalEntity");
+    public static final QName ASSOC_ORG_COUNTRY = QName.createQName(IDOCS_NAMESPACE, "orgCountry");
+    public static final QName ASSOC_ORG_CURRENCY = QName.createQName(IDOCS_NAMESPACE, "orgCurrency");
 
     public static final QName ASSOC_CRR_BASE_CURRENCY = QName.createQName(IDOCS_NAMESPACE, "crrBaseCurrency");
     public static final QName ASSOC_CRR_TARGET_CURRENCY = QName.createQName(IDOCS_NAMESPACE, "crrTargetCurrency");
+    public static final QName ASSOC_CRR_INTERNAL_BASE_CURRENCY = QName.createQName(IDOCS_NAMESPACE, "crrInternalBaseCurrency");
+    public static final QName ASSOC_CRR_INTERNAL_TARGET_CURRENCY = QName.createQName(IDOCS_NAMESPACE, "crrInternalTargetCurrency");
+    public static final QName ASSOC_GOC_COUNTRY = QName.createQName(IDOCS_NAMESPACE, "gocCountries");
 
     public static final QName ASSOC_ATTACHMENT_RKK_CREATED_FROM = QName.createQName(IDOCS_NAMESPACE, "attachmentRkkCreatedFrom");
 

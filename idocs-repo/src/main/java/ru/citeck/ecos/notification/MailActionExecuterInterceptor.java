@@ -98,7 +98,6 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
 	{
 		logger.debug("!!!!createLoggingItem");
 		NodeInfo nodeInfo = nodeInfoFactory.createNodeInfo();
-		Map<String, Serializable> parameterValues = act.getParameterValues();
 		logger.debug("act.getParameterValue "+act.getParameterValues());
 		Map<String, Serializable> template_modelParameterValue = (Map<String, Serializable>)act.getParameterValue("template_model");
 		if(template_modelParameterValue!=null)
@@ -117,7 +116,6 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
 				}
 				Map<String, Serializable> taskParameterValues = (Map<String, Serializable>)argsParameterValues.get("task");
 				Map<String, Serializable> workflowParameterValues = (Map<String, Serializable>)argsParameterValues.get("workflow");
-				Map<String, Serializable> sentOnCancelWFValues = (Map<String, Serializable>)argsParameterValues.get("sentOnCancelWF");
 				if(taskParameterValues!=null)
 				{
 					NodeRef task = workflowMirrorService.getTaskMirror("activiti$"+(String)taskParameterValues.get("id"));
@@ -183,8 +181,8 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
 		}
 		else if(mailToMany!=null)
 		{
-			LinkedList<NodeRef> recipients = new LinkedList<NodeRef>();
-			ArrayList<String> emails = new ArrayList<String>();
+			LinkedList<NodeRef> recipients = new LinkedList<>();
+			ArrayList<String> emails = new ArrayList<>();
 			for(int i=0; i<mailToMany.size(); i++)
 			{
 				NodeRef recipient = authorityService.getAuthorityNodeRef((String)mailToMany.get(i));
@@ -223,7 +221,7 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
 	
 	public ArrayList<String> getEmailsForGroupMembers(NodeRef recipient)
 	{
-		ArrayList<String> emails = new ArrayList<String>();
+		ArrayList<String> emails = new ArrayList<>();
 		List<ChildAssociationRef> memberAssocs = nodeService.getChildAssocs(recipient, ContentModel.ASSOC_MEMBER, RegexQNamePattern.MATCH_ALL);
 		for (ChildAssociationRef memberAssoc : memberAssocs)
 		{

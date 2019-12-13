@@ -193,4 +193,85 @@
         </headers>
     </journal>
 
+    <journal id="ui-actions">
+        <datasource>eapps/module</datasource>
+        <predicate>{"t": "eq", "att": "type", "val": "ui/action"}</predicate>
+        <create>
+            <variant title="Create 'Download'">
+                <recordRef>eapps/module@ui/action$</recordRef>
+                <formKey>action_download</formKey>
+                <attribute name="type">download</attribute>
+            </variant>
+            <variant title="Create 'Record actions'">
+                <recordRef>eapps/module@ui/action$</recordRef>
+                <formKey>action_record_actions</formKey>
+                <attribute name="type">record_actions</attribute>
+            </variant>
+            <variant title="Upload action">
+                <recordRef>eapps/module@ui/action$</recordRef>
+                <formKey>ecos-module-upload</formKey>
+            </variant>
+        </create>
+       <option name="actionFormatter">
+            [
+                {
+                    buttonClass: 'custom-button-edit',
+                    onclick: {
+                        fn: function () {
+                            Citeck.forms.eform(oRecord.getData('nodeRef'), {});
+                        }
+                    }
+                },
+                {
+                    buttonClass: 'custom-button-download',
+                    onclick: {
+                        fn: function () {
+                            var record = Citeck.Records.get(oRecord.getData('nodeRef'));
+                            record.load({ module_id: 'module_id', json:'.json' }, true).then(data => {
+                                Citeck.utils.downloadText(JSON.stringify(data.json), data.module_id + '.json', 'text/json');
+                            });
+                        }
+                    }
+                },
+                {
+                    buttonClass: 'custom-button-remove',
+                    onclick: {
+                        fn: function () {
+
+                            var recordId = oRecord.getData('nodeRef');
+
+                            Alfresco.util.PopupManager.displayPrompt({
+                                title: Alfresco.util.message("message.confirm.delete.title"),
+                                text: Alfresco.util.message("message.confirm.delete"),
+                                buttons: [
+                                    {
+                                        text: Alfresco.util.message("button.delete"),
+                                        handler: function () {
+                                            this.destroy();
+                                            Citeck.Records.remove([recordId]);
+                                        }
+                                    },
+                                    {
+                                        text: Alfresco.util.message("button.cancel"),
+                                        handler: function () {
+                                            this.destroy();
+                                        },
+                                        isDefault: true
+                                    }
+                                ]
+                            });
+                        }
+                    }
+                }
+            ]
+        </option>
+        <headers>
+            <header key="module_id" default="true"/>
+            <header key="name" default="true" />
+            <header key="type" default="true" />
+            <header key="key" default="true" />
+            <header key="icon" default="true" />
+        </headers>
+    </journal>
+
 </journals>

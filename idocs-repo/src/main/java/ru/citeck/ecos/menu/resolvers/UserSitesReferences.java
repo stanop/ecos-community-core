@@ -37,7 +37,7 @@ public class UserSitesReferences extends AbstractMenuItemsResolver {
     private Element constructItem(SiteInfo site, Element context, Map<String, String> params) {
 
         String listId = getParam(params, context, LIST_ID_KEY);
-        Boolean displayIcon = context.getParams().containsKey("rootElement");
+        boolean displayIcon = context.getParams().containsKey("rootElement");
         if (StringUtils.isNotEmpty(listId)) {
             params.put(LIST_ID_KEY, listId);
         } else {

@@ -85,7 +85,7 @@ public class TDecision
      */
     public List<TDecisionParameter> getInput() {
         if (input == null) {
-            input = new ArrayList<TDecisionParameter>();
+            input = new ArrayList<>();
         }
         return this.input;
     }
@@ -114,7 +114,7 @@ public class TDecision
      */
     public List<TDecisionParameter> getOutput() {
         if (output == null) {
-            output = new ArrayList<TDecisionParameter>();
+            output = new ArrayList<>();
         }
         return this.output;
     }

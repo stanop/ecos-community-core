@@ -3,8 +3,6 @@ package ru.citeck.ecos.utils;
 import org.alfresco.util.ISO8601DateFormat;
 import org.alfresco.util.ParameterCheck;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
-import org.apache.poi.util.StringUtil;
 import org.joda.time.Interval;
 
 import java.util.ArrayList;

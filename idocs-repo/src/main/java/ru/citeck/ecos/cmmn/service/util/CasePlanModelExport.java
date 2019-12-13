@@ -29,8 +29,8 @@ public class CasePlanModelExport {
 
     private static final Logger logger = Logger.getLogger(CasePlanModelExport.class);
 
-    private final static Map<String, PlanItemTransition> ACTIVITY_EVENT_TYPES_MAPPING = new HashMap<>();
-    private final static String USER_ACTION_TYPE = "user-action";
+    private static final Map<String, PlanItemTransition> ACTIVITY_EVENT_TYPES_MAPPING = new HashMap<>();
+    private static final String USER_ACTION_TYPE = "user-action";
 
     private final NodeService nodeService;
     private final DictionaryService dictionaryService;

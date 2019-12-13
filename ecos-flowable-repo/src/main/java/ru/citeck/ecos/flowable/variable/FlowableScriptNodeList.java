@@ -20,9 +20,4 @@ public class FlowableScriptNodeList extends ArrayList<FlowableScriptNode> {
         }
         return nodeRefs;
     }
-
-    @Override
-    public int size() {
-        return super.size();
-    }
 }

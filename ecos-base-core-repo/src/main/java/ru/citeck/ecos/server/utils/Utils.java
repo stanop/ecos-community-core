@@ -32,7 +32,7 @@ public class Utils {
 		
 		if(fileExtension != null && fileExtension.length() > 0) {
 			// Removing file extension from the name if any
-			int dot_index = fileName.lastIndexOf(".");
+			int dot_index = fileName.lastIndexOf('.');
 			if (dot_index > -1) {
 				fileName = fileName.substring(0, dot_index) + "." + fileExtension;
             } else {

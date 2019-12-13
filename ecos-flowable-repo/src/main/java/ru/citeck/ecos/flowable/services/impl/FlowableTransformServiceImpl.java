@@ -54,11 +54,11 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
      */
     @Override
     public WorkflowDefinition transformProcessDefinition(ProcessDefinition processDefinition) {
-        /** Workflow definition */
+        /* Workflow definition */
         return new WorkflowDefinition(
                 ENGINE_PREFIX + processDefinition.getId(),
                 ENGINE_PREFIX + processDefinition.getKey(),
-                new Integer(processDefinition.getVersion()).toString(),
+                Integer.toString(processDefinition.getVersion()),
                 processDefinition.getName(),
                 processDefinition.getName(),
                 transformStartTaskDefinition(processDefinition)

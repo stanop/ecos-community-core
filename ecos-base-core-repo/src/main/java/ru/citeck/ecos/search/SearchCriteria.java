@@ -143,9 +143,9 @@ public class SearchCriteria {
 
         SearchCriteria that = (SearchCriteria) o;
 
-        if (limit != null ? !limit.equals(that.limit) : that.limit != null) return false;
-        if (skip != null ? !skip.equals(that.skip) : that.skip != null) return false;
-        if (sort != null ? !sort.equals(that.sort) : that.sort != null) return false;
+        if (!Objects.equals(limit, that.limit)) return false;
+        if (!Objects.equals(skip, that.skip)) return false;
+        if (!Objects.equals(sort, that.sort)) return false;
         return triplets.equals(that.triplets);
     }
 

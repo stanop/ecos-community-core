@@ -147,7 +147,7 @@ public class DataBundleProcessorWebscript extends AbstractWebScript
 	private DataBundle getInputBundle(WebScriptRequest req) {
 		Content content = req.getContent();
         InputStream stream = content.getInputStream();
-		Map<String,Object> model = new HashMap<String,Object>(2);
+		Map<String,Object> model = new HashMap<>(2);
 		model.put(KEY_ARGS, WebScriptUtils.getParameterMap(req));
 		model.put(KEY_JSON, new JSONUtils());
 		model.put(ProcessorConstants.KEY_ENCODING, content.getEncoding());

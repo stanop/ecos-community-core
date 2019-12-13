@@ -24,7 +24,9 @@ import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.*;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
+import org.springframework.web.client.RestTemplate;
 import ru.citeck.ecos.http.BasicAuthInterceptor;
 
 import javax.annotation.PostConstruct;
@@ -45,7 +47,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class FlowableRestTemplate {
 
-    private final static Log logger = LogFactory.getLog(RestFormService.class);
+    private static final Log logger = LogFactory.getLog(RestFormService.class);
 
     @Value("${flowable.rest-api.username}")
     private String username;
@@ -226,7 +228,7 @@ public class FlowableRestTemplate {
 
             String cookie = cookieList.get(0);
 
-            loginToken = cookie.substring(cookie.indexOf("=") + 1, cookie.indexOf(";"));
+            loginToken = cookie.substring(cookie.indexOf('=') + 1, cookie.indexOf(';'));
             tokenExpired = System.currentTimeMillis() + TOKEN_AGE;
 
             return loginToken;

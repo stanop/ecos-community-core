@@ -37,8 +37,6 @@ public class EcosAppsFactoryConfig extends EappsFactory {
         Map<String, String> mapping = new HashMap<>();
 
         mapping.put("form", "ecos-forms");
-        mapping.put("type", "ecos-types");
-        mapping.put("section", "ecos-sections");
 
         modulesReader.setModuleLocations(mapping);
         return modulesReader;

@@ -30,20 +30,20 @@ public abstract class SupplementaryFilesDAOAbstractImpl implements Supplementary
 	public void setSupplementaryFiles(NodeRef document, List<NodeRef> files) {
 		
 		// get current supplementary files list:
-		HashSet<NodeRef> oldFiles = new HashSet<NodeRef>();
-		HashSet<NodeRef> newFiles = new HashSet<NodeRef>();
+		HashSet<NodeRef> oldFiles = new HashSet<>();
+		HashSet<NodeRef> newFiles = new HashSet<>();
 		oldFiles.addAll(this.getSupplementaryFiles(document));
 		newFiles.addAll(files);
 		
 		// get lists of files to add and to remove:
-		List<NodeRef> filesToAdd = new ArrayList<NodeRef>(newFiles.size());
+		List<NodeRef> filesToAdd = new ArrayList<>(newFiles.size());
 		for(NodeRef file : newFiles) {
 			if(!oldFiles.contains(file)) {
 				filesToAdd.add(file);
 			}
 		}
 		
-		List<NodeRef> filesToRemove = new ArrayList<NodeRef>(oldFiles.size());
+		List<NodeRef> filesToRemove = new ArrayList<>(oldFiles.size());
 		for(NodeRef file : oldFiles) {
 			if(!newFiles.contains(file)) {
 				filesToRemove.add(file);

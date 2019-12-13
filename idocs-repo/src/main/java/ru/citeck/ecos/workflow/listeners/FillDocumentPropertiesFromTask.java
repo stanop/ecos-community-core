@@ -56,67 +56,64 @@ public class FillDocumentPropertiesFromTask extends AbstractTaskListener {
 
     @Override
     protected void notifyImpl(final DelegateTask task) {
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-            @Override
-            public Object doWork() throws Exception {
-                final WorkflowTask wfTask = serviceRegistry.getWorkflowService().getTaskById("activiti$" + task.getId());
-                if (wfTask != null && wfTask.getName() != null && wfTask.getName().equals(taskName)) {
-                    NodeRef docRef = documentResolverRegistry.getResolver(task.getExecution()).getDocument(task.getExecution());
-                    if (nodeService.exists(docRef)) {
-                        if (propertiesList != null) {
-                            for (Map.Entry<String, String> entry : propertiesList.entrySet()) {
-                                QName propNameInTask = qNameConverter.mapNameToQName(entry.getKey());
-                                QName propNameInDoc = qNameConverter.mapNameToQName(entry.getValue());
-                                if (wfTask.getProperties().get(propNameInTask) != null)
-                                    nodeService.setProperty(docRef, propNameInDoc, wfTask.getProperties().get(propNameInTask));
-                            }
+        AuthenticationUtil.runAsSystem(() -> {
+            final WorkflowTask wfTask = serviceRegistry.getWorkflowService().getTaskById("activiti$" + task.getId());
+            if (wfTask != null && wfTask.getName() != null && wfTask.getName().equals(taskName)) {
+                NodeRef docRef = documentResolverRegistry.getResolver(task.getExecution()).getDocument(task.getExecution());
+                if (nodeService.exists(docRef)) {
+                    if (propertiesList != null) {
+                        for (Map.Entry<String, String> entry : propertiesList.entrySet()) {
+                            QName propNameInTask = qNameConverter.mapNameToQName(entry.getKey());
+                            QName propNameInDoc = qNameConverter.mapNameToQName(entry.getValue());
+                            if (wfTask.getProperties().get(propNameInTask) != null)
+                                nodeService.setProperty(docRef, propNameInDoc, wfTask.getProperties().get(propNameInTask));
                         }
-                        if (assocsList != null) {
-                            for (Map.Entry<String, String> entry : assocsList.entrySet()) {
-                                QName assocNameInTask = qNameConverter.mapNameToQName(entry.getKey());
-                                QName assocNameInDoc = qNameConverter.mapNameToQName(entry.getValue());
-                                List<AssociationRef> assocs = nodeService.getTargetAssocs(docRef, assocNameInDoc);
-                                for (AssociationRef existingAssoc : assocs) {
-                                    NodeRef nodeTarget = existingAssoc.getTargetRef();
-                                    NodeRef nodeSource = existingAssoc.getSourceRef();
-                                    nodeService.removeAssociation(nodeSource, nodeTarget, assocNameInDoc);
-                                }
-                                if (wfTask.getProperties().get(assocNameInTask) != null) {
-                                    if (wfTask.getProperties().get(assocNameInTask) instanceof ArrayList) {
-                                        ArrayList<NodeRef> nodes = (ArrayList<NodeRef>) wfTask.getProperties().get(assocNameInTask);
-                                        for (NodeRef node : nodes) {
-                                            nodeService.createAssociation(docRef, node, assocNameInDoc);
-                                        }
-                                    } else if (wfTask.getProperties().get(assocNameInTask) instanceof NodeRef) {
-                                        nodeService.createAssociation(docRef, (NodeRef) wfTask.getProperties().get(assocNameInTask), assocNameInDoc);
+                    }
+                    if (assocsList != null) {
+                        for (Map.Entry<String, String> entry : assocsList.entrySet()) {
+                            QName assocNameInTask = qNameConverter.mapNameToQName(entry.getKey());
+                            QName assocNameInDoc = qNameConverter.mapNameToQName(entry.getValue());
+                            List<AssociationRef> assocs = nodeService.getTargetAssocs(docRef, assocNameInDoc);
+                            for (AssociationRef existingAssoc : assocs) {
+                                NodeRef nodeTarget = existingAssoc.getTargetRef();
+                                NodeRef nodeSource = existingAssoc.getSourceRef();
+                                nodeService.removeAssociation(nodeSource, nodeTarget, assocNameInDoc);
+                            }
+                            if (wfTask.getProperties().get(assocNameInTask) != null) {
+                                if (wfTask.getProperties().get(assocNameInTask) instanceof ArrayList) {
+                                    ArrayList<NodeRef> nodes = (ArrayList<NodeRef>) wfTask.getProperties().get(assocNameInTask);
+                                    for (NodeRef node : nodes) {
+                                        nodeService.createAssociation(docRef, node, assocNameInDoc);
                                     }
+                                } else if (wfTask.getProperties().get(assocNameInTask) instanceof NodeRef) {
+                                    nodeService.createAssociation(docRef, (NodeRef) wfTask.getProperties().get(assocNameInTask), assocNameInDoc);
                                 }
                             }
                         }
-                        if (childAssocsList != null) {
-                            for (Map.Entry<String, String> entry : childAssocsList.entrySet()) {
-                                QName childAssocNameInTask = qNameConverter.mapNameToQName(entry.getKey());
-                                QName childAssocNameInDoc = qNameConverter.mapNameToQName(entry.getValue());
-                                List<ChildAssociationRef> existingAssocs = nodeService.getChildAssocs(docRef, childAssocNameInDoc, RegexQNamePattern.MATCH_ALL);
-                                for (ChildAssociationRef existingChild : existingAssocs) {
-                                    nodeService.removeChildAssociation(existingChild);
-                                }
-                                if (wfTask.getProperties().get(childAssocNameInTask) != null) {
-                                    if (wfTask.getProperties().get(childAssocNameInTask) instanceof ArrayList) {
-                                        ArrayList<NodeRef> nodes = (ArrayList<NodeRef>) wfTask.getProperties().get(childAssocNameInTask);
-                                        for (NodeRef node : nodes) {
-                                            nodeService.addChild(docRef, node, childAssocNameInDoc, nodeService.getPrimaryParent(node).getQName());
-                                        }
-                                    } else if (wfTask.getProperties().get(childAssocNameInTask) instanceof NodeRef) {
-                                        nodeService.addChild(docRef, (NodeRef) wfTask.getProperties().get(childAssocNameInTask), childAssocNameInDoc, nodeService.getPrimaryParent((NodeRef) wfTask.getProperties().get(childAssocNameInTask)).getQName());
+                    }
+                    if (childAssocsList != null) {
+                        for (Map.Entry<String, String> entry : childAssocsList.entrySet()) {
+                            QName childAssocNameInTask = qNameConverter.mapNameToQName(entry.getKey());
+                            QName childAssocNameInDoc = qNameConverter.mapNameToQName(entry.getValue());
+                            List<ChildAssociationRef> existingAssocs = nodeService.getChildAssocs(docRef, childAssocNameInDoc, RegexQNamePattern.MATCH_ALL);
+                            for (ChildAssociationRef existingChild : existingAssocs) {
+                                nodeService.removeChildAssociation(existingChild);
+                            }
+                            if (wfTask.getProperties().get(childAssocNameInTask) != null) {
+                                if (wfTask.getProperties().get(childAssocNameInTask) instanceof ArrayList) {
+                                    ArrayList<NodeRef> nodes = (ArrayList<NodeRef>) wfTask.getProperties().get(childAssocNameInTask);
+                                    for (NodeRef node : nodes) {
+                                        nodeService.addChild(docRef, node, childAssocNameInDoc, nodeService.getPrimaryParent(node).getQName());
                                     }
+                                } else if (wfTask.getProperties().get(childAssocNameInTask) instanceof NodeRef) {
+                                    nodeService.addChild(docRef, (NodeRef) wfTask.getProperties().get(childAssocNameInTask), childAssocNameInDoc, nodeService.getPrimaryParent((NodeRef) wfTask.getProperties().get(childAssocNameInTask)).getQName());
                                 }
                             }
                         }
                     }
                 }
-                return null;
             }
+            return null;
         });
     }
 

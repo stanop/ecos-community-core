@@ -92,8 +92,8 @@ public class ExportDocWebScript extends AbstractWebScript {
 
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
-        String nodeRef = req.getParameter("nodeRef"),
-                   ext = req.getParameter("ext");
+        String nodeRef = req.getParameter("nodeRef");
+        String ext = req.getParameter("ext");
 
         if (StringUtils.isBlank(nodeRef) || StringUtils.isBlank(ext)) {
             throw new WebScriptException(HttpServletResponse.SC_BAD_REQUEST, "The request does not match the template");
