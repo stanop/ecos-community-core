@@ -96,96 +96,95 @@ public class LifeCycleXMLFormat extends LifeCycleAbstractFormat {
     @Override
     public LifeCycleDefinition parseLifeCycleDefinition(InputStream lifeCycleDefinitionStream) throws IOException {
 
-    	LifeCycleDefinition result = new LifeCycleDefinition();
+        LifeCycleDefinition result = new LifeCycleDefinition();
 
         Document xmlDoc = getDOMDocument(lifeCycleDefinitionStream, "UTF-8");
 
         if (xmlDoc != null) {
-        	try {
-				XPathFactory factory = XPathFactory.newInstance();
-				XPath xpath = factory.newXPath();
-				SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
-				nsContext.addNamespace("lc", NS_URL);
-				xpath.setNamespaceContext(nsContext);
+            try {
+                XPathFactory factory = XPathFactory.newInstance();
+                XPath xpath = factory.newXPath();
+                SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
+                nsContext.addNamespace("lc", NS_URL);
+                xpath.setNamespaceContext(nsContext);
 
-				XPathExpression expr = xpath.compile("/" + NS_PREFIX + LifeCycleConstants.LIFECYCLE + "/" + NS_PREFIX + LifeCycleConstants.STATE);
-				NodeList nodes = (NodeList) expr.evaluate(xmlDoc, XPathConstants.NODESET);
+                XPathExpression expr = xpath.compile("/" + NS_PREFIX + LifeCycleConstants.LIFECYCLE + "/" + NS_PREFIX + LifeCycleConstants.STATE);
+                NodeList nodes = (NodeList) expr.evaluate(xmlDoc, XPathConstants.NODESET);
 
-				logger.info("Found " + nodes.getLength() + " states in XML document with lifecycle definition");
+                logger.info("Found " + nodes.getLength() + " states in XML document with lifecycle definition");
 
-				for (int i = 0; i < nodes.getLength(); i++) {
-					Node node = nodes.item(i);
-					LifeCycleState state = getStateData(result, node, xpath);
+                for (int i = 0; i < nodes.getLength(); i++) {
+                    Node node = nodes.item(i);
+                    LifeCycleState state = getStateData(result, node, xpath);
 
-					if (state != null)
-						result.getStateList().add(state);
-				}
+                    if (state != null)
+                        result.getStateList().add(state);
+                }
 
-				expr = xpath.compile("/" + NS_PREFIX + LifeCycleConstants.LIFECYCLE + "/" + NS_PREFIX + LifeCycleConstants.TRANSITION);
-				nodes = (NodeList) expr.evaluate(xmlDoc, XPathConstants.NODESET);
+                expr = xpath.compile("/" + NS_PREFIX + LifeCycleConstants.LIFECYCLE + "/" + NS_PREFIX + LifeCycleConstants.TRANSITION);
+                nodes = (NodeList) expr.evaluate(xmlDoc, XPathConstants.NODESET);
 
-				logger.info("Found " + nodes.getLength() + " transitions in XML document with lifecycle definition");
+                logger.info("Found " + nodes.getLength() + " transitions in XML document with lifecycle definition");
 
-				for (int i = 0; i < nodes.getLength(); i++) {
-					Node node = nodes.item(i);
-					LifeCycleTransition transition = getTransitionData(result, node, xpath);
+                for (int i = 0; i < nodes.getLength(); i++) {
+                    Node node = nodes.item(i);
+                    LifeCycleTransition transition = getTransitionData(result, node, xpath);
 
-					if (transition != null)
-						result.getTransitionList().add(transition);
-				}
-        	} catch (XPathException e) {
-        		logger.error(e.getMessage(), e);
-        		logger.error("Unable to parse lifecycle definition");
-        	}
+                    if (transition != null)
+                        result.getTransitionList().add(transition);
+                }
+            } catch (XPathException e) {
+                logger.error(e.getMessage(), e);
+                logger.error("Unable to parse lifecycle definition");
+            }
         }
 
         return result;
     }
 
     protected Document getDOMDocument(InputStream xmlStream, String encoding) {
-		DocumentBuilderFactory DOMFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory DOMFactory = DocumentBuilderFactory.newInstance();
         DOMFactory.setNamespaceAware(true);
 
         InputStreamReader reader = null;
 
         try {
-        	// validate document
-        	logger.info("Validating XML LifeCycle Definition against XSD schema");
+            // validate document
+            logger.info("Validating XML LifeCycle Definition against XSD schema");
 
-        	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-       		IOUtils.copy(xmlStream, baos);
-       		InputStream xmlStream1 = new ByteArrayInputStream(baos.toByteArray());
-       		InputStream xmlStream2 = new ByteArrayInputStream(baos.toByteArray());
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            IOUtils.copy(xmlStream, baos);
+            InputStream xmlStream1 = new ByteArrayInputStream(baos.toByteArray());
+            InputStream xmlStream2 = new ByteArrayInputStream(baos.toByteArray());
 
-       		final ClassPathResource xsdResource = new ClassPathResource(SCHEMA_PATH);
-       		InputStream xsdStream = xsdResource.getInputStream();
+            final ClassPathResource xsdResource = new ClassPathResource(SCHEMA_PATH);
+            InputStream xsdStream = xsdResource.getInputStream();
 
-       		validateDocument(xmlStream1, xsdStream);
+            validateDocument(xmlStream1, xsdStream);
 
-       		// parse document
-        	logger.info("Building W3C Document for lifecycle XML stream");
+            // parse document
+            logger.info("Building W3C Document for lifecycle XML stream");
 
             reader = new InputStreamReader(xmlStream2, encoding);
             InputSource is = new InputSource(reader);
 
             // build document
-        	DocumentBuilder builder = DOMFactory.newDocumentBuilder();
-        	Document doc = builder.parse(is);
+            DocumentBuilder builder = DOMFactory.newDocumentBuilder();
 
-        	return doc;
+            return builder.parse(is);
         } catch (SAXException | IOException | ParserConfigurationException e) {
-			logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
 
-			return null;
-		} finally {
+            return null;
+        } finally {
             if (reader != null) {
-				try {
-					reader.close();
-				} catch (IOException e) {
-				}
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                }
             }
         }
-	}
+    }
 
     /**
      * Validate XML document against XSD schema
@@ -197,7 +196,7 @@ public class LifeCycleXMLFormat extends LifeCycleAbstractFormat {
      * @throws IOException
      */
     protected void validateDocument(InputStream xmlStream, InputStream xsdStream) throws SAXException, IOException {
-    	SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = factory.newSchema(new StreamSource(xsdStream));
         Validator validator = schema.newValidator();
         validator.validate(new StreamSource(xmlStream));
@@ -210,60 +209,60 @@ public class LifeCycleXMLFormat extends LifeCycleAbstractFormat {
      * @return POJO with state fields
      */
     protected LifeCycleState getStateData(LifeCycleDefinition lcd, Node node, XPath xpath) {
-    	if (node != null) {
-    		LifeCycleState state = new LifeCycleState();
+        if (node != null) {
+            LifeCycleState state = new LifeCycleState();
 
-    		try {
-				Node idNode = (Node) xpath.evaluate(NS_PREFIX + LifeCycleConstants.ID, node, XPathConstants.NODE);
-				Node eventNode = (Node) xpath.evaluate(NS_PREFIX + LifeCycleConstants.EVENT, node, XPathConstants.NODE);
-				NodeList startActionNodes = (NodeList) xpath.evaluate(NS_PREFIX + LifeCycleConstants.START_ACTION, node, XPathConstants.NODESET);
-				NodeList endActionNodes = (NodeList) xpath.evaluate(NS_PREFIX + LifeCycleConstants.END_ACTION, node, XPathConstants.NODESET);
+            try {
+                Node idNode = (Node) xpath.evaluate(NS_PREFIX + LifeCycleConstants.ID, node, XPathConstants.NODE);
+                Node eventNode = (Node) xpath.evaluate(NS_PREFIX + LifeCycleConstants.EVENT, node, XPathConstants.NODE);
+                NodeList startActionNodes = (NodeList) xpath.evaluate(NS_PREFIX + LifeCycleConstants.START_ACTION, node, XPathConstants.NODESET);
+                NodeList endActionNodes = (NodeList) xpath.evaluate(NS_PREFIX + LifeCycleConstants.END_ACTION, node, XPathConstants.NODESET);
 
-				if (idNode != null) {
-					String id = getNodeStringValue(idNode);
-					state.setId(id);
-				}
+                if (idNode != null) {
+                    String id = getNodeStringValue(idNode);
+                    state.setId(id);
+                }
 
-				if (eventNode != null) {
-					LifeCycleEvent lcEvent = getLifeCycleEvent(lcd, xpath, eventNode);
-					state.setEvent(lcEvent);
-				}
+                if (eventNode != null) {
+                    LifeCycleEvent lcEvent = getLifeCycleEvent(lcd, xpath, eventNode);
+                    state.setEvent(lcEvent);
+                }
 
-				if ((startActionNodes != null) && (startActionNodes.getLength() > 0)) {
-				    for (int i = 0; i < startActionNodes.getLength(); i++) {
-    					Node actionNode = startActionNodes.item(i);
-    					Node typeNode = actionNode.getAttributes().getNamedItem(LifeCycleConstants.ATTR_TYPE);
+                if ((startActionNodes != null) && (startActionNodes.getLength() > 0)) {
+                    for (int i = 0; i < startActionNodes.getLength(); i++) {
+                        Node actionNode = startActionNodes.item(i);
+                        Node typeNode = actionNode.getAttributes().getNamedItem(LifeCycleConstants.ATTR_TYPE);
 
-    					if (typeNode != null) {
-    						String type = typeNode.getNodeValue();
-    						LifeCycleAction lcAction = new LifeCycleAction(type);
+                        if (typeNode != null) {
+                            String type = typeNode.getNodeValue();
+                            LifeCycleAction lcAction = new LifeCycleAction(type);
 
-    						NodeList paramNodes = (NodeList) xpath.evaluate(NS_PREFIX + LifeCycleConstants.PARAM, actionNode, XPathConstants.NODESET);
+                            NodeList paramNodes = (NodeList) xpath.evaluate(NS_PREFIX + LifeCycleConstants.PARAM, actionNode, XPathConstants.NODESET);
 
-    		                for (int j = 0; j < paramNodes.getLength(); j++) {
-    		                    Node paramNode = paramNodes.item(j);
-    		                    Node nameNode = paramNode.getAttributes().getNamedItem(LifeCycleConstants.ATTR_NAME);
+                            for (int j = 0; j < paramNodes.getLength(); j++) {
+                                Node paramNode = paramNodes.item(j);
+                                Node nameNode = paramNode.getAttributes().getNamedItem(LifeCycleConstants.ATTR_NAME);
 
-    		                    if (nameNode != null) {
-    		                        String paramName = nameNode.getNodeValue();
-    		                        String paramValue = getNodeStringValue(paramNode);
-    		                        lcAction.setParam(paramName, paramValue);
-    		                    }
-    		                }
+                                if (nameNode != null) {
+                                    String paramName = nameNode.getNodeValue();
+                                    String paramValue = getNodeStringValue(paramNode);
+                                    lcAction.setParam(paramName, paramValue);
+                                }
+                            }
 
-    		                state.getStartActionList().add(lcAction);
-    					}
-				    }
-				}
+                            state.getStartActionList().add(lcAction);
+                        }
+                    }
+                }
 
-				if ((endActionNodes != null) && (endActionNodes.getLength() > 0)) {
-				    for (int i = 0; i < endActionNodes.getLength(); i++) {
-    					Node actionNode = endActionNodes.item(i);
-    					Node typeNode = actionNode.getAttributes().getNamedItem(LifeCycleConstants.ATTR_TYPE);
+                if ((endActionNodes != null) && (endActionNodes.getLength() > 0)) {
+                    for (int i = 0; i < endActionNodes.getLength(); i++) {
+                        Node actionNode = endActionNodes.item(i);
+                        Node typeNode = actionNode.getAttributes().getNamedItem(LifeCycleConstants.ATTR_TYPE);
 
-    					if (typeNode != null) {
-    						String type = typeNode.getNodeValue();
-    						LifeCycleAction lcAction = new LifeCycleAction(type);
+                        if (typeNode != null) {
+                            String type = typeNode.getNodeValue();
+                            LifeCycleAction lcAction = new LifeCycleAction(type);
 
                             NodeList paramNodes = (NodeList) xpath.evaluate(NS_PREFIX + LifeCycleConstants.PARAM, actionNode, XPathConstants.NODESET);
 
@@ -279,17 +278,17 @@ public class LifeCycleXMLFormat extends LifeCycleAbstractFormat {
                             }
 
                             state.getEndActionList().add(lcAction);
-    					}
-				    }
-				}
+                        }
+                    }
+                }
 
-				return state;
-			} catch (XPathException e) {
-				logger.error(e.getMessage(), e);
-			}
-    	}
+                return state;
+            } catch (XPathException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
 
-    	return null;
+        return null;
     }
 
     /**
@@ -299,39 +298,39 @@ public class LifeCycleXMLFormat extends LifeCycleAbstractFormat {
      * @return POJO with transition fields
      */
     protected LifeCycleTransition getTransitionData(LifeCycleDefinition lcd, Node node, XPath xpath) {
-    	if (node != null) {
-    		LifeCycleTransition transition = new LifeCycleTransition();
+        if (node != null) {
+            LifeCycleTransition transition = new LifeCycleTransition();
 
-    		try {
-				Node fromStateNode = (Node) xpath.evaluate(NS_PREFIX + LifeCycleConstants.FROM_STATE, node, XPathConstants.NODE);
-				Node eventNode = (Node) xpath.evaluate(NS_PREFIX + LifeCycleConstants.EVENT, node, XPathConstants.NODE);
-				Node toStateNode = (Node) xpath.evaluate(NS_PREFIX + LifeCycleConstants.TO_STATE, node, XPathConstants.NODE);
-				NodeList conditionNodes = (NodeList) xpath.evaluate(NS_PREFIX + LifeCycleConstants.CONDITION, node, XPathConstants.NODESET);
-				NodeList actionNodes = (NodeList) xpath.evaluate(NS_PREFIX + LifeCycleConstants.ACTION, node, XPathConstants.NODESET);
+            try {
+                Node fromStateNode = (Node) xpath.evaluate(NS_PREFIX + LifeCycleConstants.FROM_STATE, node, XPathConstants.NODE);
+                Node eventNode = (Node) xpath.evaluate(NS_PREFIX + LifeCycleConstants.EVENT, node, XPathConstants.NODE);
+                Node toStateNode = (Node) xpath.evaluate(NS_PREFIX + LifeCycleConstants.TO_STATE, node, XPathConstants.NODE);
+                NodeList conditionNodes = (NodeList) xpath.evaluate(NS_PREFIX + LifeCycleConstants.CONDITION, node, XPathConstants.NODESET);
+                NodeList actionNodes = (NodeList) xpath.evaluate(NS_PREFIX + LifeCycleConstants.ACTION, node, XPathConstants.NODESET);
 
-				if (fromStateNode != null) {
-					String fromState = getNodeStringValue(fromStateNode);
-					transition.setFromState(fromState);
-				}
+                if (fromStateNode != null) {
+                    String fromState = getNodeStringValue(fromStateNode);
+                    transition.setFromState(fromState);
+                }
 
-				if (toStateNode != null) {
-					String toState = getNodeStringValue(toStateNode);
-					transition.setToState(toState);
-				}
+                if (toStateNode != null) {
+                    String toState = getNodeStringValue(toStateNode);
+                    transition.setToState(toState);
+                }
 
-				if (eventNode != null) {
-					LifeCycleEvent lcEvent = getLifeCycleEvent(lcd, xpath, eventNode);
-					transition.setEvent(lcEvent);
-				}
+                if (eventNode != null) {
+                    LifeCycleEvent lcEvent = getLifeCycleEvent(lcd, xpath, eventNode);
+                    transition.setEvent(lcEvent);
+                }
 
-				if ((conditionNodes != null) && (conditionNodes.getLength() > 0)) {
-				    for (int i = 0; i < conditionNodes.getLength(); i++) {
-    					Node conditionNode = conditionNodes.item(i);
-    					Node typeNode = conditionNode.getAttributes().getNamedItem(LifeCycleConstants.ATTR_TYPE);
+                if ((conditionNodes != null) && (conditionNodes.getLength() > 0)) {
+                    for (int i = 0; i < conditionNodes.getLength(); i++) {
+                        Node conditionNode = conditionNodes.item(i);
+                        Node typeNode = conditionNode.getAttributes().getNamedItem(LifeCycleConstants.ATTR_TYPE);
 
-    					if (typeNode != null) {
-    						String type = typeNode.getNodeValue();
-    						LifeCycleCondition lcCondition = new LifeCycleCondition(type);
+                        if (typeNode != null) {
+                            String type = typeNode.getNodeValue();
+                            LifeCycleCondition lcCondition = new LifeCycleCondition(type);
 
                             NodeList paramNodes = (NodeList) xpath.evaluate(NS_PREFIX + LifeCycleConstants.PARAM, conditionNode, XPathConstants.NODESET);
 
@@ -347,18 +346,18 @@ public class LifeCycleXMLFormat extends LifeCycleAbstractFormat {
                             }
 
                             transition.getConditionList().add(lcCondition);
-    					}
-				    }
-				}
+                        }
+                    }
+                }
 
-				if ((actionNodes != null) && (actionNodes.getLength() > 0)) {
-				    for (int i = 0; i < actionNodes.getLength(); i++) {
-    					Node actionNode = actionNodes.item(i);
-    					Node typeNode = actionNode.getAttributes().getNamedItem(LifeCycleConstants.ATTR_TYPE);
+                if ((actionNodes != null) && (actionNodes.getLength() > 0)) {
+                    for (int i = 0; i < actionNodes.getLength(); i++) {
+                        Node actionNode = actionNodes.item(i);
+                        Node typeNode = actionNode.getAttributes().getNamedItem(LifeCycleConstants.ATTR_TYPE);
 
-    					if (typeNode != null) {
-    						String type = typeNode.getNodeValue();
-    						LifeCycleAction lcAction = new LifeCycleAction(type);
+                        if (typeNode != null) {
+                            String type = typeNode.getNodeValue();
+                            LifeCycleAction lcAction = new LifeCycleAction(type);
 
                             NodeList paramNodes = (NodeList) xpath.evaluate(NS_PREFIX + LifeCycleConstants.PARAM, actionNode, XPathConstants.NODESET);
 
@@ -374,81 +373,81 @@ public class LifeCycleXMLFormat extends LifeCycleAbstractFormat {
                             }
 
                             transition.getActionList().add(lcAction);
-    					}
-				    }
-				}
+                        }
+                    }
+                }
 
-				return transition;
-			} catch (XPathException e) {
-				logger.error(e.getMessage(), e);
-			}
-    	}
+                return transition;
+            } catch (XPathException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
 
-    	return null;
+        return null;
     }
 
     protected LifeCycleEvent getLifeCycleEvent(LifeCycleDefinition lcd, XPath xpath, Node eventNode) throws XPathException {
-    	Node typeNode = eventNode.getAttributes().getNamedItem(LifeCycleConstants.ATTR_TYPE);
+        Node typeNode = eventNode.getAttributes().getNamedItem(LifeCycleConstants.ATTR_TYPE);
 
-		if (typeNode != null) {
-			LifeCycleEvent lcEvent = new LifeCycleEvent();
+        if (typeNode != null) {
+            LifeCycleEvent lcEvent = new LifeCycleEvent();
 
-			String type = typeNode.getNodeValue();
+            String type = typeNode.getNodeValue();
 
-			String eventType = "";
-			switch (type) {
-				case "auto" :
-					eventType = LifeCycleModel.CONSTR_AUTOMATIC_TRANSITION;
-					break;
-				case "user" :
-					eventType = LifeCycleModel.CONSTR_USER_TRANSITION;
-					break;
-				case "timer" :
-					eventType = LifeCycleModel.CONSTR_TIMER_TRANSITION;
-					break;
-				case "processStart" :
-					eventType = LifeCycleModel.CONSTR_TRANSITION_ON_START_PROCESS;
-					break;
-				case "processEnd" :
-					eventType = LifeCycleModel.CONSTR_TRANSITION_ON_END_PROCESS;
-					break;
-				case "signal" :
+            String eventType = "";
+            switch (type) {
+                case "auto" :
+                    eventType = LifeCycleModel.CONSTR_AUTOMATIC_TRANSITION;
+                    break;
+                case "user" :
+                    eventType = LifeCycleModel.CONSTR_USER_TRANSITION;
+                    break;
+                case "timer" :
+                    eventType = LifeCycleModel.CONSTR_TIMER_TRANSITION;
+                    break;
+                case "processStart" :
+                    eventType = LifeCycleModel.CONSTR_TRANSITION_ON_START_PROCESS;
+                    break;
+                case "processEnd" :
+                    eventType = LifeCycleModel.CONSTR_TRANSITION_ON_END_PROCESS;
+                    break;
+                case "signal" :
                     eventType = LifeCycleModel.CONSTR_TRANSITION_ON_SIGNAL;
                     break;
-			}
+            }
 
-			lcEvent.setEventType(eventType);
+            lcEvent.setEventType(eventType);
 
-			NodeList paramNodes = (NodeList) xpath.evaluate(NS_PREFIX + LifeCycleConstants.PARAM, eventNode, XPathConstants.NODESET);
+            NodeList paramNodes = (NodeList) xpath.evaluate(NS_PREFIX + LifeCycleConstants.PARAM, eventNode, XPathConstants.NODESET);
 
-			if (paramNodes != null) {
-				for (int i = 0; i < paramNodes.getLength(); i++) {
-					Node paramNode = paramNodes.item(i);
-					Node nameNode = paramNode.getAttributes().getNamedItem(LifeCycleConstants.ATTR_NAME);
+            if (paramNodes != null) {
+                for (int i = 0; i < paramNodes.getLength(); i++) {
+                    Node paramNode = paramNodes.item(i);
+                    Node nameNode = paramNode.getAttributes().getNamedItem(LifeCycleConstants.ATTR_NAME);
 
-					if (nameNode != null) {
-						String paramName = nameNode.getNodeValue();
-						String paramValue = getNodeStringValue(paramNode);
-						lcEvent.setEventParam(paramName, paramValue);
-					}
-				}
-			}
+                    if (nameNode != null) {
+                        String paramName = nameNode.getNodeValue();
+                        String paramValue = getNodeStringValue(paramNode);
+                        lcEvent.setEventParam(paramName, paramValue);
+                    }
+                }
+            }
 
-			return lcEvent;
-		}
+            return lcEvent;
+        }
 
-		return null;
+        return null;
     }
 
     protected String getNodeStringValue(Node n) {
-		try {
-			return n.getTextContent();
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
+        try {
+            return n.getTextContent();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
 
-		return null;
-	}
+        return null;
+    }
 
     @Override
     public String serializeLifeCycleDefinition(LifeCycleDefinition lcd) {
@@ -655,48 +654,48 @@ public class LifeCycleXMLFormat extends LifeCycleAbstractFormat {
         return xmlEventType;
     }
 
-	class SimpleNamespaceContext implements NamespaceContext {
-		private Map<String, String> urisByPrefix = new HashMap<>();
+    class SimpleNamespaceContext implements NamespaceContext {
+        private Map<String, String> urisByPrefix = new HashMap<>();
 
-		private Map<String, Set<String>> prefixesByURI = new HashMap<>();
+        private Map<String, Set<String>> prefixesByURI = new HashMap<>();
 
-		public SimpleNamespaceContext() {
-			addNamespace(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI);
-			addNamespace(XMLConstants.XMLNS_ATTRIBUTE, XMLConstants.XMLNS_ATTRIBUTE_NS_URI);
-		}
+        public SimpleNamespaceContext() {
+            addNamespace(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI);
+            addNamespace(XMLConstants.XMLNS_ATTRIBUTE, XMLConstants.XMLNS_ATTRIBUTE_NS_URI);
+        }
 
-		public synchronized void addNamespace(String prefix, String namespaceURI) {
-			urisByPrefix.put(prefix, namespaceURI);
-			if (prefixesByURI.containsKey(namespaceURI)) {
-				(prefixesByURI.get(namespaceURI)).add(prefix);
-			} else {
-				Set<String> set = new HashSet<>();
-				set.add(prefix);
-				prefixesByURI.put(namespaceURI, set);
-			}
-		}
+        public synchronized void addNamespace(String prefix, String namespaceURI) {
+            urisByPrefix.put(prefix, namespaceURI);
+            if (prefixesByURI.containsKey(namespaceURI)) {
+                (prefixesByURI.get(namespaceURI)).add(prefix);
+            } else {
+                Set<String> set = new HashSet<>();
+                set.add(prefix);
+                prefixesByURI.put(namespaceURI, set);
+            }
+        }
 
-		public String getNamespaceURI(String prefix) {
-			if (prefix == null)
-				throw new IllegalArgumentException("Prefix cannot be null");
-			if (urisByPrefix.containsKey(prefix))
-				return (String) urisByPrefix.get(prefix);
-			else
-				return XMLConstants.NULL_NS_URI;
-		}
+        public String getNamespaceURI(String prefix) {
+            if (prefix == null)
+                throw new IllegalArgumentException("Prefix cannot be null");
+            if (urisByPrefix.containsKey(prefix))
+                return (String) urisByPrefix.get(prefix);
+            else
+                return XMLConstants.NULL_NS_URI;
+        }
 
-		public String getPrefix(String namespaceURI) {
-			return (String) getPrefixes(namespaceURI).next();
-		}
+        public String getPrefix(String namespaceURI) {
+            return (String) getPrefixes(namespaceURI).next();
+        }
 
-		public Iterator<String> getPrefixes(String namespaceURI) {
-			if (namespaceURI == null)
-				throw new IllegalArgumentException("NamespaceURI cannot be null");
-			if (prefixesByURI.containsKey(namespaceURI)) {
-				return ((Set<String>) prefixesByURI.get(namespaceURI)).iterator();
-			} else {
-				return (new HashSet<String>()).iterator();
-			}
-		}
-	}
+        public Iterator<String> getPrefixes(String namespaceURI) {
+            if (namespaceURI == null)
+                throw new IllegalArgumentException("NamespaceURI cannot be null");
+            if (prefixesByURI.containsKey(namespaceURI)) {
+                return ((Set<String>) prefixesByURI.get(namespaceURI)).iterator();
+            } else {
+                return (new HashSet<String>()).iterator();
+            }
+        }
+    }
 }

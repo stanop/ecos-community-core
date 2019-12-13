@@ -108,11 +108,11 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
             template = getTemplateBasedOnKind(node)!= null ? getTemplateBasedOnKind(node) : getTemplateBasedOnType(node);
         }
 
-		if(template == null) {
+        if(template == null) {
             template = getTemplateBasedOnTag(node, tags);
-		}
-		if(template != null) {
-			if (!containsAssoc(node, template)) {
+        }
+        if(template != null) {
+            if (!containsAssoc(node, template)) {
                 nodeService.createAssociation(node, template, DmsModel.ASSOC_TEMPLATE);
             }
             /*added generate template*/
@@ -123,7 +123,7 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
                 actionService.executeAction(actionGenerateContent, node);
             }
             /*end*/
-		}
+        }
         else {
             logger.info("Can't find template for document");
         }
@@ -164,69 +164,69 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
             }
         }
     }
-	
-	private NodeRef getTemplateBasedOnType(NodeRef node)
-	{
-		StringBuilder sb = new StringBuilder();
-		sb.append("TYPE:\"").append(DmsModel.TYPE_TEMPLATE).append("\" AND (");
-		sb.append("@tk\\:appliesToType:\"")
+
+    private NodeRef getTemplateBasedOnType(NodeRef node)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("TYPE:\"").append(DmsModel.TYPE_TEMPLATE).append("\" AND (");
+        sb.append("@tk\\:appliesToType:\"")
                 .append((NodeRef)nodeService.getProperty(node, ClassificationModel.PROP_DOCUMENT_TYPE))
                 .append("\" AND (ISNULL:\"" + ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND + "\"")
                 .append("OR ISUNSET:\"" + ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND + "\")")
                 .append(")");
-		NodeRef template = getTemplate(sb);
-		return template;
-	}
-	
-	private NodeRef getTemplateBasedOnKind(NodeRef node)
-	{
-		NodeRef template = null;
-		if(nodeService.getProperty(node, ClassificationModel.PROP_DOCUMENT_KIND)!=null)
-		{
-			StringBuilder sb = new StringBuilder();
-			sb.append("TYPE:\"").append(DmsModel.TYPE_TEMPLATE).append("\"");
-			sb.append(" AND (@tk\\:appliesToKind:\"").append((NodeRef)nodeService.getProperty(node, ClassificationModel.PROP_DOCUMENT_KIND)).append("\" )");
-			template =  getTemplate(sb);
-		}
-		return template;
-	}
-	
-	private NodeRef getTemplateBasedOnTag(NodeRef node, Set<NodeRef> tags)
-	{
-		NodeRef template = null;
+        return getTemplate(sb);
+    }
+
+    private NodeRef getTemplateBasedOnKind(NodeRef node)
+    {
+        NodeRef template = null;
+        if(nodeService.getProperty(node, ClassificationModel.PROP_DOCUMENT_KIND)!=null)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.append("TYPE:\"").append(DmsModel.TYPE_TEMPLATE).append("\"");
+            sb.append(" AND (@tk\\:appliesToKind:\"").append((NodeRef)nodeService.getProperty(node, ClassificationModel.PROP_DOCUMENT_KIND)).append("\" )");
+            template =  getTemplate(sb);
+        }
+        return template;
+    }
+
+    private NodeRef getTemplateBasedOnTag(NodeRef node, Set<NodeRef> tags)
+    {
+        NodeRef template = null;
         if (!tags.isEmpty()) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("TYPE:\"").append(DmsModel.TYPE_TEMPLATE).append("\" AND (");
-			for (NodeRef tag : tags) {
-				sb.append("@cm\\:taggable:\"").append(tag).append("\" ");
-			}
-			sb.append(")");
-			template = getTemplate(sb);
-		}
-		return template;
-	}
-	
-	private NodeRef getTemplate(StringBuilder sb)
-	{
-		ResultSet results = null;
-		NodeRef template = null;
-		SearchParameters sp = new SearchParameters();
-		sp.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
-		sp.setLanguage(SearchService.LANGUAGE_LUCENE);
-		sp.setQuery(sb.toString());
-		try {
-			results = serviceRegistry.getSearchService().query(sp);
-			List<NodeRef> templates = results.getNodeRefs();
-			if (templates != null && !templates.isEmpty()) {
-				template = templates.get(0);
-			}
-		} finally {
-			if (results != null) {
-				results.close();
-			}
-		}
-		return template;
-	}
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("TYPE:\"").append(DmsModel.TYPE_TEMPLATE).append("\" AND (");
+            for (NodeRef tag : tags) {
+                sb.append("@cm\\:taggable:\"").append(tag).append("\" ");
+            }
+            sb.append(")");
+            template = getTemplate(sb);
+        }
+        return template;
+    }
+
+    private NodeRef getTemplate(StringBuilder sb)
+    {
+        ResultSet results = null;
+        NodeRef template = null;
+        SearchParameters sp = new SearchParameters();
+        sp.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+        sp.setLanguage(SearchService.LANGUAGE_LUCENE);
+        sp.setQuery(sb.toString());
+        try {
+            results = serviceRegistry.getSearchService().query(sp);
+            List<NodeRef> templates = results.getNodeRefs();
+            if (templates != null && !templates.isEmpty()) {
+                template = templates.get(0);
+            }
+        } finally {
+            if (results != null) {
+                results.close();
+            }
+        }
+        return template;
+    }
 
     public void setPolicyComponent(PolicyComponent policyComponent) {
         this.policyComponent = policyComponent;

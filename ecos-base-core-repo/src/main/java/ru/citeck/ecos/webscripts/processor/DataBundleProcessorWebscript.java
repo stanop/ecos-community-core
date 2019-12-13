@@ -152,8 +152,7 @@ public class DataBundleProcessorWebscript extends AbstractWebScript
 		model.put(KEY_JSON, new JSONUtils());
 		model.put(ProcessorConstants.KEY_ENCODING, content.getEncoding());
 		model.put(ProcessorConstants.KEY_MIMETYPE, content.getMimetype());
-        DataBundle inputBundle = new DataBundle(stream, model);
-		return inputBundle;
+		return new DataBundle(stream, model);
 	}
 
 	public void setProcessor(DataBundleProcessor processor) {
