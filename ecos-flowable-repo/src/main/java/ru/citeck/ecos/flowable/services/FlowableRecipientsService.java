@@ -42,4 +42,12 @@ public interface FlowableRecipientsService {
      * @return users names from case role
      */
     Set<String> getRoleUsers(NodeRef document, String caseRoleName);
+
+    /**
+     * Method to get users names {@code ContentModel.PROP_USERNAME} from case role,
+     *
+     * @param username user name
+     * @return user email {@code ContentModel.PROP_EMAIL}
+     */
+    String getUserEmail(String username);
 }

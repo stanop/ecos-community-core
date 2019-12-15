@@ -28,6 +28,10 @@ public class FlowableRecipientsServiceJS extends AlfrescoScopableProcessorExtens
         return flowableRecipientsService.getRoleUsers(docRef, caseRoleName);
     }
 
+    public String getUserEmail(String username) {
+        return flowableRecipientsService.getUserEmail(username);
+    }
+
     public void setFlowableRecipientsService(FlowableRecipientsService flowableRecipientsService) {
         this.flowableRecipientsService = flowableRecipientsService;
     }
