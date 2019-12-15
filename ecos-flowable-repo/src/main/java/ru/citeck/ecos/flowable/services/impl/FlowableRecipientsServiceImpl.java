@@ -6,6 +6,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
+import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -30,6 +31,8 @@ public class FlowableRecipientsServiceImpl implements FlowableRecipientsService 
     private AuthorityService authorityService;
     @Autowired
     private DictionaryService dictionaryService;
+    @Autowired
+    private PersonService personService;
     @Autowired
     protected NodeService nodeService;
 
@@ -85,6 +88,12 @@ public class FlowableRecipientsServiceImpl implements FlowableRecipientsService 
     public Set<String> getRoleUsers(NodeRef document, String caseRoleName) {
         return getRoleRecipients(document, caseRoleName, ContentModel.TYPE_PERSON,
                 ContentModel.PROP_USERNAME);
+    }
+
+    @Override
+    public String getUserEmail(String username) {
+        NodeRef person = personService.getPerson(username);
+        return RepoUtils.getProperty(person, ContentModel.PROP_EMAIL, nodeService);
     }
 
     private Set<String> getRoleRecipients(NodeRef document, String caseRoleName, QName recipientType,
