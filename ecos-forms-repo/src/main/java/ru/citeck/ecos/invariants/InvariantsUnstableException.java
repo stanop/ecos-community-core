@@ -24,7 +24,9 @@ public class InvariantsUnstableException extends InvariantsRuntimeException {
         for (Map.Entry<QName, Object> entry : attributes0.entrySet()) {
             QName key = entry.getKey();
             if (!Objects.equals(entry.getValue(), attributes1.get(key))) {
-                if (sb.length() > 0) sb.append(", ");
+                if (sb.length() > 0) {
+                    sb.append(", ");
+                }
                 sb.append(key.toPrefixString());
             }
         }

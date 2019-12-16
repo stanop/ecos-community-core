@@ -107,14 +107,14 @@ public class TemplateNodeInfo implements NamespacePrefixResolverProvider
 
     @SuppressWarnings("unchecked")
     private Map<String,List<TemplateNode>> convertAssocMap(Map<QName,List<NodeRef>> assocMap) {
-        if(assocMap == null) {
+        if (assocMap == null) {
             return null;
         }
         Map<String,List<TemplateNode>> templateAssocMap = new QNameMap<String,List<TemplateNode>>(this);
         for (Map.Entry<QName, List<NodeRef>> entry : assocMap.entrySet()) {
             QName qname = entry.getKey();
             List<NodeRef> nodes = entry.getValue();
-			List<TemplateNode> templateNodes = new ArrayList<>(nodes.size());
+            List<TemplateNode> templateNodes = new ArrayList<>(nodes.size());
             for (NodeRef node : nodes) {
                 templateNodes.add(new TemplateNode(node, services, imageResolver));
             }

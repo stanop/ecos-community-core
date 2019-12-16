@@ -94,14 +94,14 @@ public class BuildWorkflowModel extends AbstractDataBundleLine
     private Object getPropsModel(String workflowId) {
         List<WorkflowPath> paths = workflowService.getWorkflowPaths(workflowId);
         Map<String,Object> props = new HashMap<>();
-        for(WorkflowPath path : paths) {
+        for (WorkflowPath path : paths) {
             Map<QName, Serializable> pathProps = workflowService.getPathProperties(path.getId());
             for(Map.Entry<QName, Serializable> propEntry : pathProps.entrySet()) {
-				QName propQName = propEntry.getKey();
+                QName propQName = propEntry.getKey();
                 String propShortName = propQName.toPrefixString(namespaceService);
                 String propFullName = propQName.toString();
 
-				Serializable pathProp = propEntry.getValue();
+                Serializable pathProp = propEntry.getValue();
                 props.put(propShortName, pathProp);
                 props.put(propFullName, pathProp);
             }
