@@ -173,8 +173,9 @@ public class CategoriesCaseElementDAOImpl extends AbstractCaseElementDAO<Categor
         List<NodeRef> newCategories = RepoUtils.anyToNodeRefs(after.get(categoryProperty));
 
         @SuppressWarnings("unchecked")
-        Collection<NodeRef> addedCategories = CollectionUtils.subtract(newCategories, oldCategories),
-                removedCategories = CollectionUtils.subtract(oldCategories, newCategories);
+        Collection<NodeRef> addedCategories = CollectionUtils.subtract(newCategories, oldCategories);
+        @SuppressWarnings("unchecked")
+        Collection<NodeRef> removedCategories = CollectionUtils.subtract(oldCategories, newCategories);
 
         for (NodeRef element : addedCategories) {
             caseElementService.invokeOnCaseElementAdd(caseNode, element, config);

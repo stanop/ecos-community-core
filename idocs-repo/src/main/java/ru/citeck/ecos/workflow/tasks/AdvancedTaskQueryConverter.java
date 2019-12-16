@@ -37,7 +37,7 @@ public class AdvancedTaskQueryConverter implements QueryParameterConverter {
     @Override
     public Map<String, Object> convert(Object parameters) {
         AdvancedTaskQuery taskQuery = (AdvancedTaskQuery) parameters;
-        Map<String, Object> parametersMap = new HashMap<String, Object>();
+        Map<String, Object> parametersMap = new HashMap<>();
         String owner = taskQuery.getOwner();
         if (owner != null && !owner.isEmpty()) {
             parametersMap.put("owner", owner);

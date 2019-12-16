@@ -264,24 +264,13 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             return null;
         }
 
-        if (query.actors != null) {
+        if ((query.actors != null && query.actors.size() == 1)) {
 
-            if (query.actors.size() == 1) {
-                String actor = query.actors.get(0);
-                if (CURRENT_USER.equals(actor)) {
+            String actor = query.actors.get(0);
+            boolean isCurrentUser = CURRENT_USER.equals(actor);
 
-                    if (query.active == null) {
-                        return workflowUtils.getDocumentUserTasks(docRef);
-                    } else {
-                        return workflowUtils.getDocumentUserTasks(docRef, query.active);
-                    }
-                }
-            }
-        } else {
-            if (query.active == null) {
-                return workflowUtils.getDocumentTasks(docRef);
-            } else {
-                return workflowUtils.getDocumentTasks(docRef, query.active);
+            if (isCurrentUser) {
+                return workflowUtils.getDocumentTasks(docRef, query.active, query.engine, isCurrentUser);
             }
         }
 
@@ -338,6 +327,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     public static class TasksQuery {
 
         @Getter @Setter public String workflowId;
+        @Getter @Setter public String engine;
         @Getter @Setter public List<String> assignees;
         @Getter @Setter public List<String> actors;
         @Getter @Setter public Boolean active;
@@ -534,6 +524,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     return attributes.get("cwf_lastcomment");
                 case ATT_TITLE:
                     return taskInfo.getTitle();
+                case ATT_DESCRIPTION:
+                    return taskInfo.getDescription();
                 case ATT_REASSIGNABLE:
                     return workflowTaskRecordsUtils.isReassignable(attributes, hasOwner, hasClaimOwner);
                 case ATT_CLAIMABLE:

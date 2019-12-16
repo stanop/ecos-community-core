@@ -58,7 +58,7 @@ public class ChildAssociationsFormFilterImpl
 		extends AbstractFilter<Object, NodeRef>
 		implements ChildAssociationsFormFilter {
 	private static final Log log = LogFactory.getLog(ChildAssociationsFormFilterImpl.class);
-	private final Map<String, QName> fieldsChildAssocs = new HashMap<String, QName>();
+	private final Map<String, QName> fieldsChildAssocs = new HashMap<>();
 	private NodeService nodeService;
 	private DictionaryService dictionaryService;
 	/**

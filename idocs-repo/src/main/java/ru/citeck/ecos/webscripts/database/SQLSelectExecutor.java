@@ -72,7 +72,7 @@ public class SQLSelectExecutor extends AbstractWebScript {
 
     private Map<String, String> getParametersMap(WebScriptRequest request) {
         String[] names = request.getParameterNames();
-        Map<String, String> parametersMap = new HashMap<String, String>();
+        Map<String, String> parametersMap = new HashMap<>();
         for (String name : names) {
             String value = request.getParameter(name);
             parametersMap.put(name, value);
@@ -118,7 +118,7 @@ public class SQLSelectExecutor extends AbstractWebScript {
 
     private List<JSONObject> convertToJSON(ResultSet resultSet) throws SQLException, JSONException {
         ResultSetMetaData metaData = resultSet.getMetaData();
-        ArrayList<JSONObject> rows = new ArrayList<JSONObject>();
+        ArrayList<JSONObject> rows = new ArrayList<>();
         while (resultSet.next()) {
             JSONObject row = new JSONObject();
             for (int i = 1; i <= metaData.getColumnCount(); i++) {

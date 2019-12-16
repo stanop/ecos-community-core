@@ -66,14 +66,14 @@ public class ConfirmListService
 	private boolean onlyLatest = false;
 
     public Map<String, Object> getModel(NodeRef document) throws Exception {
-    	Map<String, Object> model = new HashMap<String, Object>();
+    	Map<String, Object> model = new HashMap<>();
     	
     	if(!nodeService.exists(document)) {
     		throw new Exception("There are no document with NodeRef:" + document);
     	}
     	
     	// find document workflows
-    	List<WorkflowInstance> workflows = new ArrayList<WorkflowInstance>();
+    	List<WorkflowInstance> workflows = new ArrayList<>();
     	workflows.addAll(workflowService.getWorkflowsForContent(document, true));
     	workflows.addAll(workflowService.getWorkflowsForContent(document, false));
     	
@@ -92,7 +92,7 @@ public class ConfirmListService
 
     	if(latestWorkflow != null) {
             // get completed tasks of specified type
-            Collection<WorkflowTask> tasks = new ArrayList<WorkflowTask>();
+            Collection<WorkflowTask> tasks = new ArrayList<>();
             addTasks(tasks, latestWorkflow);
             if(onlyLatest) {
                 tasks = filterTasks(tasks);
@@ -115,7 +115,7 @@ public class ConfirmListService
 	
 	// filter tasks by assignee
 	private Collection<WorkflowTask> filterTasks(Collection<WorkflowTask> tasks) {
-		Map<String,WorkflowTask> latestTasks = new HashMap<String,WorkflowTask>();
+		Map<String,WorkflowTask> latestTasks = new HashMap<>();
 		for(WorkflowTask task : tasks) {
 			String assignee = (String) task.getProperties().get(ContentModel.PROP_OWNER);
 			Date completionDate = (Date) task.getProperties().get(WorkflowModel.PROP_COMPLETION_DATE);
@@ -137,7 +137,7 @@ public class ConfirmListService
 				return authorityService.getAuthoritiesForUser((String) nodeService.getProperty(person, ContentModel.PROP_USERNAME));
 			}
 		});
-		List<NodeRef> personGroupRefs = new ArrayList<NodeRef>(personGroups.size());
+		List<NodeRef> personGroupRefs = new ArrayList<>(personGroups.size());
 		for(String groupName : personGroups) {
 			NodeRef group = authorityService.getAuthorityNodeRef(groupName);
 			if(group != null) {
@@ -149,10 +149,10 @@ public class ConfirmListService
 
 	@SuppressWarnings("rawtypes")
 	private Object createTaskListModel(Collection<WorkflowTask> tasks) {
-		List<Object> taskListModel = new ArrayList<Object>(tasks.size());
+		List<Object> taskListModel = new ArrayList<>(tasks.size());
 		for(WorkflowTask task : tasks) {
 			Map<QName, Serializable> taskProperties = task.getProperties();
-			Map<String,Object> taskModel = new HashMap<String,Object>();
+			Map<String,Object> taskModel = new HashMap<>();
 			
 			// role
 			Collection pooledActors = (Collection) taskProperties.get(WorkflowModel.ASSOC_POOLED_ACTORS);

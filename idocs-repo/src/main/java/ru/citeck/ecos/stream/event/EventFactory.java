@@ -62,7 +62,9 @@ public class EventFactory {
     private final MappingRegistry<String, String> panelOfAuthorized;
 
     private final WorkflowQNameConverter qNameConverter;
-    private final String VAR_OUTCOME_PROPERTY_NAME, VAR_COMMENT, VAR_DESCRIPTION;
+    private final String VAR_OUTCOME_PROPERTY_NAME;
+    private final String VAR_COMMENT;
+    private final String VAR_DESCRIPTION;
 
     @Autowired
     public EventFactory(@Qualifier("ecos.workflowDocumentResolverRegistry") WorkflowDocumentResolverRegistry

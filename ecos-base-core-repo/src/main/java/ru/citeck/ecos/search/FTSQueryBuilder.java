@@ -78,8 +78,6 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
                 break;
             case NUMBER_EQUALS:
             case DATE_EQUALS:
-                term = buildEqualsTerm(field, value);
-                break;
             case TYPE_EQUALS:
             case ASPECT_EQUALS:
             case PARENT_EQUALS:

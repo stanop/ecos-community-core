@@ -50,7 +50,7 @@ public class ConcreteBeanPostProcessor implements BeanPostProcessor, Ordered, Ap
     private static final Log logger = LogFactory.getLog(ConcreteBeanPostProcessor.class);
     
     private List<String> configLocations;
-    private Map<String, List<BeanProcessor>> concreteProcessors = new HashMap<String, List<BeanProcessor>>();
+    private Map<String, List<BeanProcessor>> concreteProcessors = new HashMap<>();
     private int order = 0;
 
     private ApplicationContext applicationContext;
@@ -83,7 +83,7 @@ public class ConcreteBeanPostProcessor implements BeanPostProcessor, Ordered, Ap
             String beanName = processor.getBeanName();
             List<BeanProcessor> processorsForName = concreteProcessors.get(beanName);
             if(processorsForName == null) {
-                processorsForName = new LinkedList<BeanProcessor>();
+                processorsForName = new LinkedList<>();
                 concreteProcessors.put(beanName, processorsForName);
             }
             processorsForName.add(processor);
@@ -91,7 +91,7 @@ public class ConcreteBeanPostProcessor implements BeanPostProcessor, Ordered, Ap
     }
 
     private Set<String> readProcessorNames() throws IOException {
-        Set<String> processorNames = new LinkedHashSet<String>();
+        Set<String> processorNames = new LinkedHashSet<>();
         ResourcePatternResolver resolver = new ServletContextResourcePatternResolver(servletContext);
         for(String configLocation : configLocations) {
             Resource[] configs = resolver.getResources(configLocation);

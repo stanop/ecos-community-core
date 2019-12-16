@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-/**
+/*
  *
  * THIS OVERRIDE IS USED TO EXPLICITLY SET THE ALFRESCO REPOSITORY LOCALE TO RUSSIAN.
  * For localizing Share interface look at ru.citeck.LocaleRestrictor in the Share project
@@ -24,7 +24,6 @@
 package org.alfresco.web.app.servlet;
 
 import java.io.IOException;
-import javax.servlet.http.HttpSession;
 import java.util.Locale;
 import java.util.StringTokenizer;
 

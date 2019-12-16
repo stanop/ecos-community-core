@@ -22,6 +22,11 @@ public class EngineTaskInfo implements TaskInfo {
     }
 
     @Override
+    public String getDescription() {
+        return AuthenticationUtil.runAsSystem(info::getDescription);
+    }
+
+    @Override
     public String getId() {
         return engineId + "$" + info.getId();
     }

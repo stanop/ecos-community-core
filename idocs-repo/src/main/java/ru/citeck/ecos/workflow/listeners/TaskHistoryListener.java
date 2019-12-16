@@ -76,8 +76,10 @@ public class TaskHistoryListener extends AbstractTaskListener {
     private List<String> panelOfAuthorized; //группа уполномоченных
 
     private WorkflowQNameConverter qNameConverter;
-    private String VAR_OUTCOME_PROPERTY_NAME, VAR_COMMENT, VAR_DESCRIPTION;
+    private String VAR_OUTCOME_PROPERTY_NAME;
+    private String VAR_COMMENT;
     private String VAR_LAST_COMMENT;
+    private String VAR_DESCRIPTION;
     private WorkflowDocumentResolverRegistry documentResolverRegistry;
 
     /* (non-Javadoc)
@@ -194,7 +196,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 
     @SuppressWarnings("rawtypes")
     private Map<QName, Serializable> convertProperties(Map additionalProperties) {
-        Map<QName, Serializable> result = new HashMap<QName, Serializable>(additionalProperties.size());
+        Map<QName, Serializable> result = new HashMap<>(additionalProperties.size());
         for (Object key : additionalProperties.keySet()) {
             QName name = null;
             if (key instanceof String) {

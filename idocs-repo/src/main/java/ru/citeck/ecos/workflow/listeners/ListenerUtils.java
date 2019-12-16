@@ -108,7 +108,7 @@ public class ListenerUtils {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static ArrayList<NodeRef> getPooledActors(DelegateTask task, AuthorityService authorityService) {
         Set<IdentityLink> candidates = (Set) ReflectionUtils.callGetterIfDeclared(task, "getCandidates", new HashSet());
-        ArrayList<NodeRef> pooledActors = new ArrayList<NodeRef>(candidates.size());
+        ArrayList<NodeRef> pooledActors = new ArrayList<>(candidates.size());
         for (IdentityLink candidate : candidates) {
             if (!candidate.getType().equals(IdentityLinkType.CANDIDATE)) {
                 continue;
@@ -139,10 +139,10 @@ public class ListenerUtils {
         }
         @SuppressWarnings("rawtypes")
         Collection source = (Collection) taskAttachments;
-        ArrayList<NodeRef> target = new ArrayList<NodeRef>(source.size());
+        ArrayList<NodeRef> target = new ArrayList<>(source.size());
         for (Object item : source) {
             if (item == null) {
-                continue;
+                // empty
             } else if (item instanceof NodeRef) {
                 target.add((NodeRef) item);
             } else if (item instanceof ScriptNode) {

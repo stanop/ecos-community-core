@@ -69,7 +69,7 @@ public class AddConsiderableVersion implements TaskListener {
         WorkflowQNameConverter qNameConverter = new WorkflowQNameConverter(namespaceService);
         NodeRef packageRef = ((ScriptNode) delegateTask
                 .getVariable(qNameConverter.mapQNameToName(WorkflowModel.ASSOC_PACKAGE))).getNodeRef();
-        Set<QName> includeQNames = new HashSet<QName>();
+        Set<QName> includeQNames = new HashSet<>();
         includeQNames.add(WorkflowModel.ASSOC_PACKAGE_CONTAINS);
         includeQNames.add(ContentModel.ASSOC_CONTAINS);
         List<ChildAssociationRef> documentRefs = nodeService.getChildAssocs(packageRef);

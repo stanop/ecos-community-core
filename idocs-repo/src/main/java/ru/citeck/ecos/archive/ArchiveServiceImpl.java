@@ -75,7 +75,7 @@ class ArchiveServiceImpl implements ArchiveService {
 	protected DictionaryService dictionaryService;
 	protected Set<String> storesToIgnorePolicies = Collections.emptySet();
 
-	protected Map<QName, Destination> cache = Collections.synchronizedMap(new HashMap<QName, Destination>());
+	protected Map<QName, Destination> cache = Collections.synchronizedMap(new HashMap<>());
 
 	private ClassPolicyDelegate<BeforeMovePolicy> beforeMoveDelegate;
 	private ClassPolicyDelegate<OnMovePolicy> onMoveDelegate;
@@ -222,7 +222,7 @@ class ArchiveServiceImpl implements ArchiveService {
 			Set<QName> aspectQNames = nodeService.getAspects(nodeRef);
 			QName typeQName = nodeService.getType(nodeRef);
 
-			qnames = new HashSet<QName>(aspectQNames.size() + 1);
+			qnames = new HashSet<>(aspectQNames.size() + 1);
 			qnames.addAll(aspectQNames);
 			qnames.add(typeQName);
 		} catch (InvalidNodeRefException e) {

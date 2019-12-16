@@ -210,7 +210,7 @@ public class HistoryService {
                 assocType = HistoryModel.ASSOC_EVENT_CONTAINED;
             }
 
-            /** Modifier */
+            /* Modifier */
             String currentUsername = authenticationService.getCurrentUserName();
             if (currentUsername != null) {
                 properties.put(HistoryModel.MODIFIER_PROPERTY, currentUsername);
@@ -346,13 +346,13 @@ public class HistoryService {
         logger.info("History transferring started from position - " + offset);
         logger.info("History transferring. Max load size - " + maxItemsCount);
         try {
-            /** Load first documents */
+            /* Load first documents */
             int documentsTransferred = 0;
             int skipCount = offset;
             ResultSet resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
             boolean hasMore;
 
-            /** Start processing */
+            /* Start processing */
             do {
                 if (isHistoryTransferringInterrupted) {
                     logger.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
@@ -360,7 +360,7 @@ public class HistoryService {
                 }
                 List<NodeRef> documents = resultSet.getNodeRefs();
                 hasMore = resultSet.hasMore();
-                /** Process each document */
+                /* Process each document */
                 for (NodeRef documentRef : documents) {
                     if (isHistoryTransferringInterrupted) {
                         logger.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
@@ -391,7 +391,7 @@ public class HistoryService {
 
     private void sendEventsByDocumentRef(NodeRef documentRef) {
         UserTransaction trx = transactionService.getNonPropagatingUserTransaction(false);
-        /** Do processing in transaction */
+        /* Do processing in transaction */
         try {
             trx.setTransactionTimeout(1000);
             trx.begin();
@@ -486,7 +486,7 @@ public class HistoryService {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void addHistoricalProperty(NodeRef nodeRef, QName sourceProp, QName historyProp) {
         Object oldValue = nodeService.getProperty(nodeRef, HistoryModel.PROP_ADDITIONAL_PROPERTIES);
-        HashMap<QName, QName> propertyMapping = new HashMap<QName, QName>();
+        HashMap<QName, QName> propertyMapping = new HashMap<>();
         if (oldValue instanceof Map) {
             propertyMapping.putAll((Map) oldValue);
         }
@@ -595,56 +595,11 @@ public class HistoryService {
         }
         @SuppressWarnings("unchecked")
         Map<QName, QName> propertyMapping = (Map<QName, QName>) mapping;
-        Map<QName, Serializable> additionalProperties = new HashMap<QName, Serializable>(propertyMapping.size());
+        Map<QName, Serializable> additionalProperties = new HashMap<>(propertyMapping.size());
         for (QName documentProp : propertyMapping.keySet()) {
             QName historyProp = propertyMapping.get(documentProp);
             additionalProperties.put(historyProp, nodeService.getProperty(document, documentProp));
         }
         nodeService.addProperties(historyEvent, additionalProperties);
-    }
-
-    /**
-     * History batch process worker
-     */
-    private static class HistoryTransferWorker extends BatchProcessor.BatchProcessWorkerAdaptor<NodeRef> {
-
-        private HistoryRemoteService historyService;
-
-        HistoryTransferWorker(HistoryRemoteService historyService) {
-            this.historyService = historyService;
-        }
-
-        @Override
-        public void process(NodeRef eventRef) throws Throwable {
-            historyService.sendHistoryEventToRemoteService(eventRef);
-        }
-    }
-
-    /**
-     * History transfer provider
-     */
-    private static class HistoryTransferProvider implements BatchProcessWorkProvider<NodeRef> {
-
-        private Collection<NodeRef> events;
-        private boolean hasMore = true;
-
-        HistoryTransferProvider(Collection<NodeRef> events) {
-            this.events = events;
-        }
-
-        @Override
-        public int getTotalEstimatedWorkSize() {
-            return events.size();
-        }
-
-        @Override
-        public Collection<NodeRef> getNextWork() {
-            if (hasMore) {
-                hasMore = false;
-                return events;
-            } else {
-                return Collections.emptyList();
-            }
-        }
     }
 }

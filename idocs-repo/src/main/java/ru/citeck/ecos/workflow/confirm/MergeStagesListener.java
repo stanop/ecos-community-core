@@ -38,7 +38,8 @@ public class MergeStagesListener implements ExecutionListener {
     private static final String CONFIRMERS = "confirmers";
     private static final String STAGES = "stages";
     
-    private Expression stages1, stages2;
+    private Expression stages1;
+    private Expression stages2;
     private Expression resultVar;
 
     @Override
@@ -78,7 +79,7 @@ public class MergeStagesListener implements ExecutionListener {
                 targetStage.put(CONFIRMERS, targetConfirmers);
             }
             
-            Set<String> stageConfirmersIndex = new HashSet<String>();
+            Set<String> stageConfirmersIndex = new HashSet<>();
             for (Object confirmerObj : targetConfirmers) {
                 Map confirmer = (Map) confirmerObj;
                 stageConfirmersIndex.add((String) confirmer.get(NODE_REF));

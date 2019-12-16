@@ -44,9 +44,7 @@ public class DropDownFieldConverter extends FieldConverter<OptionFormField> {
         Map<String, String> optionsTitle = new HashMap<>();
 
         for (Option option : field.getOptions()) {
-            String id = option.getId() != null ? option.getId() : option.getName();
-            options.add(id);
-            optionsTitle.put(id, option.getName());
+            fillOptions(option, options, optionsTitle);
         }
         if (CollectionUtils.isEmpty(options)) {
             String optionsExpression = field.getOptionsExpression();
@@ -60,7 +58,13 @@ public class DropDownFieldConverter extends FieldConverter<OptionFormField> {
                         if (variables.containsKey(optionsExpressionVariable)) {
                             Object optionsExpressionValue = variables.get(optionsExpressionVariable);
                             if (optionsExpressionValue instanceof List) {
-                                options.addAll((Collection<? extends String>) optionsExpressionValue);
+                                for (Object option : (List) optionsExpressionValue) {
+                                    if (option instanceof Option) {
+                                        fillOptions((Option) option, options, optionsTitle);
+                                        continue;
+                                    }
+                                    options.add((String) option);
+                                }
                             }
                         }
                     }
@@ -95,6 +99,12 @@ public class DropDownFieldConverter extends FieldConverter<OptionFormField> {
         invariants.add(invDef);
 
         return invariants;
+    }
+
+    private void fillOptions(Option option, List<String> options, Map<String, String> optionsTitle) {
+        String id = option.getId() == null ? option.getName() : option.getId();
+        options.add(id);
+        optionsTitle.put(id, option.getName());
     }
 
     @Override

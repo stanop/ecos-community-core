@@ -68,7 +68,7 @@ public class TChildren
      */
     public List<CaseFileItem> getCaseFileItem() {
         if (caseFileItem == null) {
-            caseFileItem = new ArrayList<CaseFileItem>();
+            caseFileItem = new ArrayList<>();
         }
         return this.caseFileItem;
     }

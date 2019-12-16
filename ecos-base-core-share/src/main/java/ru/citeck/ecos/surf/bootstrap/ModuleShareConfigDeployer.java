@@ -51,7 +51,7 @@ public class ModuleShareConfigDeployer implements BeanNameAware, ConfigDeployer 
     }
 
     private List<String> getModuleConfigs() {
-        List<String> configs = new LinkedList<String>();
+        List<String> configs = new LinkedList<>();
         for (ModuleShareConfig moduleShareConfig : moduleConfigs) {
             configs.addAll(
                     moduleShareConfig.getConfigs()
