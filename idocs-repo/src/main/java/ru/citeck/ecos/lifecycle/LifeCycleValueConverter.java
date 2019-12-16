@@ -98,9 +98,9 @@ public class LifeCycleValueConverter {
                 {
                     // convert JavaScript array of values to a List of objects
                     Object[] propIds = values.getIds();
-                    if (isArray(propIds) == true)
+                    if (isArray(propIds))
                     {                    
-                        List<Object> propValues = new ArrayList<Object>(propIds.length);
+                        List<Object> propValues = new ArrayList<>(propIds.length);
                         for (int i=0; i<propIds.length; i++)
                         {
                             // work on each key in turn
@@ -120,7 +120,7 @@ public class LifeCycleValueConverter {
                     }
                     else
                     {
-                        Map<Object, Object> propValues = new HashMap<Object, Object>(propIds.length);
+                        Map<Object, Object> propValues = new HashMap<>(propIds.length);
                         for (Object propId : propIds)
                         {
                             // Get the value and add to the map
@@ -135,7 +135,7 @@ public class LifeCycleValueConverter {
                 {
                     // convert Scriptable object of values to a Map of objects
                     Object[] propIds = values.getIds();
-                    Map<String, Object> propValues = new HashMap<String, Object>(propIds.length);
+                    Map<String, Object> propValues = new HashMap<>(propIds.length);
                     for (int i=0; i<propIds.length; i++)
                     {
                         // work on each key in turn
@@ -157,7 +157,7 @@ public class LifeCycleValueConverter {
             {
                 // convert Scriptable object of values to a Map of objects
                 Object[] propIds = values.getIds();
-                Map<String, Object> propValues = new HashMap<String, Object>(propIds.length);
+                Map<String, Object> propValues = new HashMap<>(propIds.length);
                 for (int i=0; i<propIds.length; i++)
                 {
                     // work on each key in turn
@@ -179,7 +179,7 @@ public class LifeCycleValueConverter {
         {
             // convert back a list of Java values
             int length = Array.getLength(value);
-            ArrayList<Object> list = new ArrayList<Object>(length);
+            ArrayList<Object> list = new ArrayList<>(length);
             for (int i=0; i<length; i++)
             {
                 list.add(convertValueForJava(Array.get(value, i)));
@@ -190,7 +190,7 @@ public class LifeCycleValueConverter {
         {
             @SuppressWarnings({ "unchecked", "rawtypes" })
             Collection<Object> originalItems = (Collection) value;
-            Collection<Object> convertedItems = new ArrayList<Object>(originalItems.size());
+            Collection<Object> convertedItems = new ArrayList<>(originalItems.size());
             for(Object item : originalItems) {
                 convertedItems.add(this.convertValueForJava(item));
             }
@@ -204,7 +204,7 @@ public class LifeCycleValueConverter {
         boolean result = true;
         for (Object id : ids)
         {
-            if (id instanceof Integer == false)
+            if (!(id instanceof Integer))
             {
                result = false;
                break;

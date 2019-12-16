@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class ResetMenuCacheBehaviour extends AbstractBehaviour {
 
-    public static String TXN_ACTION_KEY = ResetMenuCacheBehaviour.class.getName();
+    public final static String TXN_ACTION_KEY = ResetMenuCacheBehaviour.class.getName();
 
     public static QName TYPE_JOURNAL = JournalsModel.TYPE_JOURNAL;
     public static QName TYPE_SITE = SiteModel.TYPE_SITE;

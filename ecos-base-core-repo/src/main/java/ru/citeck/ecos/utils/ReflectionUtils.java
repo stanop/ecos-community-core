@@ -29,7 +29,7 @@ import java.util.Map;
 public class ReflectionUtils {
 	
     static List<Method> getMatchingMethods(List<Method> methods, Object[] args) {
-        List<Method> matchingMethods = new LinkedList<Method>();
+        List<Method> matchingMethods = new LinkedList<>();
         for(Method method : methods) {
             Class<?>[] parameterTypes = method.getParameterTypes();
             boolean matches = true;

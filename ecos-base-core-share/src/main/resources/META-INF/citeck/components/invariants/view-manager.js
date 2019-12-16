@@ -59,7 +59,7 @@ define(['js/citeck/modules/utils/citeck'], function() {
         },
         
         onSubmit: function(layer, args) {
-            if(this.key != args[1].key) return;
+            if (this.key != args[1].key) return;
             var behaviours = args[1].isDraft ? this.behavioursDraft : this.behaviours;
             var node = args[1].node;
             var isDraft = node.impl().getAttribute('invariants:isDraft').value();
@@ -76,14 +76,15 @@ define(['js/citeck/modules/utils/citeck'], function() {
         },
         
         onCancel: function(layer, args) {
-            if(this.key != args[1].key) return;
+            if (this.key != args[1].key) return;
             var node = args[1].node;
             var cancelBehaviour = this.behaviours[this.options.oncancel] || this.defaultBehaviour;
             cancelBehaviour.call(this, node);
         },
         
         goBack: function(node) {
-            if(history.length > 1) {
+            
+            if (history.length > 1) {
                 history.go(-1);
             } else if(document.referrer) {
                 document.location.href = document.referrer;
@@ -91,8 +92,14 @@ define(['js/citeck/modules/utils/citeck'], function() {
                 document.location.href = Alfresco.constants.URL_CONTEXT;
             }
         },
-        
+
         goToCard: function(node, isDraft) {
+
+            if (this.isV2Page()) {
+                document.location.href = "/v2/dashboard?recordRef="  + node.nodeRef;
+                return;
+            }
+
             var showStartMessage = true;
             if (!isDraft && location.pathname.indexOf('node-edit-page') !== -1) {
                 showStartMessage = false;
@@ -107,7 +114,18 @@ define(['js/citeck/modules/utils/citeck'], function() {
         },
 
         goToCardDraft: function(node) {
+
+            if (this.isV2Page()) {
+                document.location.href = "/v2/dashboard?recordRef="  + node.nodeRef;
+                return;
+            }
+
             document.location.href = Alfresco.constants.URL_PAGECONTEXT + "card-details?nodeRef=" + node.nodeRef;
+        },
+
+        isV2Page: function() {
+            var link = window.location.pathname || '';
+            return /share\/.+-page-v2.*/.test(link);
         },
 
         redirect: function(node) {

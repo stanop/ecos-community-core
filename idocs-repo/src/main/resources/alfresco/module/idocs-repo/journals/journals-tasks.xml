@@ -13,28 +13,36 @@
 
     <journal id="active-tasks">
         <datasource>workflow-tasks</datasource>
+        <option name="metaRecord">@</option>
         <option name="type">bpm:workflowTask</option>
         <option name="formId">search</option>
         <option name="actionGroupId">task</option>
         <option name="css">modules/journals/tasks/tasks.css</option>
         <option name="doubleClickId">nodeRef</option>
-        <option name="doubleClickLink">/citeck/components/redirect-to-task?nodeRef={id}
-        </option>
+        <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="formId">filters</option>
+        <option name="clickLinkAttribute">cm:name, contracts:agreementNumber</option>
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
+        <option name="disableTableEditing">true</option>
         <headers>
             <!-- cm:name is used for double-click -->
             <header key="cm:name" visible="false" searchable="false" />
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <header key="wfm:taskType" default="true">
+            <header key="cm:title" default="true" sortable="false" >
+                <option name="customLabel">journal.task.bpm_description.title</option>
+                <option name="formatter">taskTitle</option>
+                <option name="attributeSchema">str</option>
+            </header>
+            <header key="wfm:taskType" visible="false" searchable="false">
                 <option name="customLabel">journal.task.bpm_description.title</option>
                 <option name="formatter">taskTitle</option>
                 <option name="attributeSchema">str</option>
             </header>
             <header key="cwf:senderName" default="true" searchable="false" />
             <header key="cwf:sender" visible="false" />
-            <header key="wfm:assignee">
+            <header key="wfm:assignee" sortable="false">
                 <criterion>
                     <region name="select" template="orgstruct">
                         <param name="allowedAuthorityType">USER</param>
@@ -42,17 +50,17 @@
                 </criterion>
             </header>
             <header key="bpm:status" />
-            <header key="bpm:pooledActors">
+            <header key="bpm:pooledActors" sortable="false">
                 <criterion>
                     <region name="select" template="orgstruct">
                         <param name="allowedAuthorityType">USER, GROUP</param>
                     </region>
                 </criterion>
             </header>
-            <header key="wfm:document" default="true" searchable="false">
+            <header key="wfm:document" default="true" searchable="false" sortable="false">
                 <option name="formatter">documentLink</option>
             </header>
-            <header key="wfm:counterparty" default="true" searchable="false">
+            <header key="wfm:counterparty" default="true" searchable="false" sortable="false">
                 <option name="formatter">documentLink</option>
             </header>
             <header key="wfm:documentTypeTitle" default="true"/>
@@ -66,7 +74,6 @@
             <header key="attr:isContainer" visible="false" searchable="false" />
             <header key="attr:isDocument" visible="false" searchable="false" />
             <header key="cwf:taskTitle" visible="false" />
-            <header key="cm:title" visible="false" searchable="false" />
         </headers>
     </journal>
 
@@ -76,23 +83,25 @@
         <option name="actionGroupId">task</option>
         <option name="css">modules/journals/tasks/tasks.css</option>
         <option name="doubleClickId">nodeRef</option>
-        <option name="doubleClickLink">/citeck/components/redirect-to-task?nodeRef={id}
-        </option>
+        <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="formId">filters</option>
+        <option name="clickLinkAttribute">cm:name, cm:title, contracts:agreementNumber</option>
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
+        <option name="disableTableEditing">true</option>
         <headers>
             <!-- cm:name is used for double-click -->
             <header key="cm:name" visible="false" searchable="false" />
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <header key="wfm:taskType" default="true">
+            <header key="wfm:taskType" default="true" sortable="false">
                 <option name="customLabel">journal.task.bpm_description.title</option>
                 <option name="formatter">taskTitle</option>
                 <option name="attributeSchema">str</option>
             </header>
             <header key="cwf:senderName" default="true" searchable="false" />
             <header key="cwf:sender" visible="false" />
-            <header key="wfm:assignee" default="true">
+            <header key="wfm:assignee" default="true" sortable="false">
                 <criterion>
                     <region name="select" template="orgstruct">
                         <param name="allowedAuthorityType">USER</param>
@@ -100,17 +109,17 @@
                 </criterion>
             </header>
             <header key="bpm:status" default="true" />
-            <header key="bpm:pooledActors">
+            <header key="bpm:pooledActors" sortable="false">
                 <criterion>
                     <region name="select" template="orgstruct">
                         <param name="allowedAuthorityType">USER, GROUP</param>
                     </region>
                 </criterion>
             </header>
-            <header key="wfm:document" default="true" searchable="false">
+            <header key="wfm:document" default="true" searchable="false" sortable="false">
                 <option name="formatter">documentLink</option>
             </header>
-            <header key="wfm:counterparty" default="true" searchable="false">
+            <header key="wfm:counterparty" default="true" searchable="false" sortable="false">
                 <option name="formatter">documentLink</option>
             </header>
             <header key="wfm:documentTypeTitle" default="true"/>
@@ -131,16 +140,18 @@
         <option name="actionGroupId">task</option>
         <option name="css">modules/journals/tasks/tasks.css</option>
         <option name="doubleClickId">nodeRef</option>
-        <option name="doubleClickLink">/citeck/components/redirect-to-task?nodeRef={id}
-        </option>
+        <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="formId">filters</option>
+        <option name="clickLinkAttribute">cm:name, cm:title, contracts:agreementNumber</option>
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
+        <option name="disableTableEditing">true</option>
         <headers>
             <!-- cm:name is used for double-click -->
             <header key="cm:name" visible="false" searchable="false" />
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <header key="wfm:taskType" default="true">
+            <header key="wfm:taskType" default="true"  sortable="false">
                 <option name="customLabel">journal.task.bpm_description.title</option>
                 <option name="formatter">taskTitle</option>
                 <option name="attributeSchema">str</option>
@@ -154,10 +165,10 @@
                     </region>
                 </criterion>
             </header>
-            <header key="wfm:document" default="true" searchable="false">
+            <header key="wfm:document" default="true" searchable="false"  sortable="false">
                 <option name="formatter">documentLink</option>
             </header>
-            <header key="wfm:counterparty" default="true" searchable="false">
+            <header key="wfm:counterparty" default="true" searchable="false"  sortable="false">
                 <option name="formatter">documentLink</option>
             </header>
             <header key="wfm:documentTypeTitle" default="true"/>
@@ -175,8 +186,13 @@
 
     <journal id="task-statistic">
         <datasource>task-statistic</datasource>
+        <option name="metaRecord">@</option>
         <option name="actionGroupId">none</option>
+        <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="formId">filters</option>
+        <option name="clickLinkAttribute">cm:name, cm:title, contracts:agreementNumber</option>
         <option name="defaultSortBy">[{id: 'event:date', order: 'desc'}]</option>
+        <option name="disableTableEditing">true</option>
         <headers>
             <header key="event:taskType" default="true" searchable="false" sortable="false">
                 <option name="customLabel">journal.task.statistics.task_type.title</option>
@@ -221,22 +237,25 @@
         <option name="actionGroupId">task</option>
         <option name="css">modules/journals/tasks/tasks.css</option>
         <option name="doubleClickId">nodeRef</option>
-        <option name="doubleClickLink">/citeck/components/redirect-to-task?nodeRef={id}
-        </option>
+        <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="formId">filters</option>
+        <option name="clickLinkAttribute">cm:name, cm:title, contracts:agreementNumber</option>
+        <option name="defaultSortBy">[{id: 'event:date', order: 'desc'}]</option>
+        <option name="disableTableEditing">true</option>
         <headers>
             <!-- cm:name is used for double-click -->
             <header key="cm:name" visible="false" searchable="false" />
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <header key="wfm:taskType" default="true">
+            <header key="wfm:taskType" default="true" sortable="false">
                 <option name="customLabel">journal.task.bpm_description.title</option>
                 <option name="formatter">taskTitle</option>
                 <option name="attributeSchema">str</option>
             </header>
             <header key="cwf:senderName" searchable="false" />
             <header key="cwf:sender" visible="false" />
-            <header key="wfm:assignee" default="true">
+            <header key="wfm:assignee" default="true" sortable="false">
                 <criterion>
                     <region name="select" template="orgstruct">
                         <param name="allowedAuthorityType">USER</param>
@@ -244,17 +263,17 @@
                 </criterion>
             </header>
             <header key="bpm:status" default="true" />
-            <header key="bpm:pooledActors">
+            <header key="bpm:pooledActors" sortable="false">
                 <criterion>
                     <region name="select" template="orgstruct">
                         <param name="allowedAuthorityType">USER, GROUP</param>
                     </region>
                 </criterion>
             </header>
-            <header key="wfm:document" default="true" searchable="false">
+            <header key="wfm:document" default="true" searchable="false" sortable="false">
                 <option name="formatter">documentLink</option>
             </header>
-            <header key="wfm:counterparty" default="true" searchable="false">
+            <header key="wfm:counterparty" default="true" searchable="false" sortable="false">
                 <option name="formatter">documentLink</option>
             </header>
             <header key="wfm:documentTypeTitle" default="true"/>
@@ -279,22 +298,25 @@
         <option name="actionGroupId">task</option>
         <option name="css">modules/journals/tasks/tasks.css</option>
         <option name="doubleClickId">nodeRef</option>
-        <option name="doubleClickLink">/citeck/components/redirect-to-task?nodeRef={id}</option>
+        <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="formId">filters</option>
+        <option name="clickLinkAttribute">cm:name, cm:title, contracts:agreementNumber</option>
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
+        <option name="disableTableEditing">true</option>
         <headers>
             <!-- cm:name is used for double-click -->
             <header key="cm:name" visible="false" searchable="false" />
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <header key="wfm:taskType" default="true">
+            <header key="wfm:taskType" default="true" sortable="false">
                 <option name="customLabel">journal.task.bpm_description.title</option>
                 <option name="formatter">taskTitle</option>
                 <option name="attributeSchema">str</option>
             </header>
             <header key="cwf:senderName" searchable="false"/>
             <header key="cwf:sender" visible="false" />
-            <header key="wfm:assignee" default="true">
+            <header key="wfm:assignee" default="true" sortable="false">
                 <criterion>
                     <region name="select" template="orgstruct">
                         <param name="allowedAuthorityType">USER</param>
@@ -302,17 +324,17 @@
                 </criterion>
             </header>
             <header key="bpm:status" default="true" />
-            <header key="bpm:pooledActors">
+            <header key="bpm:pooledActors" sortable="false">
                 <criterion>
                     <region name="select" template="orgstruct">
                         <param name="allowedAuthorityType">USER, GROUP</param>
                     </region>
                 </criterion>
             </header>
-            <header key="wfm:document" default="true" searchable="false">
+            <header key="wfm:document" default="true" searchable="false" sortable="false">
                 <option name="formatter">documentLink</option>
             </header>
-            <header key="wfm:counterparty" default="true" searchable="false">
+            <header key="wfm:counterparty" default="true" searchable="false" sortable="false">
                 <option name="formatter">documentLink</option>
             </header>
             <header key="wfm:documentTypeTitle" default="true"/>

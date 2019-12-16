@@ -8,18 +8,21 @@ import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.collections.CollectionUtils;
-import org.alfresco.util.collections.Function;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.action.node.CreateNodeAction;
 import ru.citeck.ecos.action.node.NodeActionDefinition;
+import ru.citeck.ecos.action.node.NodeActionsProvider;
 import ru.citeck.ecos.action.node.RequestAction;
 import ru.citeck.ecos.event.EventService;
 import ru.citeck.ecos.model.EventModel;
 import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author deathNC on 30.04.2016.
@@ -35,13 +38,13 @@ public class CaseActionsProvider extends NodeActionsProvider {
     private NamespaceService namespaceService;
 
     @Override
-    public List<NodeActionDefinition> getNodeActions(NodeRef nodeRef) {
+    public List<ru.citeck.ecos.action.node.NodeActionDefinition> getNodeActions(NodeRef nodeRef) {
         return getActions(nodeRef);
     }
 
-    private List<NodeActionDefinition> getActions(NodeRef eventSource) {
+    private List<ru.citeck.ecos.action.node.NodeActionDefinition> getActions(NodeRef eventSource) {
         List<NodeRef> events = getUserActionEvents(eventSource);
-        List<NodeActionDefinition> actions = new ArrayList<>(events.size());
+        List<ru.citeck.ecos.action.node.NodeActionDefinition> actions = new ArrayList<>(events.size());
         for (NodeRef event : events) {
             String additionalDataType = (String) nodeService.getProperty(event, EventModel.PROP_ADDITIONAL_DATA_TYPE);
             NodeActionDefinition definition;
@@ -76,14 +79,11 @@ public class CaseActionsProvider extends NodeActionsProvider {
     private List<NodeRef> getUserActionEvents(final NodeRef eventSource) {
         List<NodeRef> events = RepoUtils.getSourceNodeRefs(eventSource, EventModel.ASSOC_EVENT_SOURCE, nodeService);
 
-        return CollectionUtils.filter(events, new Function<NodeRef, Boolean>() {
-            @Override
-            public Boolean apply(NodeRef eventRef) {
-                QName eventType = nodeService.getType(eventRef);
-                return eventType.equals(EventModel.TYPE_USER_ACTION)
-                        && checkRoles(eventRef)
-                        && eventService.checkConditions(eventRef, eventSource);
-            }
+        return CollectionUtils.filter(events, eventRef -> {
+            QName eventType = nodeService.getType(eventRef);
+            return eventType.equals(EventModel.TYPE_USER_ACTION)
+                    && checkRoles(eventRef)
+                    && eventService.checkConditions(eventRef, eventSource);
         });
     }
 

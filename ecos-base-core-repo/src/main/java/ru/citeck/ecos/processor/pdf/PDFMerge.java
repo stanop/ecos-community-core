@@ -18,7 +18,6 @@
  */
 package ru.citeck.ecos.processor.pdf;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -65,8 +64,8 @@ public class PDFMerge extends AbstractDataBundleMerge
 		}
 		
 		// leave only PDFs
-		List<DataBundle> pdfInputs = new ArrayList<DataBundle>(inputs.size());
-		List<PdfReader> pdfReaders = new ArrayList<PdfReader>(inputs.size());
+		List<DataBundle> pdfInputs = new ArrayList<>(inputs.size());
+		List<PdfReader> pdfReaders = new ArrayList<>(inputs.size());
 		for(DataBundle input : inputs) {
 			Object mimetype = input.getModel().get(ProcessorConstants.KEY_MIMETYPE);
 			if(mimetype == null || !mimetype.equals(MimetypeMap.MIMETYPE_PDF)) {
@@ -105,11 +104,7 @@ public class PDFMerge extends AbstractDataBundleMerge
             ContentReader contentReader = contentWriter.getReader();
             return helper.getDataBundle(contentReader, modelBundle.getModel());
 
-        } catch (FileNotFoundException e) {
-            return null;
-        } catch (DocumentException e) {
-            return null;
-        } catch (IOException e) {
+        } catch (IOException | DocumentException e) {
             return null;
         } finally {
             if(resultPdf != null) {

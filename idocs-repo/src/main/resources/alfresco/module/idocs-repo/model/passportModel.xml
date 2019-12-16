@@ -57,6 +57,11 @@
 					<type>d:date</type>
 					<mandatory>false</mandatory>
 				</property>
+				<property name="pass:expirationDate">
+					<title>Срок окончания действия</title>
+					<type>d:date</type>
+					<mandatory>false</mandatory>
+				</property>
 				<property name="pass:issuingAuthority">
 					<title>Кем выдан паспорт</title>
 					<type>d:text</type>

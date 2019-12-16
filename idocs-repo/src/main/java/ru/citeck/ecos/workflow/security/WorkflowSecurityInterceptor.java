@@ -18,14 +18,6 @@
  */
 package ru.citeck.ecos.workflow.security;
 
-import java.io.Serializable;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -35,8 +27,10 @@ import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.cmr.workflow.WorkflowTaskState;
 import org.alfresco.service.namespace.QName;
-
 import ru.citeck.ecos.utils.SimpleMethodInterceptor;
+
+import java.io.Serializable;
+import java.util.*;
 
 public class WorkflowSecurityInterceptor extends SimpleMethodInterceptor {
     
@@ -104,23 +98,19 @@ public class WorkflowSecurityInterceptor extends SimpleMethodInterceptor {
     private boolean hasUserAnyStatus(String username, WorkflowTask task, Set<WorkflowUserStatus> statuses) {
         Map<QName, Serializable> taskProperties = task.getProperties();
         String ownerName = (String) taskProperties.get(ContentModel.PROP_OWNER);
-        NodeRef userNodeRef = null;
 
-        if(statuses.contains(WorkflowUserStatus.OWNER)) {
-            if(username.equals(ownerName)) {
-                return true;
-            }
+        if (statuses.contains(WorkflowUserStatus.OWNER) && username.equals(ownerName)) {
+            return true;
         }
         
-        if(statuses.contains(WorkflowUserStatus.ADMIN)) {
-            if(authorityService.isAdminAuthority(username)) {
-                return true;
-            }
+        if (statuses.contains(WorkflowUserStatus.ADMIN) && authorityService.isAdminAuthority(username)) {
+            return true;
         }
 
-        if(statuses.contains(WorkflowUserStatus.INITIATOR)) {
-            if(userNodeRef == null) userNodeRef = personService.getPerson(username);
-            if(task.getPath().getInstance().getInitiator().equals(userNodeRef)) {
+        NodeRef userNodeRef = null;
+        if (statuses.contains(WorkflowUserStatus.INITIATOR)) {
+            userNodeRef = personService.getPerson(username);
+            if (task.getPath().getInstance().getInitiator().equals(userNodeRef)) {
                 return true;
             }
         }

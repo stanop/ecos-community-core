@@ -59,7 +59,7 @@ public class JSONUtils {
     }
 
     public static List<Object> convertJSON(org.json.JSONArray jsonArray) {
-        List<Object> converted = new ArrayList<Object>(jsonArray.length());
+        List<Object> converted = new ArrayList<>(jsonArray.length());
         for(int i = 0, ii = jsonArray.length(); i < ii; i++) {
             converted.add(i, convertJSON(jsonArray.opt(i)));
         }
@@ -67,7 +67,7 @@ public class JSONUtils {
     }
 
     public static Map<String, Object> convertJSON(org.json.JSONObject jsonObject) {
-        Map<String, Object> converted = new HashMap<String, Object>(jsonObject.length());
+        Map<String, Object> converted = new HashMap<>(jsonObject.length());
         for(String name : org.json.JSONObject.getNames(jsonObject)) {
             converted.put(name, convertJSON(jsonObject.opt(name)));
         }
@@ -75,7 +75,7 @@ public class JSONUtils {
     }
 
     public static List<Object> convertJSON(org.json.simple.JSONArray jsonArray) {
-        List<Object> converted = new ArrayList<Object>(jsonArray.size());
+        List<Object> converted = new ArrayList<>(jsonArray.size());
         for(Object child : jsonArray) {
             converted.add(convertJSON(child));
         }
@@ -131,11 +131,8 @@ public class JSONUtils {
             out.close();
             ByteArrayInputStream bin = new ByteArrayInputStream(bout.toByteArray());
             ObjectInputStream in = new ObjectInputStream(bin);
-            Object y = in.readObject();
-            return y;
-        } catch (IOException e) {
-            return null;
-        } catch (ClassNotFoundException e) {
+            return in.readObject();
+        } catch (IOException | ClassNotFoundException e) {
             return null;
         }
     }

@@ -109,7 +109,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
             Optional<SimpleFormModel> formModel = getFormKey(taskId).flatMap(restFormService::getFormByKey);
             if (formModel.isPresent()) {
 
-                String id = taskId.substring(taskId.indexOf("$") + 1);
+                String id = taskId.substring(taskId.indexOf('$') + 1);
                 Map<String, Object> variables = taskService.getVariables(id);
                 Map<String, Object> localVariables = taskService.getVariablesLocal(id);
 
@@ -166,7 +166,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
 
         if (taskId.startsWith(FlowableConstants.ENGINE_PREFIX)) {
 
-            String id = taskId.substring(taskId.indexOf("$") + 1);
+            String id = taskId.substring(taskId.indexOf('$') + 1);
             Task task = flowableTaskService.getTaskById(id);
 
             if (task != null) {
@@ -175,7 +175,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
                 logger.warn("Task with id " + taskId + " not found!");
             }
         } else if (taskId.startsWith(ACTIVITI_PREFIX)) {
-            String id = taskId.substring(taskId.indexOf("$") + 1);
+            String id = taskId.substring(taskId.indexOf('$') + 1);
             org.activiti.engine.task.Task task = activitiTaskService.createTaskQuery().taskId(id).singleResult();
             if (task != null) {
                 formKey = task.getFormKey();
@@ -226,7 +226,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
 
             if (!documentAttributes.isEmpty()) {
 
-                String taskLocalId = taskId.substring(taskId.indexOf("$") + 1);
+                String taskLocalId = taskId.substring(taskId.indexOf('$') + 1);
                 Object bpmPackage = taskService.getVariable(taskLocalId, "bpm_package");
 
                 NodeRef documentRef = getTaskDocument(bpmPackage);

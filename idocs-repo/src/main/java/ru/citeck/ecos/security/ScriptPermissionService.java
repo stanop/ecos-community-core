@@ -22,11 +22,6 @@ import org.alfresco.repo.jscript.BaseScopableProcessorExtension;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
-import org.alfresco.service.cmr.security.AccessPermission;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  *
@@ -45,7 +40,7 @@ public class ScriptPermissionService extends BaseScopableProcessorExtension {
                 nodeRef,
                 authority,
                 permission,
-                new Boolean(allow)
+                Boolean.valueOf(allow)
         );
         return "";
     }
@@ -107,15 +102,15 @@ public class ScriptPermissionService extends BaseScopableProcessorExtension {
         NodeRef nodeRef = new NodeRef(nodeRefId);
         this.services.getPermissionService().setInheritParentPermissions(
                 nodeRef,
-                new Boolean(inheritParentPermissions)
+                Boolean.valueOf(inheritParentPermissions)
         );
         return "";
     }
 
     public String getInheritParentPermissions(final String nodeRefId) {
         NodeRef nodeRef = new NodeRef(nodeRefId);
-        Boolean result = this.services.getPermissionService().getInheritParentPermissions(nodeRef);
-        return result.toString();
+        boolean result = this.services.getPermissionService().getInheritParentPermissions(nodeRef);
+        return Boolean.toString(result);
     }
 
 

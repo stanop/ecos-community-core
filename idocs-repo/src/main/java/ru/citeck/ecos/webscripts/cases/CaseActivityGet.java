@@ -79,14 +79,14 @@ public class CaseActivityGet extends DeclarativeWebScript {
      */
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
-        /** Load node reference */
+        /* Load node reference */
         String nodeRefUuid = req.getParameter(PARAM_DOCUMENT_NODE_REF);
         if (nodeRefUuid == null) {
             return Collections.emptyMap();
         }
         nodeRefUuid = nodeRefUuid.startsWith(WORKSPACE_PREFIX) ? nodeRefUuid : (WORKSPACE_PREFIX + nodeRefUuid);
         NodeRef nodeRef = new NodeRef(nodeRefUuid);
-        /** Load and transform data */
+        /* Load and transform data */
         if (nodeService.exists(nodeRef)) {
             ObjectNode objectNode = createFromNodeReference(nodeRef);
             Map<String, Object> resultMap = new HashMap<>();
@@ -123,7 +123,7 @@ public class CaseActivityGet extends DeclarativeWebScript {
         objectNode.put("typeTitle", templateNodeService.getClassTitle(type.toString()));
         objectNode.put("description", (String) nodeService.getProperty(nodeRef, ContentModel.PROP_DESCRIPTION));
 
-        /** Dates */
+        /* Dates */
         if (nodeService.getProperty(nodeRef, ActivityModel.PROP_PLANNED_START_DATE) != null) {
             Date date = (Date) nodeService.getProperty(nodeRef, ActivityModel.PROP_PLANNED_START_DATE);
             objectNode.put("plannedStartDate", formatDate(date));
@@ -143,17 +143,17 @@ public class CaseActivityGet extends DeclarativeWebScript {
         Integer performTime = (Integer) nodeService.getProperty(nodeRef, ActivityModel.PROP_EXPECTED_PERFORM_TIME);
         objectNode.put("expectedPerformTime", performTime);
 
-        /** Flags */
-        Boolean manualStarted = nodeService.getProperty(nodeRef, ActivityModel.PROP_MANUAL_STARTED) != null ?
+        /* Flags */
+        boolean manualStarted = nodeService.getProperty(nodeRef, ActivityModel.PROP_MANUAL_STARTED) != null ?
                 (Boolean) nodeService.getProperty(nodeRef, ActivityModel.PROP_MANUAL_STARTED) : false;
-        Boolean manualStopped = nodeService.getProperty(nodeRef, ActivityModel.PROP_MANUAL_STOPPED) != null ?
+        boolean manualStopped = nodeService.getProperty(nodeRef, ActivityModel.PROP_MANUAL_STOPPED) != null ?
                 (Boolean) nodeService.getProperty(nodeRef, ActivityModel.PROP_MANUAL_STOPPED) : false;
-        Boolean repeatable = nodeService.getProperty(nodeRef, ActivityModel.PROP_REPEATABLE) != null ?
+        boolean repeatable = nodeService.getProperty(nodeRef, ActivityModel.PROP_REPEATABLE) != null ?
                 (Boolean) nodeService.getProperty(nodeRef, ActivityModel.PROP_REPEATABLE) : false;
 
         AccessStatus writePermission = permissionService.hasPermission(nodeRef, "Write");
 
-        boolean hasWritePermission = writePermission != null && (writePermission == AccessStatus.ALLOWED);
+        boolean hasWritePermission = (writePermission == AccessStatus.ALLOWED);
         objectNode.put("editable", hasWritePermission);
 
         boolean startable = hasWritePermission && ((manualStarted && repeatable) || actualStartDate == null);
@@ -164,7 +164,7 @@ public class CaseActivityGet extends DeclarativeWebScript {
 
 
         AccessStatus deletePermission = permissionService.hasPermission(nodeRef, "Delete");
-        objectNode.put("removable", deletePermission != null && (deletePermission == AccessStatus.ALLOWED));
+        objectNode.put("removable", (deletePermission == AccessStatus.ALLOWED));
         objectNode.put("composite", nodeService.hasAspect(nodeRef, ActivityModel.ASPECT_HAS_ACTIVITIES));
         return objectNode;
     }
@@ -190,7 +190,7 @@ public class CaseActivityGet extends DeclarativeWebScript {
         objectNode.put("actualEndDate", formatDate(caseModelDto.getActualEndDate()));
         objectNode.put("expectedPerformTime", caseModelDto.getExpectedPerformTime());
 
-        /** Flags */
+        /* Flags */
         objectNode.put("startable", false);
         objectNode.put("stoppable", false);
         objectNode.put("editable", false);

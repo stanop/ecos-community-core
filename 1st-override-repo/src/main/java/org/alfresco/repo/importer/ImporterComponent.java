@@ -18,12 +18,6 @@
  */
 package org.alfresco.repo.importer;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.Serializable;
-import java.util.*;
-
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.importer.view.NodeContext;
@@ -33,32 +27,16 @@ import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.usage.ContentUsageImpl;
 import org.alfresco.repo.version.Version2Model;
 import org.alfresco.repo.version.common.VersionUtil;
-import org.alfresco.service.cmr.dictionary.AssociationDefinition;
-import org.alfresco.service.cmr.dictionary.ChildAssociationDefinition;
-import org.alfresco.service.cmr.dictionary.ClassDefinition;
-import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.dictionary.InvalidClassException;
-import org.alfresco.service.cmr.dictionary.TypeDefinition;
+import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.repository.datatype.DefaultTypeConverter;
 import org.alfresco.service.cmr.rule.RuleService;
 import org.alfresco.service.cmr.search.SearchService;
-import org.alfresco.service.cmr.security.AccessPermission;
-import org.alfresco.service.cmr.security.AccessStatus;
-import org.alfresco.service.cmr.security.AuthorityService;
-import org.alfresco.service.cmr.security.OwnableService;
-import org.alfresco.service.cmr.security.PermissionService;
+import org.alfresco.service.cmr.security.*;
 import org.alfresco.service.cmr.version.Version;
 import org.alfresco.service.cmr.version.VersionService;
-import org.alfresco.service.cmr.view.ImportPackageHandler;
-import org.alfresco.service.cmr.view.ImporterBinding;
+import org.alfresco.service.cmr.view.*;
 import org.alfresco.service.cmr.view.ImporterBinding.UUID_BINDING;
-import org.alfresco.service.cmr.view.ImporterContentCache;
-import org.alfresco.service.cmr.view.ImporterException;
-import org.alfresco.service.cmr.view.ImporterProgress;
-import org.alfresco.service.cmr.view.ImporterService;
-import org.alfresco.service.cmr.view.Location;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
@@ -69,6 +47,12 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.extensions.surf.util.ParameterCheck;
 import org.springframework.util.StringUtils;
 import org.xml.sax.ContentHandler;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.Serializable;
+import java.util.*;
 
 
 /**
@@ -616,7 +600,7 @@ public class ImporterComponent implements ImporterService
             // apply aspects
             for (QName aspect : context.getNodeAspects())
             {
-                if (nodeService.hasAspect(nodeRef, aspect) == false)
+                if (!nodeService.hasAspect(nodeRef, aspect))
                 {
                     nodeService.addAspect(nodeRef, aspect, null);   // all properties previously added
                     reportAspectAdded(nodeRef, aspect);
@@ -1717,7 +1701,7 @@ public class ImporterComponent implements ImporterService
         {
             ResourceLoader loader = new DefaultResourceLoader();
             Resource resource = loader.getResource(content);
-            if (resource.exists() == false)
+            if (!resource.exists())
             {
                 throw new ImporterException("Content URL " + content + " does not exist.");
             }

@@ -44,6 +44,14 @@
     </bean>
 
     <bean id="idocs.module-component.ecos-bpm-process-category-root" parent="idocs.import-spaces.3-8-0" depends-on="idocs.dictionaryBootstrap">
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.ecos-bpm-process-category-root2"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.ecos-bpm-process-category-root2" parent="idocs.import-spaces.3-8-0" depends-on="idocs.dictionaryBootstrap">
         <property name="name" value="ecos-bpm-process-category-root" />
         <property name="description" value="ecos-bpm-process-category-root" />
         <property name="bootstrapView">

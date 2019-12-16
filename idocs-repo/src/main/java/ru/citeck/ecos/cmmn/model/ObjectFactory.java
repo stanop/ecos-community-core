@@ -24,71 +24,71 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _PlanItemStartTrigger_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "planItemStartTrigger");
-    private final static QName _RequiredRule_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "requiredRule");
-    private final static QName _CaseFileItemOnPart_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "caseFileItemOnPart");
-    private final static QName _Case_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "case");
-    private final static QName _Sentry_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "sentry");
-    private final static QName _CaseParameter_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "caseParameter");
-    private final static QName _Point_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/DC", "Point");
-    private final static QName _RepetitionRule_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "repetitionRule");
-    private final static QName _UserEventListener_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "userEventListener");
-    private final static QName _Association_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "association");
-    private final static QName _CMMNDI_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/CMMNDI", "CMMNDI");
-    private final static QName _Property_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "property");
-    private final static QName _DecisionParameter_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "decisionParameter");
-    private final static QName _Definitions_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "definitions");
-    private final static QName _CaseTask_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "caseTask");
-    private final static QName _PlanningTable_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "planningTable");
-    private final static QName _CaseFileItemDefinition_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "caseFileItemDefinition");
-    private final static QName _ProcessTask_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "processTask");
-    private final static QName _CMMNDiagram_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/CMMNDI", "CMMNDiagram");
-    private final static QName _Color_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/DC", "Color");
-    private final static QName _Bounds_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/DC", "Bounds");
-    private final static QName _ParameterMapping_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "parameterMapping");
-    private final static QName _Import_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "import");
-    private final static QName _ProcessParameter_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "processParameter");
-    private final static QName _Role_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "role");
-    private final static QName _CMMNLabel_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/CMMNDI", "CMMNLabel");
-    private final static QName _CaseFileItem_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "caseFileItem");
-    private final static QName _PlanItemOnPart_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "planItemOnPart");
-    private final static QName _EntryCriterion_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "entryCriterion");
-    private final static QName _Expression_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "expression");
-    private final static QName _PlanItemControl_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "planItemControl");
-    private final static QName _ApplicabilityRule_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "applicabilityRule");
-    private final static QName _DecisionTask_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "decisionTask");
-    private final static QName _TimerStart_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "timerStart");
-    private final static QName _IfPart_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "ifPart");
-    private final static QName _Style_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/DI", "Style");
-    private final static QName _Artifact_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "artifact");
-    private final static QName _Relationship_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "relationship");
-    private final static QName _Process_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "process");
-    private final static QName _ExitCriterion_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "exitCriterion");
-    private final static QName _TableItem_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "tableItem");
-    private final static QName _CMMNStyle_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/CMMNDI", "CMMNStyle");
-    private final static QName _TimerEventListener_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "timerEventListener");
-    private final static QName _Documentation_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "documentation");
-    private final static QName _OnPart_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "onPart");
-    private final static QName _CaseFile_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "caseFile");
-    private final static QName _TextAnnotation_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "textAnnotation");
-    private final static QName _DiscretionaryItem_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "discretionaryItem");
-    private final static QName _Task_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "task");
-    private final static QName _PlanItem_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "planItem");
-    private final static QName _PlanItemDefinition_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "planItemDefinition");
-    private final static QName _Parameter_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "parameter");
-    private final static QName _Milestone_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "milestone");
-    private final static QName _Dimension_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/DC", "Dimension");
-    private final static QName _CMMNEdge_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/CMMNDI", "CMMNEdge");
-    private final static QName _CMMNShape_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/CMMNDI", "CMMNShape");
-    private final static QName _ExtensionElements_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "extensionElements");
-    private final static QName _PlanFragment_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "planFragment");
-    private final static QName _CMMNDiagramElement_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/CMMNDI", "CMMNDiagramElement");
-    private final static QName _EventListener_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "eventListener");
-    private final static QName _CaseFileItemStartTrigger_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "caseFileItemStartTrigger");
-    private final static QName _ManualActivationRule_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "manualActivationRule");
-    private final static QName _HumanTask_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "humanTask");
-    private final static QName _Decision_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "decision");
-    private final static QName _Stage_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "stage");
+    private static final QName _PlanItemStartTrigger_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "planItemStartTrigger");
+    private static final QName _RequiredRule_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "requiredRule");
+    private static final QName _CaseFileItemOnPart_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "caseFileItemOnPart");
+    private static final QName _Case_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "case");
+    private static final QName _Sentry_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "sentry");
+    private static final QName _CaseParameter_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "caseParameter");
+    private static final QName _Point_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/DC", "Point");
+    private static final QName _RepetitionRule_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "repetitionRule");
+    private static final QName _UserEventListener_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "userEventListener");
+    private static final QName _Association_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "association");
+    private static final QName _CMMNDI_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/CMMNDI", "CMMNDI");
+    private static final QName _Property_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "property");
+    private static final QName _DecisionParameter_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "decisionParameter");
+    private static final QName _Definitions_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "definitions");
+    private static final QName _CaseTask_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "caseTask");
+    private static final QName _PlanningTable_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "planningTable");
+    private static final QName _CaseFileItemDefinition_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "caseFileItemDefinition");
+    private static final QName _ProcessTask_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "processTask");
+    private static final QName _CMMNDiagram_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/CMMNDI", "CMMNDiagram");
+    private static final QName _Color_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/DC", "Color");
+    private static final QName _Bounds_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/DC", "Bounds");
+    private static final QName _ParameterMapping_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "parameterMapping");
+    private static final QName _Import_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "import");
+    private static final QName _ProcessParameter_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "processParameter");
+    private static final QName _Role_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "role");
+    private static final QName _CMMNLabel_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/CMMNDI", "CMMNLabel");
+    private static final QName _CaseFileItem_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "caseFileItem");
+    private static final QName _PlanItemOnPart_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "planItemOnPart");
+    private static final QName _EntryCriterion_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "entryCriterion");
+    private static final QName _Expression_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "expression");
+    private static final QName _PlanItemControl_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "planItemControl");
+    private static final QName _ApplicabilityRule_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "applicabilityRule");
+    private static final QName _DecisionTask_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "decisionTask");
+    private static final QName _TimerStart_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "timerStart");
+    private static final QName _IfPart_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "ifPart");
+    private static final QName _Style_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/DI", "Style");
+    private static final QName _Artifact_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "artifact");
+    private static final QName _Relationship_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "relationship");
+    private static final QName _Process_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "process");
+    private static final QName _ExitCriterion_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "exitCriterion");
+    private static final QName _TableItem_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "tableItem");
+    private static final QName _CMMNStyle_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/CMMNDI", "CMMNStyle");
+    private static final QName _TimerEventListener_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "timerEventListener");
+    private static final QName _Documentation_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "documentation");
+    private static final QName _OnPart_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "onPart");
+    private static final QName _CaseFile_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "caseFile");
+    private static final QName _TextAnnotation_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "textAnnotation");
+    private static final QName _DiscretionaryItem_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "discretionaryItem");
+    private static final QName _Task_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "task");
+    private static final QName _PlanItem_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "planItem");
+    private static final QName _PlanItemDefinition_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "planItemDefinition");
+    private static final QName _Parameter_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "parameter");
+    private static final QName _Milestone_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "milestone");
+    private static final QName _Dimension_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/DC", "Dimension");
+    private static final QName _CMMNEdge_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/CMMNDI", "CMMNEdge");
+    private static final QName _CMMNShape_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/CMMNDI", "CMMNShape");
+    private static final QName _ExtensionElements_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "extensionElements");
+    private static final QName _PlanFragment_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "planFragment");
+    private static final QName _CMMNDiagramElement_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/CMMNDI", "CMMNDiagramElement");
+    private static final QName _EventListener_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "eventListener");
+    private static final QName _CaseFileItemStartTrigger_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "caseFileItemStartTrigger");
+    private static final QName _ManualActivationRule_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "manualActivationRule");
+    private static final QName _HumanTask_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "humanTask");
+    private static final QName _Decision_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "decision");
+    private static final QName _Stage_QNAME = new QName("http://www.omg.org/spec/CMMN/20151109/MODEL", "stage");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ru.citeck.ecos.cmmn.model
@@ -591,7 +591,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "planItemStartTrigger", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "timerStart")
     public JAXBElement<TPlanItemStartTrigger> createPlanItemStartTrigger(TPlanItemStartTrigger value) {
-        return new JAXBElement<TPlanItemStartTrigger>(_PlanItemStartTrigger_QNAME, TPlanItemStartTrigger.class, null, value);
+        return new JAXBElement<>(_PlanItemStartTrigger_QNAME, TPlanItemStartTrigger.class, null, value);
     }
 
     /**
@@ -600,7 +600,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "requiredRule")
     public JAXBElement<TRequiredRule> createRequiredRule(TRequiredRule value) {
-        return new JAXBElement<TRequiredRule>(_RequiredRule_QNAME, TRequiredRule.class, null, value);
+        return new JAXBElement<>(_RequiredRule_QNAME, TRequiredRule.class, null, value);
     }
 
     /**
@@ -609,7 +609,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "caseFileItemOnPart", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "onPart")
     public JAXBElement<TCaseFileItemOnPart> createCaseFileItemOnPart(TCaseFileItemOnPart value) {
-        return new JAXBElement<TCaseFileItemOnPart>(_CaseFileItemOnPart_QNAME, TCaseFileItemOnPart.class, null, value);
+        return new JAXBElement<>(_CaseFileItemOnPart_QNAME, TCaseFileItemOnPart.class, null, value);
     }
 
     /**
@@ -618,7 +618,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "case")
     public JAXBElement<Case> createCase(Case value) {
-        return new JAXBElement<Case>(_Case_QNAME, Case.class, null, value);
+        return new JAXBElement<>(_Case_QNAME, Case.class, null, value);
     }
 
     /**
@@ -627,7 +627,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "sentry")
     public JAXBElement<Sentry> createSentry(Sentry value) {
-        return new JAXBElement<Sentry>(_Sentry_QNAME, Sentry.class, null, value);
+        return new JAXBElement<>(_Sentry_QNAME, Sentry.class, null, value);
     }
 
     /**
@@ -636,7 +636,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "caseParameter", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "parameter")
     public JAXBElement<TCaseParameter> createCaseParameter(TCaseParameter value) {
-        return new JAXBElement<TCaseParameter>(_CaseParameter_QNAME, TCaseParameter.class, null, value);
+        return new JAXBElement<>(_CaseParameter_QNAME, TCaseParameter.class, null, value);
     }
 
     /**
@@ -645,7 +645,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/DC", name = "Point")
     public JAXBElement<Point> createPoint(Point value) {
-        return new JAXBElement<Point>(_Point_QNAME, Point.class, null, value);
+        return new JAXBElement<>(_Point_QNAME, Point.class, null, value);
     }
 
     /**
@@ -654,7 +654,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "repetitionRule")
     public JAXBElement<TRepetitionRule> createRepetitionRule(TRepetitionRule value) {
-        return new JAXBElement<TRepetitionRule>(_RepetitionRule_QNAME, TRepetitionRule.class, null, value);
+        return new JAXBElement<>(_RepetitionRule_QNAME, TRepetitionRule.class, null, value);
     }
 
     /**
@@ -663,7 +663,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "userEventListener", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "eventListener")
     public JAXBElement<TUserEventListener> createUserEventListener(TUserEventListener value) {
-        return new JAXBElement<TUserEventListener>(_UserEventListener_QNAME, TUserEventListener.class, null, value);
+        return new JAXBElement<>(_UserEventListener_QNAME, TUserEventListener.class, null, value);
     }
 
     /**
@@ -672,7 +672,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "association", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "artifact")
     public JAXBElement<TAssociation> createAssociation(TAssociation value) {
-        return new JAXBElement<TAssociation>(_Association_QNAME, TAssociation.class, null, value);
+        return new JAXBElement<>(_Association_QNAME, TAssociation.class, null, value);
     }
 
     /**
@@ -681,7 +681,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/CMMNDI", name = "CMMNDI")
     public JAXBElement<CMMNDI> createCMMNDI(CMMNDI value) {
-        return new JAXBElement<CMMNDI>(_CMMNDI_QNAME, CMMNDI.class, null, value);
+        return new JAXBElement<>(_CMMNDI_QNAME, CMMNDI.class, null, value);
     }
 
     /**
@@ -690,7 +690,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "property")
     public JAXBElement<TProperty> createProperty(TProperty value) {
-        return new JAXBElement<TProperty>(_Property_QNAME, TProperty.class, null, value);
+        return new JAXBElement<>(_Property_QNAME, TProperty.class, null, value);
     }
 
     /**
@@ -699,7 +699,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "decisionParameter", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "parameter")
     public JAXBElement<TDecisionParameter> createDecisionParameter(TDecisionParameter value) {
-        return new JAXBElement<TDecisionParameter>(_DecisionParameter_QNAME, TDecisionParameter.class, null, value);
+        return new JAXBElement<>(_DecisionParameter_QNAME, TDecisionParameter.class, null, value);
     }
 
     /**
@@ -708,7 +708,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "definitions")
     public JAXBElement<Definitions> createDefinitions(Definitions value) {
-        return new JAXBElement<Definitions>(_Definitions_QNAME, Definitions.class, null, value);
+        return new JAXBElement<>(_Definitions_QNAME, Definitions.class, null, value);
     }
 
     /**
@@ -717,7 +717,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "caseTask", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "task")
     public JAXBElement<TCaseTask> createCaseTask(TCaseTask value) {
-        return new JAXBElement<TCaseTask>(_CaseTask_QNAME, TCaseTask.class, null, value);
+        return new JAXBElement<>(_CaseTask_QNAME, TCaseTask.class, null, value);
     }
 
     /**
@@ -726,7 +726,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "planningTable", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "tableItem")
     public JAXBElement<TPlanningTable> createPlanningTable(TPlanningTable value) {
-        return new JAXBElement<TPlanningTable>(_PlanningTable_QNAME, TPlanningTable.class, null, value);
+        return new JAXBElement<>(_PlanningTable_QNAME, TPlanningTable.class, null, value);
     }
 
     /**
@@ -735,7 +735,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "caseFileItemDefinition")
     public JAXBElement<TCaseFileItemDefinition> createCaseFileItemDefinition(TCaseFileItemDefinition value) {
-        return new JAXBElement<TCaseFileItemDefinition>(_CaseFileItemDefinition_QNAME, TCaseFileItemDefinition.class, null, value);
+        return new JAXBElement<>(_CaseFileItemDefinition_QNAME, TCaseFileItemDefinition.class, null, value);
     }
 
     /**
@@ -744,7 +744,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "processTask", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "task")
     public JAXBElement<TProcessTask> createProcessTask(TProcessTask value) {
-        return new JAXBElement<TProcessTask>(_ProcessTask_QNAME, TProcessTask.class, null, value);
+        return new JAXBElement<>(_ProcessTask_QNAME, TProcessTask.class, null, value);
     }
 
     /**
@@ -753,7 +753,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/CMMNDI", name = "CMMNDiagram")
     public JAXBElement<CMMNDiagram> createCMMNDiagram(CMMNDiagram value) {
-        return new JAXBElement<CMMNDiagram>(_CMMNDiagram_QNAME, CMMNDiagram.class, null, value);
+        return new JAXBElement<>(_CMMNDiagram_QNAME, CMMNDiagram.class, null, value);
     }
 
     /**
@@ -762,7 +762,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/DC", name = "Color")
     public JAXBElement<Color> createColor(Color value) {
-        return new JAXBElement<Color>(_Color_QNAME, Color.class, null, value);
+        return new JAXBElement<>(_Color_QNAME, Color.class, null, value);
     }
 
     /**
@@ -771,7 +771,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/DC", name = "Bounds")
     public JAXBElement<Bounds> createBounds(Bounds value) {
-        return new JAXBElement<Bounds>(_Bounds_QNAME, Bounds.class, null, value);
+        return new JAXBElement<>(_Bounds_QNAME, Bounds.class, null, value);
     }
 
     /**
@@ -780,7 +780,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "parameterMapping")
     public JAXBElement<TParameterMapping> createParameterMapping(TParameterMapping value) {
-        return new JAXBElement<TParameterMapping>(_ParameterMapping_QNAME, TParameterMapping.class, null, value);
+        return new JAXBElement<>(_ParameterMapping_QNAME, TParameterMapping.class, null, value);
     }
 
     /**
@@ -789,7 +789,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "import")
     public JAXBElement<TImport> createImport(TImport value) {
-        return new JAXBElement<TImport>(_Import_QNAME, TImport.class, null, value);
+        return new JAXBElement<>(_Import_QNAME, TImport.class, null, value);
     }
 
     /**
@@ -798,7 +798,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "processParameter", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "parameter")
     public JAXBElement<TProcessParameter> createProcessParameter(TProcessParameter value) {
-        return new JAXBElement<TProcessParameter>(_ProcessParameter_QNAME, TProcessParameter.class, null, value);
+        return new JAXBElement<>(_ProcessParameter_QNAME, TProcessParameter.class, null, value);
     }
 
     /**
@@ -807,7 +807,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "role")
     public JAXBElement<Role> createRole(Role value) {
-        return new JAXBElement<Role>(_Role_QNAME, Role.class, null, value);
+        return new JAXBElement<>(_Role_QNAME, Role.class, null, value);
     }
 
     /**
@@ -816,7 +816,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/CMMNDI", name = "CMMNLabel")
     public JAXBElement<CMMNLabel> createCMMNLabel(CMMNLabel value) {
-        return new JAXBElement<CMMNLabel>(_CMMNLabel_QNAME, CMMNLabel.class, null, value);
+        return new JAXBElement<>(_CMMNLabel_QNAME, CMMNLabel.class, null, value);
     }
 
     /**
@@ -825,7 +825,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "caseFileItem")
     public JAXBElement<CaseFileItem> createCaseFileItem(CaseFileItem value) {
-        return new JAXBElement<CaseFileItem>(_CaseFileItem_QNAME, CaseFileItem.class, null, value);
+        return new JAXBElement<>(_CaseFileItem_QNAME, CaseFileItem.class, null, value);
     }
 
     /**
@@ -834,7 +834,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "planItemOnPart", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "onPart")
     public JAXBElement<TPlanItemOnPart> createPlanItemOnPart(TPlanItemOnPart value) {
-        return new JAXBElement<TPlanItemOnPart>(_PlanItemOnPart_QNAME, TPlanItemOnPart.class, null, value);
+        return new JAXBElement<>(_PlanItemOnPart_QNAME, TPlanItemOnPart.class, null, value);
     }
 
     /**
@@ -843,7 +843,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "entryCriterion")
     public JAXBElement<TEntryCriterion> createEntryCriterion(TEntryCriterion value) {
-        return new JAXBElement<TEntryCriterion>(_EntryCriterion_QNAME, TEntryCriterion.class, null, value);
+        return new JAXBElement<>(_EntryCriterion_QNAME, TEntryCriterion.class, null, value);
     }
 
     /**
@@ -852,7 +852,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "expression")
     public JAXBElement<TExpression> createExpression(TExpression value) {
-        return new JAXBElement<TExpression>(_Expression_QNAME, TExpression.class, null, value);
+        return new JAXBElement<>(_Expression_QNAME, TExpression.class, null, value);
     }
 
     /**
@@ -861,7 +861,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "planItemControl")
     public JAXBElement<TPlanItemControl> createPlanItemControl(TPlanItemControl value) {
-        return new JAXBElement<TPlanItemControl>(_PlanItemControl_QNAME, TPlanItemControl.class, null, value);
+        return new JAXBElement<>(_PlanItemControl_QNAME, TPlanItemControl.class, null, value);
     }
 
     /**
@@ -870,7 +870,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "applicabilityRule")
     public JAXBElement<TApplicabilityRule> createApplicabilityRule(TApplicabilityRule value) {
-        return new JAXBElement<TApplicabilityRule>(_ApplicabilityRule_QNAME, TApplicabilityRule.class, null, value);
+        return new JAXBElement<>(_ApplicabilityRule_QNAME, TApplicabilityRule.class, null, value);
     }
 
     /**
@@ -879,7 +879,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "decisionTask", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "task")
     public JAXBElement<TDecisionTask> createDecisionTask(TDecisionTask value) {
-        return new JAXBElement<TDecisionTask>(_DecisionTask_QNAME, TDecisionTask.class, null, value);
+        return new JAXBElement<>(_DecisionTask_QNAME, TDecisionTask.class, null, value);
     }
 
     /**
@@ -888,7 +888,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "timerStart")
     public JAXBElement<TStartTrigger> createTimerStart(TStartTrigger value) {
-        return new JAXBElement<TStartTrigger>(_TimerStart_QNAME, TStartTrigger.class, null, value);
+        return new JAXBElement<>(_TimerStart_QNAME, TStartTrigger.class, null, value);
     }
 
     /**
@@ -897,7 +897,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "ifPart")
     public JAXBElement<TIfPart> createIfPart(TIfPart value) {
-        return new JAXBElement<TIfPart>(_IfPart_QNAME, TIfPart.class, null, value);
+        return new JAXBElement<>(_IfPart_QNAME, TIfPart.class, null, value);
     }
 
     /**
@@ -906,7 +906,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/DI", name = "Style")
     public JAXBElement<Style> createStyle(Style value) {
-        return new JAXBElement<Style>(_Style_QNAME, Style.class, null, value);
+        return new JAXBElement<>(_Style_QNAME, Style.class, null, value);
     }
 
     /**
@@ -915,7 +915,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "artifact")
     public JAXBElement<TArtifact> createArtifact(TArtifact value) {
-        return new JAXBElement<TArtifact>(_Artifact_QNAME, TArtifact.class, null, value);
+        return new JAXBElement<>(_Artifact_QNAME, TArtifact.class, null, value);
     }
 
     /**
@@ -924,7 +924,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "relationship")
     public JAXBElement<TRelationship> createRelationship(TRelationship value) {
-        return new JAXBElement<TRelationship>(_Relationship_QNAME, TRelationship.class, null, value);
+        return new JAXBElement<>(_Relationship_QNAME, TRelationship.class, null, value);
     }
 
     /**
@@ -933,7 +933,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "process")
     public JAXBElement<TProcess> createProcess(TProcess value) {
-        return new JAXBElement<TProcess>(_Process_QNAME, TProcess.class, null, value);
+        return new JAXBElement<>(_Process_QNAME, TProcess.class, null, value);
     }
 
     /**
@@ -942,7 +942,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "exitCriterion")
     public JAXBElement<TExitCriterion> createExitCriterion(TExitCriterion value) {
-        return new JAXBElement<TExitCriterion>(_ExitCriterion_QNAME, TExitCriterion.class, null, value);
+        return new JAXBElement<>(_ExitCriterion_QNAME, TExitCriterion.class, null, value);
     }
 
     /**
@@ -951,7 +951,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "tableItem")
     public JAXBElement<TTableItem> createTableItem(TTableItem value) {
-        return new JAXBElement<TTableItem>(_TableItem_QNAME, TTableItem.class, null, value);
+        return new JAXBElement<>(_TableItem_QNAME, TTableItem.class, null, value);
     }
 
     /**
@@ -960,7 +960,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/CMMNDI", name = "CMMNStyle", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/DI", substitutionHeadName = "Style")
     public JAXBElement<CMMNStyle> createCMMNStyle(CMMNStyle value) {
-        return new JAXBElement<CMMNStyle>(_CMMNStyle_QNAME, CMMNStyle.class, null, value);
+        return new JAXBElement<>(_CMMNStyle_QNAME, CMMNStyle.class, null, value);
     }
 
     /**
@@ -969,7 +969,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "timerEventListener", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "eventListener")
     public JAXBElement<TTimerEventListener> createTimerEventListener(TTimerEventListener value) {
-        return new JAXBElement<TTimerEventListener>(_TimerEventListener_QNAME, TTimerEventListener.class, null, value);
+        return new JAXBElement<>(_TimerEventListener_QNAME, TTimerEventListener.class, null, value);
     }
 
     /**
@@ -978,7 +978,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "documentation")
     public JAXBElement<TDocumentation> createDocumentation(TDocumentation value) {
-        return new JAXBElement<TDocumentation>(_Documentation_QNAME, TDocumentation.class, null, value);
+        return new JAXBElement<>(_Documentation_QNAME, TDocumentation.class, null, value);
     }
 
     /**
@@ -987,7 +987,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "onPart")
     public JAXBElement<TOnPart> createOnPart(TOnPart value) {
-        return new JAXBElement<TOnPart>(_OnPart_QNAME, TOnPart.class, null, value);
+        return new JAXBElement<>(_OnPart_QNAME, TOnPart.class, null, value);
     }
 
     /**
@@ -996,7 +996,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "caseFile")
     public JAXBElement<CaseFile> createCaseFile(CaseFile value) {
-        return new JAXBElement<CaseFile>(_CaseFile_QNAME, CaseFile.class, null, value);
+        return new JAXBElement<>(_CaseFile_QNAME, CaseFile.class, null, value);
     }
 
     /**
@@ -1005,7 +1005,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "textAnnotation", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "artifact")
     public JAXBElement<TTextAnnotation> createTextAnnotation(TTextAnnotation value) {
-        return new JAXBElement<TTextAnnotation>(_TextAnnotation_QNAME, TTextAnnotation.class, null, value);
+        return new JAXBElement<>(_TextAnnotation_QNAME, TTextAnnotation.class, null, value);
     }
 
     /**
@@ -1014,7 +1014,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "discretionaryItem", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "tableItem")
     public JAXBElement<TDiscretionaryItem> createDiscretionaryItem(TDiscretionaryItem value) {
-        return new JAXBElement<TDiscretionaryItem>(_DiscretionaryItem_QNAME, TDiscretionaryItem.class, null, value);
+        return new JAXBElement<>(_DiscretionaryItem_QNAME, TDiscretionaryItem.class, null, value);
     }
 
     /**
@@ -1023,7 +1023,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "task", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "planItemDefinition")
     public JAXBElement<TTask> createTask(TTask value) {
-        return new JAXBElement<TTask>(_Task_QNAME, TTask.class, null, value);
+        return new JAXBElement<>(_Task_QNAME, TTask.class, null, value);
     }
 
     /**
@@ -1032,7 +1032,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "planItem")
     public JAXBElement<TPlanItem> createPlanItem(TPlanItem value) {
-        return new JAXBElement<TPlanItem>(_PlanItem_QNAME, TPlanItem.class, null, value);
+        return new JAXBElement<>(_PlanItem_QNAME, TPlanItem.class, null, value);
     }
 
     /**
@@ -1041,7 +1041,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "planItemDefinition")
     public JAXBElement<TPlanItemDefinition> createPlanItemDefinition(TPlanItemDefinition value) {
-        return new JAXBElement<TPlanItemDefinition>(_PlanItemDefinition_QNAME, TPlanItemDefinition.class, null, value);
+        return new JAXBElement<>(_PlanItemDefinition_QNAME, TPlanItemDefinition.class, null, value);
     }
 
     /**
@@ -1050,7 +1050,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "parameter")
     public JAXBElement<TParameter> createParameter(TParameter value) {
-        return new JAXBElement<TParameter>(_Parameter_QNAME, TParameter.class, null, value);
+        return new JAXBElement<>(_Parameter_QNAME, TParameter.class, null, value);
     }
 
     /**
@@ -1059,7 +1059,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "milestone", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "planItemDefinition")
     public JAXBElement<TMilestone> createMilestone(TMilestone value) {
-        return new JAXBElement<TMilestone>(_Milestone_QNAME, TMilestone.class, null, value);
+        return new JAXBElement<>(_Milestone_QNAME, TMilestone.class, null, value);
     }
 
     /**
@@ -1068,7 +1068,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/DC", name = "Dimension")
     public JAXBElement<Dimension> createDimension(Dimension value) {
-        return new JAXBElement<Dimension>(_Dimension_QNAME, Dimension.class, null, value);
+        return new JAXBElement<>(_Dimension_QNAME, Dimension.class, null, value);
     }
 
     /**
@@ -1077,7 +1077,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/CMMNDI", name = "CMMNEdge", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/CMMNDI", substitutionHeadName = "CMMNDiagramElement")
     public JAXBElement<CMMNEdge> createCMMNEdge(CMMNEdge value) {
-        return new JAXBElement<CMMNEdge>(_CMMNEdge_QNAME, CMMNEdge.class, null, value);
+        return new JAXBElement<>(_CMMNEdge_QNAME, CMMNEdge.class, null, value);
     }
 
     /**
@@ -1086,7 +1086,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/CMMNDI", name = "CMMNShape", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/CMMNDI", substitutionHeadName = "CMMNDiagramElement")
     public JAXBElement<CMMNShape> createCMMNShape(CMMNShape value) {
-        return new JAXBElement<CMMNShape>(_CMMNShape_QNAME, CMMNShape.class, null, value);
+        return new JAXBElement<>(_CMMNShape_QNAME, CMMNShape.class, null, value);
     }
 
     /**
@@ -1095,7 +1095,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "extensionElements")
     public JAXBElement<TExtensionElements> createExtensionElements(TExtensionElements value) {
-        return new JAXBElement<TExtensionElements>(_ExtensionElements_QNAME, TExtensionElements.class, null, value);
+        return new JAXBElement<>(_ExtensionElements_QNAME, TExtensionElements.class, null, value);
     }
 
     /**
@@ -1104,7 +1104,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "planFragment", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "planItemDefinition")
     public JAXBElement<TPlanFragment> createPlanFragment(TPlanFragment value) {
-        return new JAXBElement<TPlanFragment>(_PlanFragment_QNAME, TPlanFragment.class, null, value);
+        return new JAXBElement<>(_PlanFragment_QNAME, TPlanFragment.class, null, value);
     }
 
     /**
@@ -1113,7 +1113,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/CMMNDI", name = "CMMNDiagramElement")
     public JAXBElement<DiagramElement> createCMMNDiagramElement(DiagramElement value) {
-        return new JAXBElement<DiagramElement>(_CMMNDiagramElement_QNAME, DiagramElement.class, null, value);
+        return new JAXBElement<>(_CMMNDiagramElement_QNAME, DiagramElement.class, null, value);
     }
 
     /**
@@ -1122,7 +1122,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "eventListener", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "planItemDefinition")
     public JAXBElement<TEventListener> createEventListener(TEventListener value) {
-        return new JAXBElement<TEventListener>(_EventListener_QNAME, TEventListener.class, null, value);
+        return new JAXBElement<>(_EventListener_QNAME, TEventListener.class, null, value);
     }
 
     /**
@@ -1131,7 +1131,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "caseFileItemStartTrigger", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "timerStart")
     public JAXBElement<TCaseFileItemStartTrigger> createCaseFileItemStartTrigger(TCaseFileItemStartTrigger value) {
-        return new JAXBElement<TCaseFileItemStartTrigger>(_CaseFileItemStartTrigger_QNAME, TCaseFileItemStartTrigger.class, null, value);
+        return new JAXBElement<>(_CaseFileItemStartTrigger_QNAME, TCaseFileItemStartTrigger.class, null, value);
     }
 
     /**
@@ -1140,7 +1140,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "manualActivationRule")
     public JAXBElement<TManualActivationRule> createManualActivationRule(TManualActivationRule value) {
-        return new JAXBElement<TManualActivationRule>(_ManualActivationRule_QNAME, TManualActivationRule.class, null, value);
+        return new JAXBElement<>(_ManualActivationRule_QNAME, TManualActivationRule.class, null, value);
     }
 
     /**
@@ -1149,7 +1149,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "humanTask", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "task")
     public JAXBElement<THumanTask> createHumanTask(THumanTask value) {
-        return new JAXBElement<THumanTask>(_HumanTask_QNAME, THumanTask.class, null, value);
+        return new JAXBElement<>(_HumanTask_QNAME, THumanTask.class, null, value);
     }
 
     /**
@@ -1158,7 +1158,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "decision")
     public JAXBElement<TDecision> createDecision(TDecision value) {
-        return new JAXBElement<TDecision>(_Decision_QNAME, TDecision.class, null, value);
+        return new JAXBElement<>(_Decision_QNAME, TDecision.class, null, value);
     }
 
     /**
@@ -1167,7 +1167,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", name = "stage", substitutionHeadNamespace = "http://www.omg.org/spec/CMMN/20151109/MODEL", substitutionHeadName = "planItemDefinition")
     public JAXBElement<Stage> createStage(Stage value) {
-        return new JAXBElement<Stage>(_Stage_QNAME, Stage.class, null, value);
+        return new JAXBElement<>(_Stage_QNAME, Stage.class, null, value);
     }
 
 }

@@ -22,25 +22,21 @@ import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
 
 import java.util.Date;
+
 /**
  * @author: Elena Zaripova
  * @date: 25.02.2015
  */
 public class SetTaskDueDateAsProcessDueDateListener
-	implements TaskListener
-{
+    implements TaskListener {
+
     @Override
-	public void notify(DelegateTask task)
-	{
-    	Object wfDueDate = task.getExecution().getVariable("bpm_workflowDueDate");
-		Object setDueDate = task.getExecution().getVariable("cwf_setDueDate");
-		if (Boolean.TRUE.equals((Boolean)setDueDate))
-		{
-			if(wfDueDate!=null)
-			{
-				task.setDueDate((Date)wfDueDate);
-			}
-		}
+    public void notify(DelegateTask task) {
+        Object wfDueDate = task.getExecution().getVariable("bpm_workflowDueDate");
+        Object setDueDate = task.getExecution().getVariable("cwf_setDueDate");
+        if (Boolean.TRUE.equals((Boolean) setDueDate) && wfDueDate != null) {
+            task.setDueDate((Date) wfDueDate);
+        }
     }
 
 }

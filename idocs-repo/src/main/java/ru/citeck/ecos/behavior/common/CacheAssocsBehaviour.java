@@ -108,7 +108,7 @@ public class CacheAssocsBehaviour implements
 			
 			// mark elements, already existing in cache with MARK_OLD
 			List<AssociationRef> existingAssocs = nodeService.getTargetAssocs(cacheObject, assocToSync);
-			Map<NodeRef,Integer> existanceMap = new HashMap<NodeRef,Integer>(existingAssocs.size());
+			Map<NodeRef,Integer> existanceMap = new HashMap<>(existingAssocs.size());
 			markExisting(existanceMap, existingAssocs, MARK_OLD);
 			
 			// mark elements, that should be cached with 2

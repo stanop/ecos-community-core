@@ -129,7 +129,7 @@ public class OrgStructServiceImpl implements OrgStructService
 
 	@Override
 	public List<String> getGroupTypes() {
-		List<String> groupTypes = new ArrayList<String>();
+		List<String> groupTypes = new ArrayList<>();
 		groupTypes.addAll(components.keySet());
 		return groupTypes;
 	}
@@ -188,10 +188,10 @@ public class OrgStructServiceImpl implements OrgStructService
 		// look for the branches "breadth first"
 		
 		Set<String> groupsToVisit = authorityService.getContainingAuthorities(null, userName, true);
-		Set<String> visitedGroups = new TreeSet<String>();
+		Set<String> visitedGroups = new TreeSet<>();
 
 		while(groupsToVisit.size() > 0) {
-			Set<String> currentGroups = new TreeSet<String>();
+			Set<String> currentGroups = new TreeSet<>();
 			currentGroups.addAll(groupsToVisit);
 			for(String group : currentGroups) {
 				if(isTypedGroup(BRANCH_TYPE, group)) {

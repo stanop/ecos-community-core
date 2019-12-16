@@ -20,9 +20,11 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.utils.WorkflowUtils;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +62,10 @@ public class EcosActivitiTaskService implements EngineTaskService {
         Map<String, Object> result = new HashMap<>();
 
         WorkflowTask taskById = workflowService.getTaskById(ENGINE_PREFIX + taskId);
+        if (taskById == null) {
+            return Collections.emptyMap();
+        }
+
         taskById.getProperties().forEach((qName, serializable) -> {
             String newKey = qName.toPrefixString(namespaceService).replaceAll(":", "_");
             result.put(newKey, serializable);
@@ -125,6 +131,9 @@ public class EcosActivitiTaskService implements EngineTaskService {
         if (comment != null) {
             taskVariables.put("bpm_comment", comment);
         }
+
+        String lastCommentProp = workflowUtils.mapQNameToName(CiteckWorkflowModel.PROP_LASTCOMMENT);
+        taskVariables.put(lastCommentProp, comment);
 
         //TODO: transient variables should be saved in execution
         taskVariables.putAll(transientVariables);
@@ -215,6 +224,12 @@ public class EcosActivitiTaskService implements EngineTaskService {
         public String getTitle() {
             WorkflowTask task = workflowService.getTaskById(ENGINE_PREFIX + getId());
             return workflowUtils.getTaskTitle(task);
+        }
+
+        @Override
+        public String getDescription() {
+            WorkflowTask task = workflowService.getTaskById(ENGINE_PREFIX + getId());
+            return task.getDescription();
         }
 
         @Override

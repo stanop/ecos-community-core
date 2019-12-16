@@ -84,11 +84,9 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
     public static final String ARG_WORKFLOW_ID = "id";
     public static final String ARG_WORKFLOW_PROPERTIES = "properties";
     public static final String ARG_WORKFLOW_DOCUMENTS = "documents";
-    private Map<String, Map<String, String>> taskProperties;
     List<String> allowDocList;
     Map<String, Map<String, String>> subjectTemplates;
     Map<String, String> subjectTemplatesForWorkflow;
-    private TemplateService templateService;
     private String nodeVariable;
     private String templateEngine = "freemarker";
     private static final Log logger = LogFactory.getLog(DelegateTaskNotificationSender.class);
@@ -97,18 +95,18 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
 
     // get notification template arguments for the task
     protected Map<String, Serializable> getNotificationArgs(DelegateTask task) {
-        Map<String, Serializable> args = new HashMap<String, Serializable>();
+        Map<String, Serializable> args = new HashMap<>();
         args.put(ARG_TASK, getTaskInfo(task));
         args.put(ARG_WORKFLOW, getWorkflowInfo(task));
         return args;
     }
 
     private Serializable getTaskInfo(DelegateTask task) {
-        HashMap<String, Object> taskInfo = new HashMap<String, Object>();
+        HashMap<String, Object> taskInfo = new HashMap<>();
         taskInfo.put(ARG_TASK_ID, task.getId());
         taskInfo.put(ARG_TASK_NAME, task.getName());
         taskInfo.put(ARG_TASK_DESCRIPTION, task.getDescription());
-        HashMap<String, Serializable> properties = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> properties = new HashMap<>();
         taskInfo.put(ARG_TASK_PROPERTIES, properties);
         ExecutionEntity executionEntity = ((ExecutionEntity) task.getExecution()).getProcessInstance();
         for (Map.Entry<String, Object> entry : executionEntity.getVariables().entrySet()) {
@@ -128,7 +126,7 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
     }
 
     private Serializable getWorkflowInfo(DelegateTask task) {
-        HashMap<String, Object> workflowInfo = new HashMap<String, Object>();
+        HashMap<String, Object> workflowInfo = new HashMap<>();
         workflowInfo.put(ARG_WORKFLOW_ID, "activiti$" + task.getProcessInstanceId());
         workflowInfo.put(ARG_WORKFLOW_DOCUMENTS, getWorkflowDocuments(task));
         return workflowInfo;
@@ -137,11 +135,10 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
     public void sendNotification(DelegateTask task) {
         NotificationContext notificationContext = new NotificationContext();
         NodeRef template = getNotificationTemplate(task);
-        String from = null;
         notificationContext.setTemplateArgs(getNotificationArgs(task));
         String notificationProviderName = EMailNotificationProvider.NAME;
         String subject = null;
-        Set<String> authorities = new HashSet<String>();
+        Set<String> authorities = new HashSet<>();
         if (template != null && nodeService.exists(template)) {
             setBodyTemplate(notificationContext, template);
             String taskFormKey = (String) task.getVariableLocal("taskFormKey");
@@ -153,9 +150,6 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
             notificationContext.addTo(to);
         }
         notificationContext.setAsyncNotification(getAsyncNotification());
-        if (null != from) {
-            notificationContext.setFrom(from);
-        }
         // send
         logger.debug("before sent");
         services.getNotificationService().sendNotification(notificationProviderName, notificationContext);
@@ -223,8 +217,9 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
         this.subjectTemplates = subjectTemplates;
     }
 
+    @Deprecated
     public void setTemplateService(TemplateService templateService) {
-        this.templateService = templateService;
+        // not used
     }
 
     public void setTemplateEngine(String templateEngine) {
@@ -241,7 +236,7 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
 
     public NodeRef getNotificationTemplate(DelegateTask task) {
         String processDef = task.getProcessDefinitionId();
-        String wfkey = "activiti$" + processDef.substring(0, processDef.indexOf(":"));
+        String wfkey = "activiti$" + processDef.substring(0, processDef.indexOf(':'));
         String tkey = (String) task.getVariableLocal("taskFormKey");
         return getNotificationTemplate(wfkey, tkey);
     }
@@ -249,8 +244,9 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
     /* Properties for tasks provided as map: "task name"-{"property1"-"value1", ...}
     * @param task subscribers
     */
+    @Deprecated
     public void setTaskProperties(Map<String, Map<String, String>> taskProperties) {
-        this.taskProperties = taskProperties;
+        // not used
     }
 
     protected void sendToAssignee(DelegateTask task, Set<String> authorities) {
@@ -340,7 +336,7 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
     }
 
     public ArrayList<Object> getWorkflowDocuments(DelegateTask task) {
-        ArrayList<Object> docsInfo = new ArrayList<Object>();
+        ArrayList<Object> docsInfo = new ArrayList<>();
         NodeRef workflowPackage = null;
         ExecutionEntity executionEntity = ((ExecutionEntity) task.getExecution()).getProcessInstance();
         ActivitiScriptNode scriptNode = (ActivitiScriptNode) executionEntity.getVariable("bpm_package");

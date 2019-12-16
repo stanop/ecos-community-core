@@ -214,11 +214,4 @@
         </view>
     </view>
 
-    <view class="idocs:countryISO3166">
-        <field prop="cm:title"/>
-        <field prop="idocs:countryISO3166Alpha2"/>
-        <field prop="idocs:countryISO3166Alpha3"/>
-        <field prop="idocs:countryISO3166Number"/>
-    </view>
-
 </views>

@@ -38,17 +38,7 @@ public class BusinessCalendarJS extends AlfrescoScopableProcessorExtension {
 		impl.add(field, amount);
 	}
 
-	public void setSearchService(SearchService searchService) {
-		this.searchService = searchService;
-		//impl.setSearchService(searchService);
+	public static void setSearchService(SearchService searchService) {
+		BusinessCalendarJS.searchService = searchService;
 	}
-
-	/*public void setWorkingDays() {
-		impl.setWorkingDays();
-	}
-
-	public void setDayOff() {
-		impl.setDayOff();
-	}*/
-
 }

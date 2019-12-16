@@ -8,6 +8,9 @@
 
 package ru.citeck.ecos.journals.xml;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -19,9 +22,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for journal complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="journal">
  *   &lt;complexContent>
@@ -60,41 +63,48 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "journal", propOrder = {
-    "datasource",
-    "predicate",
-    "create",
-    "groupBy",
-    "option",
-    "groupActions",
-    "headers"
+        "datasource",
+        "predicate",
+        "create",
+        "groupBy",
+        "option",
+        "actions",
+        "groupActions",
+        "headers"
 })
 public class Journal {
 
     protected String datasource;
     protected Predicate predicate;
     protected CreateVariants create;
+
     @XmlElement(name = "group-by")
     protected GroupBy groupBy;
+
     protected List<Option> option;
+
+    @Getter
+    @Setter
+    @XmlElement(name = "actions")
+    protected Action actions;
+
     @XmlElement(name = "group-actions")
     protected GroupActions groupActions;
+
     @XmlElement(required = true)
     protected Headers headers;
+
     @XmlAttribute(name = "id", required = true)
     protected String id;
 
     /**
      * Gets the value of the datasource property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getDatasource() {
         return datasource;
@@ -102,11 +112,9 @@ public class Journal {
 
     /**
      * Sets the value of the datasource property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setDatasource(String value) {
         this.datasource = value;
@@ -114,11 +122,9 @@ public class Journal {
 
     /**
      * Gets the value of the predicate property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Predicate }
-     *     
+     *
+     * @return possible object is
+     * {@link Predicate }
      */
     public Predicate getPredicate() {
         return predicate;
@@ -126,11 +132,9 @@ public class Journal {
 
     /**
      * Sets the value of the predicate property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Predicate }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Predicate }
      */
     public void setPredicate(Predicate value) {
         this.predicate = value;
@@ -138,25 +142,23 @@ public class Journal {
 
     /**
      * Gets the value of the create property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the create property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getCreate().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link CreateVariants }
-     * 
-     * 
      */
     public CreateVariants getCreate() {
         return this.create;
@@ -164,11 +166,9 @@ public class Journal {
 
     /**
      * Gets the value of the groupBy property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link GroupBy }
-     *     
+     *
+     * @return possible object is
+     * {@link GroupBy }
      */
     public GroupBy getGroupBy() {
         return groupBy;
@@ -176,11 +176,9 @@ public class Journal {
 
     /**
      * Sets the value of the groupBy property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link GroupBy }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link GroupBy }
      */
     public void setGroupBy(GroupBy value) {
         this.groupBy = value;
@@ -188,40 +186,36 @@ public class Journal {
 
     /**
      * Gets the value of the option property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the option property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getOption().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link Option }
-     * 
-     * 
      */
     public List<Option> getOption() {
         if (option == null) {
-            option = new ArrayList<Option>();
+            option = new ArrayList<>();
         }
         return this.option;
     }
 
     /**
      * Gets the value of the groupActions property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link GroupActions }
-     *     
+     *
+     * @return possible object is
+     * {@link GroupActions }
      */
     public GroupActions getGroupActions() {
         return groupActions;
@@ -229,11 +223,9 @@ public class Journal {
 
     /**
      * Sets the value of the groupActions property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link GroupActions }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link GroupActions }
      */
     public void setGroupActions(GroupActions value) {
         this.groupActions = value;
@@ -241,11 +233,9 @@ public class Journal {
 
     /**
      * Gets the value of the headers property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Headers }
-     *     
+     *
+     * @return possible object is
+     * {@link Headers }
      */
     public Headers getHeaders() {
         return headers;
@@ -253,11 +243,9 @@ public class Journal {
 
     /**
      * Sets the value of the headers property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Headers }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Headers }
      */
     public void setHeaders(Headers value) {
         this.headers = value;
@@ -265,11 +253,9 @@ public class Journal {
 
     /**
      * Gets the value of the id property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getId() {
         return id;
@@ -277,11 +263,9 @@ public class Journal {
 
     /**
      * Sets the value of the id property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setId(String value) {
         this.id = value;
@@ -290,9 +274,9 @@ public class Journal {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     *
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     *
      * <pre>
      * &lt;complexType>
      *   &lt;complexContent>
@@ -304,12 +288,10 @@ public class Journal {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "action"
+            "action"
     })
     public static class GroupActions {
 
@@ -318,29 +300,45 @@ public class Journal {
 
         /**
          * Gets the value of the action property.
-         * 
+         *
          * <p>
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
          * This is why there is not a <CODE>set</CODE> method for the action property.
-         * 
+         *
          * <p>
          * For example, to add a new item, do as follows:
          * <pre>
          *    getAction().add(newItem);
          * </pre>
-         * 
-         * 
+         *
+         *
          * <p>
          * Objects of the following type(s) are allowed in the list
          * {@link GroupAction }
-         * 
-         * 
          */
         public List<GroupAction> getAction() {
             if (action == null) {
-                action = new ArrayList<GroupAction>();
+                action = new ArrayList<>();
+            }
+            return this.action;
+        }
+
+    }
+
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "", propOrder = {
+            "action"
+    })
+    public static class Action {
+
+        @XmlElement(required = true)
+        protected List<ru.citeck.ecos.journals.xml.Action> action;
+
+        public List<ru.citeck.ecos.journals.xml.Action> getAction() {
+            if (action == null) {
+                action = new ArrayList<>();
             }
             return this.action;
         }
@@ -350,9 +348,9 @@ public class Journal {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     *
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     *
      * <pre>
      * &lt;complexType>
      *   &lt;complexContent>
@@ -364,12 +362,10 @@ public class Journal {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "header"
+            "header"
     })
     public static class Headers {
 
@@ -378,29 +374,27 @@ public class Journal {
 
         /**
          * Gets the value of the header property.
-         * 
+         *
          * <p>
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
          * This is why there is not a <CODE>set</CODE> method for the header property.
-         * 
+         *
          * <p>
          * For example, to add a new item, do as follows:
          * <pre>
          *    getHeader().add(newItem);
          * </pre>
-         * 
-         * 
+         *
+         *
          * <p>
          * Objects of the following type(s) are allowed in the list
          * {@link Header }
-         * 
-         * 
          */
         public List<Header> getHeader() {
             if (header == null) {
-                header = new ArrayList<Header>();
+                header = new ArrayList<>();
             }
             return this.header;
         }

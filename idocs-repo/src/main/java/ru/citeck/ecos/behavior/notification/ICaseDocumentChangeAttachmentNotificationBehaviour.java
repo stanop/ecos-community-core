@@ -2,7 +2,9 @@ package ru.citeck.ecos.behavior.notification;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
-import org.alfresco.repo.policy.*;
+import org.alfresco.repo.policy.Behaviour;
+import org.alfresco.repo.policy.JavaBehaviour;
+import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.version.VersionServicePolicies;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -29,13 +31,13 @@ public class ICaseDocumentChangeAttachmentNotificationBehaviour extends Abstract
     private QName documentQName;
     private HashMap<String, Object> addition;
 
-    private final static String PARAM_TYPE = "type";
-    private final static String PARAM_KIND = "kind";
-    private final static String PARAM_FILE_NAME = "fileName";
-    private final static String PARAM_METHOD = "method";
-    private final static String PARAM_METHOD_ON_DELETE = "onDelete";
-    private final static String PARAM_METHOD_ON_CREATE = "onCreate";
-    private final static String PARAM_METHOD_UPLOAD_NEW_VERSION = "uploadNewVersion";
+    private static final String PARAM_TYPE = "type";
+    private static final String PARAM_KIND = "kind";
+    private static final String PARAM_FILE_NAME = "fileName";
+    private static final String PARAM_METHOD = "method";
+    private static final String PARAM_METHOD_ON_DELETE = "onDelete";
+    private static final String PARAM_METHOD_ON_CREATE = "onCreate";
+    private static final String PARAM_METHOD_UPLOAD_NEW_VERSION = "uploadNewVersion";
 
     public void init() {
         documentQName = QName.createQName(documentNamespace, documentType);

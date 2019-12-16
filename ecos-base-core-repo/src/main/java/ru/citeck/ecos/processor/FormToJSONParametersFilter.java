@@ -48,7 +48,7 @@ public class FormToJSONParametersFilter extends AbstractDataBundleLine {
     public DataBundle process(DataBundle input) {
         Map<String, Object> model = input.needModel();
         
-        HashMap<String, Object> newModel = new HashMap<String, Object>();
+        HashMap<String, Object> newModel = new HashMap<>();
         newModel.putAll(model);
         
         String jsonStr = checkAndConvertFromArgsToJSON(model);

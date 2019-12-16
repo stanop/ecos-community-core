@@ -7,11 +7,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.predicate.PredicateService;
+import ru.citeck.ecos.predicate.PredicateUtils;
+import ru.citeck.ecos.predicate.model.Predicate;
 import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
-import ru.citeck.ecos.records2.RecordMeta;
-import ru.citeck.ecos.records2.RecordRef;
-import ru.citeck.ecos.records2.RecordsService;
-import ru.citeck.ecos.records2.RecordsServiceAware;
+import ru.citeck.ecos.records2.*;
+import ru.citeck.ecos.records2.predicate.RecordElement;
+import ru.citeck.ecos.records2.predicate.RecordElements;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
 import ru.citeck.ecos.records2.request.result.RecordsResult;
 import ru.citeck.ecos.search.*;
@@ -22,12 +24,13 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ExactCriteriaRecordsDAO extends FilteredRecordsDAO implements RecordsServiceAware {
+public class ExactCriteriaRecordsDAO extends FilteredRecordsDAO implements ServiceFactoryAware {
 
     private static final Log logger = LogFactory.getLog(ExactCriteriaRecordsDAO.class);
 
     private SearchCriteriaParser criteriaParser;
     private RecordsService recordsService;
+    private PredicateService predicateService;
 
     private List<String> filteredFields = Collections.emptyList();
     private Map<String, PredicateFilter> filters = new HashMap<>();
@@ -57,8 +60,26 @@ public class ExactCriteriaRecordsDAO extends FilteredRecordsDAO implements Recor
 
     @Override
     protected Function<List<RecordRef>, List<RecordRef>> getFilter(RecordsQuery query) {
+        if (PredicateService.LANGUAGE_PREDICATE.equals(query.getLanguage())) {
 
-        if (!CriteriaAlfNodesSearch.LANGUAGE.equals(query.getLanguage())) {
+            Predicate predicate = predicateService.readJson(query.getQuery());
+            Optional<Predicate> predicateOpt = PredicateUtils.filterValuePredicates(predicate, p ->
+                    filteredFields.contains(p.getValue().toString()) && (p.getAttribute().equals("ISUNSET") || p.getAttribute().equals("ISNULL"))
+            );
+
+            if (predicateOpt.isPresent()) {
+                return list -> {
+                    RecordElements elements = new RecordElements(recordsService, list);
+                    List<RecordElement> filtered = predicateService.filter(elements, predicateOpt.get(), query.getMaxItems());
+                    return filtered.stream()
+                            .map(RecordElement::getRecordRef)
+                            .collect(Collectors.toList());
+                };
+            } else {
+                return list -> list;
+            }
+
+        } else if (!CriteriaAlfNodesSearch.LANGUAGE.equals(query.getLanguage())) {
             return list -> list;
         }
 
@@ -124,8 +145,13 @@ public class ExactCriteriaRecordsDAO extends FilteredRecordsDAO implements Recor
     }
 
     @Override
-    public void setRecordsService(RecordsService recordsService) {
-        this.recordsService = recordsService;
+    public void setRecordsServiceFactory(RecordsServiceFactory serviceFactory) {
+        this.recordsService = serviceFactory.getRecordsService();
+    }
+
+    @Autowired
+    public void setPredicateService(PredicateService predicateService) {
+        this.predicateService = predicateService;
     }
 
     private class CriterionFilter {

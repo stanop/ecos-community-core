@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class EcosFormServiceImpl implements EcosFormService {
 
     private static final String DEFAULT_KEY = "DEFAULT";
+    private static final String TYPE_PREFIX = "type_";
 
     private Set<FormProvider> providers = new TreeSet<>(Comparator.comparing(FormProvider::getOrder));
     private MutableFormProvider newFormsStore;
@@ -40,6 +41,12 @@ public class EcosFormServiceImpl implements EcosFormService {
             if (form != null) {
                 break;
             }
+        }
+
+        // temp fix for old forms
+        if (form == null && formKey.startsWith(TYPE_PREFIX)) {
+            formKey = formKey.substring(TYPE_PREFIX.length());
+            form = getFormByKey(formKey).orElse(null);
         }
 
         return Optional.ofNullable(form);
@@ -116,11 +123,9 @@ public class EcosFormServiceImpl implements EcosFormService {
             for (FormProvider provider : providers) {
 
                 EcosFormModel form = provider.getFormById(model.getId());
-                if (form != null) {
-                    if (provider instanceof MutableFormProvider) {
-                        ((MutableFormProvider) provider).save(model);
-                        return model.getId();
-                    }
+                if (form != null && provider instanceof MutableFormProvider) {
+                    ((MutableFormProvider) provider).save(model);
+                    return model.getId();
                 }
             }
         } else {
@@ -157,7 +162,7 @@ public class EcosFormServiceImpl implements EcosFormService {
 
     public static class FormKeys {
 
-        @MetaAtt(RecordConstants.ATT_FORM_KEY)
+        @MetaAtt(RecordConstants.ATT_FORM_KEY + "[]?str")
         @Getter @Setter private List<String> keys;
     }
 

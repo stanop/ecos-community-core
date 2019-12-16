@@ -19,8 +19,9 @@
 
 require([
     'ecosui!ecos-records',
-    'ecosui!react-dom'
-], function(Records, ReactDOM) {
+    'ecosui!react-dom',
+    'ecosui!user-in-groups-list-helper'
+], function(Records, ReactDOM, checkFunctionalAvailabilityHelper) {
 
     if (typeof Citeck == "undefined") Citeck = {};
     Citeck.forms = Citeck.forms || {};
@@ -455,7 +456,8 @@ require([
 
                 var params = {
                     attributes: config.attributes || {},
-                    onSubmit: config.onSubmit
+                    onSubmit: config.onSubmit,
+                    options: config.options
                 };
                 if (formKey) {
                     params.formKey = config.formKey
@@ -478,12 +480,13 @@ require([
         } else {
             isFormsEnabled = Promise.resolve(true);
         }
-        var isShouldDisplay = isShouldDisplayFormsForUser();
+        var isShouldDisplayFormsForUser = checkFunctionalAvailabilityHelper
+            .checkFunctionalAvailabilityForUser("default-ui-new-forms-access-groups");
 
-        Promise.all([isFormsEnabled, isShouldDisplay]).then(function (values) {
-            if (values[0] || values[1]) {
+        Promise.all([isFormsEnabled, isShouldDisplayFormsForUser]).then(function (values) {
+            if (values.includes(true)) {
                 require(['ecosui!ecos-form-utils'], function(utils) {
-                    utils.default.hasForm(recordRef).then(function (result) {
+                    utils.default.hasForm(recordRef, formKey).then(function (result) {
                         if (result) {
                             showForm(recordRef);
                         } else {
@@ -500,45 +503,35 @@ require([
         });
     };
 
-    function isShouldDisplayFormsForUser() {
-        return Citeck.Records.get("ecos-config@default-ui-main-menu").load(".str").then(function(result) {
-            if (result == "left") {
-                return isShouldDisplayForms();
+    Citeck.forms.parseCreateArguments = function (createArgs) {
+        if (!createArgs) {
+            return {};
+        }
+        var params = {};
+        try {
+            var args = createArgs.split("&");
+            for (var i = 0; i < args.length; i++) {
+                var keyValue = (args[i] || '').split("=");
+                if (keyValue.length == 2) {
+                    var key = keyValue[0] || '';
+                    var value = keyValue[1] || '';
+                    if (key.indexOf("param_") === 0) {
+                        params[key.substring("param_".length)] = value;
+                    }
+                }
             }
-            return false;
-        });
-    }
-
-    function isShouldDisplayForms() {
-        return Citeck.Records.get("ecos-config@default-ui-left-menu-access-groups")
-            .load(".str").then(function(groupsInOneString) {
-
-                if (!groupsInOneString) {
-                    return false;
-                }
-
-                var groups = groupsInOneString.split(',');
-                var results = [];
-                for(var groupsCounter = 0; groupsCounter < groups.length; ++groupsCounter) {
-                    results.push(isCurrentUserInGroup(groups[groupsCounter]));
-                }
-                return Promise.all(results).then(function (values) {
-                    return values.indexOf(false) == -1;
-                });
-            });
-    }
-
-    function isCurrentUserInGroup(group) {
-        var currentPersonName = Alfresco.constants.USERNAME;
-        return Citeck.Records.queryOne({
-            "query": 'TYPE:"cm:authority" AND =cm:authorityName:"' + group + '"',
-            "language": "fts-alfresco"
-        }, 'cm:member[].cm:userName').then(function (usernames) {
-            return (usernames || []).indexOf(currentPersonName) != -1
-        });
-    }
+        } catch (e) {
+            //protection for hotfix
+            //todo: remove it in develop
+            console.error(e);
+        }
+        return params;
+    };
 
     Citeck.forms.handleHeaderCreateVariant = function (variant) {
+
+        var params = Citeck.forms.parseCreateArguments(variant.createArguments);
+        var attributes = variant.attributes || {};
 
         Citeck.forms.createRecord(variant.recordRef, variant.type, variant.destination, function() {
 
@@ -551,10 +544,17 @@ require([
             }
 
             window.location = "/share/page/node-create?" + createArguments;
-        });
+        }, null, null, attributes, { params: params });
     };
 
-    Citeck.forms.createRecord = function (recordRef, type, destination, fallback, redirectionMethod, formKey, attributes) {
+    Citeck.forms.createRecord = function (recordRef,
+                                          type,
+                                          destination,
+                                          fallback,
+                                          redirectionMethod,
+                                          formKey,
+                                          attributes,
+                                          options) {
 
         var createAttributes = attributes || {};
         if (destination) {
@@ -565,6 +565,7 @@ require([
             recordRef: recordRef || 'dict@' + type,
             attributes: createAttributes,
             formKey: formKey,
+            options: options,
             forceNewForm: formKey || !type,
             fallback: fallback,
             onSubmit: function(record, form) {
@@ -959,13 +960,19 @@ require([
             });
         };
 
+        var editConfig = {
+            recordRef: itemId,
+            fallback: function() {
+                showOldForms();
+            }
+        };
+
+        if (params.formKey) {
+            editConfig.formKey = params.formKey;
+        }
+
         try {
-            Citeck.forms.editRecord({
-                recordRef: itemId,
-                fallback: function() {
-                    showOldForms();
-                }
-            });
+            Citeck.forms.editRecord(editConfig);
         } catch (e) {
             console.error(e);
             showOldForms();

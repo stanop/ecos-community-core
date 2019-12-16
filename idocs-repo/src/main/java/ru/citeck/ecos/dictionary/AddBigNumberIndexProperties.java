@@ -62,8 +62,8 @@ public class AddBigNumberIndexProperties implements MethodBeforeAdvice {
 	// process every property in class (type or aspect)
 	private void process(M2Class clazz) {
 		// find all big-number properties and index properties
-		Set<String> bigProps = new HashSet<String>();
-		Set<String> indexProps = new HashSet<String>();
+		Set<String> bigProps = new HashSet<>();
+		Set<String> indexProps = new HashSet<>();
 		for(M2Property property : clazz.getProperties()) {
 			if(CiteckNumericModel.isBigProp(property.getName())) {
 				bigProps.add(property.getName());

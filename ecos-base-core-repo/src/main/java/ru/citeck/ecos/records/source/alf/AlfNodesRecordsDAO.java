@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.*;
-import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
@@ -20,10 +22,10 @@ import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.model.InvariantsModel;
 import ru.citeck.ecos.records.source.alf.file.AlfNodeContentFileHelper;
-import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
 import ru.citeck.ecos.records.source.alf.search.AlfNodesSearch;
 import ru.citeck.ecos.records.source.dao.RecordsActionExecutor;
+import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
@@ -45,6 +47,8 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Component
 public class AlfNodesRecordsDAO extends LocalRecordsDAO
@@ -57,6 +61,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     private static final Log logger = LogFactory.getLog(AlfNodesRecordsDAO.class);
 
     public static final String ID = "";
+    public static final String ADD_CMD_PREFIX = "att_add_";
+    public static final String REMOVE_CMD_PREFIX = "att_rem_";
 
     private Map<String, AlfNodesSearch> searchByLanguage = new ConcurrentHashMap<>();
 
@@ -109,152 +115,211 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         RecordsMutResult result = new RecordsMutResult();
 
         for (RecordMeta record : mutation.getRecords()) {
-
-            Map<QName, Serializable> props = new HashMap<>();
-            Map<QName, JsonNode> contentProps = new HashMap<>();
-            Map<QName, Set<NodeRef>> assocs = new HashMap<>();
-            Map<QName, JsonNode> childAssocEformFiles = new HashMap<>();
-
-            NodeRef nodeRef = null;
-            if (record.getId().getId().startsWith("workspace://SpacesStore/")) {
-                nodeRef = new NodeRef(record.getId().getId());
-            }
-
-            ObjectNode fields = record.getAttributes();
-            Iterator<String> names = fields.fieldNames();
-
-            while (names.hasNext()) {
-
-                String name = names.next();
-
-                if ("_state".equals(name)) {
-                    String strValue = fields.path(name).asText();
-                    props.put(InvariantsModel.PROP_IS_DRAFT, "draft".equals(strValue));
-                    continue;
-                }
-
-                if (ecosPermissionService.isAttributeProtected(nodeRef, name)) {
-                    logger.warn("You can't change '" + name +
-                                "' attribute of '" + nodeRef +
-                                "' because it is protected! Value: " + fields.get(name));
-                    continue;
-                }
-
-                QName fieldName = QName.resolveToQName(namespaceService, name);
-                if (fieldName == null) {
-                    continue;
-                }
-
-                PropertyDefinition propDef = dictionaryService.getProperty(fieldName);
-
-                if (propDef != null) {
-
-                    QName typeName = propDef.getDataType().getName();
-
-                    if (DataTypeDefinition.CONTENT.equals(typeName)) {
-                        contentProps.put(fieldName, fields.path(name));
-                    } else {
-
-                        JsonNode value = fields.path(name);
-
-                        if (!value.isMissingNode()) {
-
-                            Serializable converted = convertValue(value);
-
-                            if (!DataTypeDefinition.TEXT.equals(typeName)
-                                    && converted instanceof String
-                                    && ((String) converted).isEmpty()) {
-
-                                props.put(fieldName, null);
-                            } else {
-                                props.put(fieldName, converted);
-                            }
-                        }
-                    }
-                } else {
-                    AssociationDefinition assocDef = dictionaryService.getAssociation(fieldName);
-                    if (assocDef != null) {
-
-                        JsonNode value = fields.path(name);
-
-                        if (assocDef instanceof ChildAssociationDefinition
-                                && contentFileHelper.isFileFromEformFormat(value)) {
-
-                            childAssocEformFiles.put(fieldName, value);
-
-                        } else {
-
-                            Set<NodeRef> nodeRefs = null;
-                            if (value.isTextual()) {
-                                nodeRefs = Arrays.stream(value.asText().split(","))
-                                        .filter(NodeRef::isNodeRef)
-                                        .map(NodeRef::new)
-                                        .collect(Collectors.toSet());
-                            } else if (value.isArray()) {
-                                nodeRefs = new HashSet<>();
-                                for (JsonNode node : value) {
-                                    String textValue = node.asText();
-                                    if (NodeRef.isNodeRef(textValue)) {
-                                        nodeRefs.add(new NodeRef(textValue));
-                                    }
-                                }
-                            }
-
-                            if (nodeRefs != null) {
-                                assocs.put(fieldName, nodeRefs);
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (record.getId() == RecordRef.EMPTY) {
-
-                if (!props.containsKey(InvariantsModel.PROP_IS_DRAFT)) {
-                    props.put(InvariantsModel.PROP_IS_DRAFT, false);
-                }
-
-                QName type = getNodeType(record);
-                NodeRef parent = getParent(record, type);
-                QName parentAssoc = getParentAssoc(record, parent);
-
-                String name = (String) props.get(ContentModel.PROP_NAME);
-
-                if (StringUtils.isBlank(name)) {
-
-                    JsonNode contentProp = contentProps.get(ContentModel.PROP_CONTENT);
-                    if (contentProp != null && contentProp.isObject()) {
-                        JsonNode filenameProp = contentProp.path("filename");
-                        if (filenameProp.isTextual()) {
-                            name = filenameProp.asText();
-                        }
-                    }
-                }
-
-                if (StringUtils.isBlank(name)) {
-                    name = GUID.generate();
-                }
-
-                props.put(ContentModel.PROP_NAME, name);
-
-                nodeRef = nodeUtils.createNode(parent, type, parentAssoc, props);
-                result.addRecord(new RecordMeta(RecordRef.valueOf(nodeRef.toString())));
-
-            } else {
-
-                nodeService.addProperties(nodeRef, props);
-                result.addRecord(new RecordMeta(record.getId()));
-            }
-
-            final NodeRef finalNodeRef = nodeRef;
-
-            contentProps.forEach((name, value) -> contentFileHelper.processPropFileContent(finalNodeRef, name, value));
-            assocs.forEach((name, value) -> nodeUtils.setAssocs(finalNodeRef, value, name, true));
-            childAssocEformFiles.forEach((qName, jsonNodes) -> contentFileHelper.processChildAssocFilesContent(
-                    qName, jsonNodes, finalNodeRef));
+            RecordMeta resRec = processSingleRecord(record);
+            result.addRecord(resRec);
         }
 
         return result;
+    }
+
+    private RecordMeta processSingleRecord(RecordMeta record) {
+        RecordMeta resultRecord;
+        Map<QName, Serializable> props = new HashMap<>();
+        Map<QName, JsonNode> contentProps = new HashMap<>();
+        Map<QName, Set<NodeRef>> assocs = new HashMap<>();
+        Map<QName, JsonNode> childAssocEformFiles = new HashMap<>();
+        Map<QName, JsonNode> attachmentAssocEformFiles = new HashMap<>();
+        Map<String, String> attsToIgnore = new HashMap<>();
+
+        NodeRef nodeRef = null;
+        if (record.getId().getId().startsWith("workspace://SpacesStore/")) {
+            nodeRef = new NodeRef(record.getId().getId());
+        }
+
+        ObjectNode attributes = record.getAttributes();
+
+        // if we get "att_add_someAtt" and "someAtt", then ignore "att_add_*"
+        attributes.fieldNames().forEachRemaining(name -> {
+            if (name.startsWith(ADD_CMD_PREFIX) || name.startsWith(REMOVE_CMD_PREFIX)) {
+                String actualName = extractActualAttName(name);
+                if (attributes.get(actualName) != null) {
+                    attsToIgnore.put(name, actualName);
+                }
+            }
+        });
+
+        Iterator<String> names = attributes.fieldNames();
+        while (names.hasNext()) {
+
+            String name = names.next();
+            JsonNode fieldValue = attributes.path(name);
+            JsonNode fieldRawValue = attributes.get(name);
+
+            if (attsToIgnore.containsKey(name)) {
+                logger.warn("Found att " + attsToIgnore.get(name) + ", att " + name + " will be ignored");
+                continue;
+            }
+
+            if ("_state".equals(name)) {
+                String strValue = fieldValue.asText();
+                props.put(InvariantsModel.PROP_IS_DRAFT, "draft".equals(strValue));
+                continue;
+            }
+
+            String addOrRemoveCmd = null;
+            if (record.getId() != RecordRef.EMPTY && name.startsWith(ADD_CMD_PREFIX)) {
+                addOrRemoveCmd = ADD_CMD_PREFIX;
+                name = name.substring(ADD_CMD_PREFIX.length());
+                if (!name.contains(":")) {
+                    logger.warn("Attribute doesn't exist: " + name);
+                    continue;
+                }
+            } else if (record.getId() != RecordRef.EMPTY && name.startsWith(REMOVE_CMD_PREFIX)) {
+                addOrRemoveCmd = REMOVE_CMD_PREFIX;
+                name = name.substring(REMOVE_CMD_PREFIX.length());
+                if (!name.contains(":")) {
+                    logger.warn("Attribute doesn't exist: " + name);
+                    continue;
+                }
+            }
+
+            if (ecosPermissionService.isAttributeProtected(nodeRef, name)) {
+                logger.warn("You can't change '" + name +
+                        "' attribute of '" + nodeRef +
+                        "' because it is protected! Value: " + fieldRawValue);
+                continue;
+            }
+
+            QName fieldName = QName.resolveToQName(namespaceService, name);
+            if (fieldName == null) {
+                continue;
+            }
+
+            PropertyDefinition propDef = dictionaryService.getProperty(fieldName);
+
+            if (propDef != null) {
+
+                QName typeName = propDef.getDataType().getName();
+                if (addOrRemoveCmd != null) {
+                    logger.warn("Attribute action " + addOrRemoveCmd + " is not supported for node properties." +
+                            " Atttribute: " + name);
+                    continue;
+                }
+
+                if (DataTypeDefinition.CONTENT.equals(typeName)) {
+                    contentProps.put(fieldName, fieldValue);
+                } else {
+                    if (!fieldValue.isMissingNode()) {
+
+                        Serializable converted = convertValue(fieldValue);
+
+                        if (!DataTypeDefinition.TEXT.equals(typeName)
+                                && converted instanceof String
+                                && ((String) converted).isEmpty()) {
+                            converted = null;
+                        }
+                        props.put(fieldName, converted);
+                    }
+                }
+            } else {
+                AssociationDefinition assocDef = dictionaryService.getAssociation(fieldName);
+                if (assocDef != null) {
+
+                    if (contentFileHelper.isFileFromEformFormat(fieldValue)) {
+                        if (addOrRemoveCmd != null) {
+                            logger.warn("Attribute action " + addOrRemoveCmd + " is not supported for fileFromEformFormat." +
+                                    " Atttribute: " + name);
+                            continue;
+                        }
+                        if (assocDef instanceof ChildAssociationDefinition) {
+                            childAssocEformFiles.put(fieldName, fieldValue);
+                        } else {
+                            attachmentAssocEformFiles.put(fieldName, fieldValue);
+                        }
+                    } else {
+                        Stream<String> refsStream = null;
+                        if (fieldValue.isTextual()) {
+                            refsStream = Arrays.stream(fieldValue.asText().split(","));
+                        } else if (fieldValue.isArray()) {
+                            refsStream = StreamSupport.stream(fieldValue.spliterator(), false)
+                                    .map(JsonNode::asText);
+                        }
+                        if (refsStream != null) {
+                            Set<NodeRef> targetRefs = refsStream
+                                    .filter(NodeRef::isNodeRef)
+                                    .map(NodeRef::new)
+                                    .collect(Collectors.toSet());
+
+                            if (!targetRefs.isEmpty() && addOrRemoveCmd != null) {
+                                Set<NodeRef> existedAssocTargets = assocs.get(fieldName);
+                                if (existedAssocTargets == null) {
+                                    existedAssocTargets = new HashSet<>(nodeUtils.getAssocTargets(nodeRef, fieldName));
+                                }
+                                if (ADD_CMD_PREFIX.equals(addOrRemoveCmd)) {
+                                    existedAssocTargets.addAll(targetRefs);
+                                }
+
+                                if (REMOVE_CMD_PREFIX.equals(addOrRemoveCmd)) {
+                                    existedAssocTargets.removeAll(targetRefs);
+                                }
+                                targetRefs = existedAssocTargets;
+                            }
+                            assocs.put(fieldName, targetRefs);
+                        }
+                    }
+                } else {
+                    logger.warn("Attribute definition not found" +
+                            " (should be either PropertyDefinition or AssociationDefinition): " + name);
+                }
+            }
+        }
+
+        if (record.getId() == RecordRef.EMPTY) {
+
+            if (!props.containsKey(InvariantsModel.PROP_IS_DRAFT)) {
+                props.put(InvariantsModel.PROP_IS_DRAFT, false);
+            }
+
+            QName type = getNodeType(record);
+            NodeRef parent = getParent(record, type);
+            QName parentAssoc = getParentAssoc(record, parent);
+
+            String name = (String) props.get(ContentModel.PROP_NAME);
+
+            if (StringUtils.isBlank(name)) {
+                name = GUID.generate();
+            }
+
+            props.put(ContentModel.PROP_NAME, name);
+
+            nodeRef = nodeUtils.createNode(parent, type, parentAssoc, props);
+            resultRecord = new RecordMeta(RecordRef.valueOf(nodeRef.toString()));
+
+        } else {
+
+            nodeService.addProperties(nodeRef, props);
+            resultRecord = new RecordMeta(record.getId());
+        }
+
+        final NodeRef finalNodeRef = nodeRef;
+
+        contentProps.forEach((name, value) -> contentFileHelper.processPropFileContent(finalNodeRef, name, value));
+        assocs.forEach((name, value) -> nodeUtils.setAssocs(finalNodeRef, value, name, true));
+        childAssocEformFiles.forEach((qName, jsonNodes) -> contentFileHelper.processAssocFilesContent(
+                qName, jsonNodes, finalNodeRef, true));
+        attachmentAssocEformFiles.forEach((qName, jsonNodes) -> contentFileHelper.processAssocFilesContent(
+                qName, jsonNodes, finalNodeRef, false));
+        return resultRecord;
+    }
+
+    private String extractActualAttName(String name) {
+        if (name.startsWith(ADD_CMD_PREFIX)) {
+            return name.substring(ADD_CMD_PREFIX.length());
+        } else if (name.startsWith(REMOVE_CMD_PREFIX)) {
+            return name.substring(REMOVE_CMD_PREFIX.length());
+        } else {
+            return name;
+        }
     }
 
     @Override

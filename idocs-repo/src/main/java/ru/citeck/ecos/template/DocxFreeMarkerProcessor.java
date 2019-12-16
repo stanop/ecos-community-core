@@ -19,22 +19,13 @@
 package ru.citeck.ecos.template;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -159,11 +150,9 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 							}
 						}
 					}
-				} catch (JAXBException e) {
+				} catch (JAXBException | Docx4JException e) {
 					logger.error(e.getLocalizedMessage(), e);
-				} catch (Docx4JException e) {
-                    logger.error(e.getLocalizedMessage(), e);
-                }
+				}
 			}
 		}
 		
@@ -208,7 +197,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 		}
 	}
 
-	private static enum LexerState {
+	private enum LexerState {
 		TEXT,
 		EXPR,
 		STRING
@@ -218,7 +207,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 		logger.debug("Start processing of texts: " + textParts.size());
 		LexerState state = LexerState.TEXT;
 		
-		Map<Character, Character> parentheses = new HashMap<Character, Character>();
+		Map<Character, Character> parentheses = new HashMap<>();
 		parentheses.put(']', '[');
 		parentheses.put('}', '{');
 		Collection<Character> openingParentheses = parentheses.values();
@@ -227,7 +216,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 		StringBuilder buffer = new StringBuilder();
 		
 		// process docx text parts
-		Stack<Character> stack = new Stack<Character>();
+		Stack<Character> stack = new Stack<>();
 		char prevChar = ' ';
 		for (Text text : textParts) {
 			String textValue = text.getValue();
@@ -316,7 +305,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 	private List<Text> getTexts(Part part, Object paragraph)
 			throws JAXBException, Docx4JException {
 		List<Object> elements = ((JaxbXmlPartXPathAware<Object>) part).getJAXBNodesViaXPath(".//w:t", paragraph, true);
-		List<Text> texts = new ArrayList<Text>(elements.size());
+		List<Text> texts = new ArrayList<>(elements.size());
 		for (Object element : elements) {
 			if(element instanceof JAXBElement) {
 				texts.add((Text) ((JAXBElement<Object>) element).getValue());
@@ -352,7 +341,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 		int j = 1;
 		TextIndex prev = null;
 		Object paragraph;
-		List<TextIndex> paragraphText = new LinkedList<TextIndex>();
+		List<TextIndex> paragraphText = new LinkedList<>();
 		for (TextIndex index : indexes) {
 			if (prev == null || prev.getNewLineIndex() == index.getNewLineIndex()) {
 				paragraphText.add(index);
@@ -360,7 +349,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 			else {
 				paragraph = createNewParagraph(p, paragraphText, texts);
 				contentAccessor.getContent().add(paragraphPos + j, paragraph);
-				paragraphText = new LinkedList<TextIndex>();
+				paragraphText = new LinkedList<>();
 				paragraphText.add(index);
 				j++;
 			}
@@ -381,7 +370,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 	 * @return
 	 */
 	private List<TextIndex> collectTextIndexes(List<Text> texts) {
-		List<TextIndex> indexes = new LinkedList<TextIndex>();
+		List<TextIndex> indexes = new LinkedList<>();
 		int textIndex = 0;
 		int newLineIndex = 0;
 		for (Text text : texts) {
@@ -483,24 +472,31 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj)
+			if (this == obj) {
 				return true;
-			if (obj == null)
+			}
+
+			if (obj == null || getClass() != obj.getClass()) {
 				return false;
-			if (getClass() != obj.getClass())
-				return false;
+			}
+
 			TextIndex other = (TextIndex) obj;
-			if (!getOuterType().equals(other.getOuterType()))
+			if (!getOuterType().equals(other.getOuterType())) {
 				return false;
-			if (newLineIndex != other.newLineIndex)
+			}
+
+			if (newLineIndex != other.newLineIndex) {
 				return false;
-			if (text == null) {
-				if (other.text != null)
-					return false;
-			} else if (!text.equals(other.text))
+			}
+
+			if (!Objects.equals(text, other.text)) {
 				return false;
-			if (textIndex != other.textIndex)
+			}
+
+			if (textIndex != other.textIndex) {
 				return false;
+			}
+
 			return true;
 		}
 

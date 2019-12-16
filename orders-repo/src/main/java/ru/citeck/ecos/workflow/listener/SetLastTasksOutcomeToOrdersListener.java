@@ -8,7 +8,6 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import ru.citeck.ecos.model.ConfirmWorkflowModel;
 import ru.citeck.ecos.workflow.listeners.AbstractTaskListener;
-import ru.citeck.ecos.workflow.listeners.ListenerUtils;
 import ru.citeck.ecos.workflow.listeners.WorkflowDocumentResolverRegistry;
 
 import java.util.Objects;
@@ -40,6 +39,9 @@ public class SetLastTasksOutcomeToOrdersListener extends AbstractTaskListener {
         }
 
         String currentTaskOutcome = (String) delegateTask.getVariable("bpm_outcome");
+        if (StringUtils.isBlank(currentTaskOutcome)) {
+            currentTaskOutcome = (String) delegateTask.getVariable("outcome");
+        }
         if (StringUtils.isBlank(currentTaskOutcome)) {
             return;
         }

@@ -65,7 +65,7 @@ public class Criterion
      */
     public List<CriterionRegion> getRegion() {
         if (region == null) {
-            region = new ArrayList<CriterionRegion>();
+            region = new ArrayList<>();
         }
         return this.region;
     }
@@ -94,7 +94,7 @@ public class Criterion
      */
     public List<Invariant> getInvariant() {
         if (invariant == null) {
-            invariant = new ArrayList<Invariant>();
+            invariant = new ArrayList<>();
         }
         return this.invariant;
     }

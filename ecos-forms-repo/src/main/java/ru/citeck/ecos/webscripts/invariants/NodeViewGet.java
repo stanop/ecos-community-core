@@ -36,7 +36,6 @@ import ru.citeck.ecos.webscripts.utils.WebScriptUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class NodeViewGet extends DeclarativeWebScript {
 

@@ -11,7 +11,6 @@ import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.thumbnail.ThumbnailService;
 import org.alfresco.service.namespace.QName;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
@@ -27,6 +26,8 @@ import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.utils.DictUtils;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -129,6 +130,18 @@ public class AlfNodeAttValue implements MetaValue {
                 return reader.exists() ? reader.getContentString() : null;
             });
         }
+        if (rawValue instanceof Number) {
+
+            DecimalFormat format = context.getOrPutData("DecimalFormat", DecimalFormat.class, () -> {
+
+                DecimalFormatSymbols locale = DecimalFormatSymbols.getInstance(Locale.ENGLISH);
+                DecimalFormat fmt = new DecimalFormat("0", locale);
+                fmt.setMaximumFractionDigits(340);
+                return fmt;
+            });
+
+            return format.format(((Number) rawValue).doubleValue());
+        }
         return rawValue.toString();
     }
 
@@ -148,10 +161,8 @@ public class AlfNodeAttValue implements MetaValue {
             return MetaUtils.getReflectionValue(qName, name);
         } else if (rawValue instanceof MLText) {
             return new MLTextValue((MLText) rawValue);
-        } else if (rawValue instanceof ContentData) {
-            if ("previewInfo".equals(name)) {
-                return getContentInfo();
-            }
+        } else if (rawValue instanceof ContentData && "previewInfo".equals(name)) {
+            return getContentInfo();
         }
         return null;
     }

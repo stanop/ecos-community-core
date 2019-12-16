@@ -28,8 +28,6 @@ public class EcosTaskService {
     @Autowired
     private WorkflowUtils workflowUtils;
 
-    private ThreadLocal<Map<String, String>> currentTaskAssignee = ThreadLocal.withInitial(HashMap::new);
-
     public void endTask(String taskId, Map<String, Object> variables) {
         endTask(taskId, null, variables, null);
     }
@@ -95,7 +93,7 @@ public class EcosTaskService {
         @Getter private final String localId;
 
         TaskId(String taskId) {
-            int delimIdx = taskId.indexOf("$");
+            int delimIdx = taskId.indexOf('$');
             if (delimIdx == -1) {
                 throw new IllegalArgumentException("Task id should has engine prefix. Task: '" + taskId + "'");
             }

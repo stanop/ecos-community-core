@@ -85,7 +85,7 @@ public class TProcess
      */
     public List<TProcessParameter> getInput() {
         if (input == null) {
-            input = new ArrayList<TProcessParameter>();
+            input = new ArrayList<>();
         }
         return this.input;
     }
@@ -114,7 +114,7 @@ public class TProcess
      */
     public List<TProcessParameter> getOutput() {
         if (output == null) {
-            output = new ArrayList<TProcessParameter>();
+            output = new ArrayList<>();
         }
         return this.output;
     }

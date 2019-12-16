@@ -65,7 +65,7 @@ public class Action {
      */
     public List<Parameter> getParam() {
         if (param == null) {
-            param = new ArrayList<Parameter>();
+            param = new ArrayList<>();
         }
         return this.param;
     }

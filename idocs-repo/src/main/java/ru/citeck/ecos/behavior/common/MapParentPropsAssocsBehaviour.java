@@ -59,7 +59,7 @@ public class MapParentPropsAssocsBehaviour implements NodeServicePolicies.OnCrea
 			return;
 		}
 		
-		Map<QName, Serializable> newProperties = new HashMap<QName, Serializable>(mapping.size());
+		Map<QName, Serializable> newProperties = new HashMap<>(mapping.size());
 		
 		// process mapping
 		for(Map.Entry<QName, QName> entry : mapping.entrySet()) {

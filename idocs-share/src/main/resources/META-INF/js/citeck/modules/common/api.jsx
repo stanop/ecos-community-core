@@ -1,5 +1,6 @@
-import { generateSearchTerm } from './util';
+import { generateSearchTerm, getCurrentLocale } from './util';
 import MenuApi from 'ecosui!menu-api';
+import { checkFunctionalAvailabilityForUser } from 'ecosui!user-in-groups-list-helper';
 
 function handleErrors(response) {
     if (!response.ok) {
@@ -17,11 +18,6 @@ const getOptions = {
     method: 'get'
 };
 
-const postOptions = {
-    ...getOptions,
-    method: 'post'
-};
-
 const menuApi = new MenuApi();
 
 export default class {
@@ -30,7 +26,12 @@ export default class {
     }
 
     getJSON = url => {
-        return fetch(this.alfrescoProxyUri + url, getOptions)
+        return fetch(this.alfrescoProxyUri + url, {
+            ...getOptions,
+            headers: {
+                'Accept-Language': getCurrentLocale()
+            }
+        })
             .then(handleErrors)
             .then(toJson);
     };
@@ -43,7 +44,11 @@ export default class {
     };
 
     getNewJournalsPageEnable = () => {
-        return Citeck.Records.get('ecos-config@new-journals-page-enable').load('.bool');
+        const isNewJournalPageEnable = Citeck.Records.get('ecos-config@new-journals-page-enable').load('.bool');
+        const isJournalAvailibleForUser = checkFunctionalAvailabilityForUser("default-ui-new-journals-access-groups");
+
+        return Promise.all([isNewJournalPageEnable, isJournalAvailibleForUser])
+            .then(values => values.includes(true));
     };
 
     getSitesForUser = username => {

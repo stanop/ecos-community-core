@@ -51,7 +51,7 @@ public class TypeFormProcessor extends org.alfresco.repo.forms.processor.node.Ty
 	@Override
     protected Set<QName> getAspectNames(TypeDefinition typeDef)
     {
-        Set<QName> aspectNames = new HashSet<QName>();
+        Set<QName> aspectNames = new HashSet<>();
         getAspectNames(typeDef, aspectNames);
         return aspectNames;
     }

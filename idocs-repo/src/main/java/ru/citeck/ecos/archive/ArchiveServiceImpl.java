@@ -75,7 +75,7 @@ class ArchiveServiceImpl implements ArchiveService {
 	protected DictionaryService dictionaryService;
 	protected Set<String> storesToIgnorePolicies = Collections.emptySet();
 
-	protected Map<QName, Destination> cache = Collections.synchronizedMap(new HashMap<QName, Destination>());
+	protected Map<QName, Destination> cache = Collections.synchronizedMap(new HashMap<>());
 
 	private ClassPolicyDelegate<BeforeMovePolicy> beforeMoveDelegate;
 	private ClassPolicyDelegate<OnMovePolicy> onMoveDelegate;
@@ -222,7 +222,7 @@ class ArchiveServiceImpl implements ArchiveService {
 			Set<QName> aspectQNames = nodeService.getAspects(nodeRef);
 			QName typeQName = nodeService.getType(nodeRef);
 
-			qnames = new HashSet<QName>(aspectQNames.size() + 1);
+			qnames = new HashSet<>(aspectQNames.size() + 1);
 			qnames.addAll(aspectQNames);
 			qnames.add(typeQName);
 		} catch (InvalidNodeRefException e) {
@@ -333,25 +333,27 @@ class ArchiveServiceImpl implements ArchiveService {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj)
+			if (this == obj) {
 				return true;
-			if (obj == null)
+			}
+
+			if (obj == null || getClass() != obj.getClass()) {
 				return false;
-			if (getClass() != obj.getClass())
-				return false;
+			}
+
 			Destination other = (Destination) obj;
-			if (!getOuterType().equals(other.getOuterType()))
+			if (!getOuterType().equals(other.getOuterType())) {
 				return false;
-			if (assocType == null) {
-				if (other.assocType != null)
-					return false;
-			} else if (!assocType.equals(other.assocType))
+			}
+
+			if (!Objects.equals(assocType, other.assocType)) {
 				return false;
-			if (destination == null) {
-				if (other.destination != null)
-					return false;
-			} else if (!destination.equals(other.destination))
+			}
+
+			if (!Objects.equals(destination, other.destination)) {
 				return false;
+			}
+
 			return true;
 		}
 

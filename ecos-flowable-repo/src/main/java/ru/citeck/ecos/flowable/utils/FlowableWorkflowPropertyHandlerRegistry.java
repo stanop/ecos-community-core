@@ -16,7 +16,7 @@ public class FlowableWorkflowPropertyHandlerRegistry {
     /**
      * Handlers
      */
-    private final Map<QName, WorkflowPropertyHandler> handlers = new HashMap<QName, WorkflowPropertyHandler>();
+    private final Map<QName, WorkflowPropertyHandler> handlers = new HashMap<>();
 
     /**
      * Default handler
@@ -68,7 +68,7 @@ public class FlowableWorkflowPropertyHandlerRegistry {
     public Map<String, Object> handleVariablesToSet(Map<QName, Serializable> properties,
                                                     TypeDefinition type,
                                                     Object object, Class<?> objectType) {
-        Map<String, Object> variablesToSet = new HashMap<String, Object>();
+        Map<String, Object> variablesToSet = new HashMap<>();
         for (Map.Entry<QName, Serializable> entry : properties.entrySet()) {
             QName key = entry.getKey();
             Serializable value = entry.getValue();
@@ -82,7 +82,7 @@ public class FlowableWorkflowPropertyHandlerRegistry {
             } else {
                 result = value;
             }
-            if (WorkflowPropertyHandler.DO_NOT_ADD.equals(result)==false) {
+            if (!WorkflowPropertyHandler.DO_NOT_ADD.equals(result)) {
                 String keyStr = qNameConverter.mapQNameToName(key);
                 variablesToSet.put(keyStr, result);
             }

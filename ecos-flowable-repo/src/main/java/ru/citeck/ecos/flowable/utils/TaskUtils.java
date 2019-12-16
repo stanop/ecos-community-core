@@ -29,7 +29,7 @@ public class TaskUtils {
 
             String workflowInstanceId = instance.getId();
             List<Task> flowableTaskList = flowableTaskService.getTasksByProcessInstanceId(
-                    workflowInstanceId.substring(workflowInstanceId.indexOf("$") + 1)
+                    workflowInstanceId.substring(workflowInstanceId.indexOf('$') + 1)
             );
             if (flowableTaskList == null || flowableTaskList.isEmpty()) {
                 continue;

@@ -205,6 +205,15 @@
         <property name="prefixResolver" ref="namespaceService"/>
     </bean>
 
+    <bean id="webscript.ru.citeck.barcode.barcode-image.get"
+          class="ru.citeck.ecos.webscripts.barcode.BarcodeImageGet"
+          parent="webscript">
+        <constructor-arg ref="barcodeWebScriptRequestHandler"/>
+        <constructor-arg ref="barcodeService"/>
+        <constructor-arg ref="nodeUtils"/>
+        <constructor-arg ref="namespaceService"/>
+    </bean>
+
     <bean id="webscript.ru.citeck.search.search-query.get"
           class="ru.citeck.ecos.webscripts.search.SearchQueryGet"
           parent="webscript">
@@ -258,6 +267,16 @@
 
     <bean id="webscript.ru.citeck.ecos.ecos-touch.get"
           class="ru.citeck.ecos.webscripts.utils.EcosTouchGet"
+          parent="webscript">
+    </bean>
+
+    <bean id="webscript.ru.citeck.ecos.ecos-eureka-status.get"
+          class="ru.citeck.ecos.webscripts.utils.EcosEurekaStatusGet"
+          parent="webscript">
+    </bean>
+
+    <bean id="webscript.ru.citeck.ecos.is-new-ui-redirect-enabled.get"
+          class="ru.citeck.ecos.webscripts.utils.IsNewUIRedirectEnabledGet"
           parent="webscript">
     </bean>
 

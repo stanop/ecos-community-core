@@ -2,7 +2,6 @@ package ru.citeck.ecos.flowable.services.impl;
 
 import lombok.extern.log4j.Log4j;
 import org.alfresco.repo.workflow.WorkflowModel;
-import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.workflow.WorkflowService;
@@ -59,12 +58,9 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
     @Autowired
     private NamespaceService namespaceService;
 
-    private WorkflowQNameConverter converter;
-
     @PostConstruct
     public void init() {
         ecosTaskService.register(FlowableConstants.ENGINE_ID, this);
-        converter = new WorkflowQNameConverter(namespaceService);
     }
 
     /**
@@ -220,8 +216,13 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
         Map<String, Object> executionVariables = new HashMap<>(transientVariables);
 
-        String lastCommentProp = converter.mapQNameToName(CiteckWorkflowModel.PROP_LASTCOMMENT);
-        variables.put(lastCommentProp, variables.get(EcosTaskService.FIELD_COMMENT));
+        Object comment = variables.get(EcosTaskService.FIELD_COMMENT);
+        if (comment != null) {
+            taskVariables.put("bpm_comment", comment);
+        }
+
+        String lastCommentProp = workflowUtils.mapQNameToName(CiteckWorkflowModel.PROP_LASTCOMMENT);
+        taskVariables.put(lastCommentProp, comment);
 
         taskService.complete(taskId, taskVariables, executionVariables);
     }
@@ -256,6 +257,12 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
         public String getTitle() {
             WorkflowTask task = workflowService.getTaskById(FlowableConstants.ENGINE_PREFIX + getId());
             return workflowUtils.getTaskTitle(task);
+        }
+
+        @Override
+        public String getDescription() {
+            WorkflowTask task = workflowService.getTaskById(FlowableConstants.ENGINE_PREFIX + id);
+            return task.getDescription();
         }
 
         @Override

@@ -15,7 +15,6 @@ import ru.citeck.ecos.search.SearchQuery;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,14 +25,11 @@ public class LastCurrencyRate extends DeclarativeWebScript {
     private static final String BASE_CURRENCY_PARAM_NAME = "baseCurrency";
     private static final String TARGET_CURRENCY_PARAM_NAME = "targetCurrency";
     private static final String DATE_PARAM_NAME = "date";
-    private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     private static final String QUERY_TEMPLATE = "TYPE:\"idocs:currencyRateRecord\"" +
             " AND @idocs\\:crrBaseCurrency_added:\"%s\"" +
             " AND @idocs\\:crrTargetCurrency_added:\"%s\"" +
             " AND @idocs\\:crrDate:[MIN TO \"%s\"]";
-
-    private SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
 
     @Setter
     private SearchService searchService;

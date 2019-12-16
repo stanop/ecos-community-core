@@ -20,11 +20,12 @@ define([
     'lib/knockout',
     'citeck/utils/knockout.utils',
     'ecosui!menu-api',
+    'ecosui!user-in-groups-list-helper',
     'underscore',
     'citeck/components/invariants/invariants',
     'citeck/components/dynamic-tree/cell-formatters',
     'citeck/components/dynamic-tree/action-renderer'
-], function(ko, koutils, MenuApi, _) {
+], function(ko, koutils, MenuApi, checkFunctionalAvailabilityHelper, _) {
 
     if (!Citeck) Citeck = {};
     if (!Citeck.constants) Citeck.constants = {};
@@ -154,6 +155,8 @@ CreateVariant
         var options = this.resolve("journal.type.options") || {};
         var redirectionMethod = options["createVariantRedirectionMethod"] || "card";
 
+        var createParams = Citeck.forms.parseCreateArguments(this.createArguments());
+
         Citeck.forms.createRecord(this.recordRef(), this.type(), this.destination(), function() {
 
             var url = self.url();
@@ -164,7 +167,7 @@ CreateVariant
             } else {
                 window.location = self.link();
             }
-        }, redirectionMethod, this.formKey(), this.attributes());
+        }, redirectionMethod, this.formKey(), this.attributes(), { params: createParams });
     })
 
     .computed('link', function () {
@@ -634,6 +637,7 @@ Journal
     .property('type', JournalType)
     .property('criteria', [ Criterion ])
     .property('createVariants', [ CreateVariant ])
+    .property('predicate', o)
 
     .computed('availableCreateVariants', function() {
         return _.filter(this.createVariants(), function(variant) {
@@ -1501,10 +1505,16 @@ JournalsWidget
 
         if (newJournalsPageEnable === null) {
             self.newJournalsPageEnable(false);
-            
-            Citeck.Records.get('ecos-config@new-journals-page-enable').load('.bool').then(function(isEnable){
-                self.newJournalsPageEnable(isEnable);
-            }).catch(function(){});
+
+            var isNewJournalsPageEnable = Citeck.Records.get('ecos-config@new-journals-page-enable').load('.bool');
+            var isJournalAvailibleForUser = checkFunctionalAvailabilityHelper
+                .checkFunctionalAvailabilityForUser("default-ui-new-journals-access-groups");
+
+            Promise.all([isNewJournalsPageEnable, isJournalAvailibleForUser])
+                .then(function (values) {
+                    self.newJournalsPageEnable(values.includes(true));
+                })
+                .catch(function () {});
         } else if (newJournalsPageEnable === true) {
             link = menuApi.getNewJournalPageUrl({
                 listId: journalsList.id(),
@@ -1561,6 +1571,7 @@ JournalsWidget
         }
 
         var result = {
+            journalId: this.journalId(),
             query: recordsQuery,
             pageInfo: {
                 sortBy: this.sortByQuery(),
@@ -2084,19 +2095,28 @@ JournalsWidget
             if (datasource.indexOf('/') >= 0) {
 
                 var queryImpl = function () {
+
+                    var query = {
+                        sourceId: datasource,
+                        page: {
+                            maxItems: recordsQuery.pageInfo.maxItems,
+                            skipCount: recordsQuery.pageInfo.skipCount
+                        },
+                        sortBy: recordsQuery.sortBy
+                    };
+
+                    if (self.journal().predicate()) {
+                        query.language = 'predicate';
+                        query.query = self.journal().predicate();
+                    } else {
+                        query.language = 'criteria';
+                        query.query = recordsQuery.query;
+                    }
+
                     Alfresco.util.Ajax.jsonPost({
                         url: '/share/api/records/query',
                         dataObj: {
-                            query: {
-                                sourceId: datasource,
-                                query: recordsQuery.query,
-                                language: 'criteria',
-                                page: {
-                                    maxItems: recordsQuery.pageInfo.maxItems,
-                                    skipCount: recordsQuery.pageInfo.skipCount
-                                },
-                                sortBy: recordsQuery.sortBy
-                            },
+                            query: query,
                             schema: journalType.gqlschema()
                         },
                         successCallback: {
@@ -2127,6 +2147,9 @@ JournalsWidget
                 }
 
             } else {
+
+                delete recordsQuery.journalId;
+
                 Alfresco.util.Ajax.jsonPost({
                     url: Alfresco.constants.PROXY_URI + "/api/journals/records?journalId=" + journalType.id(),
                     dataObj: recordsQuery,

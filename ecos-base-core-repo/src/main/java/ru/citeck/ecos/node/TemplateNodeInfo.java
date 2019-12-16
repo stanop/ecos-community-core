@@ -114,7 +114,7 @@ public class TemplateNodeInfo implements NamespacePrefixResolverProvider
         for (Map.Entry<QName, List<NodeRef>> entry : assocMap.entrySet()) {
             QName qname = entry.getKey();
             List<NodeRef> nodes = entry.getValue();
-			List<TemplateNode> templateNodes = new ArrayList<TemplateNode>(nodes.size());
+			List<TemplateNode> templateNodes = new ArrayList<>(nodes.size());
             for (NodeRef node : nodes) {
                 templateNodes.add(new TemplateNode(node, services, imageResolver));
             }

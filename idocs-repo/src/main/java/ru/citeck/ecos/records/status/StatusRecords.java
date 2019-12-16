@@ -4,12 +4,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.records2.RecordRef;
-import ru.citeck.ecos.records2.request.delete.RecordsDelResult;
-import ru.citeck.ecos.records2.request.delete.RecordsDeletion;
-import ru.citeck.ecos.records2.request.mutation.RecordsMutResult;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records2.source.dao.local.CrudRecordsDAO;
+import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
+import ru.citeck.ecos.records2.source.dao.local.RecordsMetaLocalDAO;
+import ru.citeck.ecos.records2.source.dao.local.RecordsQueryWithMetaLocalDAO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,8 @@ import java.util.List;
  * @author Roman Makarskiy
  */
 @Component
-public class StatusRecords extends CrudRecordsDAO<StatusDTO> {
+public class StatusRecords  extends LocalRecordsDAO implements RecordsMetaLocalDAO<StatusRecord>,
+        RecordsQueryWithMetaLocalDAO<StatusRecord> {
 
     private static final String ID = "status";
 
@@ -33,42 +33,26 @@ public class StatusRecords extends CrudRecordsDAO<StatusDTO> {
         this.statusRecordsUtils = statusRecordsUtils;
     }
 
-
     @Override
-    public List<StatusDTO> getValuesToMutate(List<RecordRef> records) {
-        throw new IllegalArgumentException("This operation not supported");
-    }
-
-    @Override
-    public RecordsMutResult save(List<StatusDTO> values) {
-        throw new IllegalArgumentException("This operation not supported");
-    }
-
-    @Override
-    public RecordsDelResult delete(RecordsDeletion deletion) {
-        throw new IllegalArgumentException("This operation not supported");
-    }
-
-    @Override
-    public List<StatusDTO> getMetaValues(List<RecordRef> records) {
-        List<StatusDTO> result = new ArrayList<>();
+    public List<StatusRecord> getMetaValues(List<RecordRef> records) {
+        List<StatusRecord> result = new ArrayList<>();
 
         for (RecordRef recordRef : records) {
             String id = recordRef.getId();
             if (StringUtils.isBlank(id)) {
-                result.add(new StatusDTO());
+                result.add(new StatusRecord(new StatusDTO()));
                 continue;
             }
 
             StatusDTO found = statusRecordsUtils.getByNameCaseOrDocumentStatus(id);
-            result.add(found);
+            result.add(new StatusRecord(found));
         }
 
         return result;
     }
 
     @Override
-    public RecordsQueryResult<StatusDTO> getMetaValues(RecordsQuery recordsQuery) {
+    public RecordsQueryResult<StatusRecord> getMetaValues(RecordsQuery recordsQuery) {
         StatusQuery query = recordsQuery.getQuery(StatusQuery.class);
 
         if (StringUtils.isNotBlank(query.getAllExisting())) {

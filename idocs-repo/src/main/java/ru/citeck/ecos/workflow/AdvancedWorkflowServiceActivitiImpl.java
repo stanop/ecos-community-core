@@ -38,8 +38,6 @@ class AdvancedWorkflowServiceActivitiImpl implements AdvancedWorkflowService {
 
     private ActivitiWorkflowEngine engine;
 
-    private TaskService taskService;
-
     private AuthorityService authorityService;
 
     private QueryExecutor queryExecutor;
@@ -48,8 +46,9 @@ class AdvancedWorkflowServiceActivitiImpl implements AdvancedWorkflowService {
         this.engine = engine;
     }
 
+    @Deprecated
     public void setTaskService(TaskService taskService) {
-        this.taskService = taskService;
+        // not used
     }
 
     public void setAuthorityService(AuthorityService authorityService) {
@@ -77,7 +76,7 @@ class AdvancedWorkflowServiceActivitiImpl implements AdvancedWorkflowService {
 
     private AdvancedTaskQuery convert(AdvancedTaskQuery query) {
         if (query.getCandidateGroups() != null) {
-            List<String> allGroupsList = new ArrayList<String>();
+            List<String> allGroupsList = new ArrayList<>();
             for (String candidateGroup : query.getCandidateGroups()) {
                 allGroupsList.add(candidateGroup);
                 allGroupsList.addAll(authorityService.getContainingAuthorities(null, candidateGroup, false));
@@ -93,7 +92,7 @@ class AdvancedWorkflowServiceActivitiImpl implements AdvancedWorkflowService {
 
     @SuppressWarnings("unchecked")
     private <T> List<T> convert(List<?> inputs) {
-        List<T> outputs = new ArrayList<T>(inputs.size());
+        List<T> outputs = new ArrayList<>(inputs.size());
 
         inputs.stream()
               .filter(Task.class::isInstance)

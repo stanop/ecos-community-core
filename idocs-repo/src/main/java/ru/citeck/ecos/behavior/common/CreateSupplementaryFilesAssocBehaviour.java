@@ -18,34 +18,23 @@
  */
 package ru.citeck.ecos.behavior.common;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
-
 import org.alfresco.model.ContentModel;
-import ru.citeck.ecos.model.DmsModel;
 import org.alfresco.repo.node.NodeServicePolicies;
-import ru.citeck.ecos.behavior.JavaBehaviour;
-import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.namespace.QName;
+import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.dictionary.AssociationDefinition;
-
+import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.namespace.QName;
+import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
-import org.alfresco.service.cmr.repository.AssociationExistsException;
-import org.alfresco.service.cmr.repository.TemplateService;
-import org.alfresco.service.namespace.RegexQNamePattern;
+import ru.citeck.ecos.behavior.JavaBehaviour;
 import ru.citeck.ecos.document.SupplementaryFilesDAO;
-import org.alfresco.service.cmr.repository.CyclicChildRelationshipException;
-import org.alfresco.service.cmr.repository.DuplicateChildNodeNameException;
-import org.alfresco.service.cmr.repository.AssociationRef;
+import ru.citeck.ecos.model.DmsModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolicies.OnCreateChildAssociationPolicy {
 	// common properties
@@ -53,9 +42,6 @@ public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolici
 	protected NodeService nodeService;
 	protected ServiceRegistry services;
 	protected DictionaryService dictionaryService;
-	private TemplateService templateService;
-	private String nodeVariable;
-	private String templateEngine;
 	private SupplementaryFilesDAO supplFilesDAO;
 
 	// distinct properties
@@ -74,8 +60,7 @@ public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolici
 	@Override
 	public void onCreateChildAssociation(ChildAssociationRef childAssociationRef, boolean isNew) {
 		logger.debug("onCreateChildAssociation event");
-		NodeRef nodeNewSource = null;
-		List<NodeRef> suppFiles = new ArrayList<NodeRef>();
+		List<NodeRef> suppFiles = new ArrayList<>();
 		NodeRef nodeTarget = childAssociationRef.getChildRef(); //supp file
 		if(nodeService.exists(nodeTarget) && (ignoredTypes==null || !ignoredTypes.contains(nodeService.getType(nodeTarget))))
 		{
@@ -89,10 +74,8 @@ public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolici
 				NodeRef docNode = child.getChildRef();
 				if(nodeService.exists(docNode) && allowedDocTypes!=null && allowedDocTypes.size()>0 && allowedDocTypes.contains(nodeService.getType(docNode)) && !nodeTarget.equals(docNode))
 				{
-					String nameTemplate = null;
 					QName folderType = nodeService.getType(nodeSource);
-					if(folderType!=null && className!=null && folderType.equals(className))
-					{
+					if (folderType != null && folderType.equals(className)) {
 						try
 						{
 							List<ChildAssociationRef> existingAssocs = nodeService.getChildAssocs(docNode, DmsModel.ASSOC_SUPPLEMENARY_FILES, RegexQNamePattern.MATCH_ALL);
@@ -138,20 +121,23 @@ public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolici
 		this.nodeService = nodeService;
 	}
 
+	@Deprecated
 	public void setTemplateService(TemplateService templateService) {
-		this.templateService = templateService;
+		// not used
 	}
 
 	public void setClassName(QName className) {
 		this.className = className;
 	}
 
+	@Deprecated
 	public void setTemplateEngine(String templateEngine) {
-		this.templateEngine = templateEngine;
+		// not used
 	}
 
+	@Deprecated
 	public void setNodeVariable(String nodeVariable) {
-		this.nodeVariable = nodeVariable;
+		// not used
 	}
 
 	public void setAllowedDocTypes(List<QName> allowedDocTypes) {

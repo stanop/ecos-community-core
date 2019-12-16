@@ -1,13 +1,10 @@
 
 package ru.citeck.ecos.journals.xml;
 
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import java.util.Objects;
 
 
 /**
@@ -20,6 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
+ *         &lt;element name="formatter" type="{http://www.citeck.ru/ecos/journals/1.0}formatter" minOccurs="0"/>
  *         &lt;element name="option" type="{http://www.citeck.ru/ecos/journals/1.0}option" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="batch-edit" type="{http://www.citeck.ru/ecos/journals/1.0}batchEdit" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="criterion" type="{http://www.citeck.ru/ecos/journals/1.0}criterion" minOccurs="0"/>
@@ -39,12 +37,14 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "header", propOrder = {
+    "formatter",
     "option",
     "batchEdit",
     "criterion"
 })
 public class Header {
 
+    protected Formatter formatter;
     protected List<Option> option;
     @XmlElement(name = "batch-edit")
     protected List<BatchEdit> batchEdit;
@@ -61,6 +61,30 @@ public class Header {
     protected Boolean sortable;
     @XmlAttribute(name = "groupable")
     protected Boolean groupable;
+
+    /**
+     * Gets the value of the formatter property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Formatter }
+     *     
+     */
+    public Formatter getFormatter() {
+        return formatter;
+    }
+
+    /**
+     * Sets the value of the formatter property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Formatter }
+     *     
+     */
+    public void setFormatter(Formatter value) {
+        this.formatter = value;
+    }
 
     /**
      * Gets the value of the option property.
@@ -86,7 +110,7 @@ public class Header {
      */
     public List<Option> getOption() {
         if (option == null) {
-            option = new ArrayList<Option>();
+            option = new ArrayList<>();
         }
         return this.option;
     }
@@ -115,7 +139,7 @@ public class Header {
      */
     public List<BatchEdit> getBatchEdit() {
         if (batchEdit == null) {
-            batchEdit = new ArrayList<BatchEdit>();
+            batchEdit = new ArrayList<>();
         }
         return this.batchEdit;
     }
@@ -315,13 +339,13 @@ public class Header {
 
         Header header = (Header) o;
 
-        if (option != null ? !option.equals(header.option) : header.option != null) return false;
-        if (key != null ? !key.equals(header.key) : header.key != null) return false;
-        if (_default != null ? !_default.equals(header._default) : header._default != null) return false;
-        if (visible != null ? !visible.equals(header.visible) : header.visible != null) return false;
-        if (searchable != null ? !searchable.equals(header.searchable) : header.searchable != null) return false;
-        if (sortable != null ? !sortable.equals(header.sortable) : header.sortable != null) return false;
-        return groupable != null ? groupable.equals(header.groupable) : header.groupable == null;
+        if (!Objects.equals(option, header.option)) return false;
+        if (!Objects.equals(key, header.key)) return false;
+        if (!Objects.equals(_default, header._default)) return false;
+        if (!Objects.equals(visible, header.visible)) return false;
+        if (!Objects.equals(searchable, header.searchable)) return false;
+        if (!Objects.equals(sortable, header.sortable)) return false;
+        return Objects.equals(groupable, header.groupable);
 
     }
 

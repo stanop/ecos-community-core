@@ -123,7 +123,7 @@ public class HistoryGet extends BaseAbstractWebscript {
 
     private JSONObject serialize(List<NodeRef> history) throws JSONException {
         JSONObject json = new JSONObject();
-        ArrayList<JSONObject> historyEvents = new ArrayList<JSONObject>();
+        ArrayList<JSONObject> historyEvents = new ArrayList<>();
         for (NodeRef event : history) {
             historyEvents.add(serializeNode(event, true));
         }

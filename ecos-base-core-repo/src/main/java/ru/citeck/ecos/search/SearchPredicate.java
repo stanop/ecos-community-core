@@ -84,11 +84,7 @@ public enum SearchPredicate {
     },
     STRING_NOT_EMPTY("string-not-empty") {
         public boolean match(Serializable nodeValue, Serializable criterionValue) {
-            if (nodeValue == null || String.valueOf(nodeValue).isEmpty()) {
-                return false;
-            }
-            return true;
-
+            return nodeValue != null && !String.valueOf(nodeValue).isEmpty();
         }
     },
     TYPE_EQUALS("type-equals") {
@@ -104,10 +100,8 @@ public enum SearchPredicate {
                 criterionValue = QName.createQName(String.valueOf(criterionValue));
             }
 
-            if (nodeValue instanceof QName && criterionValue instanceof QName) {
-                if (nodeValue.equals(criterionValue)) {
-                    return true;
-                }
+            if (nodeValue.equals(criterionValue)) {
+                return true;
             }
             return false;
 

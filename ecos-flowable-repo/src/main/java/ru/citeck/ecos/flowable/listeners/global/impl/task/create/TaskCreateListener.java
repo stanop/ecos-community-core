@@ -44,7 +44,7 @@ public class TaskCreateListener implements GlobalCreateTaskListener {
      */
     @Override
     public void notify(DelegateTask delegateTask) {
-        /** Set default properties */
+        /* Set default properties */
         propertyConverter.setDefaultTaskProperties(delegateTask);
 
         String taskFormKey = getFormKey(delegateTask);
@@ -52,18 +52,16 @@ public class TaskCreateListener implements GlobalCreateTaskListener {
         taskFormKey = typeDefinition.getName().toPrefixString();
         delegateTask.setVariableLocal(ActivitiConstants.PROP_TASK_FORM_KEY, taskFormKey);
 
-        /** Check assignee */
-        if (delegateTask.getAssignee() != null) {
-            if (delegateTask.getAssignee().startsWith(NODE_WORKSPACE_PREFIX)) {
-                NodeRef initiatorNode = new NodeRef(delegateTask.getAssignee());
-                PersonService.PersonInfo initiatorInfo = personService.getPerson(initiatorNode);
-                if (initiatorInfo != null && initiatorInfo.getUserName() != null) {
-                    delegateTask.setAssignee(initiatorInfo.getUserName());
-                }
+        /* Check assignee */
+        if (delegateTask.getAssignee() != null && delegateTask.getAssignee().startsWith(NODE_WORKSPACE_PREFIX)) {
+            NodeRef initiatorNode = new NodeRef(delegateTask.getAssignee());
+            PersonService.PersonInfo initiatorInfo = personService.getPerson(initiatorNode);
+            if (initiatorInfo != null && initiatorInfo.getUserName() != null) {
+                delegateTask.setAssignee(initiatorInfo.getUserName());
             }
         }
 
-        /** Set initiator variable */
+        /* Set initiator variable */
         NodeRef initiatorNode = (NodeRef) delegateTask.getVariable(WorkflowConstants.PROP_INITIATOR);
         if(initiatorNode != null) {
             delegateTask.addUserIdentityLink(personService.getPerson(initiatorNode).getUserName(),

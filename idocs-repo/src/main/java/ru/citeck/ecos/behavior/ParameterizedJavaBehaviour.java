@@ -70,11 +70,11 @@ public class ParameterizedJavaBehaviour<P> extends BaseBehaviour
     }
     
     public static <P> ParameterizedJavaBehaviour<P> newInstance(Object instance, String method, P parameter) {
-        return new ParameterizedJavaBehaviour<P>(instance, method, NotificationFrequency.EVERY_EVENT, parameter);
+        return new ParameterizedJavaBehaviour<>(instance, method, NotificationFrequency.EVERY_EVENT, parameter);
     }
 
     public static <P> ParameterizedJavaBehaviour<P> newInstance(Object instance, String method, NotificationFrequency frequency, P parameter) {
-        return new ParameterizedJavaBehaviour<P>(instance, method, frequency, parameter);
+        return new ParameterizedJavaBehaviour<>(instance, method, frequency, parameter);
     }
     
 
@@ -123,7 +123,7 @@ public class ParameterizedJavaBehaviour<P> extends BaseBehaviour
             
             Class<?> instanceClass = instance.getClass();
             Method delegateMethod = instanceClass.getMethod(method, extendedParameterTypes);
-            return new JavaMethodInvocationHandler<P>(this, delegateMethod);
+            return new JavaMethodInvocationHandler<>(this, delegateMethod);
         }
         catch (NoSuchMethodException e)
         {
@@ -161,21 +161,16 @@ public class ParameterizedJavaBehaviour<P> extends BaseBehaviour
             MethodPerformance perf = new MethodPerformance(behaviour.instance, delegateMethod, args);
 
             // Handle Object level methods
-            if (method.getName().equals("toString"))
-            {
-                return toString();
-            }
-            else if (method.getName().equals("hashCode"))
-            {
-                return hashCode();
-            }
-            else if (method.getName().equals("equals"))
-            {
-                if (Proxy.isProxyClass(args[0].getClass()))
-                {
-                    return equals(Proxy.getInvocationHandler(args[0]));
-                }
-                return false;
+            switch (method.getName()) {
+                case "toString":
+                    return toString();
+                case "hashCode":
+                    return hashCode();
+                case "equals":
+                    if (Proxy.isProxyClass(args[0].getClass())) {
+                        return equals(Proxy.getInvocationHandler(args[0]));
+                    }
+                    return false;
             }
             
             // Delegate to designated method pointer
@@ -204,12 +199,9 @@ public class ParameterizedJavaBehaviour<P> extends BaseBehaviour
         @Override
         public boolean equals(Object obj)
         {
-            if (obj == this)
-            {
+            if (obj == this) {
                 return true;
-            }
-            else if (obj == null || !(obj instanceof JavaMethodInvocationHandler))
-            {
+            } else if (!(obj instanceof JavaMethodInvocationHandler)) {
                 return false;
             }
             JavaMethodInvocationHandler<?> that = (JavaMethodInvocationHandler<?>)obj;
@@ -221,8 +213,7 @@ public class ParameterizedJavaBehaviour<P> extends BaseBehaviour
         }
 
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             return new HashCodeBuilder()
                     .append(behaviour.instance)
                     .append(delegateMethod)
@@ -231,8 +222,7 @@ public class ParameterizedJavaBehaviour<P> extends BaseBehaviour
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return "ParameterizedJavaBehaviour[instance=" + behaviour.instance.hashCode() + ", method=" + delegateMethod.toString() + ", parameter=" + behaviour.parameter + "]";
         }
     }

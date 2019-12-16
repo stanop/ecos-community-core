@@ -23,120 +23,114 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.alfresco.service.cmr.workflow.WorkflowInstance;
-import org.alfresco.service.cmr.workflow.WorkflowPath;
-import org.alfresco.service.cmr.workflow.WorkflowService;
-import org.alfresco.service.cmr.workflow.WorkflowTask;
-import org.alfresco.service.cmr.workflow.WorkflowTaskQuery;
+import org.alfresco.service.cmr.workflow.*;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 
 public class BuildWorkflowModel extends AbstractDataBundleLine
 {
-	private WorkflowService workflowService;
-	private String workflowIdExpr;
-	private String workflowModelKey;
-	private String tasksModelKey;
-	private String pathsModelKey;
-	private String propsModelKey;
-	private NamespacePrefixResolver namespaceService;
-	
-	public void init() {
-		this.workflowService = this.serviceRegistry.getWorkflowService();
-		this.namespaceService = this.serviceRegistry.getNamespaceService();
-	}
+    private WorkflowService workflowService;
+    private String workflowIdExpr;
+    private String workflowModelKey;
+    private String tasksModelKey;
+    private String pathsModelKey;
+    private String propsModelKey;
+    private NamespacePrefixResolver namespaceService;
 
-	@Override
-	public DataBundle process(DataBundle input) {
-		
-		Map<String, Object> model = input.needModel();
-		String workflowId = this.evaluateExpression(workflowIdExpr, model).toString();
+    public void init() {
+        this.workflowService = this.serviceRegistry.getWorkflowService();
+        this.namespaceService = this.serviceRegistry.getNamespaceService();
+    }
 
-		Map<String, Object> newModel = new HashMap<String,Object>(model.size() + 1);
-		newModel.putAll(model);
-		
-		if(workflowModelKey != null) {
-			newModel.put(workflowModelKey, getWorkflowModel(workflowId));
-		}
-		if(tasksModelKey != null) {
-			newModel.put(tasksModelKey, getTasksModel(workflowId));
-		}
-		if(pathsModelKey != null) {
-			newModel.put(pathsModelKey, getPathsModel(workflowId));
-		}
-		if(propsModelKey != null) {
-			newModel.put(propsModelKey, getPropsModel(workflowId));
-		}
-		
-		return new DataBundle(input, newModel);
-	}
-	
-	private Object getWorkflowModel(String workflowId) {
-		if(workflowId == null) {
-			return null;
-		}
-		WorkflowInstance workflowInstance = workflowService.getWorkflowById(workflowId);
-		return workflowInstance;
-	}
+    @Override
+    public DataBundle process(DataBundle input) {
 
-	private Object getTasksModel(String workflowId) {
-		WorkflowTaskQuery taskQuery = new WorkflowTaskQuery();
-		taskQuery.setProcessId(workflowId);
-		taskQuery.setActive(null);
-		taskQuery.setTaskState(null);
-		
-		// backwards compatibility with 4.0.c
-		@SuppressWarnings("deprecation")
-		List<WorkflowTask> tasks = workflowService.queryTasks(taskQuery);
+        Map<String, Object> model = input.needModel();
+        String workflowId = this.evaluateExpression(workflowIdExpr, model).toString();
 
-		return tasks;
-	}
-	
-	private Object getPathsModel(String workflowId) {
-		List<WorkflowPath> paths = workflowService.getWorkflowPaths(workflowId);
-		return paths;
-	}
-	
-	private Object getPropsModel(String workflowId) {
-		List<WorkflowPath> paths = workflowService.getWorkflowPaths(workflowId);
-		Map<String,Object> props = new HashMap<String,Object>();
-		for(WorkflowPath path : paths) {
-			Map<QName, Serializable> pathProps = workflowService.getPathProperties(path.getId());
-			for(Map.Entry<QName, Serializable> propEntry : pathProps.entrySet()) {
+        Map<String, Object> newModel = new HashMap<>(model.size() + 1);
+        newModel.putAll(model);
+
+        if(workflowModelKey != null) {
+            newModel.put(workflowModelKey, getWorkflowModel(workflowId));
+        }
+        if(tasksModelKey != null) {
+            newModel.put(tasksModelKey, getTasksModel(workflowId));
+        }
+        if(pathsModelKey != null) {
+            newModel.put(pathsModelKey, getPathsModel(workflowId));
+        }
+        if(propsModelKey != null) {
+            newModel.put(propsModelKey, getPropsModel(workflowId));
+        }
+
+        return new DataBundle(input, newModel);
+    }
+
+    private Object getWorkflowModel(String workflowId) {
+        if(workflowId == null) {
+            return null;
+        }
+        return workflowService.getWorkflowById(workflowId);
+    }
+
+    private Object getTasksModel(String workflowId) {
+        WorkflowTaskQuery taskQuery = new WorkflowTaskQuery();
+        taskQuery.setProcessId(workflowId);
+        taskQuery.setActive(null);
+        taskQuery.setTaskState(null);
+
+        // backwards compatibility with 4.0.c
+        @SuppressWarnings("deprecation")
+        List<WorkflowTask> tasks = workflowService.queryTasks(taskQuery);
+
+        return tasks;
+    }
+
+    private Object getPathsModel(String workflowId) {
+        return workflowService.getWorkflowPaths(workflowId);
+    }
+
+    private Object getPropsModel(String workflowId) {
+        List<WorkflowPath> paths = workflowService.getWorkflowPaths(workflowId);
+        Map<String,Object> props = new HashMap<>();
+        for(WorkflowPath path : paths) {
+            Map<QName, Serializable> pathProps = workflowService.getPathProperties(path.getId());
+            for(Map.Entry<QName, Serializable> propEntry : pathProps.entrySet()) {
 				QName propQName = propEntry.getKey();
-				String propShortName = propQName.toPrefixString(namespaceService);
-				String propFullName = propQName.toString();
+                String propShortName = propQName.toPrefixString(namespaceService);
+                String propFullName = propQName.toString();
 
 				Serializable pathProp = propEntry.getValue();
-				props.put(propShortName, pathProp);
-				props.put(propFullName, pathProp);
-			}
-		}
-		return props;
-	}
+                props.put(propShortName, pathProp);
+                props.put(propFullName, pathProp);
+            }
+        }
+        return props;
+    }
 
-	public void setWorkflowId(String workflowIdExpr) {
-		this.workflowIdExpr = workflowIdExpr;
-	}
+    public void setWorkflowId(String workflowIdExpr) {
+        this.workflowIdExpr = workflowIdExpr;
+    }
 
-	public String getWorkflowModelKey() {
-		return workflowModelKey;
-	}
+    public String getWorkflowModelKey() {
+        return workflowModelKey;
+    }
 
-	public void setWorkflowModelKey(String workflowModelKey) {
-		this.workflowModelKey = workflowModelKey;
-	}
+    public void setWorkflowModelKey(String workflowModelKey) {
+        this.workflowModelKey = workflowModelKey;
+    }
 
-	public void setTasksModelKey(String tasksModelKey) {
-		this.tasksModelKey = tasksModelKey;
-	}
+    public void setTasksModelKey(String tasksModelKey) {
+        this.tasksModelKey = tasksModelKey;
+    }
 
-	public void setPathsModelKey(String pathsModelKey) {
-		this.pathsModelKey = pathsModelKey;
-	}
+    public void setPathsModelKey(String pathsModelKey) {
+        this.pathsModelKey = pathsModelKey;
+    }
 
-	public void setPropsModelKey(String propsModelKey) {
-		this.propsModelKey = propsModelKey;
-	}
+    public void setPropsModelKey(String propsModelKey) {
+        this.propsModelKey = propsModelKey;
+    }
 
 }

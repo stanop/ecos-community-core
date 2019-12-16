@@ -144,6 +144,18 @@
         </property>
     </type>
 
+    <type name="idocs:legalForm">
+        <association name="idocs:gocCountries">
+            <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
+        </association>
+    </type>
+
+    <type name="idocs:groupOfCountries">
+        <association name="idocs:gocCountries">
+            <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
+        </association>
+    </type>
+
     <type name="deputy:absenceEvent">
         <property name="deputy:startAbsence">
             <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
@@ -188,6 +200,26 @@
             <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
         </association>
         <association name="idocs:crrTargetCurrency">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
+        </association>
+    </type>
+
+    <type name="idocs:currencyRateInternalRecord">
+        <property name="idocs:crrInternalValue">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+        <property name="idocs:crrInternalMonth">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+        <property name="idocs:crrInternalYear">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+        <association name="idocs:crrInternalBaseCurrency">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
+        </association>
+        <association name="idocs:crrInternalTargetCurrency">
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
         </association>
