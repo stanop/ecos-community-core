@@ -24,6 +24,23 @@ public interface FlowableRecipientsService {
     String getRoleEmails(NodeRef document, String caseRoleName);
 
     /**
+     * Method to get user email
+     *
+     * @param username user name {@code ContentModel.PROP_USERNAME}
+     * @return user email {@code ContentModel.PROP_EMAIL}
+     */
+    String getUserEmail(String username);
+
+    /**
+     * Method to getting emails addresses from authority, its usually uses in email task.
+     * Email addresses must be comma {@code EMAIL_SEPARATOR} separated.
+     *
+     * @param authority authority id
+     * @return emails comma {@code EMAIL_SEPARATOR} separated
+     */
+    String getAuthorityEmails(String authority);
+
+    /**
      * Method to get groups names {@code ContentModel.PROP_AUTHORITY_NAME} from case role,
      * its usually uses in recipients groups in user task.
      *
@@ -43,11 +60,4 @@ public interface FlowableRecipientsService {
      */
     Set<String> getRoleUsers(NodeRef document, String caseRoleName);
 
-    /**
-     * Method to get users names {@code ContentModel.PROP_USERNAME} from case role,
-     *
-     * @param username user name
-     * @return user email {@code ContentModel.PROP_EMAIL}
-     */
-    String getUserEmail(String username);
 }

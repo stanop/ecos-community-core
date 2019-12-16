@@ -13,8 +13,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.flowable.services.FlowableRecipientsService;
 import ru.citeck.ecos.role.CaseRoleService;
+import ru.citeck.ecos.utils.AuthorityUtils;
 import ru.citeck.ecos.utils.RepoUtils;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,6 +36,8 @@ public class FlowableRecipientsServiceImpl implements FlowableRecipientsService 
     @Autowired
     private PersonService personService;
     @Autowired
+    private AuthorityUtils authorityUtils;
+    @Autowired
     protected NodeService nodeService;
 
     @Override
@@ -47,25 +51,38 @@ public class FlowableRecipientsServiceImpl implements FlowableRecipientsService 
         }
 
         Set<NodeRef> assignees = caseRoleService.getAssignees(document, caseRoleName);
+        return getEmailsFromAuthorities(assignees);
+    }
+
+    @Override
+    public String getAuthorityEmails(String authority) {
+        NodeRef nodeRef = authorityUtils.getNodeRef(authority);
+        return getEmailsFromAuthorities(Collections.singleton(nodeRef));
+    }
+
+
+    private String getEmailsFromAuthorities(Set<NodeRef> authorityRefs) {
         Set<String> emails = new HashSet<>();
 
-        for (NodeRef assignee : assignees) {
-            if (nodeService.exists(assignee)) {
-                QName type = nodeService.getType(assignee);
-                if (dictionaryService.isSubClass(type, ContentModel.TYPE_PERSON)) {
-                    String email = RepoUtils.getProperty(assignee, ContentModel.PROP_EMAIL, nodeService);
+        for (NodeRef ref : authorityRefs) {
+            if (!nodeService.exists(ref)) {
+                continue;
+            }
+
+            QName type = nodeService.getType(ref);
+            if (dictionaryService.isSubClass(type, ContentModel.TYPE_PERSON)) {
+                String email = RepoUtils.getProperty(ref, ContentModel.PROP_EMAIL, nodeService);
+                if (StringUtils.isNotBlank(email)) {
+                    emails.add(email);
+                }
+            } else if (dictionaryService.isSubClass(type, ContentModel.TYPE_AUTHORITY_CONTAINER)) {
+                String groupName = (String) nodeService.getProperty(ref, ContentModel.PROP_AUTHORITY_NAME);
+                Set<String> authorities = authorityService.getContainedAuthorities(AuthorityType.USER, groupName, false);
+                for (String authority : authorities) {
+                    NodeRef authorityRef = authorityService.getAuthorityNodeRef(authority);
+                    String email = RepoUtils.getProperty(authorityRef, ContentModel.PROP_EMAIL, nodeService);
                     if (StringUtils.isNotBlank(email)) {
                         emails.add(email);
-                    }
-                } else if (dictionaryService.isSubClass(type, ContentModel.TYPE_AUTHORITY_CONTAINER)) {
-                    String groupName = (String) nodeService.getProperty(assignee, ContentModel.PROP_AUTHORITY_NAME);
-                    Set<String> authorities = authorityService.getContainedAuthorities(AuthorityType.USER, groupName, false);
-                    for (String authority : authorities) {
-                        NodeRef authorityRef = authorityService.getAuthorityNodeRef(authority);
-                        String email = RepoUtils.getProperty(authorityRef, ContentModel.PROP_EMAIL, nodeService);
-                        if (StringUtils.isNotBlank(email)) {
-                            emails.add(email);
-                        }
                     }
                 }
             }
@@ -79,6 +96,12 @@ public class FlowableRecipientsServiceImpl implements FlowableRecipientsService 
     }
 
     @Override
+    public String getUserEmail(String username) {
+        NodeRef person = personService.getPerson(username);
+        return RepoUtils.getProperty(person, ContentModel.PROP_EMAIL, nodeService);
+    }
+
+    @Override
     public Set<String> getRoleGroups(NodeRef document, String caseRoleName) {
         return getRoleRecipients(document, caseRoleName, ContentModel.TYPE_AUTHORITY_CONTAINER,
                 ContentModel.PROP_AUTHORITY_NAME);
@@ -88,12 +111,6 @@ public class FlowableRecipientsServiceImpl implements FlowableRecipientsService 
     public Set<String> getRoleUsers(NodeRef document, String caseRoleName) {
         return getRoleRecipients(document, caseRoleName, ContentModel.TYPE_PERSON,
                 ContentModel.PROP_USERNAME);
-    }
-
-    @Override
-    public String getUserEmail(String username) {
-        NodeRef person = personService.getPerson(username);
-        return RepoUtils.getProperty(person, ContentModel.PROP_EMAIL, nodeService);
     }
 
     private Set<String> getRoleRecipients(NodeRef document, String caseRoleName, QName recipientType,

@@ -18,6 +18,14 @@ public class FlowableRecipientsServiceJS extends AlfrescoScopableProcessorExtens
         return flowableRecipientsService.getRoleEmails(docRef, caseRoleName);
     }
 
+    public String getUserEmail(String username) {
+        return flowableRecipientsService.getUserEmail(username);
+    }
+
+    public String getAuthorityEmails(String authority) {
+        return flowableRecipientsService.getAuthorityEmails(authority);
+    }
+
     public Set<String> getRoleGroups(Object document, String caseRoleName) {
         NodeRef docRef = JavaScriptImplUtils.getNodeRef(document);
         return flowableRecipientsService.getRoleGroups(docRef, caseRoleName);
@@ -26,10 +34,6 @@ public class FlowableRecipientsServiceJS extends AlfrescoScopableProcessorExtens
     public Set<String> getRoleUsers(Object document, String caseRoleName) {
         NodeRef docRef = JavaScriptImplUtils.getNodeRef(document);
         return flowableRecipientsService.getRoleUsers(docRef, caseRoleName);
-    }
-
-    public String getUserEmail(String username) {
-        return flowableRecipientsService.getUserEmail(username);
     }
 
     public void setFlowableRecipientsService(FlowableRecipientsService flowableRecipientsService) {
