@@ -17,6 +17,7 @@ import ru.citeck.ecos.workflow.variable.type.PojoVariableWrapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class EcosPojoTypeHandler<T> implements VariableType {
 
@@ -24,7 +25,7 @@ public class EcosPojoTypeHandler<T> implements VariableType {
 
     private static final int MAX_TEXT_LENGTH = 4000;
     private static final String TYPE_NAME = "ecos-pojo";
-    private static final Charset STRING_CHARSET = Charset.forName("utf-8");
+    private static final Charset STRING_CHARSET = StandardCharsets.UTF_8;
     private static final byte[] STRING_BYTES_MARKER = {(byte) 0xAB, (byte) 0xCD, (byte) 0xEF};
 
     private VariableTypeUtils utils;

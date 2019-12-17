@@ -32,6 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,7 +55,7 @@ public class FormToJSONParametersFilter extends AbstractDataBundleLine {
         InputStream newIS = null;
 
         if (jsonStr != null) {
-            newIS = new ByteArrayInputStream(jsonStr.getBytes(Charset.forName("UTF-8")));
+            newIS = new ByteArrayInputStream(jsonStr.getBytes(StandardCharsets.UTF_8));
             newModel.put(ProcessorConstants.KEY_MIMETYPE, MediaType.APPLICATION_JSON.toString());
         } else {
             InputStream is = input.needInputStream();

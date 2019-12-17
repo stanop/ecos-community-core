@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +71,7 @@ public class ReportOutputCSV extends AbstractDataBundleLine {
         
         try {
             ByteArrayOutputStream result = new ByteArrayOutputStream();
-            result.write(builder.toString().getBytes(Charset.forName("UTF-8")));
+            result.write(builder.toString().getBytes(StandardCharsets.UTF_8));
             return result;
         } catch (IOException exc) {
             Logger.getLogger(getClass()).error(exc.getMessage(), exc);

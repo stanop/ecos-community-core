@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -36,7 +37,7 @@ import java.util.Map;
 
 public class CiteckUtilsJS extends AlfrescoScopableProcessorExtension implements NamespacePrefixResolverProvider {
 
-    private static final Charset UTF8 = Charset.forName("UTF-8");
+    private static final Charset UTF8 = StandardCharsets.UTF_8;
 
     private ValueConverter converter = new ValueConverter();
     private NamespacePrefixResolver prefixResolver;
