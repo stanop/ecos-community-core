@@ -38,91 +38,91 @@ import org.apache.commons.logging.LogFactory;
 
 public class MapParentPropsAssocsBehaviour implements NodeServicePolicies.OnCreateNodePolicy
 {
-	private static Log logger = LogFactory.getLog(MapParentPropsAssocsBehaviour.class);
-	
-	private PolicyComponent policyComponent;
-	private NodeService nodeService;
-	private DictionaryService dictionaryService;
-	private Map<QName, QName> mapping;
-	private QName className;
-	private Boolean enabled = null;
+    private static Log logger = LogFactory.getLog(MapParentPropsAssocsBehaviour.class);
 
-	@Override
-	public void onCreateNode(ChildAssociationRef childAssocRef) {
-		if(!Boolean.TRUE.equals(enabled)) {
-			return;
-		}
-		NodeRef parent = childAssocRef.getParentRef();
-		NodeRef node = childAssocRef.getChildRef();
-		// check that nodes exist
-		if(!nodeService.exists(parent) || !nodeService.exists(node)) {
-			return;
-		}
-		
-		Map<QName, Serializable> newProperties = new HashMap<>(mapping.size());
-		
-		// process mapping
-		for(QName parentAttrib : mapping.keySet()) {
-			QName childAttrib = mapping.get(parentAttrib);
-			
-			// try to get parent property
-			PropertyDefinition parentPropDef = dictionaryService.getProperty(parentAttrib);
-			
-			// if it is found, get value
-			Serializable parentPropValue = null;
-			if(parentPropDef != null) {
-				parentPropValue = nodeService.getProperty(parent, parentAttrib);
-			} 
-			else {
-				// TODO support associations for parent node
-				throw new IllegalArgumentException("No such property found: " + parentAttrib);
-			}
-			
-			// TODO support associations for child node
-			PropertyDefinition childPropDef = null;
-			if(parentAttrib.equals(childAttrib)) {
-				childPropDef = parentPropDef;
-			} else {
-				childPropDef = dictionaryService.getProperty(childAttrib);
-			}
-			
-			// if child property definition exists, set the value
-			if(childPropDef != null) {
-				newProperties.put(childAttrib, parentPropValue);
-			}
-			
-		}
-		
-		if(newProperties.size() > 0) {
-			nodeService.addProperties(node, newProperties);
-		}
-		
-	}
-	
-	public void init() {
-		policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, className, 
-				new JavaBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT));
-	}
+    private PolicyComponent policyComponent;
+    private NodeService nodeService;
+    private DictionaryService dictionaryService;
+    private Map<QName, QName> mapping;
+    private QName className;
+    private Boolean enabled = null;
 
-	public void setPolicyComponent(PolicyComponent policyComponent) {
-		this.policyComponent = policyComponent;
-	}
+    @Override
+    public void onCreateNode(ChildAssociationRef childAssocRef) {
+        if (!Boolean.TRUE.equals(enabled)) {
+            return;
+        }
+        NodeRef parent = childAssocRef.getParentRef();
+        NodeRef node = childAssocRef.getChildRef();
+        // check that nodes exist
+        if (!nodeService.exists(parent) || !nodeService.exists(node)) {
+            return;
+        }
 
-	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-		this.nodeService = serviceRegistry.getNodeService();
-		this.dictionaryService = serviceRegistry.getDictionaryService();
-	}
+        Map<QName, Serializable> newProperties = new HashMap<>(mapping.size());
 
-	public void setMapping(Map<QName, QName> mapping) {
-		this.mapping = mapping;
-	}
+        // process mapping
+        for(Map.Entry<QName, QName> entry : mapping.entrySet()) {
+            QName parentAttrib = entry.getKey();
+            QName childAttrib = entry.getValue();
 
-	public void setClassName(QName className) {
-		this.className = className;
-	}
+            // try to get parent property
+            PropertyDefinition parentPropDef = dictionaryService.getProperty(parentAttrib);
 
-	public void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
-	}
+            // if it is found, get value
+            Serializable parentPropValue = null;
+            if (parentPropDef != null) {
+                parentPropValue = nodeService.getProperty(parent, parentAttrib);
+            } else {
+                // TODO support associations for parent node
+                throw new IllegalArgumentException("No such property found: " + parentAttrib);
+            }
+
+            // TODO support associations for child node
+            PropertyDefinition childPropDef = null;
+            if (parentAttrib.equals(childAttrib)) {
+                childPropDef = parentPropDef;
+            } else {
+                childPropDef = dictionaryService.getProperty(childAttrib);
+            }
+
+            // if child property definition exists, set the value
+            if (childPropDef != null) {
+                newProperties.put(childAttrib, parentPropValue);
+            }
+
+        }
+
+        if (newProperties.size() > 0) {
+            nodeService.addProperties(node, newProperties);
+        }
+
+    }
+
+    public void init() {
+        policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, className,
+                new JavaBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT));
+    }
+
+    public void setPolicyComponent(PolicyComponent policyComponent) {
+        this.policyComponent = policyComponent;
+    }
+
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.nodeService = serviceRegistry.getNodeService();
+        this.dictionaryService = serviceRegistry.getDictionaryService();
+    }
+
+    public void setMapping(Map<QName, QName> mapping) {
+        this.mapping = mapping;
+    }
+
+    public void setClassName(QName className) {
+        this.className = className;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
 
 }

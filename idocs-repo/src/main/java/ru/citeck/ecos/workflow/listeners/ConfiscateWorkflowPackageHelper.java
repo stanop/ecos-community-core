@@ -35,56 +35,46 @@ import ru.citeck.ecos.security.ConfiscateService;
  * @author Sergey Tiunov
  */
 public class ConfiscateWorkflowPackageHelper {
-	
-	private ConfiscateService confiscateService;
-	private GrantWorkflowPackageHelper grantHelper;
-	
-	public void setConfiscateService(ConfiscateService confiscateService) {
-		this.confiscateService = confiscateService;
-	}
-	
-	public void setGrantHelper(GrantWorkflowPackageHelper grantHelper) {
-		this.grantHelper = grantHelper;
-	}
 
-	/**
+    private ConfiscateService confiscateService;
+    private GrantWorkflowPackageHelper grantHelper;
+
+    public void setConfiscateService(ConfiscateService confiscateService) {
+        this.confiscateService = confiscateService;
+    }
+
+    public void setGrantHelper(GrantWorkflowPackageHelper grantHelper) {
+        this.grantHelper = grantHelper;
+    }
+
+    /**
      * Start-process listener implementation.
      * - confiscate workflow package and its descendants from their owners
      * - grant Consumer to workflow initiator
      * 
      * @param execution
      */
-	public void confiscatePackage(final DelegateExecution execution) {
-		final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(execution);
-		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
+    public void confiscatePackage(final DelegateExecution execution) {
+        final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(execution);
+        AuthenticationUtil.runAsSystem(() -> {
+            confiscateService.confiscateNode(workflowPackage);
+            grantHelper.grant(execution, ListenerUtils.getInitiator(execution), PermissionService.CONSUMER);
+            return null;
+        });
+    }
 
-			@Override
-			public Object doWork() throws Exception {
-				confiscateService.confiscateNode(workflowPackage);
-				grantHelper.grant(execution, ListenerUtils.getInitiator(execution), PermissionService.CONSUMER);
-				return null;
-			}
-			
-		});
-	}
+    /**
+     * End-process listener implementation.
+     * - return workflow package and its descendants from their owners
+     *
+     * @param execution
+     */
+    public void returnPackage(final DelegateExecution execution) {
+        final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(execution);
+        AuthenticationUtil.runAsSystem(() -> {
+            confiscateService.returnNode(workflowPackage);
+            return null;
+        });
+    }
 
-	/**
-	 * End-process listener implementation.
-	 * - return workflow package and its descendants from their owners
-	 *
-	 * @param execution
-	 */
-	public void returnPackage(final DelegateExecution execution) {
-		final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(execution);
-		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
-
-			@Override
-			public Object doWork() throws Exception {
-				confiscateService.returnNode(workflowPackage);
-				return null;
-			}
-			
-		});
-	}
-	
 }

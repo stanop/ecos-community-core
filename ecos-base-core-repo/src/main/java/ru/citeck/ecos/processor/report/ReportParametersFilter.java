@@ -129,10 +129,10 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
                 }
 
                 return map;
-            } else{
+            } else {
                 return o;
+            }
         }
-}
 
         return null;
     }

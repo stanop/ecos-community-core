@@ -18,17 +18,10 @@
  */
 package ru.citeck.ecos.notification;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import java.util.Set;
-
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.notification.EMailNotificationProvider;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
 import org.alfresco.service.ServiceRegistry;
@@ -36,15 +29,16 @@ import org.alfresco.service.cmr.notification.NotificationContext;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.TemplateService;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.alfresco.service.cmr.repository.TemplateService;
-import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
-
 import ru.citeck.ecos.security.NodeOwnerDAO;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Notification sender for tasks (ItemType = ExecutionEntity).
@@ -90,7 +84,6 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 	public static final String ARG_WORKFLOW_ID = "id";
 	public static final String ARG_WORKFLOW_PROPERTIES = "properties";
 	public static final String ARG_WORKFLOW_DOCUMENTS = "documents";
-	private Map<String, Map<String,List<String>>> taskSubscribers;
 	protected WorkflowQNameConverter qNameConverter;
 	protected PersonService personService;
 	protected AuthenticationService authenticationService;
@@ -110,14 +103,15 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 		this.qNameConverter = new WorkflowQNameConverter(namespaceService);
 		this.authenticationService = serviceRegistry.getAuthenticationService();
 		this.personService = serviceRegistry.getPersonService();
-	}	
-	
+	}
+
 	/**
 	* Recipients provided as parameter taskSubscribers: "task name"-{"doc type1"-"recepient field1", ...}
 	* @param task subscribers
 	*/
+	@Deprecated
 	public void setTaskSubscribers(Map<String, Map<String,List<String>>> taskSubscribers) {
-    	this.taskSubscribers = taskSubscribers;
+    	// not used
     }
 
   // get notification template arguments for the task

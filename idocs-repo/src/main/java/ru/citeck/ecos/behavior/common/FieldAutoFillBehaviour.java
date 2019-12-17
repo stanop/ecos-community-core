@@ -19,7 +19,7 @@
 package ru.citeck.ecos.behavior.common;
 
 import org.alfresco.repo.node.NodeServicePolicies;
-import ru.citeck.ecos.behavior.JavaBehaviour;
+import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -28,9 +28,7 @@ import org.alfresco.service.cmr.repository.TemplateService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-//import ru.citeck.ecos.behavior.OrderedBehaviour;
-import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
+import ru.citeck.ecos.behavior.JavaBehaviour;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -59,10 +57,8 @@ public class FieldAutoFillBehaviour implements
     private String accessorTemplate;
     private QName fieldForFill;
     private Map<String, String> valueMap;
-    private int order = 65;
 
     public void init() {
-//        OrderedBehaviour updateBehaviour = new OrderedBehaviour(this, "onUpdateProperties", NotificationFrequency.TRANSACTION_COMMIT, order);
         JavaBehaviour updateBehaviour = new JavaBehaviour(this, "onUpdateProperties", NotificationFrequency.TRANSACTION_COMMIT);
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME, className, updateBehaviour);
     }
@@ -86,23 +82,20 @@ public class FieldAutoFillBehaviour implements
     }
 
     private String getObjectFromTemplate(final NodeRef nodeRef, final String template) {
-        if (template == null) {return null;}
-        return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<String>() {
-            @Override
-            public String doWork() throws Exception {
-                HashMap<String, Object> model = new HashMap<>(1);
-                model.put(nodeVariable, nodeRef);
-                return templateService.processTemplateString(templateEngine, template, model);
-            }
+        if (template == null) {
+            return null;
+        }
+        return AuthenticationUtil.runAsSystem(() -> {
+            HashMap<String, Object> model = new HashMap<>(1);
+            model.put(nodeVariable, nodeRef);
+            return templateService.processTemplateString(templateEngine, template, model);
         });
     }
 
     private Void setProperty(final NodeRef nodeRef, final QName property, final String value) {
-        return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-            public Void doWork() throws Exception {
-                nodeService.setProperty(nodeRef, property, value);
-                return null;
-            }
+        return AuthenticationUtil.runAsSystem(() -> {
+            nodeService.setProperty(nodeRef, property, value);
+            return null;
         });
     }
 

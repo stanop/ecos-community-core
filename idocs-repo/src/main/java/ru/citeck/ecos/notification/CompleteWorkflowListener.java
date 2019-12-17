@@ -40,12 +40,8 @@ public class CompleteWorkflowListener implements ExecutionListener
         {
             ExecutionEntity entity = (ExecutionEntity)task;
             Boolean value = (Boolean)entity.getVariable("cwf_sendNotification");
-            if (Boolean.TRUE.equals(value))
-            {
-                if(!entity.isDeleteRoot() && entity.isEnded())
-                {
-                    sender.sendNotification((ExecutionEntity)task);
-                }
+            if (Boolean.TRUE.equals(value) && !entity.isDeleteRoot() && entity.isEnded()) {
+                sender.sendNotification((ExecutionEntity)task);
             }
         }
     }

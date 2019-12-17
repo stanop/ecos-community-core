@@ -17,19 +17,19 @@ import ru.citeck.ecos.apps.app.module.type.ui.action.ActionModule;
 import ru.citeck.ecos.attr.prov.VirtualScriptAttributes;
 import ru.citeck.ecos.document.sum.DocSumService;
 import ru.citeck.ecos.graphql.AlfGqlContext;
-import ru.citeck.ecos.node.AlfNodeContentPathRegistry;
-import ru.citeck.ecos.node.AlfNodeInfo;
-import ru.citeck.ecos.node.DisplayNameService;
-import ru.citeck.ecos.records.meta.MetaUtils;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
+import ru.citeck.ecos.node.AlfNodeContentPathRegistry;
+import ru.citeck.ecos.node.AlfNodeInfo;
+import ru.citeck.ecos.node.DisplayNameService;
+import ru.citeck.ecos.records.RecordsUtils;
+import ru.citeck.ecos.records.meta.MetaUtils;
+import ru.citeck.ecos.records.source.alf.AlfNodeMetaEdge;
 import ru.citeck.ecos.records.source.alf.file.FileRepresentation;
 import ru.citeck.ecos.records.source.common.MLTextValue;
 import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.RecordConstants;
-import ru.citeck.ecos.records.RecordsUtils;
-import ru.citeck.ecos.records.source.alf.AlfNodeMetaEdge;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaEdge;
@@ -274,6 +274,9 @@ public class AlfNodeRecord implements MetaValue {
             default:
 
                 Attribute nodeAtt = node.attribute(name);
+                if (nodeAtt == null) {
+                    return Collections.emptyList();
+                }
                 if (Attribute.Type.UNKNOWN.equals(nodeAtt.type())) {
                     Optional<QName> attQname = context.getQName(name).map(GqlQName::getQName);
                     if (attQname.isPresent()) {

@@ -26,6 +26,10 @@ import org.alfresco.util.ParameterCheck;
 
 import java.util.*;
 
+/*
+ * This is very old class, which we are not plan to support.
+ * If you need to add new methods or work with DictionaryService then use ru.citeck.ecos.utils.DictUtils
+ */
 public class DictionaryUtils {
 
     public static List<ClassDefinition> getClasses(Collection<QName> classNames, DictionaryService dictionaryService) {
@@ -100,7 +104,11 @@ public class DictionaryUtils {
         }
         return classes;
     }
-    
+
+    /*
+     * Deprecated method, use method with same name in class DictUtils
+     */
+    @Deprecated
     public static Collection<QName> getChildClassNames(QName className, boolean recursive, DictionaryService dictionaryService) {
         ClassDefinition classDef = dictionaryService.getClass(className);
         if(classDef == null) {

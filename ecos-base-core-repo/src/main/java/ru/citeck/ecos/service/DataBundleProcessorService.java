@@ -137,8 +137,8 @@ public class DataBundleProcessorService {
             ProcessionResult that = (ProcessionResult) o;
 
             if (!inputStream.equals(that.inputStream)) return false;
-            if (encoding != null ? !encoding.equals(that.encoding) : that.encoding != null) return false;
-            if (mimeType != null ? !mimeType.equals(that.mimeType) : that.mimeType != null) return false;
+            if (!Objects.equals(encoding, that.encoding)) return false;
+            if (!Objects.equals(mimeType, that.mimeType)) return false;
             return fileName.equals(that.fileName);
         }
 

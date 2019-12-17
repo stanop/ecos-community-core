@@ -240,18 +240,17 @@ public class DuplicatorFormProcessor extends ContentModelFormProcessor<NodeRef, 
 
     @Override
     protected NodeRef internalPersist(NodeRef item, final FormData data) {
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
             logger.debug("Persisting form for: " + item);
+        }
         // create a new instance of the type
         final NodeRef nodeRef = createNode(item, data);
 
         if (nodeService.hasAspect(nodeRef, ASPECT_FILE_PLAN_COMPONENT)) {
             // persist the form data as the admin user
-            AuthenticationUtil.runAs(new AuthenticationUtil.RunAsWork<Object>() {
-                    public Object doWork() throws Exception {
-                        persistNode(nodeRef, data);
-                        return null;
-                    }
+            AuthenticationUtil.runAs(() -> {
+                    persistNode(nodeRef, data);
+                    return null;
                 },
                 AuthenticationUtil.getSystemUserName()
             );

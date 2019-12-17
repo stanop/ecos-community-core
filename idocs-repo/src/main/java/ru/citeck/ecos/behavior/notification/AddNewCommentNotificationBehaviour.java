@@ -4,13 +4,16 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.model.ForumModel;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
-import ru.citeck.ecos.behavior.OrderedBehaviour;
-import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
+import org.alfresco.service.cmr.repository.ContentReader;
+import org.alfresco.service.cmr.repository.ContentService;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.behavior.OrderedBehaviour;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +29,8 @@ public class AddNewCommentNotificationBehaviour extends AbstractICaseDocumentNot
     private String documentNamespace;
     private String documentType;
 
-    private final static String PARAM_COMMENT_CREATOR_NAME = "commentCreatorName";
-    private final static String PARAM_COMMENT = "comment";
+    private static final String PARAM_COMMENT_CREATOR_NAME = "commentCreatorName";
+    private static final String PARAM_COMMENT = "comment";
 
     private static Log logger = LogFactory.getLog(AddNewCommentNotificationBehaviour.class);
 

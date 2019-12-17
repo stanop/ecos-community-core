@@ -19,8 +19,6 @@
 package ru.citeck.ecos.history;
 
 import org.alfresco.model.ContentModel;
-import org.alfresco.repo.batch.BatchProcessWorkProvider;
-import org.alfresco.repo.batch.BatchProcessor;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
@@ -38,7 +36,10 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.config.EcosConfigService;
-import ru.citeck.ecos.model.*;
+import ru.citeck.ecos.model.ActivityModel;
+import ru.citeck.ecos.model.HistoryModel;
+import ru.citeck.ecos.model.ICaseModel;
+import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.utils.TransactionUtils;
 
@@ -185,15 +186,14 @@ public class HistoryService {
             properties.remove(HistoryModel.ASSOC_DOCUMENT);
 
             //sorting in history for assocs
-            Date now = creationDate;
             if ("assoc.added".equals(properties.get(HistoryModel.PROP_NAME))) {
-                now.setTime(now.getTime() + 1000);
+                creationDate.setTime(creationDate.getTime() + 1000);
             }
             if ("node.created".equals(properties.get(HistoryModel.PROP_NAME))
                     || "node.updated".equals(properties.get(HistoryModel.PROP_NAME))) {
-                now.setTime(now.getTime() - 5000);
+                creationDate.setTime(creationDate.getTime() - 5000);
             }
-            properties.put(HistoryModel.PROP_DATE, now);
+            properties.put(HistoryModel.PROP_DATE, creationDate);
             QName assocName = QName.createQName(HistoryModel.HISTORY_NAMESPACE, "event." + properties.get(HistoryModel.PROP_NAME));
 
             QName assocType;
@@ -372,10 +372,8 @@ public class HistoryService {
                 skipCount += documents.size();
                 resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
                 logger.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
-                if (stopCount != null && stopCount > 0) {
-                    if (stopCount < documentsTransferred) {
-                        break;
-                    }
+                if (stopCount != null && stopCount > 0 && stopCount < documentsTransferred) {
+                    break;
                 }
             } while (hasMore);
             logger.info("History transferring - all documents have been transferred - " + (documentsTransferred + offset));
@@ -596,8 +594,9 @@ public class HistoryService {
         @SuppressWarnings("unchecked")
         Map<QName, QName> propertyMapping = (Map<QName, QName>) mapping;
         Map<QName, Serializable> additionalProperties = new HashMap<>(propertyMapping.size());
-        for (QName documentProp : propertyMapping.keySet()) {
-            QName historyProp = propertyMapping.get(documentProp);
+        for (Map.Entry<QName, QName> entry : propertyMapping.entrySet()) {
+            QName documentProp = entry.getKey();
+            QName historyProp = entry.getValue();
             additionalProperties.put(historyProp, nodeService.getProperty(document, documentProp));
         }
         nodeService.addProperties(historyEvent, additionalProperties);

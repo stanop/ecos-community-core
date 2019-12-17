@@ -16,6 +16,7 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.flowable.engine.TaskService;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.flowable.variable.api.delegate.VariableScope;
 import ru.citeck.ecos.deputy.DeputyService;
@@ -23,7 +24,6 @@ import ru.citeck.ecos.flowable.listeners.global.GlobalAssignmentTaskListener;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCompleteTaskListener;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCreateTaskListener;
 import ru.citeck.ecos.flowable.services.FlowableCustomCommentService;
-import org.flowable.engine.TaskService;
 import ru.citeck.ecos.flowable.utils.FlowableListenerUtils;
 import ru.citeck.ecos.flowable.utils.FlowableUtils;
 import ru.citeck.ecos.history.HistoryEventType;
@@ -210,8 +210,9 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
      */
     private Map<QName, Serializable> convertProperties(Map additionalProperties) {
         Map<QName, Serializable> result = new HashMap<>(additionalProperties.size());
-        for (Object key : additionalProperties.keySet()) {
-            QName name;
+        for (Map.Entry<?,?> entry : ((Map<?, ?>) additionalProperties).entrySet()) {
+            Object key = entry.getKey();
+            QName name = null;
             if (key instanceof String) {
                 name = qNameConverter.mapNameToQName((String) key);
             } else if (key instanceof QName) {
@@ -220,7 +221,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
                 logger.warn("Unknown type of key: " + key.getClass());
                 continue;
             }
-            result.put(name, (Serializable) additionalProperties.get(key));
+            result.put(name, (Serializable) entry.getValue());
         }
         return result;
     }

@@ -18,21 +18,15 @@
  */
 package ru.citeck.ecos.calendar;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Date;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.ResultSetRow;
 import org.alfresco.service.cmr.search.SearchService;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.BusinessCalendarModel;
+
+import java.util.*;
 
 public class BusinessCalendar extends GregorianCalendar {
 	private Map<Date, Date> extraWorkingDays /*= fillDateSet("working-day")*/;

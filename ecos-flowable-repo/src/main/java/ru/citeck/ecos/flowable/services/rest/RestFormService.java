@@ -16,7 +16,7 @@ public class RestFormService {
 
     private static final String FLOWABLE_REST_API_KEY = "${flowable.rest-api.url}";
 
-    private final static Log logger = LogFactory.getLog(RestFormService.class);
+    private static final Log logger = LogFactory.getLog(RestFormService.class);
 
     @Value(FLOWABLE_REST_API_KEY)
     private String restApiUrl;

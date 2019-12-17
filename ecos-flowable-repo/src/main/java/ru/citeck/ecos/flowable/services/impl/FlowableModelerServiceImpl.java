@@ -331,8 +331,7 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
     private List<String> getBootstrapDefinitions() {
         List<String> bootstrapLocations = new ArrayList<>();
         Map<String, WorkflowDeployer> deployerMap = applicationContext.getBeansOfType(WorkflowDeployer.class);
-        for (String key : deployerMap.keySet()) {
-            WorkflowDeployer deployer = deployerMap.get(key);
+        for (WorkflowDeployer deployer : deployerMap.values()) {
             if (deployer != null && !CollectionUtils.isEmpty(deployer.getWorkflowDefinitions())) {
                 for (Properties definitionProperties : deployer.getWorkflowDefinitions()) {
                     String engineId = definitionProperties.getProperty("engineId");

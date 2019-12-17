@@ -27,77 +27,77 @@ import org.springframework.extensions.config.ConfigElement;
 import org.springframework.extensions.config.element.GenericConfigElement;
 
 public class IdBasedElement extends GenericConfigElement {
-	
-	private static final long serialVersionUID = 2925925928223078364L;
-	
-	private static final String ID = "id";
-	private static final String REPLACE = "replace";
-	private static final Object TRUE = "true";
-	private Map<String, ConfigElement> childMap = new HashMap<>();
 
-	public IdBasedElement(String name) {
-		super(name);
-	}
-	
-	public IdBasedElement(ConfigElement that) {
-		super(that.getName());
-		this.setValue(that.getValue());
-		this.addAttributes(that);
-		this.addChildren(that);
-	}
+    private static final long serialVersionUID = 2925925928223078364L;
 
-	@Override
-	public ConfigElement combine(ConfigElement that) {
-		IdBasedElement result = new IdBasedElement(that.getName());
-		result.setValue(that.getValue());
-		
-		result.addAttributes(this);
-		result.addAttributes(that);
-		
-		result.addChildren(this);
-		result.addChildren(that);
-		
-		return result;
-	}
-	
-	public void addAttributes(ConfigElement that) {
-		Map<String, String> attributes = that.getAttributes();
-		if(attributes == null) {
-			return;
-		}
-		for(String key : attributes.keySet()) {
-			addAttribute(key, attributes.get(key));
-		}
-	}
-	
-	public void addChildren(ConfigElement that) {
-		List<ConfigElement> children = that.getChildren();
-		if(children == null) {
-			return;
-		}
-		for(ConfigElement child : children) {
-			addChild(child);
-		}
-	}
+    private static final String ID = "id";
+    private static final String REPLACE = "replace";
+    private static final Object TRUE = "true";
+    private Map<String, ConfigElement> childMap = new HashMap<>();
 
-	@Override
-	public void addChild(ConfigElement child) {
-		String id = child.getAttribute(ID);
+    public IdBasedElement(String name) {
+        super(name);
+    }
+
+    public IdBasedElement(ConfigElement that) {
+        super(that.getName());
+        this.setValue(that.getValue());
+        this.addAttributes(that);
+        this.addChildren(that);
+    }
+
+    @Override
+    public ConfigElement combine(ConfigElement that) {
+        IdBasedElement result = new IdBasedElement(that.getName());
+        result.setValue(that.getValue());
+
+        result.addAttributes(this);
+        result.addAttributes(that);
+
+        result.addChildren(this);
+        result.addChildren(that);
+
+        return result;
+    }
+
+    public void addAttributes(ConfigElement that) {
+        Map<String, String> attributes = that.getAttributes();
+        if (attributes == null) {
+            return;
+        }
+        for (Map.Entry<String, String> entry : attributes.entrySet()) {
+            addAttribute(entry.getKey(), entry.getValue());
+        }
+    }
+
+    public void addChildren(ConfigElement that) {
+        List<ConfigElement> children = that.getChildren();
+        if(children == null) {
+            return;
+        }
+        for(ConfigElement child : children) {
+            addChild(child);
+        }
+    }
+
+    @Override
+    public void addChild(ConfigElement child) {
+        String id = child.getAttribute(ID);
         ConfigElement existingChild = null;
         if (id != null) {
             existingChild = childMap.get(id);
         }
-		if(existingChild == null) {
-			children.add(child);
-			childMap.put(id, child);
-		} else if(TRUE.equals(child.getAttribute(REPLACE))) {
-			Collections.replaceAll(children, existingChild, child);
-			childMap.put(id, child);
-		} else {
-			ConfigElement combinedChild = existingChild.combine(child);
-			Collections.replaceAll(children, existingChild, combinedChild);
-			childMap.put(id, combinedChild);
-		}
-	}
-	
+        if(existingChild == null) {
+            children.add(child);
+            childMap.put(id, child);
+        } else if(TRUE.equals(child.getAttribute(REPLACE))) {
+            Collections.replaceAll(children, existingChild, child);
+            childMap.put(id, child);
+        } else {
+            ConfigElement combinedChild = existingChild.combine(child);
+            Collections.replaceAll(children, existingChild, combinedChild);
+            childMap.put(id, combinedChild);
+        }
+    }
+
 }

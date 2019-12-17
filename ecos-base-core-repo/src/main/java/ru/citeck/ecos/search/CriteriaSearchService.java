@@ -64,7 +64,7 @@ public class CriteriaSearchService {
             throw new IllegalArgumentException("Language can't be null or empty");
         }
         SearchQueryBuilder queryBuilder = getMatchingQueryBuilder(language);
-        if(queryBuilder == null) {
+        if (queryBuilder == null) {
             throw new IllegalArgumentException("Unsupported query language");
         }
         String query = queryBuilder.buildQuery(criteria);
@@ -78,18 +78,19 @@ public class CriteriaSearchService {
             parameters.setSkipCount(criteria.getSkip());
         }
         Map<String, Boolean> sortCriteria = criteria.getSort();
-        for (String field : sortCriteria.keySet()) {
-            if(sortFieldChanger != null) {
+        for (Map.Entry<String, Boolean> entry : sortCriteria.entrySet()) {
+            String field = entry.getKey();
+            if (sortFieldChanger != null) {
                 field = sortFieldChanger.getSortField(field);
             }
             QName fieldQName = QName.resolveToQName(namespaceService, field);
-            if(dictionaryService.getProperty(fieldQName) != null) {
-                parameters.addSort("@" + field, sortCriteria.get(field));
+            if (dictionaryService.getProperty(fieldQName) != null) {
+                parameters.addSort("@" + field, entry.getValue());
                 continue;
             }
-            if(dictionaryService.getAssociation(fieldQName) != null) {
+            if (dictionaryService.getAssociation(fieldQName) != null) {
                 QName indexField = associationIndexPropertyRegistry.getAssociationIndexProperty(fieldQName);
-                parameters.addSort("@" + indexField, sortCriteria.get(field));
+                parameters.addSort("@" + indexField, entry.getValue());
                 continue;
             }
             throw new IllegalArgumentException("Field " + field + " is neither property, nor association");

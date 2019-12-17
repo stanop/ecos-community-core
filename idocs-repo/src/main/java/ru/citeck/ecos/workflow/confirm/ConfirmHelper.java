@@ -18,14 +18,6 @@
  */
 package ru.citeck.ecos.workflow.confirm;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.activiti.engine.delegate.DelegateExecution;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.workflow.WorkflowModel;
@@ -34,16 +26,18 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.security.AuthorityService;
+import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.version.Version;
 import org.alfresco.service.cmr.version.VersionService;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
-import org.alfresco.service.cmr.security.PersonService;
-import org.alfresco.service.cmr.security.AuthorityService;
-
 import ru.citeck.ecos.model.ConfirmWorkflowModel;
 import ru.citeck.ecos.workflow.listeners.ListenerUtils;
+
+import java.io.Serializable;
+import java.util.*;
 
 public class ConfirmHelper
 {
@@ -229,8 +223,7 @@ public class ConfirmHelper
     }
 
 	private QName getConfirmDecisionAssocName(String confirmerRole) {
-		QName assocName = QName.createQName(ConfirmWorkflowModel.NAMESPACE, "decision-" + confirmerRole);
-		return assocName;
+		return QName.createQName(ConfirmWorkflowModel.NAMESPACE, "decision-" + confirmerRole);
 	}
 
 	public void setServiceRegistry(ServiceRegistry services) {

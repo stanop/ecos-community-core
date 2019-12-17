@@ -34,47 +34,47 @@ import org.alfresco.service.cmr.repository.NodeRef;
  */
 public class OrgMetaServiceImpl implements OrgMetaService
 {
-	private Map<String,GroupSubTypeDAO> components;
+    private Map<String,GroupSubTypeDAO> components;
 
-	private GroupSubTypeDAO getComponent(String type) {
-		if(!components.containsKey(type)) {
-			throw new IllegalArgumentException("No such group type: " + type);
-		}
-		return components.get(type);
-	}
+    private GroupSubTypeDAO getComponent(String type) {
+        if(!components.containsKey(type)) {
+            throw new IllegalArgumentException("No such group type: " + type);
+        }
+        return components.get(type);
+    }
 
-	public void setComponents(Map<String,GroupSubTypeDAO> components) {
-		this.components = components;
-	}
+    public void setComponents(Map<String,GroupSubTypeDAO> components) {
+        this.components = components;
+    }
 
-	@Override
-	public NodeRef getSubType(String type, String name) {
-		return getComponent(type).getSubType(name);
-	}
+    @Override
+    public NodeRef getSubType(String type, String name) {
+        return getComponent(type).getSubType(name);
+    }
 
-	@Override
-	public List<NodeRef> getAllSubTypes(String type) {
-		return getComponent(type).getAllSubTypes();
-	}
+    @Override
+    public List<NodeRef> getAllSubTypes(String type) {
+        return getComponent(type).getAllSubTypes();
+    }
 
-	@Override
-	public NodeRef createSubType(String type, String name) {
-		return getComponent(type).createSubType(name);
-	}
+    @Override
+    public NodeRef createSubType(String type, String name) {
+        return getComponent(type).createSubType(name);
+    }
 
-	@Override
-	public void deleteSubType(String type, String name) {
-		getComponent(type).deleteSubType(name);
-	}
+    @Override
+    public void deleteSubType(String type, String name) {
+        getComponent(type).deleteSubType(name);
+    }
 
-	@Override
-	public List<String> getGroupTypes() {
-		return new ArrayList<>(components.keySet());
-	}
+    @Override
+    public List<String> getGroupTypes() {
+        return new ArrayList<>(components.keySet());
+    }
 
-	@Override
-	public NodeRef getSubTypeRoot(String type) {
-		return getComponent(type).getSubTypeRoot();
-	}
+    @Override
+    public NodeRef getSubTypeRoot(String type) {
+        return getComponent(type).getSubTypeRoot();
+    }
 
 }

@@ -32,65 +32,65 @@ import java.util.Map;
  */
 public class UpdateModel extends AbstractDataBundleLine
 {
-	private Map<String,Object> templateModel;
+    private Map<String,Object> templateModel;
 
-	@Override
-	public DataBundle process(DataBundle input) {
-		Map<String,Object> inputModel = input.needModel();
-		Map<String,Object> newModel = new HashMap<>(inputModel.size() + templateModel.size());
-		newModel.putAll(inputModel);
-		newModel.putAll(this.processTemplateMap(templateModel, inputModel));
-		return new DataBundle(input, newModel);
-	}
-	
-	// evaluate all strings as expressions
-	private Map<String,Object> processTemplateMap(Map<String,Object> templateMap, 
-			Map<String,Object> inputModel) 
-	{
-		Map<String,Object> map = new HashMap<>(templateMap.size());
-		for(String key : templateMap.keySet()) {
-			Object template = templateMap.get(key);
-			Object value = this.processTemplateObject(template, inputModel);
-			map.put(key, value);
-		}
-		return map;
-	}
+    @Override
+    public DataBundle process(DataBundle input) {
+        Map<String,Object> inputModel = input.needModel();
+        Map<String,Object> newModel = new HashMap<>(inputModel.size() + templateModel.size());
+        newModel.putAll(inputModel);
+        newModel.putAll(this.processTemplateMap(templateModel, inputModel));
+        return new DataBundle(input, newModel);
+    }
 
-	// evaluate all strings as expressions
-	private Collection<Object> processTemplateCollection(Collection<Object> templateCollection,
-			Map<String, Object> inputModel) 
-	{
-		Collection<Object> collection = new ArrayList<>(templateCollection.size());
-		for(Object template : templateCollection) {
-			Object value = this.processTemplateObject(template, inputModel);
-			collection.add(value);
-		}
-		return collection;
-	}
-	
-	// evaluate all strings as expressions
-	@SuppressWarnings("unchecked")
-	private Object processTemplateObject(Object template, Map<String,Object> inputModel) {
-		Object value = template;
-		if(template == null) {
-			// do nothing
-		} else if(template instanceof String) {
-			value = this.evaluateExpression((String) template, inputModel);
-		} else if(template instanceof Map) {
-			value = this.processTemplateMap((Map) template, inputModel);
-		} else if(template instanceof Collection) {
-			value = this.processTemplateCollection((Collection) template, inputModel);
-		}
-		return value;
-	}
+    // evaluate all strings as expressions
+    private Map<String,Object> processTemplateMap(Map<String,Object> templateMap,
+            Map<String,Object> inputModel) {
+        Map<String,Object> map = new HashMap<>(templateMap.size());
+        for (Map.Entry<String, Object> entry : templateMap.entrySet()) {
+            String key = entry.getKey();
+            Object template = entry.getValue();
+            Object value = this.processTemplateObject(template, inputModel);
+            map.put(key, value);
+        }
+        return map;
+    }
 
-	/**
-	 * Set model with new fields.
-	 * 
-	 * @param model
-	 */
-	public void setModel(Map<String,Object> model) {
-		this.templateModel = model;
-	}
+    // evaluate all strings as expressions
+    private Collection<Object> processTemplateCollection(Collection<Object> templateCollection,
+            Map<String, Object> inputModel)
+    {
+        Collection<Object> collection = new ArrayList<>(templateCollection.size());
+        for(Object template : templateCollection) {
+            Object value = this.processTemplateObject(template, inputModel);
+            collection.add(value);
+        }
+        return collection;
+    }
+
+    // evaluate all strings as expressions
+    @SuppressWarnings("unchecked")
+    private Object processTemplateObject(Object template, Map<String,Object> inputModel) {
+        Object value = template;
+        if(template == null) {
+            // do nothing
+        } else if(template instanceof String) {
+            value = this.evaluateExpression((String) template, inputModel);
+        } else if(template instanceof Map) {
+            value = this.processTemplateMap((Map) template, inputModel);
+        } else if(template instanceof Collection) {
+            value = this.processTemplateCollection((Collection) template, inputModel);
+        }
+        return value;
+    }
+
+    /**
+     * Set model with new fields.
+     *
+     * @param model
+     */
+    public void setModel(Map<String,Object> model) {
+        this.templateModel = model;
+    }
 
 }

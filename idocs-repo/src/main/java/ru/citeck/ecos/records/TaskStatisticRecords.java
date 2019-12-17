@@ -278,16 +278,14 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
                 continue;
             }
 
-            if (fieldQName.equals(HistoryModel.ASSOC_INITIATOR)) {
-                if (value != null && NodeRef.isNodeRef(value)) {
-                    NodeRef rootRef = new NodeRef(value);
-                    Set<String> authorities = authorityUtils.getContainedUsers(rootRef, false);
-                    if (!authorities.isEmpty()) {
-                        value = authorityUtils.getNodeRefs(authorities)
-                                .stream()
-                                .map(Object::toString)
-                                .collect(Collectors.joining(","));
-                    }
+            if (fieldQName.equals(HistoryModel.ASSOC_INITIATOR) && value != null && NodeRef.isNodeRef(value)) {
+                NodeRef rootRef = new NodeRef(value);
+                Set<String> authorities = authorityUtils.getContainedUsers(rootRef, false);
+                if (!authorities.isEmpty()) {
+                    value = authorityUtils.getNodeRefs(authorities)
+                                          .stream()
+                                          .map(Object::toString)
+                                          .collect(Collectors.joining(","));
                 }
             }
 

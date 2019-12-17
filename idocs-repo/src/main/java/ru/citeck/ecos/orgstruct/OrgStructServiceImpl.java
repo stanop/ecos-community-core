@@ -41,179 +41,180 @@ import ru.citeck.ecos.model.OrgStructModel;
  */
 public class OrgStructServiceImpl implements OrgStructService
 {
-	private Map<String, TypedGroupDAO> components;
-	private AuthorityService authorityService;
-	private NodeService nodeService;
-	private OrgMetaService orgMetaService;
+    private Map<String, TypedGroupDAO> components;
+    private AuthorityService authorityService;
+    private NodeService nodeService;
+    private OrgMetaService orgMetaService;
 
-	private static final String BRANCH_TYPE = "branch";
-	private static final String ROLE_TYPE = "role";
+    private static final String BRANCH_TYPE = "branch";
+    private static final String ROLE_TYPE = "role";
 
-	private TypedGroupDAO getComponent(String type) {
-		if(!components.containsKey(type)) {
-			throw new IllegalArgumentException("No such group type: " + type);
-		}
-		return components.get(type);
-	}
+    private TypedGroupDAO getComponent(String type) {
+        if(!components.containsKey(type)) {
+            throw new IllegalArgumentException("No such group type: " + type);
+        }
+        return components.get(type);
+    }
 
-	public void setComponents(Map<String, TypedGroupDAO> components) {
-		this.components = components;
-	}
+    public void setComponents(Map<String, TypedGroupDAO> components) {
+        this.components = components;
+    }
 
-	public void setAuthorityService(AuthorityService authorityService) {
-		this.authorityService = authorityService;
-	}
+    public void setAuthorityService(AuthorityService authorityService) {
+        this.authorityService = authorityService;
+    }
 
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 
-	public void setOrgMetaService(OrgMetaService orgMetaService) {
-		this.orgMetaService = orgMetaService;
-	}
+    public void setOrgMetaService(OrgMetaService orgMetaService) {
+        this.orgMetaService = orgMetaService;
+    }
 
-	@Override
-	public String getGroupType(String name) {
-		for(String type : components.keySet()) {
-			if(components.get(type).isTypedGroup(name)) {
-				return type;
-			}
-		}
-		return null;
-	}
+    @Override
+    public String getGroupType(String name) {
+        for (Map.Entry<String, TypedGroupDAO> entry : components.entrySet()) {
+            if (entry.getValue().isTypedGroup(name)) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public String getGroupSubtype(String name) {
-		String type = getGroupType(name);
-		if(type == null) {
-			return null;
-		}
-		TypedGroupDAO dao = getComponent(type);
-		return dao.getGroupSubtype(name);
-	}
-
-
-	@Override
-	public boolean isTypedGroup(String type, String name) {
-		return getComponent(type).isTypedGroup(name);
-	}
-
-	@Override
-	public List<String> getAllTypedGroups(String type, boolean rootOnly) {
-		Set<String> groups = getAllGroups(rootOnly);
-		return getComponent(type).filterTypedGroups(groups, null);
-	}
-
-	@Override
-	public List<String> getAllTypedGroups(String type, String subtype, boolean rootOnly) {
-		Set<String> groups = getAllGroups(rootOnly);
-		return getComponent(type).filterTypedGroups(groups, subtype);
-	}
-
-	@Override
-	public String createTypedGroup(String type, String subtype, String name) {
-		return getComponent(type).createTypedGroup(subtype, name);
-	}
-
-	@Override
-	public void deleteTypedGroup(String type, String name) {
-		getComponent(type).deleteTypedGroup(name);
-	}
-
-	@Override
-	public void convertToSimpleGroup(String name) {
-		for(TypedGroupDAO dao : components.values()) {
-			dao.convertToSimpleGroup(name);
-		}
-	}
-
-	@Override
-	public List<String> getGroupTypes() {
-		return new ArrayList<>(components.keySet());
-	}
-
-	@Override
-	public List<String> getTypedGroupsForUser(String userName, String type) {
-		Set<String> userGroups = authorityService.getAuthoritiesForUser(userName);
-		return getComponent(type).filterTypedGroups(userGroups, null);
-	}
-
-	@Override
-	public List<String> getTypedGroupsForUser(String userName, String type, String subtype) {
-		Set<String> userGroups = authorityService.getAuthoritiesForUser(userName);
-		return getComponent(type).filterTypedGroups(userGroups, subtype);
-	}
-
-	private Set<String> getAllGroups(boolean rootOnly) {
-		if(rootOnly) {
-			return authorityService.getAllRootAuthorities(AuthorityType.GROUP);
-		} else {
-			return authorityService.getAllAuthorities(AuthorityType.GROUP);
-		}
-	}
-
-	@Override
-	public String getBranchManager(String branchName) {
-		if(!branchName.startsWith(AuthorityType.GROUP.getPrefixString())) {
-			branchName = AuthorityType.GROUP.getPrefixString() + branchName;
-		}
-		// look for immediate groups inside branch:
-		Set<String> immediateGroups = authorityService.getContainedAuthorities(AuthorityType.GROUP, branchName, true);
-		for(String group : immediateGroups) {
-			if(!isTypedGroup(ROLE_TYPE, group)) {
-				continue;
-			}
-			String subtype = getGroupSubtype(group);
-			if(subtype == null) {
-				continue;
-			}
-			NodeRef subtypeNode = orgMetaService.getSubType(ROLE_TYPE, subtype);
-			if(subtypeNode == null || !nodeService.exists(subtypeNode)) {
-				continue;
-			}
-			Boolean isManager = (Boolean) nodeService.getProperty(subtypeNode, OrgStructModel.PROP_ROLE_IS_MANAGER);
-			if(Boolean.TRUE.equals(isManager)) {
-				return group;
-			}
-		}
-		return null;
-	}
+    @Override
+    public String getGroupSubtype(String name) {
+        String type = getGroupType(name);
+        if(type == null) {
+            return null;
+        }
+        TypedGroupDAO dao = getComponent(type);
+        return dao.getGroupSubtype(name);
+    }
 
 
-	@Override
-	public String getUserManager(String userName) {
+    @Override
+    public boolean isTypedGroup(String type, String name) {
+        return getComponent(type).isTypedGroup(name);
+    }
 
-		// look for the branches "breadth first"
+    @Override
+    public List<String> getAllTypedGroups(String type, boolean rootOnly) {
+        Set<String> groups = getAllGroups(rootOnly);
+        return getComponent(type).filterTypedGroups(groups, null);
+    }
 
-		Set<String> groupsToVisit = authorityService.getContainingAuthorities(null, userName, true);
-		Set<String> visitedGroups = new TreeSet<>();
+    @Override
+    public List<String> getAllTypedGroups(String type, String subtype, boolean rootOnly) {
+        Set<String> groups = getAllGroups(rootOnly);
+        return getComponent(type).filterTypedGroups(groups, subtype);
+    }
 
-		while(groupsToVisit.size() > 0) {
-			Set<String> currentGroups = new TreeSet<>(groupsToVisit);
-			for(String group : currentGroups) {
-				if(isTypedGroup(BRANCH_TYPE, group)) {
-					String managerGroup = getBranchManager(group);
-					if(managerGroup != null) {
+    @Override
+    public String createTypedGroup(String type, String subtype, String name) {
+        return getComponent(type).createTypedGroup(subtype, name);
+    }
 
-						Set<String> managerUsers = authorityService.getContainedAuthorities(AuthorityType.USER, managerGroup, false);
-						if(!managerUsers.contains(userName)) {
-							return managerGroup;
-						}
-					}
-				}
+    @Override
+    public void deleteTypedGroup(String type, String name) {
+        getComponent(type).deleteTypedGroup(name);
+    }
 
-				Set<String> parentGroups = authorityService.getContainingAuthorities(null, group, true);
-				for(String parentGroup : parentGroups) {
-					if(!visitedGroups.contains(parentGroup)) {
-						groupsToVisit.add(parentGroup);
-					}
-				}
-				visitedGroups.add(group);
-				groupsToVisit.remove(group);
-			}
-		}
-		return null;
-	}
+    @Override
+    public void convertToSimpleGroup(String name) {
+        for(TypedGroupDAO dao : components.values()) {
+            dao.convertToSimpleGroup(name);
+        }
+    }
+
+    @Override
+    public List<String> getGroupTypes() {
+        return new ArrayList<>(components.keySet());
+    }
+
+    @Override
+    public List<String> getTypedGroupsForUser(String userName, String type) {
+        Set<String> userGroups = authorityService.getAuthoritiesForUser(userName);
+        return getComponent(type).filterTypedGroups(userGroups, null);
+    }
+
+    @Override
+    public List<String> getTypedGroupsForUser(String userName, String type, String subtype) {
+        Set<String> userGroups = authorityService.getAuthoritiesForUser(userName);
+        return getComponent(type).filterTypedGroups(userGroups, subtype);
+    }
+
+    private Set<String> getAllGroups(boolean rootOnly) {
+        if(rootOnly) {
+            return authorityService.getAllRootAuthorities(AuthorityType.GROUP);
+        } else {
+            return authorityService.getAllAuthorities(AuthorityType.GROUP);
+        }
+    }
+
+    @Override
+    public String getBranchManager(String branchName) {
+        if(!branchName.startsWith(AuthorityType.GROUP.getPrefixString())) {
+            branchName = AuthorityType.GROUP.getPrefixString() + branchName;
+        }
+        // look for immediate groups inside branch:
+        Set<String> immediateGroups = authorityService.getContainedAuthorities(AuthorityType.GROUP, branchName, true);
+        for(String group : immediateGroups) {
+            if(!isTypedGroup(ROLE_TYPE, group)) {
+                continue;
+            }
+            String subtype = getGroupSubtype(group);
+            if(subtype == null) {
+                continue;
+            }
+            NodeRef subtypeNode = orgMetaService.getSubType(ROLE_TYPE, subtype);
+            if(subtypeNode == null || !nodeService.exists(subtypeNode)) {
+                continue;
+            }
+            Boolean isManager = (Boolean) nodeService.getProperty(subtypeNode, OrgStructModel.PROP_ROLE_IS_MANAGER);
+            if(Boolean.TRUE.equals(isManager)) {
+                return group;
+            }
+        }
+        return null;
+    }
+
+
+    @Override
+    public String getUserManager(String userName) {
+
+        // look for the branches "breadth first"
+
+        Set<String> groupsToVisit = authorityService.getContainingAuthorities(null, userName, true);
+        Set<String> visitedGroups = new TreeSet<>();
+
+        while (groupsToVisit.size() > 0) {
+            Set<String> currentGroups = new TreeSet<>(groupsToVisit);
+            for (String group : currentGroups) {
+                if (isTypedGroup(BRANCH_TYPE, group)) {
+                    String managerGroup = getBranchManager(group);
+                    if (managerGroup != null) {
+
+                        Set<String> managerUsers = authorityService.getContainedAuthorities(AuthorityType.USER,
+                            managerGroup, false);
+                        if (!managerUsers.contains(userName)) {
+                            return managerGroup;
+                        }
+                    }
+                }
+
+                Set<String> parentGroups = authorityService.getContainingAuthorities(null, group, true);
+                for (String parentGroup : parentGroups) {
+                    if (!visitedGroups.contains(parentGroup)) {
+                        groupsToVisit.add(parentGroup);
+                    }
+                }
+                visitedGroups.add(group);
+                groupsToVisit.remove(group);
+            }
+        }
+        return null;
+    }
 
     @Override
     public List<String> getTypedSubgroups(String groupName, String type,
