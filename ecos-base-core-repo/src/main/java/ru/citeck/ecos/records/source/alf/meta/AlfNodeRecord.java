@@ -279,10 +279,10 @@ public class AlfNodeRecord implements MetaValue {
                 if (nodeAtt == null) {
                     return Collections.emptyList();
                 }
+
                 if (name.contains(ASSOC_SRC_ATTR_PREFIX)) {
                     attribute = getSourceAssocs(node.nodeRef(), name);
-                }
-                if (Attribute.Type.UNKNOWN.equals(nodeAtt.type())) {
+                } else if (Attribute.Type.UNKNOWN.equals(nodeAtt.type())) {
                     Optional<QName> attQname = context.getQName(name).map(GqlQName::getQName);
                     if (attQname.isPresent()) {
                         VirtualScriptAttributes attributes = context.getService(VIRTUAL_SCRIPT_ATTS_ID);
@@ -292,6 +292,7 @@ public class AlfNodeRecord implements MetaValue {
                         }
                     }
                 }
+
                 if (attribute == null) {
                     attribute = nodeAtt.getValues()
                             .stream()
