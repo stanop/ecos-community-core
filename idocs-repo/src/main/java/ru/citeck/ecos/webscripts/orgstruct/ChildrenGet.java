@@ -52,6 +52,7 @@ public class ChildrenGet extends AbstractWebScript {
     private static final String PARAM_SUB_TYPES = "subTypes";
     private static final String PARAM_SHOW_DISABLED = "showdisabled";
     private static final String PARAM_EXCLUDE_AUTHORITIES = "excludeAuthorities";
+    private static final String PARAM_EXCLUDE_CHILDS = "excludeChilds";
 
     private static final String CONFIG_KEY_SHOW_INACTIVE = "orgstruct-show-inactive-user-only-for-admin";
     private static final String CONFIG_KEY_HIDE_INACTIVE_FOR_ALL = "hide-disabled-users-for-everyone";
@@ -435,6 +436,9 @@ public class ChildrenGet extends AbstractWebScript {
 
         Set<String> excludeAuthorities = new HashSet<>();
         excludeAuthorities.addAll(strToSet(req.getParameter(PARAM_EXCLUDE_AUTHORITIES)));
+        if (ConfigUtils.strToBool(req.getParameter(PARAM_EXCLUDE_CHILDS), false)) {
+            excludeAuthorities.addAll(getExcludedChildAuthorities(strToSet(req.getParameter(PARAM_EXCLUDE_AUTHORITIES))));
+        }
         excludeAuthorities.addAll(strToSet((String) ecosConfigService.getParamValue(CONFIG_KEY_HIDE_IN_ORGSTRUCT)));
 
         options.excludeAuthorities = new HashSet<>();
@@ -446,6 +450,16 @@ public class ChildrenGet extends AbstractWebScript {
         }
 
         return options;
+    }
+
+    private List<String> getExcludedChildAuthorities(Set<String> rootAuthorities) {
+        List<String> excludedChilds = new ArrayList<>();
+        for (String rootGroupName : rootAuthorities) {
+            excludedChilds.addAll(authorityService.getContainedAuthorities(AuthorityType.GROUP,
+                    rootGroupName,
+                    false));
+        }
+        return excludedChilds.stream().distinct().collect(Collectors.toList());
     }
 
     private static class RequestParams {
