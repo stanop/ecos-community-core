@@ -50,7 +50,7 @@ public class HistoricalAssocsBehaviour implements
 
 	private List<QName> allowedAssocs;
 	private DictionaryService dictionaryService;
-	private static Map<String,Long> createdNodes = new HashMap<String,Long>();
+	private static Map<String,Long> createdNodes = new HashMap<>();
 	protected boolean enableHistoryOnAddAssocs;
 	protected boolean enableHistoryOnDeleteAssocs;
 

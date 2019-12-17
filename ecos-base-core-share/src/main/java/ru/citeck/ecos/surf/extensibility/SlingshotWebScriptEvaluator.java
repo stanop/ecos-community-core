@@ -101,10 +101,10 @@ public class SlingshotWebScriptEvaluator extends AbstractUniversalEvaluator
             }
 
             // extract params
-            Map<String, String> paramValues = new HashMap<String, String>(params.size());
-            for (String key : params.keySet()) {
-                String paramValue = substitute(params.get(key), rc.getParameters());
-                paramValues.put(key, paramValue);
+            Map<String, String> paramValues = new HashMap<>(params.size());
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                String paramValue = substitute(entry.getValue(), rc.getParameters());
+                paramValues.put(entry.getKey(), paramValue);
             }
 
             // get url
@@ -140,7 +140,7 @@ public class SlingshotWebScriptEvaluator extends AbstractUniversalEvaluator
         String valuesParam = params.get(PARAM_VALUES);
 
         // no values is used to allow null
-        if(valuesParam == null || value == null) {
+        if (valuesParam == null || value == null) {
             return value == null;
         }
 
@@ -179,10 +179,12 @@ public class SlingshotWebScriptEvaluator extends AbstractUniversalEvaluator
 
     private String substitute(String template, Map<String, String> params) {
         String result = template;
-        for(String key : params.keySet()) {
-            String value = params.get(key);
-            if (value != null)
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            if (value != null) {
                 result = result.replace("{" + key + "}", value);
+            }
         }
         return result;
     }

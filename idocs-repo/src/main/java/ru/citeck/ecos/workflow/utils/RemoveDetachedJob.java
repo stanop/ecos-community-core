@@ -24,9 +24,7 @@ public class RemoveDetachedJob extends AbstractLockedJob
 
 	private static final Object PARAM_SEARCH_SERVICE = "searchService";
 	private static final Object PARAM_NODE_SERVICE = "NodeService";
-	private static final Object PARAM_SERVICE = "ServiceRegistry";
-	private static final Object PARAM_MINUS_DAYS = "ServiceRegistry";
-	
+
 	private int minusDays;
 	  
     public void setMinusDays(int timeout) {
@@ -41,7 +39,7 @@ public class RemoveDetachedJob extends AbstractLockedJob
 
         final SearchService searchService = (SearchService) data.get(PARAM_SEARCH_SERVICE);
 		final NodeService nodeService = (NodeService) data.get(PARAM_NODE_SERVICE);
-		final Integer minusDayz = minusDays;
+		final int minusDayz = minusDays;
 		
 		Integer deletedNodes = AuthenticationUtil.runAs(new RunAsWork<Integer>() {
 

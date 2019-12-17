@@ -615,4 +615,95 @@
             </list>
         </property>
     </bean>
+
+    <bean id="idocs.module-component.main-journals.currency-rates-internal" parent="idocs.import-spaces">
+        <property name="name" value="currency-rates-internal-journal" />
+        <property name="description" value="Currency rates internal Journal" />
+        <property name="sinceVersion" value="3.16.0" />
+        <property name="appliesFromVersion" value="3.16.0" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:dataLists</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/datalist.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/currency-rates-internal</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/currency-rates-internal</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:currency-rates-internal</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/currency-rates-internal</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:currency-rates-internal</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/currency-rates-internal</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/main/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/currency-rates-internal</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.groups-of-countries" parent="idocs.import-spaces"
+          depends-on="idocs.dictionaryBootstrap">
+        <property name="name" value="groups-of-countries"/>
+        <property name="description" value="Groups of Countries Journals"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root"/>
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:dataLists</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/groups-of-countries</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/groups-of-countries</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:groups-of-countries</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/groups-of-countries</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:groups-of-countries</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/groups-of-countries</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/main/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/main/groups-of-countries</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
 </beans>

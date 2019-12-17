@@ -73,7 +73,7 @@ public class EcosWorkflowService {
         @Getter private final String localId;
 
         WorkflowId(String workflowId) {
-            int delimIdx = workflowId.indexOf("$");
+            int delimIdx = workflowId.indexOf('$');
             if (delimIdx == -1) {
                 throw new IllegalArgumentException("Workflow id should has engine " +
                                                    "prefix. Workflow: '" + workflowId + "'");

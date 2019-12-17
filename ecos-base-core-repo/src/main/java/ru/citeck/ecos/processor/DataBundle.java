@@ -142,6 +142,6 @@ public class DataBundle {
 	}
 	
 	static Map<String,Object> emptyModel() {
-		return new HashMap<String,Object>();
+		return new HashMap<>();
 	}
 }

@@ -46,12 +46,9 @@ public class CaseTaskEndProcessListener extends AbstractExecutionListener {
 
     @Override
     protected void notifyImpl(final DelegateExecution delegateExecution) throws Exception {
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-            @Override
-            public Object doWork() throws Exception {
-                CaseTaskEndProcessListener.this.doWork(delegateExecution);
-                return null;
-            }
+        AuthenticationUtil.runAsSystem(() -> {
+            CaseTaskEndProcessListener.this.doWork(delegateExecution);
+            return null;
         });
     }
 

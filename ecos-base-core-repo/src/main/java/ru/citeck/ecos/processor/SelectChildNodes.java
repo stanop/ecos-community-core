@@ -18,7 +18,6 @@
  */
 package ru.citeck.ecos.processor;
 
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
@@ -26,7 +25,6 @@ import org.alfresco.service.namespace.QNamePattern;
 import org.alfresco.service.namespace.RegexQNamePattern;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,7 +48,7 @@ public class SelectChildNodes extends AbstractDataBundleLine {
     @Override
     public DataBundle process(DataBundle input) {
         Map<String, Object> model = input.needModel();
-        HashMap<String, Object> newModel = new HashMap<String, Object>();
+        HashMap<String, Object> newModel = new HashMap<>();
         newModel.putAll(model);
 
         NodeRef parent = new NodeRef((String) evaluateExpression(parentNodeRef, model));

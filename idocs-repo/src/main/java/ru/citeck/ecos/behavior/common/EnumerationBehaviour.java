@@ -21,19 +21,20 @@ package ru.citeck.ecos.behavior.common;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
-import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
-
+import ru.citeck.ecos.behavior.JavaBehaviour;
 import ru.citeck.ecos.counter.EnumerationException;
 import ru.citeck.ecos.counter.EnumerationService;
 import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
 import ru.citeck.ecos.service.CiteckServices;
+
+import java.util.Objects;
 
 public class EnumerationBehaviour implements NodeServicePolicies.OnCreateNodePolicy
 {
@@ -66,8 +67,7 @@ public class EnumerationBehaviour implements NodeServicePolicies.OnCreateNodePol
         }
         // check if enumeration is enabled
         Object enumerationState = nodeService.getProperty(nodeRef, enumerationStateField);
-        if ((enabledState != null && !enabledState.equals(enumerationState)) ||
-                (enabledState == null && enumerationState != null)) {
+        if (!Objects.equals(enabledState, enumerationState)) {
             return;
         }
         NodeRef template = enumerationService.getTemplate(templateName);

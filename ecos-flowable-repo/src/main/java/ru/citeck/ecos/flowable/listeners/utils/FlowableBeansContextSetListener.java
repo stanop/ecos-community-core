@@ -28,7 +28,7 @@ public class FlowableBeansContextSetListener implements ApplicationListener<Cont
      */
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        /** Refresh engine */
+        /* Refresh engine */
         ProcessEngine processEngine = (ProcessEngine) ApplicationContextProvider.getBean("flowableEngine");
         if (processEngine != null) {
             refreshEngineBeans(processEngine);
@@ -41,21 +41,21 @@ public class FlowableBeansContextSetListener implements ApplicationListener<Cont
      */
     private void refreshEngineBeans(ProcessEngine processEngine) {
         Map<Object, Object> beans = processEngine.getProcessEngineConfiguration().getBeans();
-        /** Global execution listeners */
-        Map<String, GlobalExecutionListener> executionListenerMap = ApplicationContextProvider.getApplicationContext().
-                getBeansOfType(GlobalExecutionListener.class);
-        for (String key : executionListenerMap.keySet()) {
-            beans.put(key, executionListenerMap.get(key));
+        /* Global execution listeners */
+        Map<String, GlobalExecutionListener> executionListenerMap = ApplicationContextProvider.getApplicationContext()
+            .getBeansOfType(GlobalExecutionListener.class);
+        for (Map.Entry<String, GlobalExecutionListener> entry : executionListenerMap.entrySet()) {
+            beans.put(entry.getKey(), entry.getValue());
         }
-        /** Global task listeners */
-        Map<String, GlobalTaskListener> taskListenerMap = ApplicationContextProvider.getApplicationContext().
-                getBeansOfType(GlobalTaskListener.class);
-        for (String key : taskListenerMap.keySet()) {
-            beans.put(key, taskListenerMap.get(key));
+        /* Global task listeners */
+        Map<String, GlobalTaskListener> taskListenerMap = ApplicationContextProvider.getApplicationContext()
+            .getBeansOfType(GlobalTaskListener.class);
+        for (Map.Entry<String, GlobalTaskListener> entry : taskListenerMap.entrySet()) {
+            beans.put(entry.getKey(), entry.getValue());
         }
-        /** Script services */
-        Map<String, BaseScopableProcessorExtension> servicesMap = ApplicationContextProvider.getApplicationContext().
-                getBeansOfType(BaseScopableProcessorExtension.class);
+        /* Script services */
+        Map<String, BaseScopableProcessorExtension> servicesMap = ApplicationContextProvider.getApplicationContext()
+            .getBeansOfType(BaseScopableProcessorExtension.class);
         for (BaseScopableProcessorExtension extension : servicesMap.values()) {
             if (!EXCLUDE_JS_SERVICES.contains(extension.getExtensionName())) {
                 beans.put(extension.getExtensionName(), extension);

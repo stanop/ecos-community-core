@@ -1,7 +1,7 @@
 package ru.citeck.ecos.action;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.CacheStats;
@@ -19,7 +19,7 @@ import ru.citeck.ecos.action.node.NodeActionDefinition;
 import ru.citeck.ecos.action.node.NodeActionsProvider;
 import ru.citeck.ecos.action.node.NodeActionsService;
 import ru.citeck.ecos.action.v2.NodeActionsV2Provider;
-import ru.citeck.ecos.apps.app.module.type.type.action.ActionDto;
+import ru.citeck.ecos.apps.app.module.type.ui.action.ActionModule;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -76,13 +76,13 @@ public class NodeActionsServiceImpl implements NodeActionsService {
     }
 
     @Override
-    public List<ActionDto> getNodeActions(NodeRef nodeRef) {
+    public List<ActionModule> getNodeActions(NodeRef nodeRef) {
         List<Map<String, String>> rawActions = getNodeActionsRaw(nodeRef);
 
-        List<ActionDto> result = new ArrayList<>();
+        List<ActionModule> result = new ArrayList<>();
 
         for (Map<String, String> actionRaw : rawActions) {
-            ActionDto action = new ActionDto();
+            ActionModule action = new ActionModule();
             action.setId(actionRaw.get("actionId"));
             action.setName(actionRaw.get("title"));
             action.setType(actionRaw.get("actionType"));
@@ -92,7 +92,7 @@ public class NodeActionsServiceImpl implements NodeActionsService {
                     .filter(x -> !EXCLUDE_FROM_CONFIG.contains(x.getKey()))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-            JsonNode configNode = OBJECT_MAPPER.convertValue(config, JsonNode.class);
+            ObjectNode configNode = OBJECT_MAPPER.convertValue(config, ObjectNode.class);
 
             action.setConfig(configNode);
             result.add(action);
@@ -173,8 +173,11 @@ public class NodeActionsServiceImpl implements NodeActionsService {
         this.nodeService = serviceRegistry.getNodeService();
     }
 
-    @Autowired
+    @Autowired(required = false)
     public void setV2providersList(List<NodeActionsV2Provider> v2providersList) {
+        if (v2providersList == null) {
+            v2providersList = new ArrayList<>();
+        }
         this.v2providersList = v2providersList;
     }
 

@@ -7,7 +7,6 @@ import org.alfresco.service.cmr.search.*;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import ru.citeck.ecos.utils.search.SearchResult;
 import ru.citeck.ecos.utils.search.SearchUtils;
 
 import java.io.Serializable;

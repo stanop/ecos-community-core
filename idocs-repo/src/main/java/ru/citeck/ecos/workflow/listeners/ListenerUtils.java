@@ -36,6 +36,7 @@ import org.alfresco.service.cmr.workflow.WorkflowDefinition;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.RegexQNamePattern;
+import org.apache.commons.lang3.StringUtils;
 import ru.citeck.ecos.utils.ReflectionUtils;
 
 import java.util.*;
@@ -45,6 +46,7 @@ public class ListenerUtils {
     public static final String ACTIVITI_PREFIX = ActivitiConstants.ENGINE_ID + "$";
     public static final String VAR_PACKAGE = "bpm_package";
     public static final String VAR_ATTACHMENTS = "cwf_taskAttachments";
+    private static final String TASK_FORM_KEY = "formKey";
 
     // get workflow package
     public static NodeRef getWorkflowPackage(VariableScope execution) {
@@ -106,7 +108,7 @@ public class ListenerUtils {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static ArrayList<NodeRef> getPooledActors(DelegateTask task, AuthorityService authorityService) {
         Set<IdentityLink> candidates = (Set) ReflectionUtils.callGetterIfDeclared(task, "getCandidates", new HashSet());
-        ArrayList<NodeRef> pooledActors = new ArrayList<NodeRef>(candidates.size());
+        ArrayList<NodeRef> pooledActors = new ArrayList<>(candidates.size());
         for (IdentityLink candidate : candidates) {
             if (!candidate.getType().equals(IdentityLinkType.CANDIDATE)) {
                 continue;
@@ -137,10 +139,10 @@ public class ListenerUtils {
         }
         @SuppressWarnings("rawtypes")
         Collection source = (Collection) taskAttachments;
-        ArrayList<NodeRef> target = new ArrayList<NodeRef>(source.size());
+        ArrayList<NodeRef> target = new ArrayList<>(source.size());
         for (Object item : source) {
             if (item == null) {
-                continue;
+                // empty
             } else if (item instanceof NodeRef) {
                 target.add((NodeRef) item);
             } else if (item instanceof ScriptNode) {
@@ -152,5 +154,24 @@ public class ListenerUtils {
             }
         }
         return target;
+    }
+
+    public static String getTaskFormKey(DelegateTask task) {
+        String formKey = task.getFormKey();
+        if (StringUtils.isNotBlank(formKey)) {
+            return formKey;
+        }
+
+        formKey = (String) task.getVariable(ActivitiConstants.PROP_TASK_FORM_KEY);
+        if (StringUtils.isNotBlank(formKey)) {
+            return formKey;
+        }
+
+        formKey = (String) task.getVariable(TASK_FORM_KEY);
+        if (StringUtils.isNotBlank(formKey)) {
+            return formKey;
+        }
+
+        throw new RuntimeException("Failed get taskForm, from task: " + task.getId());
     }
 }

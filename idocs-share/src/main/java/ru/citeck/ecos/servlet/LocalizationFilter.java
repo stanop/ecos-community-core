@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-/**
+/*
  *
  * THIS OVERRIDE IS USED TO EXPLICITLY SET THE ALFRESCO SHARE LOCALE TO RUSSIAN.
  * For localizing Alfresco Repository look at override of

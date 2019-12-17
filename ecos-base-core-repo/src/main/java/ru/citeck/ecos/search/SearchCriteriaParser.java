@@ -97,7 +97,8 @@ public class SearchCriteriaParser {
         return searchCriteria;
     }
 
-    private void addCriteriaTriplet(SearchCriteria searchCriteria, JSONObject criteria, String name) throws JSONException {
+    private void addCriteriaTriplet(SearchCriteria searchCriteria, JSONObject criteria, String name)
+        throws JSONException {
         String field = criteria.getString(name);
         Integer criteriaIndex = Integer.valueOf(name.substring(fieldIndexPos));
         String predicate;

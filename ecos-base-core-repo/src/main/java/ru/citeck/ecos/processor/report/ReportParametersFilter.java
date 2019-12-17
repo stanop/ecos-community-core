@@ -60,14 +60,12 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
         } catch (IOException e) {
             Logger.getLogger(ReportParametersFilter.class).error(e.getMessage(), e);
         }
-
         DataBundle copyDB = new DataBundle(copyIS, model);
 
         ContentReader contentReader = helper.getContentReader(copyDB);
         Object criteriaObj = evaluateExpression(contentReader.getContentString(), model);
 
-        HashMap<String, Object> newModel = new HashMap<String, Object>();
-        newModel.putAll(model);
+        HashMap<String, Object> newModel = new HashMap<>(model);
         newModel = insertReportParams(criteriaObj, newModel);
 
         return new DataBundle(newIS, newModel);
@@ -107,7 +105,7 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
         if (o != null) {
             if (o instanceof JSONArray) {
                 JSONArray arr = (JSONArray) o;
-                List<Object> list = new ArrayList<Object>();
+                List<Object> list = new ArrayList<>();
 
                 for (int i = 0; i < arr.length(); i++) {
                     try {
@@ -119,7 +117,7 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
                 return list;
             } else if (o instanceof JSONObject) {
                 JSONObject obj = (JSONObject) o;
-                Map<String, Object> map = new HashMap<String, Object>();
+                Map<String, Object> map = new HashMap<>();
                 Iterator keys = obj.sortedKeys();
 
                 while (keys.hasNext()) {

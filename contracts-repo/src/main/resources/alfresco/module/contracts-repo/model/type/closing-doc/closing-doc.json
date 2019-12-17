@@ -1,0 +1,6 @@
+{
+    "id": "contracts-cat-doctype-closing-doc",
+    "name": "Закрывающий документ",
+    "parent": "model/type$base",
+    "inheritActions": true
+}

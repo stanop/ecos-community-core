@@ -19,14 +19,13 @@
 package ru.citeck.ecos.template;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,28 +55,28 @@ import org.docx4j.wml.Text;
 
 /**
  * DOCX template processor with support of FreeMarker tags.
- * 
+ *
  * Following type of tags is supported:
  * 1) freemarker interpolations @{code ${ ... } }
  * 2) freemarker single directives, e.g. @{code [#include ... /]} or @{code [@user-defined-macro ... /]}.
  * 3) special grouping tags @{code [# ... #]}
  * 4) in the template you can output a new line symbol ( like \r\n or \n ),
  *    after processing this symbol is representing as new paragraph in the document with the same style.
- * 
+ *
  * Note. To include directives, that contain open and close tags (e.g. @{code [#if]...[/#if]}),
  *       one should use grouping tags.
  *       This tags mark beginning and ending of freemarker code.
- * 
- * Note. Only square bracket tags are supported, 
+ *
+ * Note. Only square bracket tags are supported,
  * i.e. @{code [#assign ...]}, but not @{code <#assign ...>}.
- * 
+ *
  * @author Alexander Nemerov
  * @date 24.07.13
  */
 public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplateProcessor {
 
 	private static final Log logger = LogFactory.getLog(DocxFreeMarkerProcessor.class);
-	
+
 	private FreeMarkerProcessor processor;
 	private String newLineRegexp = "\\r?\\n";
 	Pattern newLinePattern = Pattern.compile(newLineRegexp, Pattern.DOTALL);
@@ -113,13 +112,13 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 		logger.debug("Start processing template " + template);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		process(template, model, outputStream);
-		
+
 		try {
-			out.write(new String(outputStream.toByteArray(), Charset.forName("ISO-8859-1")));
+			out.write(new String(outputStream.toByteArray(), StandardCharsets.ISO_8859_1));
 		} catch (IOException e) {
 			logger.error("Write failed", e);
 		}
-		
+
 		// closing ByteArrayOutputStream is not necessary
 //		try {
 //			outputStream.close();
@@ -131,7 +130,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 	public void process(String template, Object model, OutputStream out) {
 		NodeRef templateNodeRef = new NodeRef(template);
 		WordprocessingMLPackage wpMLPackage = getWordTemplate(templateNodeRef);
-		
+
 		// process each part of document, that has texts
 		HashMap<PartName, Part> parts = wpMLPackage.getParts().getParts();
 		for(Part part : parts.values()) {
@@ -157,7 +156,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 				}
 			}
 		}
-		
+
 		// save processed Wordprocessing ML package
 		Save saver = new Save(wpMLPackage);
 		try {
@@ -185,7 +184,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 	 * Replaces all new line symbols on the space.
 	 * This method should be executed before processing template, because of
 	 * we should display all new line symbols after processing as new paragraphs.
-	 * 
+	 *
 	 * @param texts - input w:t elements from the paragraph
 	 */
 	private void replaceAllNewLines(List<Text> texts) {
@@ -199,7 +198,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 		}
 	}
 
-	private static enum LexerState {
+	private enum LexerState {
 		TEXT,
 		EXPR,
 		STRING
@@ -208,26 +207,26 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 	private void processTexts(List<Text> textParts, Object model) {
 		logger.debug("Start processing of texts: " + textParts.size());
 		LexerState state = LexerState.TEXT;
-		
-		Map<Character, Character> parentheses = new HashMap<Character, Character>();
+
+		Map<Character, Character> parentheses = new HashMap<>();
 		parentheses.put(']', '[');
 		parentheses.put('}', '{');
 		Collection<Character> openingParentheses = parentheses.values();
 		Collection<Character> closingParentheses = parentheses.keySet();
-		
+
 		StringBuilder buffer = new StringBuilder();
-		
+
 		// process docx text parts
-		Stack<Character> stack = new Stack<Character>();
+		Stack<Character> stack = new Stack<>();
 		char prevChar = ' ';
 		for (Text text : textParts) {
 			String textValue = text.getValue();
-			
+
 			char[] chars = textValue.toCharArray();
-			
+
 			for(int i = 0; i < chars.length; i++) {
 				switch(state) {
-				case TEXT: 
+				case TEXT:
 					if((chars[i] == '#' || chars[i] == '@') && prevChar == '[') {
 						stack.push('[');
 						state = LexerState.EXPR;
@@ -237,7 +236,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 						state = LexerState.EXPR;
 					}
 					break;
-				case EXPR: 
+				case EXPR:
 					if(openingParentheses.contains(chars[i])) {
 						stack.push(chars[i]);
 					} else if(closingParentheses.contains(chars[i])) {
@@ -270,7 +269,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 				}
 				prevChar = chars[i];
 			}
-			
+
 			buffer.append(textValue);
 
 			if(state.equals(LexerState.TEXT) && prevChar != '$' && prevChar != '[') {
@@ -288,7 +287,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 				text.setValue("");
 			}
 		}
-		
+
 		if(!state.equals(LexerState.TEXT)) {
 			throw new IllegalStateException("Expression not closed, stack is " + stack);
 		}
@@ -296,18 +295,18 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 
 	/**
 	 * Returns all text blocks of a specified paragraph.
-	 * 
+	 *
 	 * @param part - part of the document
 	 * @param paragraph - specified paragraph
 	 * @return list of text blocks ({@link Text})
 	 * @throws JAXBException
-	 * @throws XPathBinderAssociationIsPartialException 
+	 * @throws XPathBinderAssociationIsPartialException
 	 */
 	@SuppressWarnings("unchecked")
 	private List<Text> getTexts(Part part, Object paragraph)
 			throws JAXBException, Docx4JException {
 		List<Object> elements = ((JaxbXmlPartXPathAware<Object>) part).getJAXBNodesViaXPath(".//w:t", paragraph, true);
-		List<Text> texts = new ArrayList<Text>(elements.size());
+		List<Text> texts = new ArrayList<>(elements.size());
 		for (Object element : elements) {
 			if(element instanceof JAXBElement) {
 				texts.add((Text) ((JAXBElement<Object>) element).getValue());
@@ -319,10 +318,10 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 	/**
 	 * If item from the specified {@code texts} contains new line symbol, it
 	 * divides this paragraph onto several paragraphs.
-	 * 
+	 *
 	 * @param p - parent paragraph
 	 * @param texts - paragraph text items
-	 * @throws JAXBException 
+	 * @throws JAXBException
 	 */
 	private void createNewParagraphsIfNeed(Part part, P p, List<Text> texts)
 			throws JAXBException {
@@ -343,7 +342,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 		int j = 1;
 		TextIndex prev = null;
 		Object paragraph;
-		List<TextIndex> paragraphText = new LinkedList<TextIndex>();
+		List<TextIndex> paragraphText = new LinkedList<>();
 		for (TextIndex index : indexes) {
 			if (prev == null || prev.getNewLineIndex() == index.getNewLineIndex()) {
 				paragraphText.add(index);
@@ -351,7 +350,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 			else {
 				paragraph = createNewParagraph(p, paragraphText, texts);
 				contentAccessor.getContent().add(paragraphPos + j, paragraph);
-				paragraphText = new LinkedList<TextIndex>();
+				paragraphText = new LinkedList<>();
 				paragraphText.add(index);
 				j++;
 			}
@@ -367,12 +366,12 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 	 *  - text item,
 	 *  - new paragraph index,
 	 *  - position in the specified {@code texts}
-	 * 
+	 *
 	 * @param texts - list of text items of the paragraph
 	 * @return
 	 */
 	private List<TextIndex> collectTextIndexes(List<Text> texts) {
-		List<TextIndex> indexes = new LinkedList<TextIndex>();
+		List<TextIndex> indexes = new LinkedList<>();
 		int textIndex = 0;
 		int newLineIndex = 0;
 		for (Text text : texts) {
@@ -406,7 +405,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 	 * 1. marshals the DOM node of the specified paragraph template.
 	 * 2. erases all text in all text blocks.
 	 * 3. sets content only for specified indexes.
-	 * 
+	 *
 	 * @param templateParagraph - paragraph template
 	 * @param paragraphText - list of {@link TextIndex}, which is in new paragraph
 	 * @param texts - list of the paragraph text blocks, currently it is used

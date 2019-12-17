@@ -35,7 +35,7 @@ public class HistoryUtils {
     public static final Serializable CHILD_ASSOC_REMOVED = "child.assoc.removed";
 
     public static Map<QName, Serializable> eventProperties(Serializable name, Serializable assocDocument, Serializable propertyName, Serializable propertyValue, Serializable taskComment, Serializable propTargetNodeType, Serializable propTargetNodeKind) {
-        Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>(7);
+        Map<QName, Serializable> eventProperties = new HashMap<>(7);
         eventProperties.put(HistoryModel.PROP_NAME, name);
         eventProperties.put(HistoryModel.ASSOC_DOCUMENT, assocDocument);
         eventProperties.put(HistoryModel.PROP_PROPERTY_NAME, propertyName);
@@ -128,15 +128,13 @@ public class HistoryUtils {
             return nodeService.getProperty(nodeRef, ContentModel.PROP_LASTNAME)
                     + " " + nodeService.getProperty(nodeRef, ContentModel.PROP_FIRSTNAME);
         } else {
-            /** Single title */
+            /* Single title */
             QName titleQName = getHistoryEventTitleMapperService().getTitleQName(nodeService.getType(nodeRef));
-            if (titleQName != null) {
-                if (nodeService.getProperty(nodeRef, titleQName) != null) {
-                    Serializable value = nodeService.getProperty(nodeRef, titleQName);
-                    return transformValueToString(value, nodeService);
-                }
+            if (titleQName != null && nodeService.getProperty(nodeRef, titleQName) != null) {
+                Serializable value = nodeService.getProperty(nodeRef, titleQName);
+                return transformValueToString(value, nodeService);
             }
-            /** List title */
+            /* List title */
             List<QName> titlesQName = getHistoryEventTitleMapperService().getTitleQNames(nodeService.getType(nodeRef));
             if (CollectionUtils.isNotEmpty(titlesQName)) {
                 List<String> paramValues = new ArrayList<>(titlesQName.size());
@@ -145,7 +143,7 @@ public class HistoryUtils {
                 }
                 return String.join("; ", paramValues);
             }
-            /** Default title */
+            /* Default title */
             return String.valueOf(nodeService.getProperty(nodeRef, ContentModel.PROP_TITLE) != null
                     ? nodeService.getProperty(nodeRef, ContentModel.PROP_TITLE)
                     : nodeService.getProperty(nodeRef, ContentModel.PROP_NAME));
@@ -153,12 +151,12 @@ public class HistoryUtils {
     }
 
     private static String getValueByQName(NodeRef nodeRef, QName title, NodeService nodeService) {
-        /** Property */
+        /* Property */
         Serializable value = nodeService.getProperty(nodeRef, title);
         if (value != null) {
             return transformValueToString(value, nodeService);
         }
-        /** Target association */
+        /* Target association */
         AssociationRef associationRef = getTargetAssociation(nodeRef, title, nodeService);
         if (associationRef != null) {
             NodeRef targetNodeRef = associationRef.getTargetRef();
@@ -305,8 +303,8 @@ public class HistoryUtils {
     public static void addUpdateChildAsscosResourseToTransaction(final Serializable resourceKey, final HistoryService historyService, final DictionaryService dictionaryService, final NodeService nodeService, final String nodeRefName) {
         TransactionUtils.doBeforeCommit("HistoryUtils.addUpdateChildAsscosResourseToTransaction", () -> {
 
-            List<ChildAssociationRef> added = new ArrayList<ChildAssociationRef>();
-            List<ChildAssociationRef> removed =  new ArrayList<ChildAssociationRef>();
+            List<ChildAssociationRef> added = new ArrayList<>();
+            List<ChildAssociationRef> removed = new ArrayList<>();
 
             if (AlfrescoTransactionSupport.getResource(CHILD_ASSOC_ADDED) != null) {
                 added.addAll(AlfrescoTransactionSupport.getResource(CHILD_ASSOC_ADDED));

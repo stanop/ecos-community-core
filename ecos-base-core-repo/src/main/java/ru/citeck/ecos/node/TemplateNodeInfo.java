@@ -35,90 +35,91 @@ import org.alfresco.service.namespace.QNameMap;
 
 public class TemplateNodeInfo implements NamespacePrefixResolverProvider
 {
-	private static final long serialVersionUID = -2633969468555475929L;
-	
-	private ServiceRegistry services;
-	private TemplateImageResolver imageResolver;
-	
-	private Map<String,Serializable> properties;
-	private Map<String,List<TemplateNode>> targetAssocs;
-	private Map<String,List<TemplateNode>> childAssocs;
-	
-	private PropertyConverter propertyConverter = new PropertyConverter();
-    
-	public TemplateNodeInfo(ServiceRegistry services, TemplateImageResolver imageResolver) {
-		this.services = services;
-		this.imageResolver = imageResolver;
-	}
-	
-    public TemplateNodeInfo(NodeInfo nodeInfo, ServiceRegistry services, TemplateImageResolver imageResolver) {
-    	this(services, imageResolver);
-    	
-    	// set information:
-    	this.setProperties(nodeInfo.getProperties());
-    	this.setTargetAssocs(nodeInfo.getTargetAssocs());
-    	this.setChildAssocs(nodeInfo.getChildAssocs());
+    private static final long serialVersionUID = -2633969468555475929L;
+
+    private ServiceRegistry services;
+    private TemplateImageResolver imageResolver;
+
+    private Map<String,Serializable> properties;
+    private Map<String,List<TemplateNode>> targetAssocs;
+    private Map<String,List<TemplateNode>> childAssocs;
+
+    private PropertyConverter propertyConverter = new PropertyConverter();
+
+    public TemplateNodeInfo(ServiceRegistry services, TemplateImageResolver imageResolver) {
+        this.services = services;
+        this.imageResolver = imageResolver;
     }
-    
-	@Override
-	public NamespacePrefixResolver getNamespacePrefixResolver() {
-		return this.services.getNamespaceService();
-	}
-	
-	public Map<String,Serializable> getProperties() {
-		return properties;
-	}
-	
-	public Map<String,List<TemplateNode>> getAssocs() {
-		return targetAssocs;
-	}
-	
-	public Map<String,List<TemplateNode>> getAssociations() {
-		return getAssocs();
-	}
-	
-	public Map<String,List<TemplateNode>> getChildAssocs() {
-		return childAssocs;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void setProperties(Map<QName,Serializable> props) {
-		if(props == null) {
-			this.properties = null;
-			return;
-		}
-		this.properties = new QNameMap<String,Serializable>(this);
-        for (QName qname : props.keySet())
-        {
+
+    public TemplateNodeInfo(NodeInfo nodeInfo, ServiceRegistry services, TemplateImageResolver imageResolver) {
+        this(services, imageResolver);
+
+        // set information:
+        this.setProperties(nodeInfo.getProperties());
+        this.setTargetAssocs(nodeInfo.getTargetAssocs());
+        this.setChildAssocs(nodeInfo.getChildAssocs());
+    }
+
+    @Override
+    public NamespacePrefixResolver getNamespacePrefixResolver() {
+        return this.services.getNamespaceService();
+    }
+
+    public Map<String,Serializable> getProperties() {
+        return properties;
+    }
+
+    public Map<String,List<TemplateNode>> getAssocs() {
+        return targetAssocs;
+    }
+
+    public Map<String,List<TemplateNode>> getAssociations() {
+        return getAssocs();
+    }
+
+    public Map<String,List<TemplateNode>> getChildAssocs() {
+        return childAssocs;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setProperties(Map<QName,Serializable> props) {
+        if (props == null) {
+            this.properties = null;
+            return;
+        }
+
+        this.properties = new QNameMap<String,Serializable>(this);
+        for (Map.Entry<QName, Serializable> propEntry : props.entrySet()) {
+            QName qname = propEntry.getKey();
             Serializable value = this.propertyConverter.convertProperty(
-                    props.get(qname), qname, this.services, imageResolver);
+                    propEntry.getValue(), qname, this.services, imageResolver);
             this.properties.put(qname.toString(), value);
         }
-	}
-	
-	public void setTargetAssocs(Map<QName,List<NodeRef>> assocs) {
-		this.targetAssocs = this.convertAssocMap(assocs);
-	}
-	
-	public void setChildAssocs(Map<QName,List<NodeRef>> assocs) {
-		this.childAssocs = this.convertAssocMap(assocs);
-	}
-	
-	@SuppressWarnings("unchecked")
-	private Map<String,List<TemplateNode>> convertAssocMap(Map<QName,List<NodeRef>> assocMap) {
-		if(assocMap == null) {
-			return null;
-		}
-		Map<String,List<TemplateNode>> templateAssocMap = new QNameMap<String,List<TemplateNode>>(this);
-		for (QName qname : assocMap.keySet())
-		{
-			List<NodeRef> nodes = assocMap.get(qname);
-			List<TemplateNode> templateNodes = new ArrayList<TemplateNode>(nodes.size());
-			for(NodeRef node : nodes) {
-				templateNodes.add(new TemplateNode(node, services, imageResolver));
-			}
-			templateAssocMap.put(qname.toString(), templateNodes);
-		}
-		return templateAssocMap;
-	}
+    }
+
+    public void setTargetAssocs(Map<QName,List<NodeRef>> assocs) {
+        this.targetAssocs = this.convertAssocMap(assocs);
+    }
+
+    public void setChildAssocs(Map<QName,List<NodeRef>> assocs) {
+        this.childAssocs = this.convertAssocMap(assocs);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String,List<TemplateNode>> convertAssocMap(Map<QName,List<NodeRef>> assocMap) {
+        if (assocMap == null) {
+            return null;
+        }
+        Map<String,List<TemplateNode>> templateAssocMap = new QNameMap<String,List<TemplateNode>>(this);
+        for (Map.Entry<QName, List<NodeRef>> entry : assocMap.entrySet()) {
+            QName qname = entry.getKey();
+            List<NodeRef> nodes = entry.getValue();
+            List<TemplateNode> templateNodes = new ArrayList<>(nodes.size());
+            for (NodeRef node : nodes) {
+                templateNodes.add(new TemplateNode(node, services, imageResolver));
+            }
+            templateAssocMap.put(qname.toString(), templateNodes);
+        }
+        return templateAssocMap;
+    }
 }

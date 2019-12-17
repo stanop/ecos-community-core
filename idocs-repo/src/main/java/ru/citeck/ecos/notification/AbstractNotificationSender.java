@@ -25,7 +25,6 @@ import org.alfresco.repo.security.authentication.AuthenticationUtil.RunAsWork;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
-import org.alfresco.util.transaction.TransactionListenerAdapter;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.notification.NotificationContext;
@@ -37,6 +36,7 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.transaction.TransactionService;
+import org.alfresco.util.transaction.TransactionListenerAdapter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.DmsModel;
@@ -180,20 +180,17 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
     }
 
     public void sendNotification(final ItemType item, final boolean afterCommit) {
-        AuthenticationUtil.runAsSystem(new RunAsWork<Void>() {
-            @Override
-            public Void doWork() throws Exception {
-                sendNotification(
-                        getNotificationProviderName(item),
-                        getNotificationFrom(item),
-                        getNotificationSubject(item),
-                        getNotificationTemplate(item),
-                        getNotificationArgs(item),
-                        getNotificationRecipients(item),
-                        afterCommit
-                );
-                return null;
-            }
+        AuthenticationUtil.runAsSystem((RunAsWork<Void>) () -> {
+            sendNotification(
+                    getNotificationProviderName(item),
+                    getNotificationFrom(item),
+                    getNotificationSubject(item),
+                    getNotificationTemplate(item),
+                    getNotificationArgs(item),
+                    getNotificationRecipients(item),
+                    afterCommit
+            );
+            return null;
         });
     }
 
@@ -431,15 +428,12 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
     }
 
     private void sendNotificationContext(final String notificationProviderName, final NotificationContext notificationContext) {
-        AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
-            @Override
-            public Object doWork() throws Exception {
-                services.getNotificationService().sendNotification(
-                        notificationProviderName,
-                        notificationContext
-                );
-                return null;
-            }
+        AuthenticationUtil.runAsSystem(() -> {
+            services.getNotificationService().sendNotification(
+                    notificationProviderName,
+                    notificationContext
+            );
+            return null;
         });
     }
 
@@ -452,18 +446,18 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
     }
 
     public Set<String> getRecipients(ItemType task, NodeRef template, NodeRef document) {
-        Set<String> authorities = new HashSet<String>();
+        Set<String> authorities = new HashSet<>();
         Boolean sendToAssigneeProp = isSendToAssignee(template);
-        if (sendToAssigneeProp != null && Boolean.TRUE.equals(sendToAssigneeProp)) {
+        if (Boolean.TRUE.equals(sendToAssigneeProp)) {
             sendToAssignee(task, authorities);
         }
         Boolean sendToInitiatorProp = isSendToInitiator(template);
-        if (sendToInitiatorProp != null && Boolean.TRUE.equals(sendToInitiatorProp)) {
+        if (Boolean.TRUE.equals(sendToInitiatorProp)) {
             sendToInitiator(task, authorities);
         }
         Boolean sendToOwnerProp = (Boolean) nodeService.getProperty(template,
                 qNameConverter.mapNameToQName("dms_sendToOwner"));
-        if (sendToOwnerProp != null && Boolean.TRUE.equals(sendToOwnerProp)
+        if (Boolean.TRUE.equals(sendToOwnerProp)
                 && document != null && nodeService.exists(document)) {
             sendToOwner(authorities, document);
         }
@@ -476,11 +470,10 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
                 qNameConverter.mapNameToQName("dms_additionRecipients"));
         if (additionRecipientsStr != null && !"".equals(additionRecipientsStr)) {
             String[] additionRecipientsArr = additionRecipientsStr.split(",");
-            ArrayList<String> additionRecipients = new ArrayList<String>(Arrays.asList(additionRecipientsArr));
+            ArrayList<String> additionRecipients = new ArrayList<>(Arrays.asList(additionRecipientsArr));
 
-            if (additionRecipients != null && additionRecipients.size() > 0) {
+            if (additionRecipients.size() > 0) {
                 authorities.addAll(additionRecipients);
-
             }
         }
         return authorities;

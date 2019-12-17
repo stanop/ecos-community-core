@@ -103,7 +103,7 @@ public class AddAssociationIndexProperties implements MethodBeforeAdvice {
     // process every property in class (type or aspect)
 	private void process(M2Class clazz, AcceptCriteria acceptCriteria, NamespacePrefixResolver nsPrefixResolver) {
 		// find all index properties
-		Set<String> definedProperties = new HashSet<String>();
+		Set<String> definedProperties = new HashSet<>();
 		for(M2Property prop : clazz.getProperties()) {
 			definedProperties.add(prop.getName());
 		}

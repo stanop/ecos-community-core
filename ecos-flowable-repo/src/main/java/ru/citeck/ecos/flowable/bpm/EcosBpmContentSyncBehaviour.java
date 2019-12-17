@@ -21,7 +21,6 @@ import org.flowable.bpmn.model.Process;
 import org.flowable.bpmn.model.StartEvent;
 import org.flowable.editor.language.json.converter.BpmnJsonConverter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.Format;
 import ru.citeck.ecos.behavior.base.AbstractBehaviour;
 import ru.citeck.ecos.behavior.base.PolicyMethod;

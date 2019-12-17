@@ -43,7 +43,6 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
     public static final String ARG_WORKFLOW_PROPERTIES = "properties";
     public static final String ARG_WORKFLOW_DOCUMENTS = "documents";
 
-    private Map<String, Map<String, List<String>>> taskSubscribers;
     protected WorkflowQNameConverter qNameConverter;
     protected PersonService personService;
     protected AuthenticationService authenticationService;
@@ -68,13 +67,14 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
     /**
      * Recipients provided as parameter taskSubscribers: "task name"-{"doc type1"-"recepient field1", ...}
      */
+    @Deprecated
     public void setTaskSubscribers(Map<String, Map<String, List<String>>> taskSubscribers) {
-        this.taskSubscribers = taskSubscribers;
+        // not used
     }
 
     // get notification template arguments for the task
     protected Map<String, Serializable> getNotificationArgs(ExecutionEntity task) {
-        Map<String, Serializable> args = new HashMap<String, Serializable>();
+        Map<String, Serializable> args = new HashMap<>();
         //args.put(ARG_TASK, getTaskInfo(task));
         args.put(ARG_WORKFLOW, getWorkflowInfo(task));
         String userName = authenticationService.getCurrentUserName();
@@ -86,9 +86,9 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
     }
 
     private Serializable getWorkflowInfo(ExecutionEntity task) {
-        HashMap<String, Object> workflowInfo = new HashMap<String, Object>();
+        HashMap<String, Object> workflowInfo = new HashMap<>();
         workflowInfo.put(ARG_WORKFLOW_ID, task.getId());
-        HashMap<String, Serializable> properties = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> properties = new HashMap<>();
         workflowInfo.put(ARG_WORKFLOW_PROPERTIES, properties);
         for (Map.Entry<String, Object> entry : task.getVariables().entrySet()) {
             if (entry.getValue() != null) {
@@ -110,12 +110,11 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
     public void sendNotification(ExecutionEntity task) {
         String subject = null;
         NodeRef workflowPackage = null;
-        Vector<String> recipient = new Vector<String>();
+        Vector<String> recipient = new Vector<>();
         workflowPackage = (NodeRef) task.getVariable("bpm_package");
         if (workflowPackage != null && nodeService.exists(workflowPackage)) {
             List<ChildAssociationRef> children = services.getNodeService().getChildAssocs(workflowPackage);
             for (ChildAssociationRef child : children) {
-                recipient.clear();
                 NodeRef node = child.getChildRef();
                 if (node != null && nodeService.exists(node)) {
                     if (allowDocList == null) {
@@ -134,15 +133,14 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
                 NodeRef template = getNotificationTemplate(task);
                 if (template != null && nodeService.exists(template)) {
                     recipient.addAll(getRecipients(task, template, getDocsInfo()));
-                    String from = null;
                     String notificationProviderName = EMailNotificationProvider.NAME;
                     if (subjectTemplates != null) {
                         String processDef = task.getProcessDefinitionId();
-                        String wfkey = FlowableConstants.ENGINE_PREFIX + processDef.substring(0, processDef.indexOf(":"));
+                        String wfkey = FlowableConstants.ENGINE_PREFIX + processDef.substring(0, processDef.indexOf(':'));
                         if (subjectTemplates.containsKey(wfkey)) {
                             Map<String, String> taskSubjectTemplate = subjectTemplates.get(wfkey);
                             if (taskSubjectTemplate.containsKey(qNameConverter.mapQNameToName(nodeService.getType(getDocsInfo())))) {
-                                HashMap<String, Object> model = new HashMap<String, Object>(1);
+                                HashMap<String, Object> model = new HashMap<>(1);
                                 model.put(nodeVariable, getDocsInfo());
                                 subject = templateService.processTemplateString(templateEngine, taskSubjectTemplate.get(qNameConverter.mapQNameToName(nodeService.getType(getDocsInfo()))), model);
                             }
@@ -159,9 +157,6 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
                     setBodyTemplate(notificationContext, template);
                     notificationContext.setTemplateArgs(getNotificationArgs(task));
                     notificationContext.setAsyncNotification(getAsyncNotification());
-                    if (null != from) {
-                        notificationContext.setFrom(from);
-                    }
                     // send
                     logger.debug("Send notification");
                     services.getNotificationService().sendNotification(notificationProviderName, notificationContext);
@@ -173,7 +168,7 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
 
     public NodeRef getNotificationTemplate(ExecutionEntity task) {
         String processDef = task.getProcessDefinitionId();
-        String wfkey = FlowableConstants.ENGINE_PREFIX + processDef.substring(0, processDef.indexOf(":"));
+        String wfkey = FlowableConstants.ENGINE_PREFIX + processDef.substring(0, processDef.indexOf(':'));
         String tkey = (String) task.getVariableLocal("taskFormKey");
         logger.debug("template for notification " + getNotificationTemplate(wfkey, tkey));
         return getNotificationTemplate(wfkey, tkey, nodeService.getType(getDocsInfo()));

@@ -21,6 +21,7 @@ package ru.citeck.ecos.lifecycle;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.supercsv.cellprocessor.Optional;
@@ -55,7 +56,7 @@ public class LifeCycleCSVFormat extends LifeCycleAbstractFormat {
     @Override
     public LifeCycleDefinition parseLifeCycleDefinition(InputStream lifeCycleDefinitionStream) throws IOException {
 
-        try (InputStreamReader reader = new InputStreamReader(lifeCycleDefinitionStream, "UTF-8")) {
+        try (InputStreamReader reader = new InputStreamReader(lifeCycleDefinitionStream, StandardCharsets.UTF_8)) {
 
             ICsvMapReader mapReader = null;
 

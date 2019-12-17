@@ -331,16 +331,14 @@ class InvariantsFilter {
 
                     QName attributeScope;
                     switch (scope.getAttributeScopeKind()) {
-                        case ASSOCIATION:
-                        case PROPERTY:
-                        case CHILD_ASSOCIATION:
-                            attributeScope = attribute.getFirst();
-                            break;
                         case ASSOCIATION_TYPE:
                         case PROPERTY_TYPE:
                         case CHILD_ASSOCIATION_TYPE:
                             attributeScope = attribute.getSecond();
                             break;
+                        case ASSOCIATION:
+                        case PROPERTY:
+                        case CHILD_ASSOCIATION:
                         default:
                             attributeScope = attribute.getFirst();
                     }

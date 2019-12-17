@@ -33,118 +33,116 @@ import java.util.List;
 public class AvailabilityServiceImpl implements AvailabilityService
 {
 
-	private AuthenticationService authenticationService;
-	private NodeService nodeService;
-	private AuthorityHelper authorityHelper;
-	private SearchService searchService;
+    private AuthenticationService authenticationService;
+    private NodeService nodeService;
+    private AuthorityHelper authorityHelper;
+    private SearchService searchService;
 
-	/////////////////////////////////////////////////////////////////
-	//                      SPRING INTERFACE                       //
-	/////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////
+    //                      SPRING INTERFACE                       //
+    /////////////////////////////////////////////////////////////////
 
-	public void setAuthenticationService(AuthenticationService authenticationService) {
-		this.authenticationService = authenticationService;
-	}
+    public void setAuthenticationService(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
 
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 
-	public void setAuthorityHelper(AuthorityHelper authorityHelper) {
-		this.authorityHelper = authorityHelper;
-	}
+    public void setAuthorityHelper(AuthorityHelper authorityHelper) {
+        this.authorityHelper = authorityHelper;
+    }
 
-	public void setSearchService(SearchService searchService) {
-		this.searchService = searchService;
-	}
+    public void setSearchService(SearchService searchService) {
+        this.searchService = searchService;
+    }
 
-	/////////////////////////////////////////////////////////////////
-	//                       ADMIN INTERFACE                       //
-	/////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////
+    //                       ADMIN INTERFACE                       //
+    /////////////////////////////////////////////////////////////////
 
-	@Override
-	public boolean getUserAvailability(String userName) {
-		NodeRef person = authorityHelper.needUser(userName);
-		if (person == null) {
-			throw new IllegalArgumentException("No such user: " + userName);
-		}
-		return getUserAvailability(person);
-	}
+    @Override
+    public boolean getUserAvailability(String userName) {
+        NodeRef person = authorityHelper.needUser(userName);
+        if (person == null) {
+            throw new IllegalArgumentException("No such user: " + userName);
+        }
+        return getUserAvailability(person);
+    }
 
-	@Override
-	public boolean getUserAvailability(NodeRef userRef) {
-		Boolean available = (Boolean) nodeService.getProperty(userRef, DeputyModel.PROP_AVAILABLE);
-		// user is available by default
-		return !Boolean.FALSE.equals(available);
-	}
+    @Override
+    public boolean getUserAvailability(NodeRef userRef) {
+        Boolean available = (Boolean) nodeService.getProperty(userRef, DeputyModel.PROP_AVAILABLE);
+        // user is available by default
+        return !Boolean.FALSE.equals(available);
+    }
 
-	public String getUserUnavailableAutoAnswer(String userName) {
-		if (!getUserAvailability(userName)) {
-			List<NodeRef> events = getUserAbsenceEvents(userName).getNodeRefs();
-			if (events.isEmpty()) return null;
+    public String getUserUnavailableAutoAnswer(String userName) {
+        if (!getUserAvailability(userName)) {
+            List<NodeRef> events = getUserAbsenceEvents(userName).getNodeRefs();
+            if (events.isEmpty()) {
+                return null;
+            }
 
-			String autoAnswer = (String) nodeService.getProperty(events.get(0), DeputyModel.PROP_AUTO_ANSWER);
-			return autoAnswer != null ? autoAnswer : "";
-		}
-		return null;
-	}
+            String autoAnswer = (String) nodeService.getProperty(events.get(0), DeputyModel.PROP_AUTO_ANSWER);
+            return autoAnswer != null ? autoAnswer : "";
+        }
+        return null;
+    }
 
-	private ResultSet getUserAbsenceEvents(String userName) {
-		NodeRef person = authorityHelper.needUser(userName);
-		if(person == null) {
-			throw new IllegalArgumentException("No such user: " + userName);
-		}
-		String query = "TYPE:\"deputy:selfAbsenceEvent\"" +
-				" AND (@deputy\\:endAbsence:{NOW TO MAX} OR ISNULL:\"deputy:endAbsence\")" +
-				" AND @deputy\\:eventFinished:false" +
-				" AND @deputy\\:user_added:\"" + person.toString() +
-				"\"";
-		final SearchParameters searchParameters = new SearchParameters();
-		searchParameters.setLanguage(SearchService.LANGUAGE_LUCENE);
-		searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
-		searchParameters.addSort(new SearchParameters.SortDefinition(SearchParameters.SortDefinition.SortType.FIELD, "startAbsence", false));
-		searchParameters.setQuery(query);
-		return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<ResultSet>() {
-			@Override
-			public ResultSet doWork() throws Exception {
-				return searchService.query(searchParameters);
-			}});
-	}
+    private ResultSet getUserAbsenceEvents(String userName) {
+        NodeRef person = authorityHelper.needUser(userName);
+        if(person == null) {
+            throw new IllegalArgumentException("No such user: " + userName);
+        }
+        String query = "TYPE:\"deputy:selfAbsenceEvent\"" +
+                " AND (@deputy\\:endAbsence:{NOW TO MAX} OR ISNULL:\"deputy:endAbsence\")" +
+                " AND @deputy\\:eventFinished:false" +
+                " AND @deputy\\:user_added:\"" + person.toString() +
+                "\"";
+        final SearchParameters searchParameters = new SearchParameters();
+        searchParameters.setLanguage(SearchService.LANGUAGE_LUCENE);
+        searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+        searchParameters.addSort(new SearchParameters.SortDefinition(SearchParameters.SortDefinition.SortType.FIELD, "startAbsence", false));
+        searchParameters.setQuery(query);
+        return AuthenticationUtil.runAsSystem(() -> searchService.query(searchParameters));
+    }
 
 
 
-	@Override
-	public void setUserAvailability(String userName, boolean availability) {
-		NodeRef person = authorityHelper.needUser(userName);
-		setUserAvailability(person, availability);
-		// note: deputy listener, related to availability change, should be called via behaviour mechanism
-	}
+    @Override
+    public void setUserAvailability(String userName, boolean availability) {
+        NodeRef person = authorityHelper.needUser(userName);
+        setUserAvailability(person, availability);
+        // note: deputy listener, related to availability change, should be called via behaviour mechanism
+    }
 
-	@Override
-	public void setUserAvailability(NodeRef user, boolean availability) {
-		nodeService.setProperty(user, DeputyModel.PROP_AVAILABLE, availability);
-	}
+    @Override
+    public void setUserAvailability(NodeRef user, boolean availability) {
+        nodeService.setProperty(user, DeputyModel.PROP_AVAILABLE, availability);
+    }
 
-	/////////////////////////////////////////////////////////////////
-	//                  CURRENT USER INTERFACE                     //
-	/////////////////////////////////////////////////////////////////
-	
-	@Override
-	public boolean getCurrentUserAvailability() {
-		return 	getUserAvailability(getCurrentUserName());
-	}
+    /////////////////////////////////////////////////////////////////
+    //                  CURRENT USER INTERFACE                     //
+    /////////////////////////////////////////////////////////////////
 
-	@Override
-	public void setCurrentUserAvailability(boolean availability) {
-		setUserAvailability(getCurrentUserName(), availability);
-	}
+    @Override
+    public boolean getCurrentUserAvailability() {
+        return 	getUserAvailability(getCurrentUserName());
+    }
 
-	/////////////////////////////////////////////////////////////////
-	//                       PRIVATE STUFF                         //
-	/////////////////////////////////////////////////////////////////
-	
-	private String getCurrentUserName() {
-		return authenticationService.getCurrentUserName();
-	}
-	
+    @Override
+    public void setCurrentUserAvailability(boolean availability) {
+        setUserAvailability(getCurrentUserName(), availability);
+    }
+
+    /////////////////////////////////////////////////////////////////
+    //                       PRIVATE STUFF                         //
+    /////////////////////////////////////////////////////////////////
+
+    private String getCurrentUserName() {
+        return authenticationService.getCurrentUserName();
+    }
+
 }

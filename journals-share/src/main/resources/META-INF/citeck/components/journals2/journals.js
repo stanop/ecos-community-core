@@ -20,11 +20,12 @@ define([
     'lib/knockout',
     'citeck/utils/knockout.utils',
     'ecosui!menu-api',
+    'ecosui!user-in-groups-list-helper',
     'underscore',
     'citeck/components/invariants/invariants',
     'citeck/components/dynamic-tree/cell-formatters',
     'citeck/components/dynamic-tree/action-renderer'
-], function(ko, koutils, MenuApi, _) {
+], function(ko, koutils, MenuApi, checkFunctionalAvailabilityHelper, _) {
 
     if (!Citeck) Citeck = {};
     if (!Citeck.constants) Citeck.constants = {};
@@ -1469,42 +1470,6 @@ JournalsWidget
     .property('newJournalsPageEnable', b)
 
     .computed('fullscreenLink', function() {
-        var isCurrentUserInGroup = function isCurrentUserInGroup(group) {
-            var currentPersonName = Alfresco.constants.USERNAME;
-            return Citeck.Records.queryOne({
-                "query": 'TYPE:"cm:authority" AND =cm:authorityName:"' + group + '"',
-                "language": "fts-alfresco"
-            }, 'cm:member[].cm:userName').then(function (usernames) {
-                return (usernames || []).indexOf(currentPersonName) != -1
-            });
-        }
-        var checkJournalsAvailability = function isShouldDisplayJournals() {
-            return Citeck.Records.get("ecos-config@default-ui-left-menu-access-groups")
-                .load(".str").then(function(groupsInOneString) {
-
-                    if (!groupsInOneString) {
-                        return false;
-                    }
-
-                    var groups = groupsInOneString.split(',');
-                    var results = [];
-                    for(var groupsCounter = 0; groupsCounter < groups.length; ++groupsCounter) {
-                        results.push(isCurrentUserInGroup.call(this, groups[groupsCounter]));
-                    }
-                    return Promise.all(results).then(function (values) {
-                        return values.indexOf(false) == -1;
-                    });
-                });
-        };
-        var checkJournalsAvailabilityForUser = function isShouldDisplayJournalForUser() {
-            return Citeck.Records.get("ecos-config@default-ui-main-menu").load(".str").then(function(result) {
-                if (result == "left") {
-                    return checkJournalsAvailability.call(this);
-                }
-                return false;
-            });
-        };
-
         var self = this;
         var newJournalsPageEnable = this.newJournalsPageEnable();
         
@@ -1542,11 +1507,14 @@ JournalsWidget
             self.newJournalsPageEnable(false);
 
             var isNewJournalsPageEnable = Citeck.Records.get('ecos-config@new-journals-page-enable').load('.bool');
-            var isJournalAvailibleForUser = checkJournalsAvailabilityForUser.call(this);
+            var isJournalAvailibleForUser = checkFunctionalAvailabilityHelper
+                .checkFunctionalAvailabilityForUser("default-ui-new-journals-access-groups");
 
-            Promise.all([isNewJournalsPageEnable, isJournalAvailibleForUser]).then(function (values) {
-                self.newJournalsPageEnable(values[0] || values[1]);
-            }).catch(function(){});
+            Promise.all([isNewJournalsPageEnable, isJournalAvailibleForUser])
+                .then(function (values) {
+                    self.newJournalsPageEnable(values.includes(true));
+                })
+                .catch(function () {});
         } else if (newJournalsPageEnable === true) {
             link = menuApi.getNewJournalPageUrl({
                 listId: journalsList.id(),

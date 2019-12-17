@@ -72,7 +72,7 @@ public abstract class TCmmnElementWithMixedContent {
     @XmlSchemaType(name = "ID")
     protected String id;
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * 
@@ -104,7 +104,7 @@ public abstract class TCmmnElementWithMixedContent {
      */
     public List<Serializable> getContent() {
         if (content == null) {
-            content = new ArrayList<Serializable>();
+            content = new ArrayList<>();
         }
         return this.content;
     }

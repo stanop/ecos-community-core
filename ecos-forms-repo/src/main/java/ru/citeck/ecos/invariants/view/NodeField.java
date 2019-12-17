@@ -283,8 +283,7 @@ public final class NodeField extends NodeViewElement {
         private QName getAttributeScope() {
             return attribute != null ? attribute
                  : datatype != null ? datatype
-                 : nodetype != null ? nodetype
-                 : null;
+                 : nodetype;
         }
         
         private AttributeScopeKind getAttributeScopeKind() {

@@ -24,6 +24,7 @@ import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -50,7 +51,6 @@ import org.alfresco.service.cmr.action.ActionService;
 import org.alfresco.service.cmr.action.ParameterDefinition;
 import org.alfresco.service.cmr.action.ParameterizedItemDefinition;
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.ContentData;
 import org.alfresco.service.cmr.repository.ContentReader;
@@ -100,31 +100,31 @@ public class LifeCycleServiceImpl implements LifeCycleService {
 
     ContentService contentService;
 
-    private Map<String, LifeCycleFormat> formats = new TreeMap<String, LifeCycleFormat>();
+    private Map<String, LifeCycleFormat> formats = new TreeMap<>();
 
-    private Map<QName, LifeCycleDefinition> definitions = new HashMap<QName, LifeCycleDefinition>();
+    private Map<QName, LifeCycleDefinition> definitions = new HashMap<>();
 
-    private Map<QName, NodeRef> deployedRepoDefinitions = new HashMap<QName, NodeRef>();
+    private Map<QName, NodeRef> deployedRepoDefinitions = new HashMap<>();
 
     @Override
     public boolean doTransition(NodeRef nodeRef, String eventType) {
-        Set<String> filters = new HashSet<String>();
+        Set<String> filters = new HashSet<>();
         filters.add(eventType);
 
         List<LifeCycleTransition> transitions = getTransitionsByEventTypesAndTrueConditions(nodeRef, filters);
         LifeCycleTransition transition = chooseRightTransition(nodeRef, transitions);
 
         if (transition != null) {
-        	String fromState = (String) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_STATE);
+            String fromState = (String) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_STATE);
             String toState = transition.getToState();
 
-        	List<LifeCycleState> fromStateDefs = getStateDefsByStateIdEventTypes(nodeRef, fromState, filters);
-        	List<LifeCycleState> toStateDefs = getStateDefsByStateIdEventTypes(nodeRef, toState, filters);
+            List<LifeCycleState> fromStateDefs = getStateDefsByStateIdEventTypes(nodeRef, fromState, filters);
+            List<LifeCycleState> toStateDefs = getStateDefsByStateIdEventTypes(nodeRef, toState, filters);
 
-        	LifeCycleState fromStateDef = chooseAppropriateStateDef(fromStateDefs, null, null, "string", nodeRef);
-        	LifeCycleState toStateDef = chooseAppropriateStateDef(toStateDefs, null, null, "string", nodeRef);
+            LifeCycleState fromStateDef = chooseAppropriateStateDef(fromStateDefs, null, null, "string", nodeRef);
+            LifeCycleState toStateDef = chooseAppropriateStateDef(toStateDefs, null, null, "string", nodeRef);
 
-        	return doTransition(nodeRef, transition, fromStateDef, toStateDef);
+            return doTransition(nodeRef, transition, fromStateDef, toStateDef);
         }
 
         return false;
@@ -132,7 +132,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
 
     @Override
     public boolean doTransition(final NodeRef nodeRef, final LifeCycleTransition transition,
-    		final LifeCycleState fromStateDef, final LifeCycleState toStateDef) {
+            final LifeCycleState fromStateDef, final LifeCycleState toStateDef) {
         return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Boolean>() {
             @Override
             public Boolean doWork() throws Exception {
@@ -144,25 +144,25 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                 }
 
                 if (fromState != null && toState != null) {
-                	// execute end actions for old state
-                	if (fromStateDef != null) {
-	                	for (LifeCycleAction action : fromStateDef.getEndActionList()) {
-	                    	performAction(nodeRef, action);
-	                    }
-                	}
+                    // execute end actions for old state
+                    if (fromStateDef != null) {
+                        for (LifeCycleAction action : fromStateDef.getEndActionList()) {
+                            performAction(nodeRef, action);
+                        }
+                    }
 
-                	// execute transition actions
+                    // execute transition actions
                     for (LifeCycleAction action : transition.getActionList()) {
-                    	performAction(nodeRef, action);
+                        performAction(nodeRef, action);
                     }
 
                     nodeService.setProperty(nodeRef, LifeCycleModel.PROP_STATE, toState);
 
                     // execute start actions for new state
                     if (toStateDef != null) {
-	                	for (LifeCycleAction action : toStateDef.getStartActionList()) {
-	                    	performAction(nodeRef, action);
-	                    }
+                        for (LifeCycleAction action : toStateDef.getStartActionList()) {
+                            performAction(nodeRef, action);
+                        }
                     }
 
                     // do automatic transition if exists
@@ -182,41 +182,41 @@ public class LifeCycleServiceImpl implements LifeCycleService {
     }
 
     private boolean doTransitionOnProcess(final NodeRef nodeRef, final String processType, final Map<String, Object> model,
-    		final String processEvent) {
+            final String processEvent) {
 
-    	AlfrescoTransactionSupport.bindResource(PROCESS_VARS, model);
+        AlfrescoTransactionSupport.bindResource(PROCESS_VARS, model);
 
         try {
             return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Boolean>() {
                 @Override
                 public Boolean doWork() throws Exception {
-                    Set<String> filters = new HashSet<String>();
+                    Set<String> filters = new HashSet<>();
                     filters.add(processEvent);
 
                     List<LifeCycleTransition> transitionsForType = getTransitionsByEventTypesAndTrueConditions(nodeRef, filters);
 
-                    List<LifeCycleTransition> transitionsForProcess = new ArrayList<LifeCycleTransition>();
+                    List<LifeCycleTransition> transitionsForProcess = new ArrayList<>();
 
                     if (processType != null) {
-	                    for (LifeCycleTransition transition : transitionsForType) {
-	                    	if (processType.equals(transition.getEvent().getEventParam(WORKFLOW_ID)))
-	                            transitionsForProcess.add(transition);
-	                    }
+                        for (LifeCycleTransition transition : transitionsForType) {
+                            if (processType.equals(transition.getEvent().getEventParam(WORKFLOW_ID)))
+                                transitionsForProcess.add(transition);
+                        }
 
-	                    LifeCycleTransition transition = chooseRightTransition(nodeRef, transitionsForProcess);
+                        LifeCycleTransition transition = chooseRightTransition(nodeRef, transitionsForProcess);
 
-	                    if (transition != null) {
-	                    	String fromState = (String) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_STATE); // due to possible * in transition def
-	                        String toState = transition.getToState();
+                        if (transition != null) {
+                            String fromState = (String) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_STATE); // due to possible * in transition def
+                            String toState = transition.getToState();
 
-	                    	List<LifeCycleState> fromStateDefs = getStateDefsByStateIdEventTypes(nodeRef, fromState, filters);
-	                    	List<LifeCycleState> toStateDefs = getStateDefsByStateIdEventTypes(nodeRef, toState, filters);
+                            List<LifeCycleState> fromStateDefs = getStateDefsByStateIdEventTypes(nodeRef, fromState, filters);
+                            List<LifeCycleState> toStateDefs = getStateDefsByStateIdEventTypes(nodeRef, toState, filters);
 
-	                    	LifeCycleState fromStateDef = chooseAppropriateStateDef(fromStateDefs, WORKFLOW_ID, processType, "string", nodeRef);
-	                    	LifeCycleState toStateDef = chooseAppropriateStateDef(toStateDefs, WORKFLOW_ID, processType, "string", nodeRef);
+                            LifeCycleState fromStateDef = chooseAppropriateStateDef(fromStateDefs, WORKFLOW_ID, processType, "string", nodeRef);
+                            LifeCycleState toStateDef = chooseAppropriateStateDef(toStateDefs, WORKFLOW_ID, processType, "string", nodeRef);
 
-	                    	return doTransition(nodeRef, transition, fromStateDef, toStateDef);
-	                    }
+                            return doTransition(nodeRef, transition, fromStateDef, toStateDef);
+                        }
                     }
 
                     return false;
@@ -234,44 +234,44 @@ public class LifeCycleServiceImpl implements LifeCycleService {
 
     @Override
     public boolean doTransitionOnEndProcess(final NodeRef nodeRef, final String processType, final Map<String, Object> model) {
-    	return doTransitionOnProcess(nodeRef, processType, model, LifeCycleModel.CONSTR_TRANSITION_ON_END_PROCESS);
+        return doTransitionOnProcess(nodeRef, processType, model, LifeCycleModel.CONSTR_TRANSITION_ON_END_PROCESS);
     }
 
     @Override
     public boolean doTransitionOnSignal(final NodeRef nodeRef, final String signalId, final Map<String, Object> model) {
-    	AlfrescoTransactionSupport.bindResource(PROCESS_VARS, model);
+        AlfrescoTransactionSupport.bindResource(PROCESS_VARS, model);
 
         try {
             return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Boolean>() {
                 @Override
                 public Boolean doWork() throws Exception {
-                    Set<String> filters = new HashSet<String>();
+                    Set<String> filters = new HashSet<>();
                     filters.add(LifeCycleModel.CONSTR_TRANSITION_ON_SIGNAL);
 
                     List<LifeCycleTransition> transitionsForType = getTransitionsByEventTypesAndTrueConditions(nodeRef, filters);
 
-                    List<LifeCycleTransition> transitionsForSignal = new ArrayList<LifeCycleTransition>();
+                    List<LifeCycleTransition> transitionsForSignal = new ArrayList<>();
 
                     if (signalId != null) {
-	                    for (LifeCycleTransition transition : transitionsForType) {
-	                    	if (signalId.equals(transition.getEvent().getEventParam(SIGNAL_ID)))
-	                            transitionsForSignal.add(transition);
-	                    }
+                        for (LifeCycleTransition transition : transitionsForType) {
+                            if (signalId.equals(transition.getEvent().getEventParam(SIGNAL_ID)))
+                                transitionsForSignal.add(transition);
+                        }
 
-	                    LifeCycleTransition transition = chooseRightTransition(nodeRef, transitionsForSignal);
+                        LifeCycleTransition transition = chooseRightTransition(nodeRef, transitionsForSignal);
 
-	                    if (transition != null) {
-	                    	String fromState = (String) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_STATE); // due to possible * in transition def
-	                        String toState = transition.getToState();
+                        if (transition != null) {
+                            String fromState = (String) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_STATE); // due to possible * in transition def
+                            String toState = transition.getToState();
 
-	                    	List<LifeCycleState> fromStateDefs = getStateDefsByStateIdEventTypes(nodeRef, fromState, filters);
-	                    	List<LifeCycleState> toStateDefs = getStateDefsByStateIdEventTypes(nodeRef, toState, filters);
+                            List<LifeCycleState> fromStateDefs = getStateDefsByStateIdEventTypes(nodeRef, fromState, filters);
+                            List<LifeCycleState> toStateDefs = getStateDefsByStateIdEventTypes(nodeRef, toState, filters);
 
-	                    	LifeCycleState fromStateDef = chooseAppropriateStateDef(fromStateDefs, SIGNAL_ID, signalId, "string", nodeRef);
-	                    	LifeCycleState toStateDef = chooseAppropriateStateDef(toStateDefs, SIGNAL_ID, signalId, "string", nodeRef);
+                            LifeCycleState fromStateDef = chooseAppropriateStateDef(fromStateDefs, SIGNAL_ID, signalId, "string", nodeRef);
+                            LifeCycleState toStateDef = chooseAppropriateStateDef(toStateDefs, SIGNAL_ID, signalId, "string", nodeRef);
 
-	                    	return doTransition(nodeRef, transition, fromStateDef, toStateDef);
-	                    }
+                            return doTransition(nodeRef, transition, fromStateDef, toStateDef);
+                        }
                     }
 
                     return false;
@@ -287,62 +287,62 @@ public class LifeCycleServiceImpl implements LifeCycleService {
         return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Boolean>() {
             @Override
             public Boolean doWork() throws Exception {
-		        Set<String> filters = new HashSet<String>();
-		        filters.add(LifeCycleModel.CONSTR_TIMER_TRANSITION);
+                Set<String> filters = new HashSet<>();
+                filters.add(LifeCycleModel.CONSTR_TIMER_TRANSITION);
 
-		        if (getTransitionsByDocStateEventTypes(nodeRef, filters).size() > 0)
-		            nodeService.addAspect(nodeRef, LifeCycleModel.ASPECT_HAS_TIMER, new HashMap<QName, Serializable>());
+                if (getTransitionsByDocStateEventTypes(nodeRef, filters).size() > 0)
+                    nodeService.addAspect(nodeRef, LifeCycleModel.ASPECT_HAS_TIMER, new HashMap<>());
 
-		        List<LifeCycleTransition> transitionsForType = getTransitionsByEventTypesAndTrueConditions(nodeRef, filters);
+                List<LifeCycleTransition> transitionsForType = getTransitionsByEventTypesAndTrueConditions(nodeRef, filters);
 
-		        List<LifeCycleTransition> transitionsWhenTimeElapsed = new ArrayList<LifeCycleTransition>();
+                List<LifeCycleTransition> transitionsWhenTimeElapsed = new ArrayList<>();
 
-		        for (LifeCycleTransition transition : transitionsForType) {
-		            try {
-		                String expression = transition.getEvent().getEventParam(DATE_TIME_EXPRESSION);
-		                Date eventDateTime = (Date) doJS(nodeRef, expression);
+                for (LifeCycleTransition transition : transitionsForType) {
+                    try {
+                        String expression = transition.getEvent().getEventParam(DATE_TIME_EXPRESSION);
+                        Date eventDateTime = (Date) doJS(nodeRef, expression);
 
-		                if (eventDateTime != null) {
-			                if (eventDateTime.getTime() <= (Calendar.getInstance().getTime().getTime()))
-			                    transitionsWhenTimeElapsed.add(transition);
+                        if (eventDateTime != null) {
+                            if (eventDateTime.getTime() <= (Calendar.getInstance().getTime().getTime()))
+                                transitionsWhenTimeElapsed.add(transition);
 
-			                Date docDateTime = (Date) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_EVENT_TIME);
+                            Date docDateTime = (Date) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_EVENT_TIME);
 
-			                if (docDateTime == null || eventDateTime.getTime() < docDateTime.getTime())
-			                    nodeService.setProperty(nodeRef, LifeCycleModel.PROP_EVENT_TIME, eventDateTime.getTime());
-		                }
-		            } catch (ClassCastException e) {
-		                logger.error("Can't cast to Date", e);
-		            }
-		        }
-
-		        LifeCycleTransition transition = chooseRightTransition(nodeRef, transitionsWhenTimeElapsed);
-		        boolean result = false;
-
-		        if (transition != null) {
-                	String fromState = (String) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_STATE); // due to possible * in transition def
-                    String toState = transition.getToState();
-
-                	List<LifeCycleState> fromStateDefs = getStateDefsByStateIdEventTypes(nodeRef, fromState, filters);
-                	List<LifeCycleState> toStateDefs = getStateDefsByStateIdEventTypes(nodeRef, toState, filters);
-
-                	Date now = Calendar.getInstance().getTime();
-                	LifeCycleState fromStateDef = chooseAppropriateStateDef(fromStateDefs, DATE_TIME_EXPRESSION, now, "dateTimeLE", nodeRef);
-                	LifeCycleState toStateDef = chooseAppropriateStateDef(toStateDefs, DATE_TIME_EXPRESSION, now, "dateTimeLE", nodeRef);
-
-                	result = doTransition(nodeRef, transition, fromStateDef, toStateDef);
+                            if (docDateTime == null || eventDateTime.getTime() < docDateTime.getTime())
+                                nodeService.setProperty(nodeRef, LifeCycleModel.PROP_EVENT_TIME, eventDateTime.getTime());
+                        }
+                    } catch (ClassCastException e) {
+                        logger.error("Can't cast to Date", e);
+                    }
                 }
 
-		        if (result)
-		            nodeService.removeAspect(nodeRef, LifeCycleModel.ASPECT_HAS_TIMER);
+                LifeCycleTransition transition = chooseRightTransition(nodeRef, transitionsWhenTimeElapsed);
+                boolean result = false;
 
-		        return result;
+                if (transition != null) {
+                    String fromState = (String) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_STATE); // due to possible * in transition def
+                    String toState = transition.getToState();
+
+                    List<LifeCycleState> fromStateDefs = getStateDefsByStateIdEventTypes(nodeRef, fromState, filters);
+                    List<LifeCycleState> toStateDefs = getStateDefsByStateIdEventTypes(nodeRef, toState, filters);
+
+                    Date now = Calendar.getInstance().getTime();
+                    LifeCycleState fromStateDef = chooseAppropriateStateDef(fromStateDefs, DATE_TIME_EXPRESSION, now, "dateTimeLE", nodeRef);
+                    LifeCycleState toStateDef = chooseAppropriateStateDef(toStateDefs, DATE_TIME_EXPRESSION, now, "dateTimeLE", nodeRef);
+
+                    result = doTransition(nodeRef, transition, fromStateDef, toStateDef);
+                }
+
+                if (result)
+                    nodeService.removeAspect(nodeRef, LifeCycleModel.ASPECT_HAS_TIMER);
+
+                return result;
             }
         });
     }
 
     private LifeCycleTransition chooseRightTransition(NodeRef nodeRef, List<LifeCycleTransition> transitions) {
-        List<LifeCycleTransition> possibleTransitions = new ArrayList<LifeCycleTransition>();
+        List<LifeCycleTransition> possibleTransitions = new ArrayList<>();
 
         for (LifeCycleTransition transition : transitions) {
             if (checkConditions(nodeRef, transition))
@@ -355,13 +355,13 @@ public class LifeCycleServiceImpl implements LifeCycleService {
             return possibleTransitions.get(0);
         } else {
             for (LifeCycleTransition possibleTransition : possibleTransitions) {
-            	List<LifeCycleCondition> conditions = possibleTransition.getConditionList();
+                List<LifeCycleCondition> conditions = possibleTransition.getConditionList();
 
-        		for (LifeCycleCondition condition : conditions) {
-        			if (condition.getType() != null && condition.getParamsCount() > 0) {
+                for (LifeCycleCondition condition : conditions) {
+                    if (condition.getType() != null && condition.getParamsCount() > 0) {
                         return possibleTransition;
                     }
-        		}
+                }
             }
         }
 
@@ -369,40 +369,40 @@ public class LifeCycleServiceImpl implements LifeCycleService {
     }
 
     private LifeCycleState chooseAppropriateStateDef(List<LifeCycleState> stateList, String eventParamName,
-    		Object eventParamValue, String compareType, NodeRef nodeRef) {
-    	List<LifeCycleState> filteredStateList = new ArrayList<LifeCycleState>();
+            Object eventParamValue, String compareType, NodeRef nodeRef) {
+        List<LifeCycleState> filteredStateList = new ArrayList<>();
 
-    	if ((stateList != null) && (eventParamName != null) && (eventParamValue != null)) {
-	    	for (LifeCycleState state : stateList) {
-	    		if ("string".equals(compareType)) {
-		        	if (((String) eventParamValue).equals(state.getEvent().getEventParam(eventParamName)))
-		                filteredStateList.add(state);
-	    		} else if ("dateTimeLE".equals(compareType)) {
-	    			try {
-	    				String expression = state.getEvent().getEventParam(eventParamName);
-		                Date eventDateTime = (Date) doJS(nodeRef, expression);
+        if ((stateList != null) && (eventParamName != null) && (eventParamValue != null)) {
+            for (LifeCycleState state : stateList) {
+                if ("string".equals(compareType)) {
+                    if (((String) eventParamValue).equals(state.getEvent().getEventParam(eventParamName)))
+                        filteredStateList.add(state);
+                } else if ("dateTimeLE".equals(compareType)) {
+                    try {
+                        String expression = state.getEvent().getEventParam(eventParamName);
+                        Date eventDateTime = (Date) doJS(nodeRef, expression);
 
-		                if ((eventDateTime != null) && (eventDateTime.getTime() <= ((Date) eventParamValue).getTime()))
-			                filteredStateList.add(state);
-	                } catch (ClassCastException e) {
-	                	logger.error("Can't cast expression to Date. " + e.getMessage());
-	                }
-	    		}
-	        }
-    	} else {
+                        if ((eventDateTime != null) && (eventDateTime.getTime() <= ((Date) eventParamValue).getTime()))
+                            filteredStateList.add(state);
+                    } catch (ClassCastException e) {
+                        logger.error("Can't cast expression to Date. " + e.getMessage());
+                    }
+                }
+            }
+        } else {
             filteredStateList = stateList;
         }
 
-    	if (filteredStateList.size() == 1)
-    		return filteredStateList.get(0);
-    	else if (filteredStateList.size() > 1) {
-    		logger.warn("Found more than one state definition for stateId=" + filteredStateList.get(0).getId()
-    				+ (eventParamName != null ? " and " + eventParamName + "=" + eventParamValue : "") +
-    				". The first will be returned");
-    		return filteredStateList.get(0);
-    	}
+        if (filteredStateList.size() == 1)
+            return filteredStateList.get(0);
+        else if (filteredStateList.size() > 1) {
+            logger.warn("Found more than one state definition for stateId=" + filteredStateList.get(0).getId()
+                    + (eventParamName != null ? " and " + eventParamName + "=" + eventParamValue : "") +
+                    ". The first will be returned");
+            return filteredStateList.get(0);
+        }
 
-    	return null;
+        return null;
     }
 
     private boolean checkConditions(NodeRef nodeRef, LifeCycleTransition transition) {
@@ -411,7 +411,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
             boolean conditionResult = checkCondition(nodeRef, condition);
             if(!conditionResult) return false;
         }
-        
+
         return true;
     }
 
@@ -445,8 +445,8 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                 if (actionCondition != null) {
                     ActionConditionDefinition actionConditionDefinition = actionService.getActionConditionDefinition(actionCondition.getActionConditionDefinitionName());
                     for (String paramName : condition.getParamsNames()) {
-                        actionCondition.setParameterValue(paramName, 
-                                convertParameterValue(actionConditionDefinition, 
+                        actionCondition.setParameterValue(paramName,
+                                convertParameterValue(actionConditionDefinition,
                                         paramName, condition.getParam(paramName)));
                     }
 
@@ -483,8 +483,8 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                 if (alfrescoAction != null) {
                     ActionDefinition actionDefinition = actionService.getActionDefinition(alfrescoAction.getActionDefinitionName());
                     for (String paramName : action.getParamsNames()) {
-                        alfrescoAction.setParameterValue(paramName, 
-                                convertParameterValue(actionDefinition, 
+                        alfrescoAction.setParameterValue(paramName,
+                                convertParameterValue(actionDefinition,
                                         paramName, action.getParam(paramName)));
                     }
 
@@ -516,7 +516,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
     }
 
     private Map<String, Object> fillModel(NodeRef nodeRef) {
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
 
         model.put("document", nodeRef);
         String userName = AuthenticationUtil.getFullyAuthenticatedUser();
@@ -557,18 +557,18 @@ public class LifeCycleServiceImpl implements LifeCycleService {
         return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<String>() {
             @Override
             public String doWork() throws Exception {
-				if (!nodeService.hasAspect(nodeRef, LifeCycleModel.ASPECT_HAS_STATE)) {
-					return null;
-				}
+                if (!nodeService.hasAspect(nodeRef, LifeCycleModel.ASPECT_HAS_STATE)) {
+                    return null;
+                }
 
-				return (String) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_STATE);
-			}
-		});
+                return (String) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_STATE);
+            }
+        });
     }
 
     @Override
     public List<LifeCycleTransition> getAvailableUserEvents(NodeRef nodeRef) {
-        Set<String> filters = new HashSet<String>();
+        Set<String> filters = new HashSet<>();
         filters.add(LifeCycleModel.CONSTR_USER_TRANSITION);
         filters.add(LifeCycleModel.CONSTR_TRANSITION_ON_START_PROCESS);
 
@@ -577,52 +577,52 @@ public class LifeCycleServiceImpl implements LifeCycleService {
 
     @Override
     public List<LifeCycleTransition> getTransitionsByDocState(NodeRef nodeRef) {
-    	String state = getDocumentState(nodeRef);
+        String state = getDocumentState(nodeRef);
         LifeCycleDefinition lcd = getLifeCycleDefinitionByDocRef(nodeRef);
 
         if (lcd == null)
-        	return new ArrayList<LifeCycleTransition>();
+            return new ArrayList<>();
 
         return LifeCycleHelper.getTransitionsByFromStateId(lcd, state);
     }
 
     @Override
     public List<NodeRef> getDocumentsWithTimer() {
-    	return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<List<NodeRef>>() {
+        return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<List<NodeRef>>() {
             @Override
             public List<NodeRef> doWork() throws Exception {
-		        List<NodeRef> result;
+                List<NodeRef> result;
 
-		        String query = "@" + LifeCycleModel.PROP_EVENT_TIME + ":[MIN TO NOW] OR (ASPECT:\"" + LifeCycleModel.ASPECT_HAS_TIMER +
-		        "\" AND ISNULL:\"" + LifeCycleModel.PROP_EVENT_TIME + "\")";
+                String query = "@" + LifeCycleModel.PROP_EVENT_TIME + ":[MIN TO NOW] OR (ASPECT:\"" + LifeCycleModel.ASPECT_HAS_TIMER +
+                "\" AND ISNULL:\"" + LifeCycleModel.PROP_EVENT_TIME + "\")";
 
-		        ResultSet rows = null;
+                ResultSet rows = null;
 
-		        try {
-		            rows = searchService.query(
-		                    StoreRef.STORE_REF_WORKSPACE_SPACESSTORE,
-		                    SearchService.LANGUAGE_FTS_ALFRESCO,
-		                    query
-		            );
+                try {
+                    rows = searchService.query(
+                            StoreRef.STORE_REF_WORKSPACE_SPACESSTORE,
+                            SearchService.LANGUAGE_FTS_ALFRESCO,
+                            query
+                    );
 
-		            result = new ArrayList<NodeRef>(rows.length());
+                    result = new ArrayList<>(rows.length());
 
-		            for (ResultSetRow row : rows) {
-		                result.add(row.getNodeRef());
-		            }
-		        } finally {
-		            if (rows != null)
-		                rows.close();
-		        }
+                    for (ResultSetRow row : rows) {
+                        result.add(row.getNodeRef());
+                    }
+                } finally {
+                    if (rows != null)
+                        rows.close();
+                }
 
-		        return result;
+                return result;
             }
-    	});
+        });
     }
 
     private List<LifeCycleTransition> getTransitionsByEventTypesAndTrueConditions(NodeRef nodeRef, Set<String> filters) {
-    	List<LifeCycleTransition> result = new ArrayList<LifeCycleTransition>();
-    	List<LifeCycleTransition> transitionsForThisType = getTransitionsByDocStateEventTypes(nodeRef, filters);
+        List<LifeCycleTransition> result = new ArrayList<>();
+        List<LifeCycleTransition> transitionsForThisType = getTransitionsByDocStateEventTypes(nodeRef, filters);
 
         for (LifeCycleTransition transition : transitionsForThisType) {
             if (checkConditions(nodeRef, transition)) {
@@ -634,11 +634,11 @@ public class LifeCycleServiceImpl implements LifeCycleService {
     }
 
     public LifeCycleDefinition getLifeCycleDefinitionByDocType(QName docType) {
-    	return definitions.get(docType);
+        return definitions.get(docType);
     }
 
     private LifeCycleDefinition getLifeCycleDefinitionByDocRef(NodeRef nodeRef) {
-    	 QName docType = nodeService.getType(nodeRef);
+         QName docType = nodeService.getType(nodeRef);
          return getLifeCycleDefinitionByDocType(docType);
     }
 
@@ -647,7 +647,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
         LifeCycleDefinition lcd = getLifeCycleDefinitionByDocRef(nodeRef);
 
         if (lcd == null)
-        	return new ArrayList<LifeCycleTransition>();
+            return new ArrayList<>();
 
         List<LifeCycleTransition> transitionsForThisState = LifeCycleHelper.getTransitionsByFromStateId(lcd, state);
 
@@ -655,14 +655,14 @@ public class LifeCycleServiceImpl implements LifeCycleService {
     }
 
     private List<LifeCycleState> getStateDefsByStateIdEventTypes(NodeRef nodeRef, String stateId, Set<String> eventTypes) {
-    	LifeCycleDefinition lcd = getLifeCycleDefinitionByDocRef(nodeRef);
+        LifeCycleDefinition lcd = getLifeCycleDefinitionByDocRef(nodeRef);
 
-    	if (lcd == null)
-        	return new ArrayList<LifeCycleState>();
+        if (lcd == null)
+            return new ArrayList<>();
 
-    	List<LifeCycleState> statesForStateId = LifeCycleHelper.getStatesByStateId(lcd, stateId);
+        List<LifeCycleState> statesForStateId = LifeCycleHelper.getStatesByStateId(lcd, stateId);
 
-    	return LifeCycleHelper.filterStatesByEventType(statesForStateId, eventTypes);
+        return LifeCycleHelper.filterStatesByEventType(statesForStateId, eventTypes);
     }
 
     @Override
@@ -717,8 +717,9 @@ public class LifeCycleServiceImpl implements LifeCycleService {
 
     @Override
     public void undeployStoredLifeCycle(NodeRef lifeCycleDefinitionNodeRef) {
-        for (QName qName : deployedRepoDefinitions.keySet()) {
-            NodeRef nodeRef = deployedRepoDefinitions.get(qName);
+        for (Map.Entry<QName, NodeRef> entry : deployedRepoDefinitions.entrySet()) {
+            QName qName = entry.getKey();
+            NodeRef nodeRef = entry.getValue();
             if ((nodeRef != null) && (nodeRef.equals(lifeCycleDefinitionNodeRef))) {
                 deployedRepoDefinitions.remove(qName);
                 definitions.remove(qName);
@@ -734,7 +735,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
         List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(companyHome,
                 Collections.singleton(LifeCycleModel.TYPE_LIFECYCLE_DEFINITION));
 
-        List<NodeRef> repoDefinitions = new ArrayList<NodeRef>(childAssocs.size());
+        List<NodeRef> repoDefinitions = new ArrayList<>(childAssocs.size());
 
         for (ChildAssociationRef childAssoc : childAssocs)
             repoDefinitions.add(childAssoc.getChildRef());
@@ -747,7 +748,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
         NodeRef companyHome = repositoryHelper.getCompanyHome();
         List<ChildAssociationRef> childAssocs = nodeService.getChildAssocsByPropertyValue(companyHome, LifeCycleModel.PROP_DOC_TYPE, docType);
 
-        List<NodeRef> repoDefinitions = new ArrayList<NodeRef>(childAssocs.size());
+        List<NodeRef> repoDefinitions = new ArrayList<>(childAssocs.size());
 
         for (ChildAssociationRef childAssoc : childAssocs)
             repoDefinitions.add(childAssoc.getChildRef());
@@ -811,11 +812,11 @@ public class LifeCycleServiceImpl implements LifeCycleService {
         else
             repoDefinitions = getStoredLifeCycleDefinitionsByDocType(requiredDocType);
 
-        List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> result = new ArrayList<>();
 
         for (NodeRef nodeRef : repoDefinitions) {
             if (nodeRef != null) {
-                Map<String, Object> lcdHeaders = new HashMap<String, Object>();
+                Map<String, Object> lcdHeaders = new HashMap<>();
 
                 String format = (String) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_LIFECYCLE_FORMAT);
                 QName docType = (QName) nodeService.getProperty(nodeRef, LifeCycleModel.PROP_DOC_TYPE);
@@ -855,7 +856,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
     public NodeRef storeLifeCycleDefinition(final NodeRef nodeRef, final String content, final String formatName,
             final QName docType, final String title, final Boolean enabled) {
 
-        final Map<QName, Serializable> properties = new HashMap<QName, Serializable>();
+        final Map<QName, Serializable> properties = new HashMap<>();
 
         if (formatName != null)
             properties.put(LifeCycleModel.PROP_LIFECYCLE_FORMAT, formatName);
@@ -917,7 +918,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                 contentWriter = contentService.getWriter(nodeRef, ContentModel.PROP_CONTENT, true);
                 contentWriter.setMimetype(MediaType.APPLICATION_XML.toString());
 
-                writer = new OutputStreamWriter(contentWriter.getContentOutputStream(), Charset.forName("UTF-8"));
+                writer = new OutputStreamWriter(contentWriter.getContentOutputStream(), StandardCharsets.UTF_8);
 
                 writer.write(content);
             } catch (IOException e) {
@@ -937,7 +938,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
 
     public Set<QName> getDocumentTypesWithLifeCycleDefinitions() {
         List<NodeRef> repoDefinitions = getStoredLifeCycleDefinitions();
-        Set<QName> docTypes = new HashSet<QName>();
+        Set<QName> docTypes = new HashSet<>();
 
         for (NodeRef repoNodeRef : repoDefinitions) {
             QName docType = (QName) nodeService.getProperty(repoNodeRef, LifeCycleModel.PROP_DOC_TYPE);

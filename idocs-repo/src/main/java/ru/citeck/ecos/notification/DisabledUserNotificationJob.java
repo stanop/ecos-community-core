@@ -47,7 +47,7 @@ public class DisabledUserNotificationJob extends AbstractLockedJob {
     @Override
     public void executeJob(final JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
-        final Integer doWork = AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Integer>() {
+        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Integer>() {
             @Override
             public Integer doWork() throws Exception {
                 if (logger.isInfoEnabled()) {
