@@ -251,7 +251,6 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
         if (workflowPackage != null && sendBasedOnUser) {
             List<ChildAssociationRef> children = services.getNodeService().getChildAssocs(workflowPackage);
             for (ChildAssociationRef child : children) {
-                recipient.clear();
                 NodeRef node = child.getChildRef();
                 if (node != null && nodeService.exists(node)) {
                     if (allowDocList == null) {
@@ -279,9 +278,7 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
                 if (additionRecipients != null) {
                     List<String> addition = additionRecipients.get(task.getName());
                     if (addition != null && addition.size() > 0) {
-                        for (String add : addition) {
-                            recipients.add(add);
-                        }
+                        recipients.addAll(addition);
                     }
 
                     List<String> recipientsFromRole = additionRecipients.get(ARG_RECIPIENTS_FROM_ROLE);
@@ -289,9 +286,7 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
                         Set<String> roleRecipients = RecipientsUtils.getRecipientsFromRole(recipientsFromRole,
                                 getDocsInfo(), nodeService, dictionaryService);
                         if (!roleRecipients.isEmpty()) {
-                            for (String roleRecipient : roleRecipients) {
-                                recipients.add(roleRecipient);
-                            }
+                            recipients.addAll(roleRecipients);
                         }
                     }
 
@@ -310,9 +305,7 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
                     setBodyTemplate(notificationContext, template);
                 }
                 notificationContext.setSubject(subject);
-                for (String to : recipient) {
-                    recipients.add(to);
-                }
+                recipients.addAll(recipient);
                 notificationContext.setTemplateArgs(getNotificationArgs(task));
                 notificationContext.setAsyncNotification(getAsyncNotification());
 

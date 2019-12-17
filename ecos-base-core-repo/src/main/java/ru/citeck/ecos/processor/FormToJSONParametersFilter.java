@@ -47,13 +47,12 @@ public class FormToJSONParametersFilter extends AbstractDataBundleLine {
     @Override
     public DataBundle process(DataBundle input) {
         Map<String, Object> model = input.needModel();
-        
-        HashMap<String, Object> newModel = new HashMap<>();
-        newModel.putAll(model);
-        
+
+        HashMap<String, Object> newModel = new HashMap<>(model);
+
         String jsonStr = checkAndConvertFromArgsToJSON(model);
         InputStream newIS = null;
-        
+
         if (jsonStr != null) {
             newIS = new ByteArrayInputStream(jsonStr.getBytes(Charset.forName("UTF-8")));
             newModel.put(ProcessorConstants.KEY_MIMETYPE, MediaType.APPLICATION_JSON.toString());
@@ -67,11 +66,11 @@ public class FormToJSONParametersFilter extends AbstractDataBundleLine {
             } catch (IOException e) {
                 Logger.getLogger(FormToJSONParametersFilter.class).error(e.getMessage(), e);
             }
-        }	
+        }
 
         return new DataBundle(newIS, newModel);
     }
-    
+
     @SuppressWarnings("unchecked")
     private String checkAndConvertFromArgsToJSON(Map<String, Object> model) {
         String jsonStr = null;
@@ -146,7 +145,7 @@ public class FormToJSONParametersFilter extends AbstractDataBundleLine {
 
         return jsonStr;
     }
-    
+
     private ByteArrayOutputStream copyInputStream(InputStream is) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
