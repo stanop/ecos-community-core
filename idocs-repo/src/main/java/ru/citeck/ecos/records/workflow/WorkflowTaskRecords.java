@@ -1,11 +1,14 @@
 package ru.citeck.ecos.records.workflow;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Getter;
 import lombok.Setter;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.service.cmr.dictionary.*;
+import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
@@ -16,8 +19,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.document.sum.DocSumResolveRegistry;
-import ru.citeck.ecos.document.sum.DocSumResolver;
+import ru.citeck.ecos.document.sum.DocSumService;
 import ru.citeck.ecos.predicate.model.ComposedPredicate;
 import ru.citeck.ecos.records.RecordConstants;
 import ru.citeck.ecos.records.models.AuthorityDTO;
@@ -66,7 +68,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     private final AuthorityService authorityService;
     private final WorkflowTaskRecordsUtils workflowTaskRecordsUtils;
     private final OwnerService ownerService;
-    private final DocSumResolveRegistry docSumResolveRegistry;
+    private final DocSumService docSumService;
     private final WorkflowUtils workflowUtils;
     private final AuthorityUtils authorityUtils;
     private final NamespaceService namespaceService;
@@ -76,7 +78,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     public WorkflowTaskRecords(EcosTaskService ecosTaskService,
                                WorkflowTaskRecordsUtils workflowTaskRecordsUtils,
                                AuthorityService authorityService, OwnerService ownerService,
-                               DocSumResolveRegistry docSumResolveRegistry,
+                               DocSumService docSumService,
                                WorkflowUtils workflowUtils, AuthorityUtils authorityUtils,
                                NamespaceService namespaceService,
                                DictionaryService dictionaryService) {
@@ -87,7 +89,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         this.workflowTaskRecordsUtils = workflowTaskRecordsUtils;
         this.authorityService = authorityService;
         this.ownerService = ownerService;
-        this.docSumResolveRegistry = docSumResolveRegistry;
+        this.docSumService = docSumService;
         this.workflowUtils = workflowUtils;
         this.authorityUtils = authorityUtils;
     }
@@ -133,7 +135,9 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 documentProps.set(getEcmFieldName(n), v);
             }
             if (n.startsWith(OUTCOME_PREFIX)) {
-                outcome[0] = n.substring(OUTCOME_PREFIX.length());
+                if (v.isBoolean() && v.asBoolean()) {
+                    outcome[0] = n.substring(OUTCOME_PREFIX.length());
+                }
             } else {
 
                 if (v.isTextual()) {
@@ -380,7 +384,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
             Set<String> customAttributes = new HashSet<>();
 
-            for (String att : attributesMap.keySet()) {
+            for (Map.Entry<String, String> entry : attributesMap.entrySet()) {
+                String att = entry.getKey();
                 switch (att) {
                     case ATT_DOC_DISP_NAME:
                         documentAttributes.put(ATT_DOC_DISP_NAME, "cm:title");
@@ -401,7 +406,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     default:
                         if (att.startsWith(DOCUMENT_FIELD_PREFIX)) {
                             String ecmFieldName = getEcmFieldName(att);
-                            String fieldAtt = attributesMap.get(att).replace(att, ecmFieldName);
+                            String fieldAtt = entry.getValue().replace(att, ecmFieldName);
 
                             documentAttributes.put(att, fieldAtt);
                         }
@@ -454,7 +459,13 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             }
 
             if (documentInfo.has(name)) {
-                return new InnerMetaValue(documentInfo.get(name));
+                JsonNode node = documentInfo.get(name);
+                if (node instanceof ArrayNode) {
+                    List<InnerMetaValue> result = new ArrayList<>();
+                    node.forEach(jsonNode -> result.add(new InnerMetaValue(jsonNode)));
+                    return result;
+                }
+                return new InnerMetaValue(node);
             }
 
             if (RecordConstants.ATT_FORM_KEY.equals(name)) {
@@ -541,8 +552,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     String ref = getDocumentRef().getId();
                     if (NodeRef.isNodeRef(ref)) {
                         NodeRef document = new NodeRef(ref);
-                        DocSumResolver resolver = docSumResolveRegistry.get(document);
-                        return resolver.resolve(document);
+                        return docSumService.getSum(document);
                     }
                     return null;
             }

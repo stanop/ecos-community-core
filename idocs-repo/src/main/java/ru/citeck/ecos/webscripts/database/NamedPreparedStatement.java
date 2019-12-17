@@ -39,7 +39,7 @@ public class NamedPreparedStatement implements Closeable {
     private final Map<String, Integer> indexMap;
 
     public NamedPreparedStatement(Connection connection, String query) throws SQLException {
-        indexMap = new HashMap<String, Integer>();
+        indexMap = new HashMap<>();
         String parsedQuery = parseQuery(query, indexMap);
         statement = connection.prepareStatement(parsedQuery);
     }

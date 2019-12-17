@@ -38,7 +38,7 @@ public class FreeMarkerImplUtils {
     public static List<TemplateNode> wrapNodes(List<NodeRef> nodeRefs, 
             AlfrescoTemplateProcessorExtension scopeProvider) 
     {
-        List<TemplateNode> nodes = new ArrayList<TemplateNode>(nodeRefs.size());
+        List<TemplateNode> nodes = new ArrayList<>(nodeRefs.size());
         for(NodeRef nodeRef : nodeRefs) {
             nodes.add(wrapNode(nodeRef, scopeProvider));
         }
@@ -58,7 +58,7 @@ public class FreeMarkerImplUtils {
     public static List<TemplateNode> wrapGroups(List<String> groupNames, 
             AlfrescoTemplateProcessorExtension scopeProvider) 
     {
-        List<TemplateNode> nodes = new ArrayList<TemplateNode>(groupNames.size());
+        List<TemplateNode> nodes = new ArrayList<>(groupNames.size());
         for(String groupName : groupNames) {
             nodes.add(wrapGroup(groupName, scopeProvider));
         }
@@ -78,7 +78,7 @@ public class FreeMarkerImplUtils {
     public static List<TemplateNode> wrapUsers(List<String> userNames, 
             AlfrescoTemplateProcessorExtension scopeProvider) 
     {
-        List<TemplateNode> nodes = new ArrayList<TemplateNode>(userNames.size());
+        List<TemplateNode> nodes = new ArrayList<>(userNames.size());
         for(String userName : userNames) {
             nodes.add(wrapUser(userName, scopeProvider));
         }

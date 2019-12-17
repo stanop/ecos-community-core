@@ -28,13 +28,15 @@ class CaseConditionExporter {
             Condition condition = new Condition();
             condition.setType(utils.convertToXMLQName(nodeService.getType(conditionRef)));
             Map<QName, Serializable> properties = nodeService.getProperties(conditionRef);
-            for (QName key : properties.keySet()) {
+            for (Map.Entry<QName, Serializable> entry : properties.entrySet()) {
+                QName key = entry.getKey();
                 if (!key.getNamespaceURI().equals("http://www.alfresco.org/model/system/1.0") &&
                         !key.getNamespaceURI().equals("http://www.alfresco.org/model/content/1.0")) {
                     ConditionProperty conditionProperty = new ConditionProperty();
                     conditionProperty.setType(utils.convertToXMLQName(key));
-                    if (properties.get(key) != null) {
-                        conditionProperty.setValue(properties.get(key).toString());
+                    Serializable value = entry.getValue();
+                    if (value != null) {
+                        conditionProperty.setValue(value.toString());
                     } else {
                         conditionProperty.setValue("");
                     }

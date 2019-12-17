@@ -88,9 +88,8 @@ public class CiteckUtilsJS extends AlfrescoScopableProcessorExtension implements
 
         ScriptableQNameMap<String, Object> result = new ScriptableQNameMap<>(this);
 
-        for (QName qname : map.keySet()) {
-            Object value = map.get(qname);
-            result.put(qname, value);
+        for (Map.Entry<QName, Object> entry : map.entrySet()) {
+            result.put(entry.getKey(), entry.getValue());
         }
 
         return result;

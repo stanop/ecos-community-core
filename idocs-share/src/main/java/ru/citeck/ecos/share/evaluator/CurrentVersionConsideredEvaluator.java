@@ -25,25 +25,25 @@ import org.springframework.extensions.surf.support.ThreadLocalRequestContext;
 
 public class CurrentVersionConsideredEvaluator extends BaseEvaluator {
 
-	private static final String currentVersionAccessor = "node.properties.cm:versionLabel";
-	
-	@Override
-	public boolean evaluate(JSONObject object) {
+    private static final String currentVersionAccessor = "node.properties.cm:versionLabel";
 
-		// deserialize confirm decisions:
-		JSONObject decisions = ConfirmUtil.deserializeConsideredVersions(object, this);
-		
-		// current user
-		RequestContext rc = ThreadLocalRequestContext.getRequestContext();
-		String userName = rc.getUserId();
-		
-		// look for his confirm decision
-		Object decisionVersion = this.getJSONValue(decisions, userName + ".versionLabel");
+    @Override
+    public boolean evaluate(JSONObject object) {
 
-		// get current version of document
-		Object currentVersion = this.getJSONValue(object, currentVersionAccessor);
-		
-		return decisionVersion != null && currentVersion != null && decisionVersion.equals(currentVersion);
-	}
+        // deserialize confirm decisions:
+        JSONObject decisions = ConfirmUtil.deserializeConsideredVersions(object, this);
+
+        // current user
+        RequestContext rc = ThreadLocalRequestContext.getRequestContext();
+        String userName = rc.getUserId();
+
+        // look for his confirm decision
+        Object decisionVersion = this.getJSONValue(decisions, userName + ".versionLabel");
+
+        // get current version of document
+        Object currentVersion = this.getJSONValue(object, currentVersionAccessor);
+
+        return decisionVersion != null && decisionVersion.equals(currentVersion);
+    }
 
 }

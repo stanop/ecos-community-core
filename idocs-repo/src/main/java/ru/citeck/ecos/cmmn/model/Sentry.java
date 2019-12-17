@@ -80,7 +80,7 @@ public class Sentry
      */
     public List<JAXBElement<? extends TOnPart>> getOnPart() {
         if (onPart == null) {
-            onPart = new ArrayList<JAXBElement<? extends TOnPart>>();
+            onPart = new ArrayList<>();
         }
         return this.onPart;
     }

@@ -182,7 +182,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
             for (String parameter : transmittedParameters) {
 
                 QName parameterQName;
-                if (parameter.indexOf(":") > 0 || parameter.startsWith("{")) {
+                if (parameter.indexOf(':') > 0 || parameter.startsWith("{")) {
                     parameterQName = QName.resolveToQName(namespaceService, parameter);
                 } else {
                     parameterQName = QName.createQName(parameter);

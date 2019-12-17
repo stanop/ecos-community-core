@@ -26,18 +26,18 @@ import org.springframework.beans.PropertyEditorRegistry;
 
 public class MapPropertyEditorRegistrar implements PropertyEditorRegistrar 
 {
-	private Map<Class<?>,PropertyEditor> propertyEditors;
+    private Map<Class<?>,PropertyEditor> propertyEditors;
 
-	@Override
-	public void registerCustomEditors(PropertyEditorRegistry registry) {
-		for(Class<?> cls : propertyEditors.keySet()) {
-			registry.registerCustomEditor(cls, propertyEditors.get(cls));
-		}
-		
-	}
+    @Override
+    public void registerCustomEditors(PropertyEditorRegistry registry) {
+        for(Map.Entry<Class<?>, PropertyEditor> propEntry : propertyEditors.entrySet()) {
+            registry.registerCustomEditor(propEntry.getKey(), propEntry.getValue());
+        }
 
-	public void setPropertyEditors(Map<Class<?>,PropertyEditor> propertyEditors) {
-		this.propertyEditors = propertyEditors;
-	}
+    }
+
+    public void setPropertyEditors(Map<Class<?>,PropertyEditor> propertyEditors) {
+        this.propertyEditors = propertyEditors;
+    }
 
 }

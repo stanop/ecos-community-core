@@ -33,7 +33,7 @@ public abstract class AbstractDataBundleLine extends AbstractDataBundleProcessor
 
 	@Override
 	public List<DataBundle> process(List<DataBundle> inputs) {
-		List<DataBundle> outputs = new ArrayList<DataBundle>(inputs.size());
+		List<DataBundle> outputs = new ArrayList<>(inputs.size());
 		for(DataBundle input : inputs) {
 			DataBundle output = process(input);
 			if(output != null) {

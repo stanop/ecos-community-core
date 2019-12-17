@@ -123,7 +123,7 @@ public class ViewRoot {
      */
     public List<Element> getElements() {
         if (elements == null) {
-            elements = new ArrayList<Element>();
+            elements = new ArrayList<>();
         }
         return this.elements;
     }
@@ -192,7 +192,7 @@ public class ViewRoot {
          */
         public List<ViewRoot.Imports.Import> getImport() {
             if (_import == null) {
-                _import = new ArrayList<ViewRoot.Imports.Import>();
+                _import = new ArrayList<>();
             }
             return this._import;
         }

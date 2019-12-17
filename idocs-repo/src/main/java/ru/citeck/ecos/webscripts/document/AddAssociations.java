@@ -43,7 +43,7 @@ public class AddAssociations extends AbstractWebScript {
 		
 		String[] filesNodeRefs =  req.getParameter("filesNodeRefs").split(",");
 		NodeRef aggNodeRef = new NodeRef(req.getParameter("nodeRef"));
-		List<NodeRef> files = new ArrayList<NodeRef>(filesNodeRefs.length);
+		List<NodeRef> files = new ArrayList<>(filesNodeRefs.length);
 		for(String file : filesNodeRefs) {
 			files.add(new NodeRef(file));
 		}

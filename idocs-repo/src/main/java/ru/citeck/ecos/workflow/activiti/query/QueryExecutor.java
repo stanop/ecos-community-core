@@ -59,7 +59,7 @@ public class QueryExecutor {
 
     public List<?> execute(String statement, Object query) {
         SqlSession session = getSqlSession();
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         if (statementExists(statement)) {
             for (QueryParameterConverter converter : converters) {
                 if (converter.canConvert(query)) {

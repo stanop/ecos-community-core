@@ -85,12 +85,12 @@ public class FullNameBehaviour implements OnCreateNodePolicy, OnUpdateProperties
 
     @Override
     public void onUpdateProperties(NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
-        String fullNameBefore = getStringProperty(before.get(fullNameProperty)),
-                fullName = getStringProperty(after.get(fullNameProperty)),
-                firstNameBefore = getStringProperty(before.get(firstNameProperty)),
-                firstName = getStringProperty(after.get(firstNameProperty)),
-                lastNameBefore = getStringProperty(before.get(lastNameProperty)),
-                lastName = getStringProperty(after.get(lastNameProperty));
+        String fullNameBefore = getStringProperty(before.get(fullNameProperty));
+        String fullName = getStringProperty(after.get(fullNameProperty));
+        String firstNameBefore = getStringProperty(before.get(firstNameProperty));
+        String firstName = getStringProperty(after.get(firstNameProperty));
+        String lastNameBefore = getStringProperty(before.get(lastNameProperty));
+        String lastName = getStringProperty(after.get(lastNameProperty));
 
         if (logger.isDebugEnabled()) {
             String TO = " -> ";

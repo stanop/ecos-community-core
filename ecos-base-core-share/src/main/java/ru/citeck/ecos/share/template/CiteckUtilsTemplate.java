@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CiteckUtilsTemplate extends BaseProcessorExtension {
 
-    private final static String CURRENT_MODULE_ID = "ecos-base-core-share";
+    private static final String CURRENT_MODULE_ID = "ecos-base-core-share";
 
     private final Map<String, TemplateBooleanModel> templateExistsCache = new ConcurrentHashMap<>();
     private final Map<String, ModulePackage> modulePackagesById = new ConcurrentHashMap<>();

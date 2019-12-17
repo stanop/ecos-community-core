@@ -29,8 +29,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.*;
-import ru.citeck.ecos.apps.app.module.type.type.action.ActionDto;
-import ru.citeck.ecos.apps.app.module.type.type.action.EvaluatorDto;
+import ru.citeck.ecos.apps.app.module.type.ui.action.ActionModule;
+import ru.citeck.ecos.apps.app.module.type.ui.action.EvaluatorDto;
 import ru.citeck.ecos.journals.*;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.predicate.PredicateService;
@@ -278,11 +278,9 @@ public class JournalConfigGet extends AbstractWebScript {
 
         fillMetaFromRepo(meta, journalData);
 
-        if (meta.getPredicate() == null) {
-            if (StringUtils.isNotBlank(type)) {
-                Predicate predicate = ValuePredicate.equal("TYPE", type);
-                meta.setPredicate(predicateService.writeJson(predicate));
-            }
+        if (meta.getPredicate() == null && StringUtils.isNotBlank(type)) {
+            Predicate predicate = ValuePredicate.equal("TYPE", type);
+            meta.setPredicate(predicateService.writeJson(predicate));
         }
 
         Map<String, String> options = journal.getOptions();
@@ -352,11 +350,11 @@ public class JournalConfigGet extends AbstractWebScript {
         }
     }
 
-    private List<ActionDto> getActions(JournalType journal) {
+    private List<ActionModule> getActions(JournalType journal) {
         return journal.getActions()
                 .stream()
                 .map(journalAction -> {
-                    ActionDto action = new ActionDto();
+                    ActionModule action = new ActionModule();
                     action.setId(journalAction.getId());
                     action.setName(journalAction.getTitle());
                     action.setType(journalAction.getType());
@@ -376,8 +374,11 @@ public class JournalConfigGet extends AbstractWebScript {
                 .collect(Collectors.toList());
     }
 
-    private JsonNode optionsToNode(Map<String, String> options) {
-        return objectMapper.convertValue(options, JsonNode.class);
+    private ObjectNode optionsToNode(Map<String, String> options) {
+        if (options == null || options.isEmpty()) {
+            return JsonNodeFactory.instance.objectNode();
+        }
+        return objectMapper.convertValue(options, ObjectNode.class);
     }
 
     private List<GroupAction> getGroupActions(JournalType type) {
@@ -572,7 +573,7 @@ public class JournalConfigGet extends AbstractWebScript {
         JsonNode groupBy;
         String metaRecord;
         List<CreateVariantsGet.ResponseVariant> createVariants;
-        List<ActionDto> actions;
+        List<ActionModule> actions;
         List<GroupAction> groupActions;
     }
 

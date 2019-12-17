@@ -103,9 +103,8 @@ public abstract class AmountInWordConverter {
         String[] divided = bigDecimalAmount.toString().split("\\.");
         divided[1] = divided[1].substring(0, 2);
         long fraction = Long.valueOf(divided[1]);
-        if (!divided[1].substring(0, 1).equals("0")) {
-            if (fraction < 10)
-                fraction *= 10;
+        if (!divided[1].substring(0, 1).equals("0") && fraction < 10) {
+            fraction *= 10;
         }
 
         String fractions = String.valueOf(fraction);
@@ -166,7 +165,7 @@ public abstract class AmountInWordConverter {
                     resources.DECLINATION[amt][2])).append(resources.INDENT);
             amt--;
         }
-        result.append("").append(fractions).append(resources.INDENT).append(getDeclination(fraction,
+        result.append(fractions).append(resources.INDENT).append(getDeclination(fraction,
                 resources.DECLINATION[0][0],
                 resources.DECLINATION[0][1], resources.DECLINATION[0][2]));
         result = new StringBuilder(result.toString().replaceAll(" {2,}", resources.INDENT));

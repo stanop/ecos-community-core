@@ -75,7 +75,7 @@ public class TemplateNodeService extends BaseTemplateProcessorExtension
         	String assocTypeStr = assocType.toString();
         	List<TemplateNode> nodes = result.get(assocTypeStr);
         	if(nodes == null) {
-        		nodes = new ArrayList<TemplateNode>();
+        		nodes = new ArrayList<>();
         		result.put(assocTypeStr, nodes);
         	}
         	nodes.add(new TemplateNode(parent, serviceRegistry, node.getImageResolver()));
@@ -86,7 +86,7 @@ public class TemplateNodeService extends BaseTemplateProcessorExtension
 	public List<TemplateNode> getParentAssocs(TemplateNode node, String assocType) {
 		QName assocTypeQName = QName.createQName(assocType, namespaceService);
 		List<ChildAssociationRef> assocs = nodeService.getParentAssocs(node.getNodeRef(), assocTypeQName, RegexQNamePattern.MATCH_ALL);
-		List<TemplateNode> result = new ArrayList<TemplateNode>(assocs.size());
+		List<TemplateNode> result = new ArrayList<>(assocs.size());
 		for(ChildAssociationRef assoc : assocs) {
 			result.add(new TemplateNode(assoc.getParentRef(), serviceRegistry, node.getImageResolver()));
 		}

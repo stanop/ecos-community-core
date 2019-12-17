@@ -128,15 +128,13 @@ public class ProductsAndServicesBehavior implements NodeServicePolicies.OnCreate
     }
 
     private List<NodeRef> getEntityRefs(NodeRef entityRef) {
-        List<NodeRef> entityRefs = new ArrayList<>();
         NodeRef source = RepoUtils.getPrimaryParentRef(entityRef,
                 nodeService);
 
         List<NodeRef> pasEntityRefs = RepoUtils.getChildrenByAssoc(source,
                 ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
-        entityRefs.addAll(pasEntityRefs);
 
-        return entityRefs;
+        return new ArrayList<>(pasEntityRefs);
     }
 
     public void setNodeService(NodeService nodeService) {

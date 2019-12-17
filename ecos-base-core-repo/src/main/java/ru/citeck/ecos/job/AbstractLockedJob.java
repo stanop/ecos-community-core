@@ -36,7 +36,7 @@ public abstract class AbstractLockedJob extends QuartzJobBean implements Statefu
     private boolean initialized = false;
 
     @Override
-    protected synchronized final void executeInternal(final JobExecutionContext jobContext)
+    protected final synchronized void executeInternal(final JobExecutionContext jobContext)
             throws JobExecutionException {
 
         if (!initialized) {

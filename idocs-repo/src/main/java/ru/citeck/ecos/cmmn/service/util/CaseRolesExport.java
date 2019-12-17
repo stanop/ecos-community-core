@@ -1,6 +1,5 @@
 package ru.citeck.ecos.cmmn.service.util;
 
-import lombok.Setter;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.AssociationRef;

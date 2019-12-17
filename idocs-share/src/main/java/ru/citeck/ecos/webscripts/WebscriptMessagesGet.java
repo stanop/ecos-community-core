@@ -84,8 +84,8 @@ public class WebscriptMessagesGet extends DeclarativeWebScript
 		}
 
 		Enumeration<String> keys = resources.getKeys();
-		Map<String,Object> model = new HashMap<String,Object>();
-		Map<String,Object> messages = new HashMap<String,Object>();
+		Map<String,Object> model = new HashMap<>();
+		Map<String,Object> messages = new HashMap<>();
 		while(keys.hasMoreElements()) {
 			String key = keys.nextElement();
 			messages.put(key, resources.getString(key));

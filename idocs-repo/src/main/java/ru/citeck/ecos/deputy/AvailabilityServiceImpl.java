@@ -102,11 +102,7 @@ public class AvailabilityServiceImpl implements AvailabilityService
 		searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
 		searchParameters.addSort(new SearchParameters.SortDefinition(SearchParameters.SortDefinition.SortType.FIELD, "startAbsence", false));
 		searchParameters.setQuery(query);
-		return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<ResultSet>() {
-			@Override
-			public ResultSet doWork() throws Exception {
-				return searchService.query(searchParameters);
-			}});
+		return AuthenticationUtil.runAsSystem(() -> searchService.query(searchParameters));
 	}
 
 

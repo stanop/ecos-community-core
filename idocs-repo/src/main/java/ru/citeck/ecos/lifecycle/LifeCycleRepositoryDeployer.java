@@ -47,21 +47,19 @@ public class LifeCycleRepositoryDeployer extends AbstractLifecycleBean {
 
     @Override
     protected void onBootstrap(ApplicationEvent event) {
-        if (!enabled)
+        if (!enabled) {
             return;
+        }
 
         logger.info("Deploying lifecycles from repository...");
 
-        AuthenticationUtil.runAsSystem(new RunAsWork<Void>() {
-            @Override
-            public Void doWork() {
-                try {
-                    lifeCycleService.deployStoredLifeCycles();
-                } catch (Exception e) {
-                    logger.warn("Could not deploy lifecycles from repository", e);
-                }
-                return null;
+        AuthenticationUtil.runAsSystem((RunAsWork<Void>) () -> {
+            try {
+                lifeCycleService.deployStoredLifeCycles();
+            } catch (Exception e) {
+                logger.warn("Could not deploy lifecycles from repository", e);
             }
+            return null;
         });
 
         logger.info("Successfully deployed lifecycles from repository");

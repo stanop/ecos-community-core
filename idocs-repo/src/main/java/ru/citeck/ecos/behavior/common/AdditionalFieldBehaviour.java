@@ -97,28 +97,25 @@ public class AdditionalFieldBehaviour implements OnUpdatePropertiesPolicy {
 
     @Override
     public void onUpdateProperties(final NodeRef nodeRef, final Map<QName, Serializable> before, final Map<QName, Serializable> after) {
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-            @Override
-            public Object doWork() throws Exception {
-                if (!nodeService.exists(nodeRef)) {
-                    return null;
-                }
-                Object oldValue = before.get(mainField);
-                Object newValue = after.get(mainField);
-                if (oldValue == null && newValue == null) {
-                    return null;
-                } else if (oldValue != null && newValue == null) {
-                    updateAdditionalField("", nodeRef);
-                }  else if (!newValue.equals(oldValue)) {
-                    updateAdditionalField(newValue.toString(), nodeRef);
-                }
+        AuthenticationUtil.runAsSystem(() -> {
+            if (!nodeService.exists(nodeRef)) {
                 return null;
             }
+            Object oldValue = before.get(mainField);
+            Object newValue = after.get(mainField);
+            if (oldValue == null && newValue == null) {
+                return null;
+            } else if (oldValue != null && newValue == null) {
+                updateAdditionalField("", nodeRef);
+            }  else if (!newValue.equals(oldValue)) {
+                updateAdditionalField(newValue.toString(), nodeRef);
+            }
+            return null;
         });
     }
 
     private void updateAdditionalField(String newValue, NodeRef nodeRef) throws JSONException {
-        HashMap<String, String> parameters = new HashMap<String, String>();
+        HashMap<String, String> parameters = new HashMap<>();
         parameters.put(queryParameterName, newValue);
         JSONObject json = queryExecutor.executeQuery(parameters);
         String additionalFieldValue = json.getJSONArray(SQLSelectExecutor.RESULT).getJSONObject(0).getString(resultFieldName);

@@ -163,11 +163,10 @@ class DictionaryServiceJSImpl extends AlfrescoScopableProcessorExtension impleme
 
     @Override
     public DictionaryProperty[] getProperties(String ddclass, boolean includeDefaultAspects) {
-        List<PropertyDefinition> propDefs = new LinkedList<>();
         ClassDefinition classDef = getDictionaryService().getClass(convert(ddclass));
-        propDefs.addAll(classDef.getProperties().values());
-        if(includeDefaultAspects) {
-            for(ClassDefinition aspectDef : classDef.getDefaultAspects()) {
+        List<PropertyDefinition> propDefs = new LinkedList<>(classDef.getProperties().values());
+        if (includeDefaultAspects) {
+            for (ClassDefinition aspectDef : classDef.getDefaultAspects()) {
                 propDefs.addAll(aspectDef.getProperties().values());
             }
         }

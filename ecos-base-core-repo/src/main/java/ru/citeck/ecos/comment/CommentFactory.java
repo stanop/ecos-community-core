@@ -112,12 +112,10 @@ public class CommentFactory {
         Set<QName> aspects = nodeService.getAspects(commentRef);
 
         boolean isWorkingCopy = aspects.contains(ContentModel.ASPECT_WORKING_COPY);
-        if (!isWorkingCopy) {
-            if (aspects.contains(ContentModel.ASPECT_LOCKABLE)) {
-                LockStatus lockStatus = lockService.getLockStatus(commentRef);
-                if (lockStatus == LockStatus.LOCKED || lockStatus == LockStatus.LOCK_OWNER) {
-                    isNodeLocked = true;
-                }
+        if (!isWorkingCopy && aspects.contains(ContentModel.ASPECT_LOCKABLE)) {
+            LockStatus lockStatus = lockService.getLockStatus(commentRef);
+            if (lockStatus == LockStatus.LOCKED || lockStatus == LockStatus.LOCK_OWNER) {
+                isNodeLocked = true;
             }
         }
 

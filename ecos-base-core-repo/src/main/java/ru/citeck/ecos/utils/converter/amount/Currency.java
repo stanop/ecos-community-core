@@ -11,8 +11,12 @@ abstract class Currency {
 
     private Locale locale;
 
-    private String fractional1, fractional2, fractional3;
-    private String intact1, intact2, intact3;
+    private String fractional1;
+    private String fractional2;
+    private String fractional3;
+    private String intact1;
+    private String intact2;
+    private String intact3;
 
     Currency(Locale locale) {
         this.locale = locale;

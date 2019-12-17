@@ -10,7 +10,7 @@ public class GqlQNameTypeDef implements GqlTypeDefinition {
 
     public static final String TYPE_NAME = "GqlQName";
 
-    public static final GraphQLTypeReference typeRef() {
+    public static GraphQLTypeReference typeRef() {
         return new GraphQLTypeReference(TYPE_NAME);
     }
 

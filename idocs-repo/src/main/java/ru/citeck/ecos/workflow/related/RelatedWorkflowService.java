@@ -20,16 +20,12 @@ package ru.citeck.ecos.workflow.related;
 
 import flexjson.JSONSerializer;
 import org.alfresco.repo.jscript.BaseScopableProcessorExtension;
-import org.alfresco.repo.web.scripts.workflow.WorkflowModelBuilder;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.workflow.WorkflowInstance;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.cmr.workflow.WorkflowTaskQuery;
 import org.alfresco.service.namespace.QName;
-import org.springframework.extensions.webscripts.Cache;
-import org.springframework.extensions.webscripts.Status;
-import org.springframework.extensions.webscripts.WebScriptRequest;
 import ru.citeck.ecos.workflow.related.WorkflowDTO;
 import ru.citeck.ecos.workflow.related.WorkflowDTOBuilder;
 
@@ -73,13 +69,13 @@ public class RelatedWorkflowService extends BaseScopableProcessorExtension {
 
     private String getRelatedWorkflowsForNodeImpl(NodeRef nodeRef) {
         List<WorkflowInstance> workflows = workflowService.getWorkflowsForContent(nodeRef, true);
-        List<WorkflowInstance> relatedWorkflows = new ArrayList<WorkflowInstance>();
+        List<WorkflowInstance> relatedWorkflows = new ArrayList<>();
         for (WorkflowInstance workflow : workflows) {
             relatedWorkflows.addAll(
                     getRelatedWorkflows(workflow)
             );
         }
-        List<WorkflowDTO> result = new LinkedList<WorkflowDTO>();
+        List<WorkflowDTO> result = new LinkedList<>();
         for (WorkflowInstance workflow : relatedWorkflows) {
             result.add(
                     WorkflowDTOBuilder.getInstance().build(new WorkflowDTO(), workflow)
@@ -95,7 +91,7 @@ public class RelatedWorkflowService extends BaseScopableProcessorExtension {
         tasksQuery.setProcessId(workflow.getId());
 
         List<WorkflowTask> tasks = workflowService.queryTasks(tasksQuery);
-        List<WorkflowInstance> results = new ArrayList<WorkflowInstance>();
+        List<WorkflowInstance> results = new ArrayList<>();
         for (WorkflowTask task : tasks) {
             String sRelatedWorkflows = (String) task.getProperties().get(PROP_RELATED_WF);
             if (null != sRelatedWorkflows) {
@@ -108,7 +104,7 @@ public class RelatedWorkflowService extends BaseScopableProcessorExtension {
     }
 
     private List<WorkflowInstance> parseRelatedWorkflows(String[] sRelatedWorkflows) {
-        List<WorkflowInstance> results = new ArrayList<WorkflowInstance>();
+        List<WorkflowInstance> results = new ArrayList<>();
         for (String id : sRelatedWorkflows ) {
             if (!id.trim().isEmpty()) {
                 WorkflowInstance workflow = workflowService.getWorkflowById(id);

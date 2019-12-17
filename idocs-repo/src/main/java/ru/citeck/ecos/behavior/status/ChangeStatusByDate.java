@@ -18,7 +18,6 @@ import org.apache.commons.logging.LogFactory;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.StatefulJob;
 import org.apache.commons.logging.Log;
 import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.job.AbstractLockedJob;
@@ -48,21 +47,18 @@ public class ChangeStatusByDate extends AbstractLockedJob {
     @Override
     public void executeJob(JobExecutionContext context) throws JobExecutionException {
         final JobDataMap data = context.getJobDetail().getJobDataMap();
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-            @Override
-            public Void doWork() throws Exception {
-                final ServiceRegistry serviceRegistry = (ServiceRegistry) data.get("serviceRegistry");
-                RepositoryState repositoryState = (RepositoryState) serviceRegistry.getService(AlfrescoServices.REPOSITORY_STATE);
-                if (repositoryState.isBootstrapping()) {
-                    return null;
-                }
-                @SuppressWarnings("unchecked")
-                final List<String> transitions = (List) data.get("transitions");
-                for (String transition : transitions) {
-                    makeTransition(serviceRegistry, transition);
-                }
+        AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
+            final ServiceRegistry serviceRegistry = (ServiceRegistry) data.get("serviceRegistry");
+            RepositoryState repositoryState = (RepositoryState) serviceRegistry.getService(AlfrescoServices.REPOSITORY_STATE);
+            if (repositoryState.isBootstrapping()) {
                 return null;
             }
+            @SuppressWarnings("unchecked")
+            final List<String> transitions = (List) data.get("transitions");
+            for (String transition : transitions) {
+                makeTransition(serviceRegistry, transition);
+            }
+            return null;
         });
     }
 

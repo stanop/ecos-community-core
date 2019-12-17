@@ -1,11 +1,8 @@
 
 package ru.citeck.ecos.journals.xml;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.*;
+import java.util.Objects;
 
 
 /**
@@ -91,8 +88,8 @@ public class Option {
 
         Option option = (Option) o;
 
-        if (value != null ? !value.equals(option.value) : option.value != null) return false;
-        return name != null ? name.equals(option.name) : option.name == null;
+        if (!Objects.equals(value, option.value)) return false;
+        return Objects.equals(name, option.name);
 
     }
 

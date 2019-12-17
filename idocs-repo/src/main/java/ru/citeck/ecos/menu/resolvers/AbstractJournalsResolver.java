@@ -1,8 +1,5 @@
 package ru.citeck.ecos.menu.resolvers;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -14,8 +11,9 @@ import ru.citeck.ecos.menu.dto.Element;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver {
 
@@ -41,14 +39,7 @@ public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver
         String elemIdVar = toUpperCase(journalId);
         String parentElemId = StringUtils.defaultString(context.getId());
         String elemId = String.format("%s_%s_JOURNAL", parentElemId, elemIdVar);
-        Boolean displayCount = Boolean.parseBoolean(getParam(params, context, "displayCount"));
-        String countForJournalsParam = getParam(params, context, "countForJournals");
-        Set<String> countForJournals;
-        if (displayCount && StringUtils.isNotEmpty(countForJournalsParam)) {
-            countForJournals = new HashSet<>(Arrays.asList(countForJournalsParam.split(",")));
-            displayCount = countForJournals.contains(journalId);
-        }
-        Boolean displayIcon = context.getParams().containsKey("rootElement");
+        boolean displayIcon = context.getParams().containsKey("rootElement");
 
         /* icon. if journal element is placed in root category */
         String icon = null;

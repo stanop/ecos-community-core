@@ -181,8 +181,8 @@ public abstract class NodeViewElement {
         }
     }
     
-    @SuppressWarnings("unchecked")
-    /*package*/ static abstract class Builder<B extends Builder<?>> {
+    /*package*/
+    @SuppressWarnings("unchecked") /*package*/ abstract static class Builder<B extends Builder<?>> {
         
         protected NamespacePrefixResolver prefixResolver;
         protected DictionaryService dictionaryService;

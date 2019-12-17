@@ -176,9 +176,10 @@ class NodeViewServiceImpl implements NodeViewService {
                     parentObj instanceof String ? new NodeRef((String) parentObj) :
                             null;
             QName parentType = nodeService.getType(parent);
-            for (QName className : defaultParentAssocs.keySet()) {
+            for (Map.Entry<QName, QName> entry : defaultParentAssocs.entrySet()) {
+                QName className = entry.getKey();
                 if (dictionaryService.isSubClass(parentType, className) || nodeService.hasAspect(parent, className)) {
-                    effectiveAttributes.put(AttributeModel.ATTR_PARENT_ASSOC, defaultParentAssocs.get(className));
+                    effectiveAttributes.put(AttributeModel.ATTR_PARENT_ASSOC, entry.getValue());
                     break;
                 }
             }

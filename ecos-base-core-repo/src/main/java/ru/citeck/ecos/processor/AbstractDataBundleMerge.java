@@ -34,7 +34,7 @@ public abstract class AbstractDataBundleMerge extends AbstractDataBundleProcesso
 	@Override
 	public List<DataBundle> process(List<DataBundle> inputs) {
 		DataBundle result = merge(inputs);
-		List<DataBundle> results = new ArrayList<DataBundle>(1);
+		List<DataBundle> results = new ArrayList<>(1);
 		if(result != null) {
 			results.add(result);
 		}
