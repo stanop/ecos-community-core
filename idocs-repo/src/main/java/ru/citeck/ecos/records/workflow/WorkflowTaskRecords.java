@@ -384,7 +384,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
             Set<String> customAttributes = new HashSet<>();
 
-            for (String att : attributesMap.keySet()) {
+            for (Map.Entry<String, String> entry : attributesMap.entrySet()) {
+                String att = entry.getKey();
                 switch (att) {
                     case ATT_DOC_DISP_NAME:
                         documentAttributes.put(ATT_DOC_DISP_NAME, "cm:title");
@@ -405,7 +406,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     default:
                         if (att.startsWith(DOCUMENT_FIELD_PREFIX)) {
                             String ecmFieldName = getEcmFieldName(att);
-                            String fieldAtt = attributesMap.get(att).replace(att, ecmFieldName);
+                            String fieldAtt = entry.getValue().replace(att, ecmFieldName);
 
                             documentAttributes.put(att, fieldAtt);
                         }

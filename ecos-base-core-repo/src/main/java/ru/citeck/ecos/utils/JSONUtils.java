@@ -83,29 +83,34 @@ public class JSONUtils {
     }
 
     public static Map<String, Object> convertJSON(org.json.simple.JSONObject jsonObject) {
+        Map<?, ?> jsonMap = (Map<?,?>) jsonObject;
         Map<String, Object> converted = new HashMap<>(jsonObject.size());
-        for(Object key : jsonObject.keySet()) {
+        for (Map.Entry<?, ?> entry : jsonMap.entrySet()) {
+            Object key = entry.getKey();
             converted.put(
                     key != null ? key.toString() : null, 
-                    convertJSON(jsonObject.get(key)));
+                    convertJSON(entry.getValue())
+            );
         }
         return converted;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static Object jsonCopy(Object obj) {
-        if(obj instanceof Map) {
-            Map map = (Map) obj;
+        if (obj instanceof Map) {
+            Map<?,?> map = (Map<?,?>) obj;
             Map copy = new HashMap(map.size());
-            for(Object key : map.keySet()) {
-                copy.put(key, jsonCopy(map.get(key)));
+            for (Map.Entry entry : map.entrySet()) {
+                Object key = entry.getKey();
+                copy.put(key, jsonCopy(entry.getValue()));
             }
             return copy;
         }
-        if(obj instanceof List) {
+
+        if (obj instanceof List) {
             List list = (List) obj;
             List copy = new ArrayList(list.size());
-            for(Object child : list) {
+            for (Object child : list) {
                 copy.add(jsonCopy(child));
             }
             return copy;

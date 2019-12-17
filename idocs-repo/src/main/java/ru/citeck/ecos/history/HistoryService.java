@@ -594,8 +594,9 @@ public class HistoryService {
         @SuppressWarnings("unchecked")
         Map<QName, QName> propertyMapping = (Map<QName, QName>) mapping;
         Map<QName, Serializable> additionalProperties = new HashMap<>(propertyMapping.size());
-        for (QName documentProp : propertyMapping.keySet()) {
-            QName historyProp = propertyMapping.get(documentProp);
+        for (Map.Entry<QName, QName> entry : propertyMapping.entrySet()) {
+            QName documentProp = entry.getKey();
+            QName historyProp = entry.getValue();
             additionalProperties.put(historyProp, nodeService.getProperty(document, documentProp));
         }
         nodeService.addProperties(historyEvent, additionalProperties);

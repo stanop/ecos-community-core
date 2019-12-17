@@ -798,9 +798,10 @@ public class RepoUtils {
     public static Map<QName, Object> convertStringMapToQNameMap(
             Map<?, ?> stringMap, NamespacePrefixResolver prefixResolver) {
         Map<QName, Object> qnameMap = new HashMap<>(stringMap.size());
-        for (Object key : stringMap.keySet()) {
+        for (Map.Entry<?, ?> entry : stringMap.entrySet()) {
+            Object key = entry.getKey();
             if (!(key instanceof String)) continue; // anything else ?
-            qnameMap.put(QName.createQName((String) key, prefixResolver), stringMap.get(key));
+            qnameMap.put(QName.createQName((String) key, prefixResolver), entry.getValue());
         }
         return qnameMap;
     }
@@ -833,8 +834,10 @@ public class RepoUtils {
         if (!nodeUtils.isValidNode(nodeRef)) {
             return;
         }
-        for (QName assocName : childAssocs.keySet()) {
-            Set<NodeRef> newChildren = new HashSet<>(childAssocs.get(assocName));
+
+        for (Map.Entry<QName, List<NodeRef>> entry : childAssocs.entrySet()) {
+            QName assocName = entry.getKey();
+            Set<NodeRef> newChildren = new HashSet<>(entry.getValue());
 
             List<ChildAssociationRef> oldChildAssocs = nodeService.getChildAssocs(nodeRef, assocName,
                     RegexQNamePattern.MATCH_ALL);

@@ -54,14 +54,13 @@ public class CaseTemplateContentSyncBehaviour extends AbstractBehaviour
 
         Map<javax.xml.namespace.QName, String> changedProps = new HashMap<>();
 
-        for (QName key : FIELDS_MAPPING.keySet()) {
-
+        for (Map.Entry<QName, javax.xml.namespace.QName> entry : FIELDS_MAPPING.entrySet()) {
+            QName key = entry.getKey();
             Serializable valueBefore = before.get(key);
             Serializable valueAfter = after.get(key);
 
             if (!Objects.equals(valueBefore, valueAfter)) {
-                changedProps.put(FIELDS_MAPPING.get(key),
-                                 converter.convertToConfigValue(key, valueAfter));
+                changedProps.put(entry.getValue(), converter.convertToConfigValue(key, valueAfter));
             }
         }
 
@@ -73,9 +72,9 @@ public class CaseTemplateContentSyncBehaviour extends AbstractBehaviour
 
                 Map<javax.xml.namespace.QName, String> attr = data.getCase().get(0).getOtherAttributes();
 
-                for (javax.xml.namespace.QName key : changedProps.keySet()) {
-
-                    String newValue = changedProps.get(key);
+                for (Map.Entry<javax.xml.namespace.QName, String> entry : changedProps.entrySet()) {
+                    javax.xml.namespace.QName key = entry.getKey();
+                    String newValue = entry.getValue();
 
                     if (newValue != null) {
                         attr.put(key, newValue);
@@ -99,8 +98,9 @@ public class CaseTemplateContentSyncBehaviour extends AbstractBehaviour
 
             Map<javax.xml.namespace.QName, String> attr = d.getCase().get(0).getOtherAttributes();
 
-            for (QName propQName : FIELDS_MAPPING.keySet()) {
-                String templateValue = attr.get(FIELDS_MAPPING.get(propQName));
+            for (Map.Entry<QName, javax.xml.namespace.QName> entry : FIELDS_MAPPING.entrySet()) {
+                QName propQName = entry.getKey();
+                String templateValue = attr.get(entry.getValue());
                 Serializable repoValue = converter.convertToRepoValue(propQName, templateValue);
                 nodeService.setProperty(nodeRef, propQName, repoValue);
             }

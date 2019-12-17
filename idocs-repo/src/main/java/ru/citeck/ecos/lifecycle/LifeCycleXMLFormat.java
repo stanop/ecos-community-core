@@ -611,12 +611,14 @@ public class LifeCycleXMLFormat extends LifeCycleAbstractFormat {
         List<Element> elList = new ArrayList<>();
 
         if (parameters != null) {
-            for (String key : parameters.keySet()) {
-                if (parameters.get(key) != null) {
+            for (Map.Entry<String, String> entry : parameters.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                if (value != null) {
                     Element paramEl = document.createElement(LifeCycleConstants.PARAM);
                     paramEl.setAttribute(LifeCycleConstants.ATTR_NAME, key);
 
-                    CDATASection cdata = document.createCDATASection(parameters.get(key));
+                    CDATASection cdata = document.createCDATASection(value);
                     paramEl.appendChild(cdata);
 
                     elList.add(paramEl);

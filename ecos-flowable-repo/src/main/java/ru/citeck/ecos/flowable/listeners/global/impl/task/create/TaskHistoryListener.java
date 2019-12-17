@@ -210,8 +210,9 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
      */
     private Map<QName, Serializable> convertProperties(Map additionalProperties) {
         Map<QName, Serializable> result = new HashMap<>(additionalProperties.size());
-        for (Object key : additionalProperties.keySet()) {
-            QName name;
+        for (Map.Entry<?,?> entry : ((Map<?, ?>) additionalProperties).entrySet()) {
+            Object key = entry.getKey();
+            QName name = null;
             if (key instanceof String) {
                 name = qNameConverter.mapNameToQName((String) key);
             } else if (key instanceof QName) {
@@ -220,7 +221,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
                 logger.warn("Unknown type of key: " + key.getClass());
                 continue;
             }
-            result.put(name, (Serializable) additionalProperties.get(key));
+            result.put(name, (Serializable) entry.getValue());
         }
         return result;
     }
