@@ -36,6 +36,7 @@ import ru.citeck.ecos.records2.graphql.meta.value.MetaEdge;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.state.ItemsUpdateState;
+import ru.citeck.ecos.utils.NodeUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -57,6 +58,7 @@ public class AlfNodeRecord implements MetaValue {
     public static final String ATTR_CASE_STATUS = "caseStatus";
 
     private static final String CASE_STATUS_NAME_SCHEMA = "icase:caseStatusAssoc.cm:name";
+    public static final String ASSOC_SRC_ATTR_PREFIX = "assoc_src_";
 
     private NodeRef nodeRef;
     private RecordRef recordRef;
@@ -277,6 +279,9 @@ public class AlfNodeRecord implements MetaValue {
                 if (nodeAtt == null) {
                     return Collections.emptyList();
                 }
+                if (name.contains(ASSOC_SRC_ATTR_PREFIX)) {
+                    attribute = getSourceAssocs(node.nodeRef(), name);
+                }
                 if (Attribute.Type.UNKNOWN.equals(nodeAtt.type())) {
                     Optional<QName> attQname = context.getQName(name).map(GqlQName::getQName);
                     if (attQname.isPresent()) {
@@ -369,6 +374,16 @@ public class AlfNodeRecord implements MetaValue {
             value = att.value().orElse(null);
         }
         return value != null && NodeRef.isNodeRef(value) ? new NodeRef(value) : null;
+    }
+
+    private List<? extends MetaValue> getSourceAssocs(String nodeRef, String attrName) {
+        String attrQNameValue = attrName.replace(ASSOC_SRC_ATTR_PREFIX, StringUtils.EMPTY);
+        QName attr = QName.createQName(attrQNameValue);
+        NodeUtils nodeUtils = context.getService(attr);
+        List<NodeRef> nodeRefs = nodeUtils.getAssocSources(new NodeRef(nodeRef), attr);
+        return nodeRefs.stream()
+                .map(e -> new AlfNodeRecord(RecordRef.valueOf(e.toString())))
+                .collect(Collectors.toList());
     }
 
     @Override
