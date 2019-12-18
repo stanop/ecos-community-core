@@ -25,36 +25,35 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public abstract class TimeLimitedCodeBlock<T> {
-	
-	private long timeoutMs;
-	
-	public TimeLimitedCodeBlock(long timeoutMs) {
-		this.timeoutMs = timeoutMs;
-	}
-	
-	protected abstract T codeBlock() throws Throwable;
-	
-	public T run() throws Throwable {
-		final ExecutorService executor = Executors.newSingleThreadExecutor();
-		final Future<T> future = executor.submit(new Callable<T>() {
-			public T call() throws Exception {
-				try {
-					return codeBlock();
-				} catch (Exception e) {
-					throw e;
-				} catch (Throwable e) {
-					// we shouldn't normally get here
-					throw new Exception(e);
-				}
-			}
-		});
-		executor.shutdown(); // This does not cancel the already-scheduled task.
-		try {
-			return future.get(timeoutMs, TimeUnit.MILLISECONDS);
-		} finally {
-			if (!executor.isTerminated())
-			    executor.shutdownNow(); // If you want to stop the code that hasn't finished.
-		}
-	}
+
+    private long timeoutMs;
+
+    public TimeLimitedCodeBlock(long timeoutMs) {
+        this.timeoutMs = timeoutMs;
+    }
+
+    protected abstract T codeBlock() throws Throwable;
+
+    public T run() throws Throwable {
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
+        final Future<T> future = executor.submit(() -> {
+            try {
+                return codeBlock();
+            } catch (Exception e) {
+                throw e;
+            } catch (Throwable e) {
+                // we shouldn't normally get here
+                throw new Exception(e);
+            }
+        });
+        executor.shutdown(); // This does not cancel the already-scheduled task.
+        try {
+            return future.get(timeoutMs, TimeUnit.MILLISECONDS);
+        } finally {
+            if (!executor.isTerminated()) {
+                executor.shutdownNow(); // If you want to stop the code that hasn't finished.
+            }
+        }
+    }
 
 }

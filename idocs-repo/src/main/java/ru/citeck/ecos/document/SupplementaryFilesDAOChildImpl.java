@@ -40,28 +40,29 @@ import ru.citeck.ecos.utils.LazyQName;
  * - get: gets all specified child-associations
  * - add: moves file to document
  * - remove: removes child-association
- * 
+ *
  * @author Sergey Tiunov
  */
 public class SupplementaryFilesDAOChildImpl extends SupplementaryFilesDAOAbstractImpl implements SupplementaryFilesDAO
 {
 	// assocTypeName - child-association, where supplementary files are stored
 	// aspectTypeName - aspect, that declares child-association
-	private String assocTypeName, aspectTypeName;
-	private LazyQName assocTypeQName, aspectTypeQName;
-	
+	private String assocTypeName;
+	private String aspectTypeName;
+	private LazyQName assocTypeQName;
+	private LazyQName aspectTypeQName;
 	private NodeService nodeService;
 	private NamespaceService namespaceService;
-	
+
 	public void init() {
 		this.assocTypeQName = new LazyQName(namespaceService, assocTypeName);
 		this.aspectTypeQName = new LazyQName(namespaceService, aspectTypeName);
 	}
-	
+
 	@Override
 	public List<NodeRef> getSupplementaryFiles(NodeRef document) {
 		List<ChildAssociationRef> assocs = nodeService.getChildAssocs(document, assocTypeQName.getQName(), RegexQNamePattern.MATCH_ALL);
-		List<NodeRef> files = new ArrayList<NodeRef>(assocs.size());
+		List<NodeRef> files = new ArrayList<>(assocs.size());
 		for(ChildAssociationRef assoc : assocs) {
 			NodeRef file = assoc.getChildRef();
 			if(file.getStoreRef().equals(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE)) {
@@ -74,7 +75,7 @@ public class SupplementaryFilesDAOChildImpl extends SupplementaryFilesDAOAbstrac
 	@Override
 	public List<NodeRef> getParentFiles(NodeRef document) {
 		List<ChildAssociationRef> assocs = nodeService.getParentAssocs(document, assocTypeQName.getQName(), RegexQNamePattern.MATCH_ALL);
-		List<NodeRef> files = new ArrayList<NodeRef>(assocs.size());
+		List<NodeRef> files = new ArrayList<>(assocs.size());
 		for(ChildAssociationRef assoc : assocs) {
 			NodeRef file = assoc.getParentRef();
 			if(file.getStoreRef().equals(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE)) {
@@ -83,7 +84,7 @@ public class SupplementaryFilesDAOChildImpl extends SupplementaryFilesDAOAbstrac
 		}
 		return files;
 	}
-	
+
 	@Override
 	public void addSupplementaryFiles(final NodeRef document, List<NodeRef> files) {
 		if(files.size() > 0 && !nodeService.hasAspect(document, aspectTypeQName.getQName())) {

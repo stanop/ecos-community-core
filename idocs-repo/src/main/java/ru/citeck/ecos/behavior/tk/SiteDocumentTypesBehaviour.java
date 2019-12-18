@@ -104,8 +104,8 @@ public class SiteDocumentTypesBehaviour implements NodeServicePolicies.OnCreateA
                                                          QName.createQName(CLASSIFICATION_NS, type.getId()),
                                                          ContentModel.TYPE_FOLDER, containerProps).getChildRef();
             } else {
-                for (QName prop : containerProps.keySet()) {
-                    nodeService.setProperty(documentsFolder, prop, containerProps.get(prop));
+                for (Map.Entry<QName, Serializable> prop : containerProps.entrySet()) {
+                    nodeService.setProperty(documentsFolder, prop.getKey(), prop.getValue());
                 }
             }
         } else {

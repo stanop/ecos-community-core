@@ -123,7 +123,7 @@ public class HistoryGet extends BaseAbstractWebscript {
 
     private JSONObject serialize(List<NodeRef> history) throws JSONException {
         JSONObject json = new JSONObject();
-        ArrayList<JSONObject> historyEvents = new ArrayList<JSONObject>();
+        ArrayList<JSONObject> historyEvents = new ArrayList<>();
         for (NodeRef event : history) {
             historyEvents.add(serializeNode(event, true));
         }
@@ -135,9 +135,9 @@ public class HistoryGet extends BaseAbstractWebscript {
         JSONObject json = new JSONObject();
         if (nodeService.exists(nodeRef)) {
             Map<QName, Serializable> properties = nodeService.getProperties(nodeRef);
-            for (QName propertyQName : properties.keySet()) {
-                String propertyName = propertyQName.toPrefixString(namespaceService);
-                Serializable propertyValue = properties.get(propertyQName);
+            for (Map.Entry<QName, Serializable> entry : properties.entrySet()) {
+                String propertyName = entry.getKey().toPrefixString(namespaceService);
+                Serializable propertyValue = entry.getValue();
                 if (embedLinked && propertyName.contains(LINKED_POSTFIX)) {
                     ArrayList<?> propertyValueList = (ArrayList<?>) propertyValue;
                     NodeRef linkedNodeRef = (propertyValueList.get(0) instanceof NodeRef) ? (NodeRef) propertyValueList.get(0) : null;

@@ -68,8 +68,9 @@ public class LifeCycleDeployer extends AbstractLifecycleBean {
 
     @Override
     protected void onBootstrap(ApplicationEvent event) {
-        if (!enabled)
+        if (!enabled) {
             return;
+        }
 
         logger.info("Deploying lifecycle: " + location);
 

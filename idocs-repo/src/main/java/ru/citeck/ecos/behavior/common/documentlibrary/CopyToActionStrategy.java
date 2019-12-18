@@ -40,14 +40,13 @@ public abstract class CopyToActionStrategy {
     public NodeRef copyAndRename(NodeRef source, NodeRef destination, boolean deepCopy) {
         ParameterCheck.mandatory("Source Node", destination);
         ParameterCheck.mandatory("Destination Node", destination);
-        NodeRef target = copyService.copyAndRename(
+        return copyService.copyAndRename(
                 source,
                 destination,
                 ContentModel.ASSOC_CONTAINS,
                 null,
                 deepCopy
         );
-        return target;
     }
 
 

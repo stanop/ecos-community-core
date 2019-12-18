@@ -75,7 +75,7 @@ class AssociationWalker
 	/////////////////////////////////////////////////////////////////
 
 	public Collection<NodeRef> getForwardAssocs(NodeRef nodeRef) {
-		Collection<NodeRef> nodeRefs = new ArrayList<NodeRef>();
+		Collection<NodeRef> nodeRefs = new ArrayList<>();
 		addTargetAssocs(nodeRefs, nodeRef);
 		addPrimaryChildAssocs(nodeRefs, nodeRef);
 		addSecondaryChildAssocs(nodeRefs, nodeRef);
@@ -83,13 +83,13 @@ class AssociationWalker
 	}
 
 	public Collection<NodeRef> getPrimaryAssocs(NodeRef nodeRef) {
-		Collection<NodeRef> nodeRefs = new ArrayList<NodeRef>();
+		Collection<NodeRef> nodeRefs = new ArrayList<>();
 		this.addPrimaryChildAssocs(nodeRefs, nodeRef);
 		return nodeRefs;
 	}
 	
 	public Collection<NodeRef> getSecondaryAssocs(NodeRef nodeRef) {
-		Collection<NodeRef> nodeRefs = new ArrayList<NodeRef>();
+		Collection<NodeRef> nodeRefs = new ArrayList<>();
 		addSecondaryChildAssocs(nodeRefs, nodeRef);
 		addTargetAssocs(nodeRefs, nodeRef);
 		return nodeRefs;
@@ -129,7 +129,7 @@ class AssociationWalker
 	}
 	
 	public Collection<NodeRef> getBackwardAssocs(NodeRef nodeRef) {
-		Collection<NodeRef> nodeRefs = new ArrayList<NodeRef>();
+		Collection<NodeRef> nodeRefs = new ArrayList<>();
 		if(propagateTargetAssociations) {
 			Collection<AssociationRef> assocs = nodeService.getSourceAssocs(nodeRef, RegexQNamePattern.MATCH_ALL);
 			for(AssociationRef assoc : assocs) {

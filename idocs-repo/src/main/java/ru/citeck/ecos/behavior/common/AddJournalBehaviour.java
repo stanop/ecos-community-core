@@ -104,7 +104,7 @@ public class AddJournalBehaviour implements NodeServicePolicies.OnCreateNodePoli
             JournalsModel.TYPE_JOURNALS_LIST // node type
         );
         // set properties
-        Map<QName, Serializable> properties = new HashMap<QName, Serializable>();
+        Map<QName, Serializable> properties = new HashMap<>();
         properties.put(ContentModel.PROP_NAME, nameJournalList);                      //cm:name
         properties.put(ContentModel.PROP_TITLE, "Журналы сайта " + titleName);        //cm:title
         nodeService.setProperties(journalsList.getChildRef(), properties);
@@ -123,7 +123,7 @@ public class AddJournalBehaviour implements NodeServicePolicies.OnCreateNodePoli
         );
 
         // set properties of journal
-        Map<QName, Serializable> propertiesJournal = new HashMap<QName, Serializable>();
+        Map<QName, Serializable> propertiesJournal = new HashMap<>();
         propertiesJournal.put(ContentModel.PROP_NAME, typeNamePlural + "-on-site-" + nameSite);                 //cm:name
         propertiesJournal.put(ContentModel.PROP_TITLE, typeTitlePlural + " для " + titleName);                  //cm:title
         propertiesJournal.put(JournalsModel.PROP_JOURNAL_TYPE, typeNamePlural);                                 //journal:journalType
@@ -166,7 +166,7 @@ public class AddJournalBehaviour implements NodeServicePolicies.OnCreateNodePoli
         NodeRef createVariantNodeRef = createVariant1.getChildRef();
 
         // set properties of criterion
-        Map<QName, Serializable> propertiesVariant = new HashMap<QName, Serializable>();
+        Map<QName, Serializable> propertiesVariant = new HashMap<>();
         propertiesVariant.put(ContentModel.PROP_NAME, "default");             // cm:name
         propertiesVariant.put(ContentModel.PROP_TITLE, typeTitleSingular);    // cm:title
         propertiesVariant.put(JournalsModel.PROP_TYPE, typeQnameShort);       // journal:type
@@ -185,7 +185,7 @@ public class AddJournalBehaviour implements NodeServicePolicies.OnCreateNodePoli
         NodeRef folderNodeRef = folder.getChildRef();
 
         // set properties of folder
-        Map<QName, Serializable> propertiesFolder = new HashMap<QName, Serializable>();
+        Map<QName, Serializable> propertiesFolder = new HashMap<>();
         propertiesFolder.put(ContentModel.PROP_NAME, typeNamePlural);                     // cm:name
         propertiesFolder.put(ContentModel.PROP_TITLE, typeTitlePlural);                   // cm:title
         nodeService.setProperties(folderNodeRef, propertiesFolder);

@@ -134,7 +134,7 @@ import java.util.stream.Collectors;
                 resultCardModes.add(mostSuitableCardMode);
             }
         }
-        Collections.sort(resultCardModes, new PropertyValueComparator(nodeService, CardletModel.PROP_CARD_MODE_ORDER));
+        resultCardModes.sort(new PropertyValueComparator(nodeService, CardletModel.PROP_CARD_MODE_ORDER));
         return resultCardModes;
     }
 
@@ -240,8 +240,7 @@ import java.util.stream.Collectors;
     }
 
     private NodeRef findMostSuitable(List<NodeRef> objects, Comparator<NodeRef> precedenceComparator, Map<String, Object> conditionModel) {
-        List<NodeRef> objectsToEvaluate = new LinkedList<>();
-        objectsToEvaluate.addAll(objects);
+        List<NodeRef> objectsToEvaluate = new LinkedList<>(objects);
         while (objectsToEvaluate.size() > 0) {
             NodeRef mostSuitable = Collections.min(objectsToEvaluate, precedenceComparator);
             if (conditionAllows(mostSuitable, conditionModel)) {

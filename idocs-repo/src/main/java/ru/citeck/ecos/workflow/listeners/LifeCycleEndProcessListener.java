@@ -37,18 +37,15 @@ public class LifeCycleEndProcessListener extends AbstractExecutionListener {
 
     @Override
     protected void notifyImpl(final DelegateExecution delegateExecution) throws Exception {
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-            @Override
-            public Object doWork() throws Exception {
-                NodeRef docRef = documentResolverRegistry.getResolver(delegateExecution).getDocument(delegateExecution);
-                if (docRef == null) {
-                    return null;
-                }
-                String definitionId = "activiti$" + Context.getExecutionContext().getProcessDefinition().getKey();
-                lifeCycleService.doTransitionOnEndProcess(docRef, definitionId,
-                        new ActivitiVariableScopeMap(delegateExecution, serviceRegistry));
+        AuthenticationUtil.runAsSystem(() -> {
+            NodeRef docRef = documentResolverRegistry.getResolver(delegateExecution).getDocument(delegateExecution);
+            if (docRef == null) {
                 return null;
             }
+            String definitionId = "activiti$" + Context.getExecutionContext().getProcessDefinition().getKey();
+            lifeCycleService.doTransitionOnEndProcess(docRef, definitionId,
+                    new ActivitiVariableScopeMap(delegateExecution, serviceRegistry));
+            return null;
         });
     }
 

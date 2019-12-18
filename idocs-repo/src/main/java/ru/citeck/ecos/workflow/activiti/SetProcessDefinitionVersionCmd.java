@@ -85,7 +85,7 @@ public class SetProcessDefinitionVersionCmd implements Command<Void>, Serializab
             HistoricProcessInstanceEntityManager historicProcessInstanceManager = commandContext.getHistoricProcessInstanceEntityManager();
             HistoricProcessInstanceEntity historicProcessInstance = historicProcessInstanceManager.findHistoricProcessInstance(processInstanceId);
             if (historicProcessInstance != null) {
-                if(!"".equals(newProcessDefinitionId)) {
+                if (!"".equals(newProcessDefinitionId)) {
 
                     historicProcessInstance.setProcessDefinitionId(newProcessDefinitionId);
                     findHistoricTaskInstancesByProcessInstanceId(commandContext, processInstanceId, newProcessDefinitionId);
@@ -151,10 +151,10 @@ public class SetProcessDefinitionVersionCmd implements Command<Void>, Serializab
         List taskInstanceIds = commandContext.getDbSqlSession().selectList("selectHistoricTaskInstanceIdsByProcessInstanceId", processInstanceId);
         HistoricTaskInstanceEntityManager historicTaskInstanceEntityManager = commandContext.getHistoricTaskInstanceEntityManager();
 
-        Iterator i$ = taskInstanceIds.iterator();
+        Iterator iter = taskInstanceIds.iterator();
 
-        while(i$.hasNext()) {
-            String taskInstanceId = (String)i$.next();
+        while(iter.hasNext()) {
+            String taskInstanceId = (String) iter.next();
             HistoricTaskInstanceEntity taskEntity = historicTaskInstanceEntityManager.findHistoricTaskInstanceById(taskInstanceId);
             taskEntity.setProcessDefinitionId(newProcessDefinitionId);
         }

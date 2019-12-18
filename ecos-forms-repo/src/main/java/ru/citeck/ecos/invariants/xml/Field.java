@@ -91,7 +91,7 @@ public class Field
      */
     public List<Region> getRegionOrRegions() {
         if (regionOrRegions == null) {
-            regionOrRegions = new ArrayList<Region>();
+            regionOrRegions = new ArrayList<>();
         }
         return this.regionOrRegions;
     }
@@ -120,7 +120,7 @@ public class Field
      */
     public List<Invariant> getInvariant() {
         if (invariant == null) {
-            invariant = new ArrayList<Invariant>();
+            invariant = new ArrayList<>();
         }
         return this.invariant;
     }

@@ -24,7 +24,6 @@ import org.alfresco.repo.policy.Behaviour;
 import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.repo.solr.AlfrescoModel;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -38,7 +37,6 @@ import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 
 import java.util.List;
-import java.util.Set;
 import java.io.Serializable;
 
 /**
@@ -117,25 +115,20 @@ public class BranchAssignBehavior implements OnCreateNodePolicy {
                     
                     for (String groupName : branches) {
                         NodeRef groupRef = authorityService.getAuthorityNodeRef(groupName);
-                        if (targetDefinition == null)
-                        {
+                        if (targetDefinition == null) {
                             PropertyDefinition propertyDefinition = dictionaryService.getProperty(targetAssociationOrProperty);
-                            if (propertyDefinition != null)
-                            {
+                            if (propertyDefinition != null) {
                                 Serializable propValue = null;
-                                if(authorityContainerProperty!=null)
-                                {
+                                if (authorityContainerProperty != null) {
                                     propValue = nodeService.getProperty(groupRef, authorityContainerProperty);
-                                }
-                                else
-                                {
+                                } else {
                                     propValue = nodeService.getProperty(groupRef, ContentModel.PROP_NODE_REF);
                                 }
                                 nodeService.setProperty(nodeRef, targetAssociationOrProperty, propValue);
                             }
-                        }
-                        else
+                        } else {
                             nodeService.createAssociation(nodeRef, groupRef, targetAssociationOrProperty);
+                        }
                     }
                 }
                 return null;

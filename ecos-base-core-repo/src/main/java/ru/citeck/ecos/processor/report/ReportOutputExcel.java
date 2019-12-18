@@ -18,7 +18,6 @@
  */
 package ru.citeck.ecos.processor.report;
 
-import org.alfresco.service.namespace.QName;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
@@ -26,7 +25,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import ru.citeck.ecos.processor.AbstractDataBundleLine;
 import ru.citeck.ecos.processor.DataBundle;
 import ru.citeck.ecos.processor.ProcessorConstants;
-import ru.citeck.ecos.template.TemplateNodeService;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -42,21 +40,13 @@ import java.util.Map;
  */
 public class ReportOutputExcel extends AbstractDataBundleLine {
     
-    private final static String NAMESPACE_BEGIN = "" + QName.NAMESPACE_BEGIN;
-    
     private static final String REPORT_DATA = "reportData";
     private static final String REPORT_TITLE = "reportTitle";
     private static final String REPORT_COLUMNS = "reportColumns";
     private static final String COLUMN_TITLE = "title";
-    private static final String COLUMN_ATTR = "attribute";
-    private static final String COLUMN_DATE_FORMAT = "dateFormat";
-    private static final String ROW_NUM = "rowNum";
-    private static final String DEFAULT_DATE_FORMAT = "dd.MM.yyyy HH:mm";
     private static final String XLSX_MIMETYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     
     private String template;
-    
-    private TemplateNodeService templateNodeService;
     
     @Override
     public DataBundle process(DataBundle input) {
@@ -195,7 +185,7 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
                                 }
                             } else if ("Double".equals(dataType)) {
                                 try {
-                                    Double val = Double.parseDouble(valStr);
+                                    double val = Double.parseDouble(valStr);
                                     newCell.setCellStyle(doubleCellStyle);
                                     newCell.setCellType(Cell.CELL_TYPE_NUMERIC);
                                     newCell.setCellValue(val);
@@ -227,30 +217,6 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
         short columnsCount = sheet.getRow(0).getLastCellNum();
         for (short s = 0; s < columnsCount; s++)
             sheet.autoSizeColumn(s, false);
-    }
-    
-    private void copyCellFormats(Workbook workbook, Sheet sheet, Cell sourceCell, Cell destCell) {
-        if (sourceCell == null) {
-            return;
-        }
-
-        // copy styles
-        CellStyle destCellStyle = workbook.createCellStyle();
-        destCellStyle.cloneStyleFrom(sourceCell.getCellStyle());
-        destCell.setCellStyle(destCellStyle);
-        
-        // copy hyperlink
-        if (sourceCell.getHyperlink() != null) {
-            destCell.setHyperlink(sourceCell.getHyperlink());
-        }
-
-        // copy comment
-        if (destCell.getCellComment() != null) {
-            destCell.setCellComment(sourceCell.getCellComment());
-        }
-
-        // copy type
-        destCell.setCellType(sourceCell.getCellType());
     }
     
     private void appendStringValue(Cell cell, String value) {

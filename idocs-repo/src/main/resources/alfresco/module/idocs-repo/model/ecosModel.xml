@@ -186,6 +186,18 @@
                     <title>City</title>
                     <type>d:text</type>
                 </property>
+                <property name="ecos:countryCode">
+                    <title>Country code</title>
+                    <type>d:text</type>
+                </property>
+                <property name="ecos:supervisorId">
+                    <title>Supervisor Id</title>
+                    <type>d:text</type>
+                </property>
+                <property name="ecos:supervisorName">
+                    <title>Supervisor Name</title>
+                    <type>d:text</type>
+                </property>
                 <property name="ecos:sex">
                     <title>Sex</title>
                     <type>d:text</type>
@@ -244,6 +256,16 @@
                     <constraints>
                         <constraint ref="ecos:constraint:typeOfEmployment"/>
                     </constraints>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="ecos:hasHrProperties">
+            <title>HR Properties</title>
+            <properties>
+                <property name="ecos:hrManagerId">
+                    <title>HR Manager Id</title>
+                    <type>d:text</type>
                 </property>
             </properties>
         </aspect>

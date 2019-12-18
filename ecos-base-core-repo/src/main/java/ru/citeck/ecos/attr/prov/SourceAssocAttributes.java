@@ -19,16 +19,12 @@
 package ru.citeck.ecos.attr.prov;
 
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
-import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.QNamePattern;
-import org.alfresco.service.namespace.RegexQNamePattern;
 
 import ru.citeck.ecos.attr.AbstractAttributeProvider;
 import ru.citeck.ecos.model.AttributeModel;
@@ -108,9 +104,6 @@ public class SourceAssocAttributes extends AbstractAttributeProvider {
     private QName getAssociationName(QName attributeName) {
         String prefixedName = attributeName.getLocalName();
         return QName.createQName(prefixedName, namespaceService);
-    }
-    private QName getAttributeName(QName associationName) {
-        return QName.createQName(AttributeModel.NAMESPACE_SOURCE_ASSOC, associationName.toPrefixString(namespaceService));
     }
 
     private AssociationDefinition getDefinition(QName attributeName) {

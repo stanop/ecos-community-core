@@ -47,7 +47,6 @@
     </bean>
 
     <bean id="user-in-document" class="ru.citeck.ecos.action.evaluator.UserInDocumentEvaluator" parent="action-condition-evaluator">
-        <property name="personService" ref="personService" />
         <property name="namespaceService" ref="namespaceService" />
     </bean>
 

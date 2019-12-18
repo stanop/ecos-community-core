@@ -45,38 +45,38 @@ public class AddToCaseActionExecuter extends ActionExecuterAbstractBase {
 
     private NodeService nodeService;
     private  CaseElementService caseElementService;
-	private DictionaryService dictionaryService;
+    private DictionaryService dictionaryService;
 
-	@Override
-	protected void executeImpl(Action action, NodeRef documentNode) {
+    @Override
+    protected void executeImpl(Action action, NodeRef documentNode) {
 
-		QName documentType = nodeService.getType(documentNode);
-		if(!dictionaryService.isSubClass(documentType, ContentModel.TYPE_CONTENT)) {
-			return;
-		}
+        QName documentType = nodeService.getType(documentNode);
+        if (!dictionaryService.isSubClass(documentType, ContentModel.TYPE_CONTENT)) {
+            return;
+        }
 
-		NodeRef caseFolder = nodeService.getPrimaryParent(documentNode).getParentRef();
-		QName caseFolderType = nodeService.getType(caseFolder);
-		if(!dictionaryService.isSubClass(caseFolderType, ContentModel.TYPE_FOLDER)) {
-			return;
-		}
+        NodeRef caseFolder = nodeService.getPrimaryParent(documentNode).getParentRef();
+        QName caseFolderType = nodeService.getType(caseFolder);
+        if (!dictionaryService.isSubClass(caseFolderType, ContentModel.TYPE_FOLDER)) {
+            return;
+        }
 
-		NodeRef caseNode = nodeService.getPrimaryParent(caseFolder).getParentRef();
-		String caseFolderName = (String) nodeService.getProperty(caseFolder, ContentModel.PROP_NAME);
-		NodeRef elementConfig = CaseUtils.getConfigByPropertyValue(caseNode, ICaseModel.PROP_FOLDER_NAME, caseFolderName, nodeService, caseElementService);
-		if(elementConfig == null) {
-			return;
-		}
-		
-		QName elementType = (QName) nodeService.getProperty(elementConfig, ICaseModel.PROP_ELEMENT_TYPE);
-		
-		if(!dictionaryService.isSubClass(documentType, elementType)) {
-			if(!dictionaryService.isSubClass(elementType, documentType)) {
-				throw new IllegalArgumentException("Document " + documentNode + 
-						" of type " + documentType + " can not be cast to " + elementType);
-			}
-			nodeService.setType(documentNode, elementType);
-		}
+        NodeRef caseNode = nodeService.getPrimaryParent(caseFolder).getParentRef();
+        String caseFolderName = (String) nodeService.getProperty(caseFolder, ContentModel.PROP_NAME);
+        NodeRef elementConfig = CaseUtils.getConfigByPropertyValue(caseNode, ICaseModel.PROP_FOLDER_NAME, caseFolderName, nodeService, caseElementService);
+        if (elementConfig == null) {
+            return;
+        }
+
+        QName elementType = (QName) nodeService.getProperty(elementConfig, ICaseModel.PROP_ELEMENT_TYPE);
+
+        if (!dictionaryService.isSubClass(documentType, elementType)) {
+            if (!dictionaryService.isSubClass(elementType, documentType)) {
+                throw new IllegalArgumentException("Document " + documentNode +
+                        " of type " + documentType + " can not be cast to " + elementType);
+            }
+            nodeService.setType(documentNode, elementType);
+        }
 
         String elementConfigName = (String) nodeService.getProperty(elementConfig, ContentModel.PROP_NAME);
         caseElementService.addElement(documentNode, caseNode, elementConfigName);

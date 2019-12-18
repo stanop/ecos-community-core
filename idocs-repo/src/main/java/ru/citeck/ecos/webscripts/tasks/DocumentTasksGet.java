@@ -89,7 +89,7 @@ public class DocumentTasksGet extends DeclarativeWebScript {
             model.add(generateTaskModel(task));
         }
         
-        HashMap<String, Object> result = new HashMap<String, Object>();
+        HashMap<String, Object> result = new HashMap<>();
         result.put("tasks", model);
         return result;
     }
@@ -151,7 +151,7 @@ public class DocumentTasksGet extends DeclarativeWebScript {
 
     private Map<String, String> getAllowedValues(PropertyDefinition propertyDefinition) {
         List<ConstraintDefinition> constraintDefinitions = propertyDefinition.getConstraints();
-        Map<String, String> allowedValues = new LinkedHashMap<String, String>();
+        Map<String, String> allowedValues = new LinkedHashMap<>();
         for (ConstraintDefinition constraintDefinition : constraintDefinitions) {
             Constraint constraint = constraintDefinition.getConstraint();
             if (constraint instanceof ListOfValuesConstraint) {

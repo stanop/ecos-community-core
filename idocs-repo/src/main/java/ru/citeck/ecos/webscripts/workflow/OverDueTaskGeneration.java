@@ -20,9 +20,7 @@ package ru.citeck.ecos.webscripts.workflow;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
@@ -175,29 +173,27 @@ public class OverDueTaskGeneration extends AbstractWebScript {
             List<?> groupIdRef = (List<?>) properties.get(QName.createQName(
                     "http://www.alfresco.org/model/bpm/1.0", "pooledActors"));
 
-			NodeRef object = (NodeRef) groupIdRef.get(0);
-			String property = (String) serviceRegistry.getNodeService()
-					.getProperty(object, ContentModel.PROP_AUTHORITY_NAME);
-			String authorityDisplayName = serviceRegistry.getAuthorityService().getAuthorityDisplayName(property);
-			assignee = authorityDisplayName;
-		}
-		
-		result.put("overDueDays", Math.abs(subtractDays(new  Date(), task.getDueDate())));
-		result.put("assignee", assignee);		
-		result.put("taskName", task.getDescription()+" ("+taskById.getTitle()+")");
-		
-		result.put("taskCreateTime",
-				DateFormatUtils.format(task.getCreateTime(), "dd.MM.yyyy"));
-		result.put("taskId",engineId+task.getId());
+            NodeRef object = (NodeRef) groupIdRef.get(0);
+            String property = (String) serviceRegistry.getNodeService()
+                    .getProperty(object, ContentModel.PROP_AUTHORITY_NAME);
+            assignee = serviceRegistry.getAuthorityService().getAuthorityDisplayName(property);
 
-		return result;
-	}
-	 
-	  private int subtractDays(Date date1, Date date2) 
-	  {
-	    long diff = date1.getTime() - date2.getTime();
-	    int days = (int) (diff / (1000 * 60 * 60 * 24));
-	    return days+1;
+        }
+        result.put("overDueDays", Math.abs(subtractDays(new  Date(), task.getDueDate())));
+        result.put("assignee", assignee);
+        result.put("taskName", task.getDescription() + " (" + taskById.getTitle() + ")");
+
+        result.put("taskCreateTime",
+                DateFormatUtils.format(task.getCreateTime(), "dd.MM.yyyy"));
+        result.put("taskId",engineId + task.getId());
+
+        return result;
+    }
+
+      private int subtractDays(Date date1, Date date2) {
+        long diff = date1.getTime() - date2.getTime();
+        int days = (int) (diff / (1000 * 60 * 60 * 24));
+        return days + 1;
 
     }
 }

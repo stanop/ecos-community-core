@@ -3,8 +3,6 @@ package ru.citeck.ecos.utils;
 import org.alfresco.util.ISO8601DateFormat;
 import org.alfresco.util.ParameterCheck;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
-import org.apache.poi.util.StringUtil;
 import org.joda.time.Interval;
 
 import java.util.ArrayList;
@@ -60,14 +58,15 @@ public class TimeUtils {
 
     private static class PrecisionByDuration {
 
-        private static final List<PrecisionByDuration> precisions = new ArrayList<PrecisionByDuration>() {{
-            add(new PrecisionByDuration("S", Calendar.SECOND));
-            add(new PrecisionByDuration("T.*[0-9]+M", Calendar.MINUTE));
-            add(new PrecisionByDuration("H", Calendar.HOUR));
-            add(new PrecisionByDuration("D", Calendar.DATE));
-            add(new PrecisionByDuration("^[^T]*[0-9]+M", Calendar.MONTH));
-            add(new PrecisionByDuration("Y", Calendar.YEAR));
-        }};
+        private static final List<PrecisionByDuration> precisions = new ArrayList<>();
+        static {
+            precisions.add(new PrecisionByDuration("S", Calendar.SECOND));
+            precisions.add(new PrecisionByDuration("T.*[0-9]+M", Calendar.MINUTE));
+            precisions.add(new PrecisionByDuration("H", Calendar.HOUR));
+            precisions.add(new PrecisionByDuration("D", Calendar.DATE));
+            precisions.add(new PrecisionByDuration("^[^T]*[0-9]+M", Calendar.MONTH));
+            precisions.add(new PrecisionByDuration("Y", Calendar.YEAR));
+        }
 
         private final Pattern pattern;
         private final int field;

@@ -48,8 +48,7 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
         List<QName> assocRecipients = convertStringToQNameList(recipients.get(ASSOC_RECIPIENTS_KEY));
         List<String> assocRecipientsFromICaseRole = recipients.get(RECIPIENTS_FROM_ROLE_KEY);
         List<String> excludeRecipient = recipients.get(EXCLUDE_RECIPIENTS);
-        Set<String> finalRecipients = new HashSet<>();
-        finalRecipients.addAll(super.getNotificationRecipients(item));
+        Set<String> finalRecipients = new HashSet<>(super.getNotificationRecipients(item));
 
         if (assocRecipients != null) {
             Set<String> assocRecipient = RecipientsUtils.getRecipientFromNodeAssoc(assocRecipients, item,

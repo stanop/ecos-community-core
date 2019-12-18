@@ -97,7 +97,7 @@ public class CopyDocumentIgnoreFieldBehaviour extends DefaultCopyBehaviourCallba
 				}
 			}
 			
-			Map<QName, Serializable> propertiesNotNull = new HashMap<QName, Serializable> ();
+			Map<QName, Serializable> propertiesNotNull = new HashMap<>();
 			for(Map.Entry<QName, Serializable> entry : properties.entrySet())
 			{
 				if(properties.get(entry.getKey())!=null || !"".equals(properties.get(entry.getKey())))
@@ -119,7 +119,7 @@ public class CopyDocumentIgnoreFieldBehaviour extends DefaultCopyBehaviourCallba
                 for (String assocField : ignoredAssociations) {
                     QName fullFieldName = qNameConverter.mapNameToQName(assocField);
                     if (assocCopyDetails.getAssocRef().getTypeQName().equals(fullFieldName)) {
-                        return new Pair<AssocCopySourceAction, AssocCopyTargetAction>(AssocCopySourceAction.IGNORE, AssocCopyTargetAction.USE_COPIED_TARGET);
+                        return new Pair<>(AssocCopySourceAction.IGNORE, AssocCopyTargetAction.USE_COPIED_TARGET);
                     }
                 }
             }

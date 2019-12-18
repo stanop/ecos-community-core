@@ -32,6 +32,8 @@ import ru.citeck.ecos.records2.meta.RecordsMetaService;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records2.request.query.SortBy;
+import ru.citeck.ecos.records2.request.query.page.QueryPage;
+import ru.citeck.ecos.records2.request.query.page.SkipPage;
 import ru.citeck.ecos.records2.source.dao.AbstractRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.RecordsQueryWithMetaDAO;
 import ru.citeck.ecos.search.*;
@@ -65,6 +67,7 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
     private static final String PRED_STR_EQUALS = SearchPredicate.STRING_EQUALS.getValue();
 
     private static final Log logger = LogFactory.getLog(TaskStatisticRecords.class);
+    private static final int TOTAL_COUNT_PAGE_SKIP_COUNT = 0;
 
     private PersonService personService;
     private SearchService searchService;
@@ -110,9 +113,23 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
         records.merge(metaValues);
         records.merge(recordsMetaService.getMeta(metaValues.getRecords(), metaSchema));
         records.setHasMore(metaValues.getHasMore());
-        records.setTotalCount(metaValues.getTotalCount());
+
+        long totalCount = getRecordsTotalCount(query);
+        records.setTotalCount(totalCount);
 
         return records;
+    }
+
+    private long getRecordsTotalCount(RecordsQuery query) {
+        query.setMaxItems(Integer.MAX_VALUE);
+
+        QueryPage page = query.getPage();
+        if (query.getPage() instanceof SkipPage) {
+            page = ((SkipPage) query.getPage()).withSkipCount(TOTAL_COUNT_PAGE_SKIP_COUNT);
+        }
+        query.setPage(page);
+
+        return getRecordsImpl(query).getTotalCount();
     }
 
     private RecordsQueryResult<MetaValue> getRecordsImpl(RecordsQuery query) {
@@ -182,9 +199,9 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
         }
 
         return getRecord(startEvent.orElse(null),
-                         completeEvent.orElse(null),
-                         !showUnassignedInStatisticConfig ? eventNode : assignEvent.orElse(null),
-                         context);
+                completeEvent.orElse(null),
+                !showUnassignedInStatisticConfig ? eventNode : assignEvent.orElse(null),
+                context);
     }
 
     private List<GqlAlfNode> getEvents(String taskId, AlfGqlContext context) {
@@ -231,10 +248,10 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
 
     private List<GqlAlfNode> wrapNodes(List<NodeRef> nodeRefs, AlfGqlContext context) {
         return nodeRefs.stream()
-                       .map(context::getNode)
-                       .filter(Optional::isPresent)
-                       .map(Optional::get)
-                       .collect(Collectors.toList());
+                .map(context::getNode)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
     }
 
     private SearchResult<NodeRef> getEvents(RecordsQuery query, Boolean isAssign) {
@@ -261,16 +278,14 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
                 continue;
             }
 
-            if (fieldQName.equals(HistoryModel.ASSOC_INITIATOR)) {
-                if (value != null && NodeRef.isNodeRef(value)) {
-                    NodeRef rootRef = new NodeRef(value);
-                    Set<String> authorities = authorityUtils.getContainedUsers(rootRef, false);
-                    if (!authorities.isEmpty()) {
-                        value = authorityUtils.getNodeRefs(authorities)
-                                              .stream()
-                                              .map(Object::toString)
-                                              .collect(Collectors.joining(","));
-                    }
+            if (fieldQName.equals(HistoryModel.ASSOC_INITIATOR) && value != null && NodeRef.isNodeRef(value)) {
+                NodeRef rootRef = new NodeRef(value);
+                Set<String> authorities = authorityUtils.getContainedUsers(rootRef, false);
+                if (!authorities.isEmpty()) {
+                    value = authorityUtils.getNodeRefs(authorities)
+                                          .stream()
+                                          .map(Object::toString)
+                                          .collect(Collectors.joining(","));
                 }
             }
 
@@ -366,9 +381,9 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
 
     private MetaValue getAssocAttribute(GqlAlfNode node, String key, AlfGqlContext context) {
         AlfNodeAttValue value = new AlfNodeAttValue(node.attribute(key)
-                                                        .node()
-                                                        .map(n -> new NodeRef(n.nodeRef()))
-                                                        .orElse(null));
+                .node()
+                .map(n -> new NodeRef(n.nodeRef()))
+                .orElse(null));
         value.init(context, null);
         return value;
     }

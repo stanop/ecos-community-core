@@ -26,22 +26,23 @@ import java.net.URLEncoder;
 public class Utils {
 
     public static String encodeContentDispositionForDownload(WebScriptRequest request, String fileName,
-			String fileExtension, boolean isInline) throws UnsupportedEncodingException {
-		if (fileName == null)
-			throw new IllegalArgumentException("Value of the \"filename\" parameter cannot be null!");
-		
-		if(fileExtension != null && fileExtension.length() > 0) {
-			// Removing file extension from the name if any
-			int dot_index = fileName.lastIndexOf(".");
-			if (dot_index > -1) {
-				fileName = fileName.substring(0, dot_index) + "." + fileExtension;
+            String fileExtension, boolean isInline) throws UnsupportedEncodingException {
+        if (fileName == null) {
+            throw new IllegalArgumentException("Value of the \"filename\" parameter cannot be null!");
+        }
+
+        if (fileExtension != null && fileExtension.length() > 0) {
+            // Removing file extension from the name if any
+            int dot_index = fileName.lastIndexOf('.');
+            if (dot_index > -1) {
+                fileName = fileName.substring(0, dot_index) + "." + fileExtension;
             } else {
                 fileName = fileName + "." + fileExtension;
             }
         }
-			
-		String contentDisposition = isInline ? "inline; " : "attachment; ";
-		String agent = request.getHeader("USER-AGENT").toLowerCase();
+
+        String contentDisposition = isInline ? "inline; " : "attachment; ";
+        String agent = request.getHeader("USER-AGENT").toLowerCase();
 
         String fName = URLEncoder.encode(fileName, "UTF-8");
         if (agent != null && agent.contains("firefox")) {
@@ -49,8 +50,7 @@ public class Utils {
         } else {
             fName = fName.replace('+', ' ');
         }
-        if (agent != null && !agent.contains("msie"))
-        {
+        if (agent != null && !agent.contains("msie")) {
             fName = fName.replace("%28", "(");
             fName = fName.replace("%29", ")");
             fName = fName.replace("%21", "!");
@@ -84,8 +84,8 @@ public class Utils {
             contentDisposition += "filename*=UTF-8''" + fName;
         }
 
-		return contentDisposition;
-	}
+        return contentDisposition;
+    }
 
     public static String restoreFreemarkerVariables(String template) {
         return template != null ? template.replace("#{","${") : null;

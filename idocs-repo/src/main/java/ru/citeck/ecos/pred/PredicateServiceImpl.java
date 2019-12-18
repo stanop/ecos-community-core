@@ -53,7 +53,7 @@ class PredicateServiceImpl implements PredicateService {
     @Override
     public Quantifier getQuantifier(NodeRef requirement) {
         String reqQuantifier = (String) nodeService.getProperty(requirement, PredicateModel.PROP_QUANTIFIER);
-        return Quantifier.valueOf(reqQuantifier.toString());
+        return Quantifier.valueOf(reqQuantifier);
     }
     
     @Override

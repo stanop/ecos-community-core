@@ -53,7 +53,7 @@ public class ConfirmDecision {
 		
 		// confirmVersions:
 		List<NodeRef> confirmVersionsValue = (List<NodeRef>) decisionProps.get(ConfirmWorkflowModel.PROP_CONFIRM_VERSIONS);
-		confirmVersions = new HashSet<NodeRef>(confirmVersionsValue.size());
+		confirmVersions = new HashSet<>(confirmVersionsValue.size());
 		confirmVersions.addAll(confirmVersionsValue);
 		
 		// task id:

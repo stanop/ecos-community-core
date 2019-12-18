@@ -16,6 +16,7 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.flowable.engine.TaskService;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.flowable.variable.api.delegate.VariableScope;
 import ru.citeck.ecos.deputy.DeputyService;
@@ -23,7 +24,6 @@ import ru.citeck.ecos.flowable.listeners.global.GlobalAssignmentTaskListener;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCompleteTaskListener;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCreateTaskListener;
 import ru.citeck.ecos.flowable.services.FlowableCustomCommentService;
-import org.flowable.engine.TaskService;
 import ru.citeck.ecos.flowable.utils.FlowableListenerUtils;
 import ru.citeck.ecos.flowable.utils.FlowableUtils;
 import ru.citeck.ecos.history.HistoryEventType;
@@ -75,6 +75,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
      */
     private String VAR_OUTCOME_PROPERTY_NAME;
     private String VAR_COMMENT;
+    private String VAR_LAST_COMMENT;
     private String VAR_DESCRIPTION;
 
 
@@ -85,6 +86,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
         qNameConverter = new WorkflowQNameConverter(namespaceService);
         VAR_OUTCOME_PROPERTY_NAME = qNameConverter.mapQNameToName(WorkflowModel.PROP_OUTCOME_PROPERTY_NAME);
         VAR_COMMENT = qNameConverter.mapQNameToName(WorkflowModel.PROP_COMMENT);
+        VAR_LAST_COMMENT = qNameConverter.mapQNameToName(CiteckWorkflowModel.PROP_LASTCOMMENT);
         VAR_DESCRIPTION = qNameConverter.mapQNameToName(WorkflowModel.PROP_WORKFLOW_DESCRIPTION);
     }
 
@@ -120,6 +122,9 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
         if (taskComment == null) {
             taskComment = getFormCustomComment(delegateTask);
         }
+
+        String lastTaskComment = (String) delegateTask.getVariable(VAR_LAST_COMMENT);
+
         ArrayList<NodeRef> taskAttachments = FlowableListenerUtils.getTaskAttachments(delegateTask);
         String assignee = delegateTask.getAssignee();
         String originalOwner = (String) delegateTask.getVariableLocal("taskOriginalOwner");
@@ -162,6 +167,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
         eventProperties.put(HistoryModel.PROP_TASK_TYPE, taskType);
         eventProperties.put(HistoryModel.PROP_TASK_OUTCOME, taskOutcome);
         eventProperties.put(HistoryModel.PROP_TASK_COMMENT, taskComment);
+        eventProperties.put(HistoryModel.PROP_LAST_TASK_COMMENT, lastTaskComment);
         eventProperties.put(HistoryModel.PROP_TASK_ATTACHMENTS, taskAttachments);
         eventProperties.put(HistoryModel.PROP_TASK_POOLED_ACTORS, pooledActors);
         eventProperties.put(HistoryModel.PROP_TASK_ROLE, roleName);
@@ -170,6 +176,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
         String taskTitleProp = qNameConverter.mapQNameToName(CiteckWorkflowModel.PROP_TASK_TITLE);
         eventProperties.put(HistoryModel.PROP_TASK_TITLE, (String) delegateTask.getVariable(taskTitleProp));
 
+        eventProperties.put(HistoryModel.PROP_TASK_FORM_KEY, delegateTask.getFormKey());
         eventProperties.put(HistoryModel.PROP_WORKFLOW_INSTANCE_ID, ENGINE_PREFIX + delegateTask.getProcessInstanceId());
         eventProperties.put(HistoryModel.PROP_WORKFLOW_DESCRIPTION, (Serializable) delegateTask.getVariable(VAR_DESCRIPTION));
         eventProperties.put(HistoryModel.ASSOC_INITIATOR, assignee != null ? assignee : HistoryService.SYSTEM_USER);
@@ -203,8 +210,9 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
      */
     private Map<QName, Serializable> convertProperties(Map additionalProperties) {
         Map<QName, Serializable> result = new HashMap<>(additionalProperties.size());
-        for (Object key : additionalProperties.keySet()) {
-            QName name;
+        for (Map.Entry<?,?> entry : ((Map<?, ?>) additionalProperties).entrySet()) {
+            Object key = entry.getKey();
+            QName name = null;
             if (key instanceof String) {
                 name = qNameConverter.mapNameToQName((String) key);
             } else if (key instanceof QName) {
@@ -213,7 +221,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
                 logger.warn("Unknown type of key: " + key.getClass());
                 continue;
             }
-            result.put(name, (Serializable) additionalProperties.get(key));
+            result.put(name, (Serializable) entry.getValue());
         }
         return result;
     }

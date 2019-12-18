@@ -123,11 +123,9 @@ public class EcosFormServiceImpl implements EcosFormService {
             for (FormProvider provider : providers) {
 
                 EcosFormModel form = provider.getFormById(model.getId());
-                if (form != null) {
-                    if (provider instanceof MutableFormProvider) {
-                        ((MutableFormProvider) provider).save(model);
-                        return model.getId();
-                    }
+                if (form != null && provider instanceof MutableFormProvider) {
+                    ((MutableFormProvider) provider).save(model);
+                    return model.getId();
                 }
             }
         } else {
@@ -164,7 +162,7 @@ public class EcosFormServiceImpl implements EcosFormService {
 
     public static class FormKeys {
 
-        @MetaAtt(RecordConstants.ATT_FORM_KEY)
+        @MetaAtt(RecordConstants.ATT_FORM_KEY + "[]?str")
         @Getter @Setter private List<String> keys;
     }
 

@@ -206,9 +206,10 @@ public class CasePlanModelImport {
         if (definition.getName() != null) {
             properties.put(ContentModel.PROP_NAME, definition.getName());
         }
-        for (javax.xml.namespace.QName key : attributes.keySet()) {
+        for (Map.Entry<javax.xml.namespace.QName, String> entry : attributes.entrySet()) {
+            javax.xml.namespace.QName key = entry.getKey();
             if (!key.getNamespaceURI().equals(CMMNUtils.NAMESPACE)) {
-                String value = attributes.get(key);
+                String value = entry.getValue();
                 properties.put(utils.convertFromXMLQName(key), value.trim().isEmpty() ? null : value);
             }
         }

@@ -59,7 +59,7 @@ public class ChildAssocAttributes extends AbstractAttributeProvider {
     @Override
     public Set<QName> getPersistedAttributeNames(NodeRef nodeRef, boolean justCreated) {
         List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(nodeRef);
-        Set<QName> attributeNames = new HashSet<QName>();
+        Set<QName> attributeNames = new HashSet<>();
         for(ChildAssociationRef assoc : childAssocs) {
             attributeNames.add(assoc.getTypeQName());
         }

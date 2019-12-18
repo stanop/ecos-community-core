@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
  */
 public abstract class AbstractActivitiCalendar implements BusinessCalendar
 {
-	private final String CANT_INIT_MSG = "Could not initialize activiti calendar {0}: {1}";
+	private final String CANT_INIT_MSG = "Could not initialize activiti calendar %1$s: %2$s";
 	private Logger logger = Logger.getLogger(BusinessCalendar.class);
 	protected String name;
 	protected ProcessEngineConfigurationImpl config;

@@ -36,66 +36,66 @@ import ru.citeck.ecos.webscripts.common.BaseAbstractWebscript;
  * 
  */
 public class UserWorkflowTasksWebscript extends BaseAbstractWebscript {
-	
-	private WorkflowService workflowService;
-	private String shareApp;
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void executeInternal(WebScriptRequest aRequest, WebScriptResponse aResponse) throws Exception {	
-		
-		// get user name to read tasks for
-		String username = aRequest.getServiceMatch().getTemplateVars().get("username");
-		
-		// load active tasks for the given user
-		List<WorkflowTask> taskList = this.workflowService.getAssignedTasks(username, WorkflowTaskState.IN_PROGRESS);
 
-		// construct resulting JSON 
-		JSONObject result = new JSONObject();
-		JSONArray array = new JSONArray();
-		result.put("data", array);
-		
-		// fill array with JSON tasks
-		for (WorkflowTask task : taskList) {
-			array.put(construct(aRequest,task, username));
-		}
-		
-		aResponse.setContentType("application/json");
-		aResponse.setContentEncoding("UTF-8");
-		aResponse.addHeader("Cache-Control", "no-cache");
-		aResponse.addHeader("Pragma","no-cache");
-		// write JSON into response stream
-		result.write(aResponse.getWriter());		
-	}
+    private WorkflowService workflowService;
+    private String shareApp;
 
-	/**
-	 * Builds JSON object from workflow task given.
-	 * @param aTask workflow task
-	 * @param aUsername user name
-	 * @return JSON otask object
-	 */
-	private JSONObject construct(WebScriptRequest aRequest, WorkflowTask aTask, String aUsername) throws JSONException {
-		
-		JSONObject result = new JSONObject();
-		
-		result.put("id", aTask.id);
-		result.put("title", aTask.title);
-		result.put("description", aTask.path.instance.description);
-		result.put("url", (new StringBuilder()).append(shareApp).append("/page/user/").append(aUsername).append("/task-edit?taskId=").append(aTask.id).append("&referrer=tasks").toString());
-		
-		return result;
-	}
-	
-	/**
-	 * @param workflowService the workflowService to set
-	 */
-	public void setWorkflowService(WorkflowService workflowService) {
-		this.workflowService = workflowService;
-	}
-	
-	public void setShareApp(String shareApp)
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void executeInternal(WebScriptRequest aRequest, WebScriptResponse aResponse) throws Exception {
+
+        // get user name to read tasks for
+        String username = aRequest.getServiceMatch().getTemplateVars().get("username");
+
+        // load active tasks for the given user
+        List<WorkflowTask> taskList = this.workflowService.getAssignedTasks(username, WorkflowTaskState.IN_PROGRESS);
+
+        // construct resulting JSON
+        JSONObject result = new JSONObject();
+        JSONArray array = new JSONArray();
+        result.put("data", array);
+
+        // fill array with JSON tasks
+        for (WorkflowTask task : taskList) {
+            array.put(construct(aRequest,task, username));
+        }
+
+        aResponse.setContentType("application/json");
+        aResponse.setContentEncoding("UTF-8");
+        aResponse.addHeader("Cache-Control", "no-cache");
+        aResponse.addHeader("Pragma","no-cache");
+        // write JSON into response stream
+        result.write(aResponse.getWriter());
+    }
+
+    /**
+     * Builds JSON object from workflow task given.
+     * @param aTask workflow task
+     * @param aUsername user name
+     * @return JSON otask object
+     */
+    private JSONObject construct(WebScriptRequest aRequest, WorkflowTask aTask, String aUsername) throws JSONException {
+
+        JSONObject result = new JSONObject();
+
+        result.put("id", aTask.id);
+        result.put("title", aTask.title);
+        result.put("description", aTask.path.instance.description);
+        result.put("url", (new StringBuilder()).append(shareApp).append("/page/user/").append(aUsername).append("/task-edit?taskId=").append(aTask.id).append("&referrer=tasks").toString());
+
+        return result;
+    }
+
+    /**
+     * @param workflowService the workflowService to set
+     */
+    public void setWorkflowService(WorkflowService workflowService) {
+        this.workflowService = workflowService;
+    }
+
+    public void setShareApp(String shareApp)
     {
         this.shareApp = shareApp;
     }

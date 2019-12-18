@@ -46,12 +46,9 @@ public class CaseTaskEndProcessListener extends AbstractExecutionListener {
 
     @Override
     protected void notifyImpl(final DelegateExecution delegateExecution) throws Exception {
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-            @Override
-            public Object doWork() throws Exception {
-                CaseTaskEndProcessListener.this.doWork(delegateExecution);
-                return null;
-            }
+        AuthenticationUtil.runAsSystem(() -> {
+            CaseTaskEndProcessListener.this.doWork(delegateExecution);
+            return null;
         });
     }
 
@@ -73,13 +70,6 @@ public class CaseTaskEndProcessListener extends AbstractExecutionListener {
             ActionConditionUtils.getProcessVariables().putAll(delegateExecution.getVariables());
             caseActivityService.stopActivity(packageAssocs.get(0).getSourceRef());
         }
-    }
-
-    private static <T> T castOrNull(Object obj, Class<T> clazz) {
-        if (obj != null && clazz.isAssignableFrom(obj.getClass())) {
-            return clazz.cast(obj);
-        }
-        return null;
     }
 
     @Override

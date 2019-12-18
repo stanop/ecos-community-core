@@ -50,7 +50,6 @@
 
     <bean id="advancedWorkflowService" class="ru.citeck.ecos.workflow.AdvancedWorkflowServiceActivitiImpl">
         <property name="engine" ref="activitiWorkflowEngine"/>
-        <property name="taskService" ref="activitiTaskService"/>
         <property name="authorityService" ref="authorityService"/>
         <property name="queryExecutor" ref="activitiQueryExecutor"/>
     </bean>
@@ -505,7 +504,6 @@
     </bean>
 
     <bean id="taskOriginalOwner" class="ru.citeck.ecos.workflow.listeners.TaskOriginalOwnerListener">
-        <property name="availabilityService" ref="availabilityService"/>
         <property name="delegateListenerName" value="deputyListener.taskManagement"/>
     </bean>
 

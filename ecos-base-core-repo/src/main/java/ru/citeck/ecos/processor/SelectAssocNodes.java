@@ -51,13 +51,13 @@ public class SelectAssocNodes extends AbstractDataBundleLine {
     @Override
     public DataBundle process(DataBundle input) {
         Map<String, Object> model = input.needModel();
-        HashMap<String, Object> newModel = new HashMap<String, Object>();
+        HashMap<String, Object> newModel = new HashMap<>();
         newModel.putAll(model);
 
         NodeRef parent = new NodeRef((String) evaluateExpression(parentNodeRef, model));
         newModel.put("parentNode", parent.toString());
         if (nodeService.exists(parent)) {
-            QNamePattern assocTypeQName = QName.resolveToQName(serviceRegistry.getNamespaceService(), 
+            QNamePattern assocTypeQName = QName.resolveToQName(serviceRegistry.getNamespaceService(),
                     (String) this.evaluateExpression(assocType, model));
             List<AssociationRef> assocs = nodeService.getTargetAssocs(parent, assocTypeQName);
             String name = (String) this.evaluateExpression(childName, model);
@@ -71,12 +71,6 @@ public class SelectAssocNodes extends AbstractDataBundleLine {
             newModel.put("childNode", childNode != null ? childNode.toString() : null);
         }
         return helper.getDataBundle(helper.getContentReader(input), newModel);
-    }
-
-    private QNamePattern createQNamePattern(String property, Map<String, Object> model) {
-        return property == null || property.isEmpty() ?
-                RegexQNamePattern.MATCH_ALL :
-                QName.createQName((String) evaluateExpression(property, model));
     }
 
     public void setParentNodeRef(String parentNodeRef) {

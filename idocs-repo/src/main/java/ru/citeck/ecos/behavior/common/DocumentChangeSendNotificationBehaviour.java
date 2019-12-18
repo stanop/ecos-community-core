@@ -18,44 +18,29 @@
  */
 package ru.citeck.ecos.behavior.common;
 
-import java.io.Serializable;
-import java.util.*;
-
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
 import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.repo.node.NodeServicePolicies;
-import ru.citeck.ecos.behavior.JavaBehaviour;
-import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.namespace.QName;
-import org.alfresco.service.namespace.NamespaceService;
-import org.alfresco.service.ServiceRegistry;
+import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.dictionary.TypeDefinition;
-import org.alfresco.service.cmr.dictionary.PropertyDefinition;
-import org.alfresco.service.cmr.dictionary.AspectDefinition;
-import org.alfresco.service.cmr.dictionary.ConstraintDefinition;
-import org.alfresco.service.cmr.dictionary.Constraint;
-import org.alfresco.service.cmr.dictionary.ClassDefinition;
-import org.alfresco.service.cmr.dictionary.ChildAssociationDefinition;
-import org.alfresco.service.cmr.dictionary.AssociationDefinition;
-import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
-import org.alfresco.repo.forms.processor.node.FormFieldConstants;
-
-import ru.citeck.ecos.notification.DocumentNotificationSender;
-import org.alfresco.service.cmr.repository.AssociationRef;
-import ru.citeck.ecos.processor.ProcessorHelper;
+import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.dictionary.*;
+import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.security.PersonService;
+import org.alfresco.service.namespace.NamespaceService;
+import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
+import ru.citeck.ecos.behavior.JavaBehaviour;
+import ru.citeck.ecos.notification.DocumentNotificationSender;
+import ru.citeck.ecos.processor.ProcessorHelper;
 import ru.citeck.ecos.security.NodeOwnerDAO;
-import org.alfresco.service.cmr.security.PersonService;
-import org.alfresco.service.cmr.repository.AssociationExistsException;
-import org.alfresco.service.cmr.repository.InvalidNodeRefException;
 import ru.citeck.ecos.service.AlfrescoServices;
+
+import java.io.Serializable;
+import java.util.*;
 
 public class DocumentChangeSendNotificationBehaviour implements NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.OnCreateAssociationPolicy, 
 		NodeServicePolicies.OnDeleteAssociationPolicy, NodeServicePolicies.OnCreateChildAssociationPolicy, NodeServicePolicies.OnDeleteChildAssociationPolicy, 
@@ -116,12 +101,11 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 		logger.debug("onUpdateProperties event");
 		if(enabled && nodeService.exists(nodeRef)) 
 		{
-			Set<String> subs = new HashSet <String>();
 			Map<QName, Serializable> properties = nodeService.getProperties(nodeRef);
-			ArrayList<Object> listProperties = new ArrayList<Object>();
-			HashMap<String, Object> addition =  new HashMap<String, Object>();
+			ArrayList<Object> listProperties = new ArrayList<>();
+			HashMap<String, Object> addition = new HashMap<>();
 			for(Map.Entry<QName, Serializable> entry : properties.entrySet()) {
-				HashMap<String, Object> changedProperties = new HashMap<String, Object>();
+				HashMap<String, Object> changedProperties = new HashMap<>();
 				Object propBefore = (Object) before.get(entry.getKey());
 				Object propAfter = (Object) after.get(entry.getKey());
 
@@ -130,7 +114,7 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 				if(propertiesMode == PropertiesMode.INCLUDE && isContains
 						|| propertiesMode == PropertiesMode.EXCLUDE && !isContains) {
 
-					if((propBefore!=null && !propBefore.equals(propAfter))||(propBefore==null && propAfter!=null))
+					if(!Objects.equals(propBefore, propAfter))
 					{
 						PropertyDefinition propDefinition = dictionaryService.getProperty(entry.getKey());
 						String propTitle = null;
@@ -241,11 +225,11 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 		if(enabled && (propertiesMode == PropertiesMode.INCLUDE && isContains
 					|| propertiesMode == PropertiesMode.EXCLUDE && !isContains)) {
 
-			HashMap<String, Object> changedProperties = new HashMap<String, Object>();
+			HashMap<String, Object> changedProperties = new HashMap<>();
 			changedProperties.put("event","added");
-			ArrayList<Object> listProperties = new ArrayList<Object>();
+			ArrayList<Object> listProperties = new ArrayList<>();
 			String propTitle = null;
-			HashMap<String, Object> addition =  new HashMap<String, Object>();
+			HashMap<String, Object> addition = new HashMap<>();
 			if(assoc!=null) {
 				propTitle=assoc.getTitle();
 			}
@@ -283,7 +267,7 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 	@Override
 	public void onDeleteAssociation(AssociationRef nodeAssocRef) {
 		logger.debug("onDeleteAssociation event");
-		HashMap<String, Object> changedProperties = new HashMap<String, Object>();
+		HashMap<String, Object> changedProperties = new HashMap<>();
 		changedProperties.put("event","deleted");
 		AssociationDefinition assoc = dictionaryService.getAssociation(nodeAssocRef.getTypeQName());
 
@@ -292,9 +276,9 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 		if(enabled && (propertiesMode == PropertiesMode.INCLUDE && isContains
 					|| propertiesMode == PropertiesMode.EXCLUDE && !isContains)) {
 
-			ArrayList<Object> listProperties = new ArrayList<Object>();
+			ArrayList<Object> listProperties = new ArrayList<>();
 			String propTitle = null;
-			HashMap<String, Object> addition =  new HashMap<String, Object>();
+			HashMap<String, Object> addition = new HashMap<>();
 			if(assoc!=null) {
 				propTitle=assoc.getTitle();
 			}
@@ -336,11 +320,11 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 		if(enabled && (propertiesMode == PropertiesMode.INCLUDE && isContains
 					|| propertiesMode == PropertiesMode.EXCLUDE && !isContains)) {
 
-			HashMap<String, Object> changedProperties = new HashMap<String, Object>();
+			HashMap<String, Object> changedProperties = new HashMap<>();
 			changedProperties.put("event","added");
-			ArrayList<Object> listProperties = new ArrayList<Object>();
+			ArrayList<Object> listProperties = new ArrayList<>();
 			String propTitle = null;
-			HashMap<String, Object> addition =  new HashMap<String, Object>();
+			HashMap<String, Object> addition = new HashMap<>();
 			if(assoc!=null) {
 				propTitle=assoc.getName().getLocalName();
 			}
@@ -382,11 +366,11 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 		if(enabled && (propertiesMode == PropertiesMode.INCLUDE && isContains
 					|| propertiesMode == PropertiesMode.EXCLUDE && !isContains)) {
 
-			HashMap<String, Object> changedProperties = new HashMap<String, Object>();
+			HashMap<String, Object> changedProperties = new HashMap<>();
 			changedProperties.put("event","deleted");
-			ArrayList<Object> listProperties = new ArrayList<Object>();
+			ArrayList<Object> listProperties = new ArrayList<>();
 			String propTitle = null;
-			HashMap<String, Object> addition =  new HashMap<String, Object>();
+			HashMap<String, Object> addition = new HashMap<>();
 			if(assoc!=null) {
 				propTitle=assoc.getName().getLocalName();
 			}
@@ -489,7 +473,7 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 
 	public Set<String> selectSubscribers(NodeRef nodeRef, String mode)
 	{
-		Set<String> subs = new HashSet <String>();
+		Set<String> subs = new HashSet<>();
 		if(subscribers!=null)
 		{
 			List<String> list_subs = subscribers.get(mode);

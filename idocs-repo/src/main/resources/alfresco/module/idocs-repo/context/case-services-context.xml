@@ -91,7 +91,6 @@
 		<property name="policyComponent" ref="policyComponent" />
 		<property name="nodeService" ref="nodeService" />
 		<property name="caseElementService" ref="caseElementService" />
-		<property name="order" value="${behavior.order.case.subcase}" />
 	</bean>
 
 	<bean id="subcaseNamingBehavior" parent="AutoNameBehaviour">
@@ -106,7 +105,6 @@
 	<bean id="add-to-case" class="ru.citeck.ecos.icase.AddToCaseActionExecuter" parent="action-executer">
 		<property name="publicAction" value="true"/>
 		<property name="nodeService" ref="nodeService"/>
-		<property name="ruleService" ref="ruleService"/>
 		<property name="dictionaryService" ref="dictionaryService"/>
 		<property name="caseElementService" ref="caseElementService"/>
 	</bean>

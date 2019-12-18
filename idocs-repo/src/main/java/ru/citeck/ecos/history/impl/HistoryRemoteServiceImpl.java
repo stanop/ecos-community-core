@@ -235,7 +235,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
                     jmsTemplate.convertAndSend(SEND_NEW_RECORDS_QUEUE, convertListOfMapsToJsonString(result));
                 }
             } else {
-                MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+                MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
                 map.add("records", convertListOfMapsToJsonString(result));
                 restTemplate.postForObject(properties.getProperty(HISTORY_SERVICE_HOST) + INSERT_RECORDS_PATH, map, Boolean.class);
             }

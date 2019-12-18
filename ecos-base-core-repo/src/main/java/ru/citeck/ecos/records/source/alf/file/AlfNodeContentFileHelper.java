@@ -5,7 +5,7 @@ import lombok.extern.log4j.Log4j;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.content.MimetypeMap;
-import org.alfresco.service.cmr.dictionary.ChildAssociationDefinition;
+import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.namespace.NamespaceService;
@@ -34,6 +34,8 @@ import static ru.citeck.ecos.records.source.alf.file.FileRepresentation.*;
 public class AlfNodeContentFileHelper {
 
     private static final String WORKSPACE_PREFIX = "workspace://SpacesStore/";
+
+    private static NodeRef attachmentRoot = new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "attachments-root");
 
     private final NodeService nodeService;
     private final ContentService contentService;
@@ -115,11 +117,17 @@ public class AlfNodeContentFileHelper {
     }
 
     public void processChildAssocFilesContent(QName assoc, JsonNode jsonNodes, NodeRef nodeRef) {
-        ChildAssociationDefinition assocDef = (ChildAssociationDefinition) dictionaryService.getAssociation(assoc);
+        processAssocFilesContent(assoc, jsonNodes, nodeRef, true);
+    }
+
+    public void processAssocFilesContent(QName assoc, JsonNode jsonNodes, NodeRef nodeRef, Boolean isChild) {
+        AssociationDefinition assocDef = dictionaryService.getAssociation(assoc);
         QName assocName = assocDef.getName();
         QName targetName = assocDef.getTargetClass().getName();
 
-        List<NodeRef> currentChilds = RepoUtils.getChildrenByAssoc(nodeRef, assocName, nodeService);
+        List<NodeRef> currentFiles = isChild
+                ? RepoUtils.getChildrenByAssoc(nodeRef, assocName, nodeService)
+                : RepoUtils.getTargetAssoc(nodeRef, assocName, nodeService);
         Set<NodeRef> inboundMutatedRefs = new HashSet<>();
 
         for (JsonNode jsonNode : jsonNodes) {
@@ -127,26 +135,43 @@ public class AlfNodeContentFileHelper {
             NodeRef fileRef = new NodeRef(tempRefStr);
             inboundMutatedRefs.add(fileRef);
 
-            if (currentChilds.contains(fileRef)) {
+            if (currentFiles.contains(fileRef)) {
                 processTypeKind(jsonNode, fileRef);
                 continue;
             }
 
-            NodeRef createdChild = nodeService.createNode(nodeRef,
-                    assocName,
-                    QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, GUID.generate()),
-                    targetName).getChildRef();
+            NodeRef createdNode;
 
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Create child node. Parent <%s>, type <%s>, assocType <%s>, nodeRef <%s>",
-                        nodeRef.toString(), targetName, assocName, createdChild.toString()));
+            if (!isChild) {
+                createdNode = nodeService.createNode(attachmentRoot,
+                        ContentModel.ASSOC_CHILDREN,
+                        QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, GUID.generate()),
+                        targetName).getChildRef();
+
+                RepoUtils.createAssociation(nodeRef, createdNode, assocName, true, nodeService);
+            } else {
+                createdNode = nodeService.createNode(nodeRef,
+                        assocName,
+                        QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, GUID.generate()),
+                        targetName).getChildRef();
             }
 
-            saveFileToContentPropFromEform(jsonNode, ContentModel.PROP_CONTENT, createdChild);
-            processTypeKind(jsonNode, createdChild);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Create file node. Source node <%s>, type <%s>, assocType <%s>, nodeRef <%s>",
+                        nodeRef.toString(), targetName, assocName, createdNode.toString()));
+            }
+
+            saveFileToContentPropFromEform(jsonNode, ContentModel.PROP_CONTENT, createdNode);
+            processTypeKind(jsonNode, createdNode);
         }
 
-        processDeletion(currentChilds, inboundMutatedRefs);
+        if (isChild) {
+            processDeletion(currentFiles, inboundMutatedRefs);
+        } else {
+            currentFiles.stream()
+                    .filter(ref -> !inboundMutatedRefs.contains(ref))
+                    .forEach(ref -> RepoUtils.removeAssociation(nodeRef, ref, assocName, true, nodeService));
+        }
     }
 
     private void saveFileToContentPropFromEform(JsonNode tempJsonNode, QName propName, NodeRef node) {

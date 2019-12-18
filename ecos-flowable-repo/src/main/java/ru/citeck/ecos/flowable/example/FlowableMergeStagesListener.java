@@ -56,7 +56,7 @@ public class FlowableMergeStagesListener implements ExecutionListener {
                 targetStage.put(CONFIRMERS, targetConfirmers);
             }
 
-            Set<String> stageConfirmersIndex = new HashSet<String>();
+            Set<String> stageConfirmersIndex = new HashSet<>();
             for (Object confirmerObj : targetConfirmers) {
                 Map confirmer = (Map) confirmerObj;
                 stageConfirmersIndex.add((String) confirmer.get(NODE_REF));

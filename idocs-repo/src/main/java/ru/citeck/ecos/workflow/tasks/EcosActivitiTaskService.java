@@ -24,6 +24,7 @@ import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.utils.WorkflowUtils;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,10 @@ public class EcosActivitiTaskService implements EngineTaskService {
         Map<String, Object> result = new HashMap<>();
 
         WorkflowTask taskById = workflowService.getTaskById(ENGINE_PREFIX + taskId);
+        if (taskById == null) {
+            return Collections.emptyMap();
+        }
+
         taskById.getProperties().forEach((qName, serializable) -> {
             String newKey = qName.toPrefixString(namespaceService).replaceAll(":", "_");
             result.put(newKey, serializable);
@@ -172,10 +177,7 @@ public class EcosActivitiTaskService implements EngineTaskService {
 
     @Override
     public TaskInfo getTaskInfo(String taskId) {
-        if (taskExists(taskId)) {
-            return new ActivitiTaskInfo(taskId);
-        }
-        return null;
+        return new ActivitiTaskInfo(taskId);
     }
 
     private String getOutcomeProperty(String taskId) {

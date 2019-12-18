@@ -36,7 +36,6 @@ import ru.citeck.ecos.webscripts.utils.WebScriptUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class NodeViewGet extends DeclarativeWebScript {
 
@@ -123,9 +122,10 @@ public class NodeViewGet extends DeclarativeWebScript {
     private Map<String, Object> getTemplateParams(WebScriptRequest req) {
         Map<String, String> requestParams = WebScriptUtils.getParameterMap(req);
         Map<String, Object> templateParams = new HashMap<>(requestParams.size());
-        for (String key : requestParams.keySet()) {
+        for (Map.Entry<String, String> entry : requestParams.entrySet()) {
+            String key = entry.getKey();
             if (key.startsWith(TEMPLATE_PARAM_PREFIX)) {
-                templateParams.put(key.replaceFirst(TEMPLATE_PARAM_PREFIX, ""), requestParams.get(key));
+                templateParams.put(key.replaceFirst(TEMPLATE_PARAM_PREFIX, ""), entry.getValue());
             }
         }
         return templateParams;

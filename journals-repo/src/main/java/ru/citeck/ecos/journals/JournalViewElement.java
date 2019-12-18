@@ -66,10 +66,8 @@ public class JournalViewElement {
                     List<String> criteriaOr = new ArrayList<>();
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject criterion = (JSONObject) jsonArray.get(i);
-                        if (PREDICATE_OR.equals(criterion.get(PREDICATE))) {
-                            if (criterion.get(ATTRIBUTE) != null) {
-                                criteriaOr.add(criterion.getString(ATTRIBUTE));
-                            }
+                        if (PREDICATE_OR.equals(criterion.get(PREDICATE)) && criterion.get(ATTRIBUTE) != null) {
+                            criteriaOr.add(criterion.getString(ATTRIBUTE));
                         }
                     }
                     if (!criteriaOr.isEmpty()) {

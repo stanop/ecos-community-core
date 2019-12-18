@@ -359,8 +359,7 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
         AlfrescoTransactionSupport.unbindResource(KEY_COPIES);
 
         // step 1: add children to copy map
-        Queue<NodeRef> queue = new LinkedList<>();
-        queue.addAll(copyMap.values());
+        Queue<NodeRef> queue = new LinkedList<>(copyMap.values());
         while (!queue.isEmpty()) {
             NodeRef node = queue.poll();
             List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(node);

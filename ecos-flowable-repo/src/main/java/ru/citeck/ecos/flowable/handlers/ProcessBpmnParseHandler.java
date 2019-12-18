@@ -41,17 +41,17 @@ public class ProcessBpmnParseHandler implements BpmnParseHandler {
     public void parse(BpmnParse bpmnParse, BaseElement baseElement) {
         Process process = (Process) baseElement;
         List<FlowableListener> listeners = process.getExecutionListeners();
-        /** Start event */
+        /* Start event */
         Collection<String> startExecutionListeners = ApplicationContextProvider.getBeansNames(GlobalStartExecutionListener.class);
         for (String listener : startExecutionListeners) {
             listeners.add(createFlowableListener(listener, ExecutionListener.EVENTNAME_START));
         }
-        /** Take event */
+        /* Take event */
         Collection<String> takeExecutionListeners = ApplicationContextProvider.getBeansNames(GlobalTakeExecutionListener.class);
         for (String listener : takeExecutionListeners) {
             listeners.add(createFlowableListener(listener, ExecutionListener.EVENTNAME_TAKE));
         }
-        /** End event */
+        /* End event */
         Collection<String> endExecutionListeners = ApplicationContextProvider.getBeansNames(GlobalEndExecutionListener.class);
         for (String listener : endExecutionListeners) {
             listeners.add(createFlowableListener(listener, ExecutionListener.EVENTNAME_END));

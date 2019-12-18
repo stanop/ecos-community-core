@@ -55,18 +55,18 @@ public class ParseJSON extends AbstractDataBundleLine {
             throw new IllegalArgumentException("Failed to parse input data", e);
         }
         
-        Map<String, Object> newModel = model != null ? 
-                new HashMap<String, Object>(model) : 
-                new HashMap<String, Object>();
-        if(modelKey != null) {
+        Map<String, Object> newModel = model != null
+            ? new HashMap<>(model) : new HashMap<>();
+        if (modelKey != null) {
             newModel.put(modelKey, result);
-        } else if(result instanceof Map) {
+        } else if (result instanceof Map) {
             Map<?,?> object = (Map<?,?>) result;
-            for(Object key : object.keySet()) {
-                if(key instanceof String) {
-                    newModel.put((String) key, object.get(key));
-                } else if(key != null) {
-                    newModel.put(key.toString(), object.get(key));
+            for (Map.Entry<?,?> entry : object.entrySet()) {
+                Object key = entry.getKey();
+                if (key instanceof String) {
+                    newModel.put((String) key, entry.getValue());
+                } else if (key != null) {
+                    newModel.put(key.toString(), entry.getValue());
                 }
             }
         } else {

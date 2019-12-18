@@ -18,12 +18,8 @@
  */
 package ru.citeck.ecos.behavior.common;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
-import java.util.ArrayList;
 
-import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
 import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;

@@ -25,7 +25,6 @@ import org.alfresco.repo.forms.processor.node.EncodingFieldProcessor;
 import org.alfresco.repo.forms.processor.node.MimetypeFieldProcessor;
 import org.alfresco.repo.forms.processor.node.SizeFieldProcessor;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.dictionary.TypeDefinition;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.namespace.NamespaceService;
@@ -137,7 +136,7 @@ public class DuplicatorFormProcessor extends ContentModelFormProcessor<NodeRef, 
 
     @Override
     protected Map<QName, Serializable> getAssociationValues(NodeRef item) {
-        HashMap<QName, Serializable> assocs = new HashMap<QName, Serializable>();
+        HashMap<QName, Serializable> assocs = new HashMap<>();
         List<AssociationRef> targetAssocs = nodeService.getTargetAssocs(item, RegexQNamePattern.MATCH_ALL);
         List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(item);
         for (ChildAssociationRef childAssoc : childAssocs) {
@@ -157,7 +156,7 @@ public class DuplicatorFormProcessor extends ContentModelFormProcessor<NodeRef, 
     private void addAssocToMap(QName name, NodeRef target, HashMap<QName, Serializable> assocs) {
         Serializable value = assocs.get(name);
         if (value == null) {
-            LinkedHashSet<NodeRef> values = new LinkedHashSet<NodeRef>();
+            LinkedHashSet<NodeRef> values = new LinkedHashSet<>();
             values.add(target);
             assocs.put(name, values);
         } else {
@@ -169,7 +168,7 @@ public class DuplicatorFormProcessor extends ContentModelFormProcessor<NodeRef, 
 
     @Override
     protected Map<String, Object> getTransientValues(NodeRef item) {
-        Map<String, Object> values = new HashMap<String, Object>(3);
+        Map<String, Object> values = new HashMap<>(3);
         ContentData contentData = getContentData(item);
         if (contentData != null) {
             values.put(EncodingFieldProcessor.KEY, contentData.getEncoding());
@@ -241,18 +240,17 @@ public class DuplicatorFormProcessor extends ContentModelFormProcessor<NodeRef, 
 
     @Override
     protected NodeRef internalPersist(NodeRef item, final FormData data) {
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
             logger.debug("Persisting form for: " + item);
+        }
         // create a new instance of the type
         final NodeRef nodeRef = createNode(item, data);
 
         if (nodeService.hasAspect(nodeRef, ASPECT_FILE_PLAN_COMPONENT)) {
             // persist the form data as the admin user
-            AuthenticationUtil.runAs(new AuthenticationUtil.RunAsWork<Object>() {
-                    public Object doWork() throws Exception {
-                        persistNode(nodeRef, data);
-                        return null;
-                    }
+            AuthenticationUtil.runAs(() -> {
+                    persistNode(nodeRef, data);
+                    return null;
                 },
                 AuthenticationUtil.getSystemUserName()
             );
@@ -310,7 +308,7 @@ public class DuplicatorFormProcessor extends ContentModelFormProcessor<NodeRef, 
             String nodeName = GUID.generate();
 
             // create the node
-            Map<QName, Serializable> nodeProps = new HashMap<QName, Serializable>(1);
+            Map<QName, Serializable> nodeProps = new HashMap<>(1);
             nodeProps.put(ContentModel.PROP_NAME, nodeName);
             nodeRef = this.nodeService.createNode(
                     parentRef, ContentModel.ASSOC_CONTAINS,

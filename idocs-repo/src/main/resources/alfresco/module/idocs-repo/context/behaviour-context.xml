@@ -148,7 +148,6 @@
         <property name="policyComponent" ref="policyComponent"/>
         <property name="serviceRegistry" ref="ServiceRegistry"/>
         <property name="nodeInfoFactory" ref="NodeInfoFactory"/>
-        <property name="order" value="${behavior.order.enumeration}"/>
     </bean>
 
     <bean id="CacheAssocsBehaviour" class="ru.citeck.ecos.behavior.common.CacheAssocsBehaviour"
@@ -169,7 +168,6 @@
 		<property name="policyComponent" ref="policyComponent" />
 		<property name="nodeService" ref="NodeService" />
 		<property name="dictionaryService" ref="DictionaryService" />
-		<property name="order" value="${behavior.order.classification}" />
 	</bean>
 
     <bean id="fileAssociationBehaviour" class="ru.citeck.ecos.behavior.common.FileAssociationBehaviour"
@@ -346,9 +344,6 @@
         <property name="policyComponent" ref="policyComponent"/>
         <property name="nodeService" ref="nodeService"/>
         <property name="serviceRegistry" ref="ServiceRegistry"/>
-        <property name="templateService" ref="TemplateService"/>
-        <property name="templateEngine" value="freemarker"/>
-        <property name="nodeVariable" value="node"/>
         <property name="supplFilesDAO" ref="supplementaryFilesDAO"/>
     </bean>
 
@@ -523,6 +518,10 @@
         <property name="nodeService" ref="nodeService"/>
         <property name="historyService" ref="historyService"/>
         <property name="dictionaryService" ref="DictionaryService"/>
+    </bean>
+
+    <bean id="record.event.propertiesBehaviour" class="ru.citeck.ecos.behavior.record.event.RecordEventAttributesBehaviour"
+          init-method="init" abstract="true">
     </bean>
 
     <bean id="history.historicalAssocsBehaviour" class="ru.citeck.ecos.behavior.history.HistoricalAssocsBehaviour" init-method="init" abstract="true">

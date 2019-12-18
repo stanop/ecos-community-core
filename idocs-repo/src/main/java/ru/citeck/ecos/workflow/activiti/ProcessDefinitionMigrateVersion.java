@@ -53,9 +53,8 @@ public class ProcessDefinitionMigrateVersion extends BaseProcessorExtension {
     public List<WorkflowInstance> getWorkflows(String workflowDefinitionId) {
 
         WorkflowInstanceQuery workflowInstanceQuery = new WorkflowInstanceQuery(workflowDefinitionId);
-        List<WorkflowInstance> workflows = workflowService.getWorkflows(workflowInstanceQuery);
 
-        return workflows;
+        return workflowService.getWorkflows(workflowInstanceQuery);
     }
 
     public void changeVersionForAllInstances(String oldProcessDefinitionId, int newVersion, String newProcessDefinitionId) {

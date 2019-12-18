@@ -25,13 +25,9 @@ import org.springframework.extensions.surf.RequestContext;
 import org.springframework.extensions.surf.ServletUtil;
 import org.springframework.extensions.surf.exception.ConnectorServiceException;
 import org.springframework.extensions.surf.support.ThreadLocalRequestContext;
-import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.Status;
-import org.springframework.extensions.webscripts.WebScriptRequest;
-import org.springframework.extensions.webscripts.WebScriptResponse;
 import org.springframework.extensions.webscripts.connector.Connector;
 import org.springframework.extensions.webscripts.connector.Response;
-import org.springframework.extensions.webscripts.connector.User;
 
 
 public class PermissionAccessEvaluator extends BaseEvaluator {

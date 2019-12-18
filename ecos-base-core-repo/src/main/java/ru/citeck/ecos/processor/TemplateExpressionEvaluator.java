@@ -33,34 +33,33 @@ import org.alfresco.service.cmr.repository.TemplateService;
  */
 public class TemplateExpressionEvaluator implements ExpressionEvaluator
 {
-	private TemplateService templateService;
-	private Repository repositoryHelper;
-	private String engine;
+    private TemplateService templateService;
+    private Repository repositoryHelper;
+    private String engine;
 
-	@Override
-	public Object evaluate(String expression, Map<String, Object> model) {
-		if(expression == null) return null;
-		NodeRef companyHome = repositoryHelper.getCompanyHome();
-		NodeRef person = repositoryHelper.getPerson();
-		NodeRef userHome = repositoryHelper.getUserHome(person);
+    @Override
+    public Object evaluate(String expression, Map<String, Object> model) {
+        if(expression == null) return null;
+        NodeRef companyHome = repositoryHelper.getCompanyHome();
+        NodeRef person = repositoryHelper.getPerson();
+        NodeRef userHome = repositoryHelper.getUserHome(person);
 
-		Map<String, Object> newModel = new HashMap<String, Object>();
-		newModel.putAll(model);
-		newModel.putAll(templateService.buildDefaultModel(person, companyHome, userHome, null, null));
+        Map<String, Object> newModel = new HashMap<>();
+        newModel.putAll(model);
+        newModel.putAll(templateService.buildDefaultModel(person, companyHome, userHome, null, null));
 
-		String result = templateService.processTemplateString(engine, expression, newModel);
-		return result;
-	}
+        return templateService.processTemplateString(engine, expression, newModel);
+    }
 
-	public void setTemplateService(TemplateService templateService) {
-		this.templateService = templateService;
-	}
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
+    }
 
-	public void setEngine(String engine) {
-		this.engine = engine;
-	}
+    public void setEngine(String engine) {
+        this.engine = engine;
+    }
 
-	public void setRepositoryHelper(Repository repositoryHelper) {
-		this.repositoryHelper = repositoryHelper;
-	}
+    public void setRepositoryHelper(Repository repositoryHelper) {
+        this.repositoryHelper = repositoryHelper;
+    }
 }

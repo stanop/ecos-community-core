@@ -252,12 +252,10 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             if (originalOwner != null) {
                 originalOwnerNodeRef = authorityService.getAuthorityNodeRef(originalOwner);
             }
-            if (pooledActors != null) {
-                if (originalOwnerNodeRef != null) {
-                    if (pooledActors.contains(originalOwnerNodeRef) && pooledActors.indexOf(originalOwnerNodeRef) != -1) {
-                        pooledActors.remove(pooledActors.indexOf(originalOwnerNodeRef));
-                        pooledActors.add(0, originalOwnerNodeRef);
-                    }
+            if (pooledActors != null && originalOwnerNodeRef != null) {
+                if (pooledActors.contains(originalOwnerNodeRef) && pooledActors.indexOf(originalOwnerNodeRef) != -1) {
+                    pooledActors.remove(pooledActors.indexOf(originalOwnerNodeRef));
+                    pooledActors.add(0, originalOwnerNodeRef);
                 }
 
                 results.addAll(pooledActors);
@@ -349,9 +347,9 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     }
 
     private NodeRef getPackage(Map<QName, List<NodeRef>> assoc) {
-        for (QName qName : assoc.keySet()) {
-            if (qName.equals(WorkflowModel.ASSOC_PACKAGE)) {
-                List<NodeRef> packageNodeRefs = assoc.get(qName);
+        for (Map.Entry<QName, List<NodeRef>> entry : assoc.entrySet()) {
+            if (entry.getKey().equals(WorkflowModel.ASSOC_PACKAGE)) {
+                List<NodeRef> packageNodeRefs = entry.getValue();
                 if (!packageNodeRefs.isEmpty()) {
                     return packageNodeRefs.get(0);
                 }
