@@ -155,8 +155,8 @@ public class AlfNodeRecord implements MetaValue {
                     }
 
                     MetaValue value = context.getServiceFactory()
-                            .getMetaValuesConverter()
-                            .toMetaValue(RecordRef.create("emodel", "type", etype));
+                        .getMetaValuesConverter()
+                        .toMetaValue(RecordRef.create("emodel", "type", etype));
                     value.init(context, field);
 
                     attribute = Collections.singletonList(value);
@@ -175,9 +175,9 @@ public class AlfNodeRecord implements MetaValue {
             case ATTR_ASPECTS:
 
                 attribute = node.aspects()
-                        .stream()
-                        .map(o -> toMetaValue(null, o, field))
-                        .collect(Collectors.toList());
+                    .stream()
+                    .map(o -> toMetaValue(null, o, field))
+                    .collect(Collectors.toList());
                 break;
 
             case ATTR_IS_CONTAINER:
@@ -243,7 +243,7 @@ public class AlfNodeRecord implements MetaValue {
                 VersionService versionService = context.getServiceRegistry().getVersionService();
                 Version currentVersion = versionService.getCurrentVersion(new NodeRef(node.nodeRef()));
                 String versionLabel = currentVersion != null && StringUtils.isNotBlank(currentVersion.getVersionLabel())
-                        ? currentVersion.getVersionLabel() : DEFAULT_VERSION_LABEL;
+                    ? currentVersion.getVersionLabel() : DEFAULT_VERSION_LABEL;
                 attribute = Collections.singletonList(toMetaValue(null, versionLabel, field));
                 break;
 
@@ -265,7 +265,7 @@ public class AlfNodeRecord implements MetaValue {
                 String caseStatusName = getCaseStatusName(context.getRecordsService());
                 if (StringUtils.isNotBlank(caseStatusName)) {
                     MetaValue statusMeta = context.getServiceFactory().getMetaValuesConverter()
-                            .toMetaValue(RecordRef.create("", "status", caseStatusName));
+                        .toMetaValue(RecordRef.create("", "status", caseStatusName));
                     statusMeta.init(context, field);
 
                     attribute = Collections.singletonList(statusMeta);
@@ -281,7 +281,7 @@ public class AlfNodeRecord implements MetaValue {
                 }
 
                 if (name.contains(ASSOC_SRC_ATTR_PREFIX)) {
-                    attribute = getSourceAssocs(node.nodeRef(), name);
+                    attribute = getSourceAssocs(node.nodeRef(), name, field);
                 } else if (Attribute.Type.UNKNOWN.equals(nodeAtt.type())) {
                     Optional<QName> attQname = context.getQName(name).map(GqlQName::getQName);
                     if (attQname.isPresent()) {
@@ -295,9 +295,9 @@ public class AlfNodeRecord implements MetaValue {
 
                 if (attribute == null) {
                     attribute = nodeAtt.getValues()
-                            .stream()
-                            .map(v -> toMetaValue(nodeAtt, v, field))
-                            .collect(Collectors.toList());
+                        .stream()
+                        .map(v -> toMetaValue(nodeAtt, v, field))
+                        .collect(Collectors.toList());
                 }
         }
 
