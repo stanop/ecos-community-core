@@ -56,9 +56,9 @@ public class AlfNodeRecord implements MetaValue {
     public static final String ATTR_VERSION = "version";
     public static final String ATTR_DOC_SUM = "docSum";
     public static final String ATTR_CASE_STATUS = "caseStatus";
-    public static final String ASSOC_SRC_ATTR_PREFIX = "assoc_src_";
 
     private static final String CASE_STATUS_NAME_SCHEMA = "icase:caseStatusAssoc.cm:name";
+    public static final String ASSOC_SRC_ATTR_PREFIX = "assoc_src_";
 
     private NodeRef nodeRef;
     private RecordRef recordRef;
@@ -281,7 +281,7 @@ public class AlfNodeRecord implements MetaValue {
                 }
 
                 if (name.contains(ASSOC_SRC_ATTR_PREFIX)) {
-                    attribute = getSourceAssocs(node.nodeRef(), name, field);
+                    attribute = getSourceAssocs(node.nodeRef(), name);
                 } else if (Attribute.Type.UNKNOWN.equals(nodeAtt.type())) {
                     Optional<QName> attQname = context.getQName(name).map(GqlQName::getQName);
                     if (attQname.isPresent()) {
