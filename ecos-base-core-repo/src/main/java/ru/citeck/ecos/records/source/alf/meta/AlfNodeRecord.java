@@ -378,9 +378,12 @@ public class AlfNodeRecord implements MetaValue {
     }
 
     private List<? extends MetaValue> getSourceAssocs(String nodeRef, String attrName) {
+        if (!NodeRef.isNodeRef(nodeRef) || StringUtils.isBlank(attrName)) {
+            return Collections.emptyList();
+        }
         String attrQNameValue = attrName.replace(ASSOC_SRC_ATTR_PREFIX, StringUtils.EMPTY);
-        QName attr = QName.createQName(attrQNameValue);
-        NodeUtils nodeUtils = context.getService(attr);
+        QName attr = QName.resolveToQName(context.getNamespaceService(), attrQNameValue);
+        NodeUtils nodeUtils = context.getService(NodeUtils.QNAME);
         List<NodeRef> nodeRefs = nodeUtils.getAssocSources(new NodeRef(nodeRef), attr);
         return nodeRefs.stream()
                 .map(e -> new AlfNodeRecord(RecordRef.valueOf(e.toString())))
