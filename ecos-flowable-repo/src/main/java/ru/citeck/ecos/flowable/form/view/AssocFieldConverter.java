@@ -57,41 +57,36 @@ public class AssocFieldConverter extends FieldConverter<FormField> {
         AssociationDefinition assocDef = dictionaryService.getAssociation(assocQName);
 
         if (assocDef != null) {
-
+            Map<String, Object> params;
             switch (field.getType()) {
 
-                case PEOPLE_FIELD: {
-
+                case PEOPLE_FIELD:
                     return Optional.of(new NodeViewRegion.Builder(prefixResolver)
-                                                         .name("select")
-                                                         .template("select-orgstruct")
-                                                         .build());
-                }
-                case GROUP_FIELD: {
-
-                    Map<String, Object> params = Collections.singletonMap("allowedAuthorityType", "GROUP");
+                            .name("select")
+                            .template("select-orgstruct")
+                            .build());
+                case GROUP_FIELD:
+                    params = Collections.singletonMap("allowedAuthorityType", "GROUP");
                     return Optional.of(new NodeViewRegion.Builder(prefixResolver)
-                                                         .template("select-orgstruct")
-                                                         .name("select")
-                                                         .templateParams(params)
-                                                         .build());
-                }
+                            .template("select-orgstruct")
+                            .name("select")
+                            .templateParams(params)
+                            .build());
                 default:
-
                     ClassDefinition targetClass = assocDef.getTargetClass();
                     Optional<JournalType> journal = journalService.getJournalForType(targetClass.getName());
 
                     if (journal.isPresent()) {
-
-                        Map<String, Object> params = new HashMap<>();
+                        params = new HashMap<>();
                         params.put("journalType", journal.get().getId());
 
                         return Optional.of(new NodeViewRegion.Builder(prefixResolver)
-                                                             .name("select")
-                                                             .template("select-journal")
-                                                             .templateParams(params)
-                                                             .build());
+                                .name("select")
+                                .template("select-journal")
+                                .templateParams(params)
+                                .build());
                     }
+                    break;
             }
         }
         return Optional.empty();

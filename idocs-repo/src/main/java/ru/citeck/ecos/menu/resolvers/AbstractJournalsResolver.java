@@ -75,11 +75,6 @@ public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver
         return element;
     }
 
-    private Long journalItemsCount(RequestKey requestKey) {
-        String journalId = requestKey.getJournalId();
-        return journalService.getRecordsCount(journalId);
-    }
-
     @Autowired
     public void setJournalService(JournalService journalService) {
         this.journalService = journalService;

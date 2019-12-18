@@ -71,17 +71,6 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
                       .collect(Collectors.toList());
     }
 
-    private String getFixedUserName(RecordRef recordRef) {
-        String userName;
-        String source = recordRef.getSourceId();
-        if (StringUtils.isNotBlank(source)) {
-            userName = source + "@" + recordRef.getId();
-        } else {
-            userName = recordRef.getId();
-        }
-        return userName;
-    }
-
     @Override
     public RecordsQueryResult<UserValue> getMetaValues(RecordsQuery query) {
 

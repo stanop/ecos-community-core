@@ -371,17 +371,6 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
         return null;
     }
 
-    private NodeRef findNode(String query) {
-        ResultSet nodes = this.searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "fts-alfresco", query);
-        if (nodes.length() > 0) {
-            NodeRef templateNode = nodes.getNodeRef(0);
-            logger.debug("templateNode " + templateNode);
-            if ((templateNode != null) && (this.nodeService.exists(templateNode)))
-                return templateNode;
-        }
-        return null;
-    }
-
     /**
      * Set notification type.
      *

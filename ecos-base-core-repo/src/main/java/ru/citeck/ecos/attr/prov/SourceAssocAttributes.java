@@ -105,9 +105,6 @@ public class SourceAssocAttributes extends AbstractAttributeProvider {
         String prefixedName = attributeName.getLocalName();
         return QName.createQName(prefixedName, namespaceService);
     }
-    private QName getAttributeName(QName associationName) {
-        return QName.createQName(AttributeModel.NAMESPACE_SOURCE_ASSOC, associationName.toPrefixString(namespaceService));
-    }
 
     private AssociationDefinition getDefinition(QName attributeName) {
         AssociationDefinition assocDef = dictionaryService.getAssociation(getAssociationName(attributeName));

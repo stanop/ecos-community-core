@@ -87,26 +87,16 @@ public class SlingshotWebScriptEvaluator extends AbstractUniversalEvaluator
     private final Logger logger = Logger.getLogger(getClass());
 
     @Override
-    public boolean evaluateImpl(RequestContext rc, Map<String, String> params)
-    {
+    public boolean evaluateImpl(RequestContext rc, Map<String, String> params) {
         try {
-            // get connector
-            final String userId = rc.getUserId();
-            Connector conn = null;
-            if(urlTemplate == null) {
+            if (urlTemplate == null) {
                 logger.error("mandatory parameter is not specified");
                 return false;
             }
-            try {
-                conn = rc.getServiceRegistry().getConnectorService().getConnector(
-                        endpoint,
-                        userId,
-                        ServletUtil.getSession()
-                );
-            } catch (ConnectorServiceException e) {
-                logger.error("Can not get connector for endpoint '" + endpoint + "' and user '" + userId + "'", e);
-            }
-            if(conn == null) {
+
+            // get connector
+            Connector conn = getConnector(rc);
+            if (conn == null) {
                 return false;
             }
 
@@ -122,42 +112,69 @@ public class SlingshotWebScriptEvaluator extends AbstractUniversalEvaluator
             // submit request
             final Response response = conn.call(url);
 
-            // process response
-            if (response.getStatus().getCode() == Status.STATUS_OK) {
-                try {
-                    Object object = JSONValue.parseWithException(response.getText());
-                    Object value = getJSONValue(object, accessor);
-                    String valuesParam = params.get(PARAM_VALUES);
-
-                    // no values is used to allow null
-                    if(valuesParam == null || value == null) {
-                        return value == null;
-                    }
-
-                    // default separator is comma
-                    String separator = params.containsKey(PARAM_SEPARATOR) ? params.get(PARAM_SEPARATOR) : "[,]";
-
-                    // get list of allowed values
-                    String[] allowedValues = valuesParam.split(separator);
-
-                    // compare
-                    String stringValue = value.toString();
-                    for(int i = 0; i < allowedValues.length; i++) {
-                        if(allowedValues[i].equals(stringValue)) {
-                            return true;
-                        }
-                    }
-
-                } catch (ParseException e) {
-                    logger.error("Failed to parse web script response using JSON", e);
-                }
-            } else {
+            // check response
+            if (response.getStatus().getCode() != Status.STATUS_OK) {
                 logger.error("Response status isn't OK");
+                return false;
             }
+
+            // process response
+            return evaluateImplResponse(response, params);
         } catch (Exception e) {
             logger.error("Failed to evaluate the result", e);
         }
+
         return false;
+    }
+
+    private boolean evaluateImplResponse(Response response, Map<String, String> params){
+        Object object;
+        try {
+            object = JSONValue.parseWithException(response.getText());
+        } catch (ParseException e) {
+            logger.error("Failed to parse web script response using JSON", e);
+            return false;
+        }
+
+        Object value = getJSONValue(object, accessor);
+        String valuesParam = params.get(PARAM_VALUES);
+
+        // no values is used to allow null
+        if (valuesParam == null || value == null) {
+            return value == null;
+        }
+
+        // default separator is comma
+        String separator = params.getOrDefault(PARAM_SEPARATOR, "[,]");
+
+        // get list of allowed values
+        String[] allowedValues = valuesParam.split(separator);
+
+        // compare
+        String stringValue = value.toString();
+        for (String allowedValue : allowedValues) {
+            if (allowedValue.equals(stringValue)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private Connector getConnector(RequestContext rc){
+        final String userId = rc.getUserId();
+
+        try {
+            return rc.getServiceRegistry().getConnectorService().getConnector(
+                    endpoint,
+                    userId,
+                    ServletUtil.getSession()
+            );
+        } catch (ConnectorServiceException e) {
+            logger.error("Can not get connector for endpoint '" + endpoint + "' and user '" + userId + "'", e);
+        }
+
+        return null;
     }
 
     private String substitute(String template, Map<String, String> params) {

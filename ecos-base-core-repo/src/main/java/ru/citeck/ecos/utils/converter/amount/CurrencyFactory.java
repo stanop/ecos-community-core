@@ -15,40 +15,33 @@ class CurrencyFactory {
         Currency currency;
 
         switch (currencyCode) {
-            case "USD": {
+            case "USD":
                 currency = new CurrencyUsd(locale);
                 break;
-            }
             case "RUB":
-            case "RUR": {
+            case "RUR":
                 currency = new CurrencyRub(locale);
                 break;
-            }
-            case "EUR": {
+            case "EUR":
                 currency = new CurrencyEur(locale);
                 break;
-            }
             case "BYN":
-            case "BYR": {
+            case "BYR":
                 currency = new CurrencyByr(locale);
                 break;
-            }
-            case "GBP": {
+            case "GBP":
                 currency = new CurrencyGbp(locale);
                 break;
-            }
-            case "JPY": {
+            case "JPY":
                 currency = new CurrencyJpy(locale);
                 break;
-            }
-            case "UAH": {
+            case "UAH":
                 currency = new CurrencyUah(locale);
                 break;
-            }
-            default: {
+            default:
                 logger.warn("Currency with code: <" + currencyCode + "> not found, using default currency - USD");
                 currency = new CurrencyUsd(locale);
-            }
+                break;
         }
         return currency;
     }
