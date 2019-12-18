@@ -7,11 +7,12 @@ timestamps {
     try {
       stage('Checkout SCM') {
         checkout([
-          $class: 'MercurialSCM',
-          credentialsId: 'bc074014-bab1-4fb0-b5a4-4cfa9ded5e66',
-          installation: '(Default)',
-          revision: "${env.BRANCH_NAME}",
-          source: "ssh://hg@bitbucket.org/citeck/ecos-community"
+          $class: 'GitSCM',
+          branches: [[name: "${env.BRANCH_NAME}"]],
+          doGenerateSubmoduleConfigurations: false,
+          extensions: [],
+          submoduleCfg: [],
+          userRemoteConfigs: [[credentialsId: 'bc074014-bab1-4fb0-b5a4-4cfa9ded5e66',url: 'git@bitbucket.org:citeck/ecos-community.git']]
         ])
       }
       def project_version = readMavenPom().getVersion()
