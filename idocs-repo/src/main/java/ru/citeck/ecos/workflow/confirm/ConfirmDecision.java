@@ -64,10 +64,6 @@ public class ConfirmDecision {
 		Map<QName,Serializable> taskProps = confirmTask.getProperties();
 		
 		// role:
-		/*List<NodeRef> pooledActors = (List<NodeRef>) taskProps.get(WorkflowModel.ASSOC_POOLED_ACTORS);
-		if(pooledActors.size() > 0) {
-			confirmerRole = pooledActors.get(0).toString();
-		}*/
 		confirmerRole = (String) decisionProps.get(ConfirmWorkflowModel.PROP_CONFIRM_ROLE);
 		
 		// user:

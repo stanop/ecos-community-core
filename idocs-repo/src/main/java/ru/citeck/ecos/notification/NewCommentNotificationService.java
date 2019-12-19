@@ -43,7 +43,7 @@ public class NewCommentNotificationService {
     private NotificationService notificationService;
     private NodeService nodeService;
     private AuthorityService authorityService;
-	private NodeOwnerDAO nodeOwnerDAO;
+    private NodeOwnerDAO nodeOwnerDAO;
     private boolean asyncNotification = true;
 
     private static final Log logger = LogFactory.getLog(NewCommentNotificationService.class);
@@ -53,7 +53,7 @@ public class NewCommentNotificationService {
             "comment-notify-email-html-ftl"
     );
 
-	public static interface TemplateArgAlias {
+    public static interface TemplateArgAlias {
         final String COMMENT_TEXT = "commentText";
         final String COMMENT_LINK = "nodeDetailsLink";
         final String COMMENT_AUTHOR = "commentAuthor";
@@ -87,7 +87,6 @@ public class NewCommentNotificationService {
         NotificationContext notificationContext = new NotificationContext();
         notificationContext.setSubject("Уведомление");
         
-        // notificationContext.setBodyTemplate(NEW_COMMENT_NOTIFICATION_EMAIL_TEMPLATE);
         // NOTE: for compatibility with Alfresco Community 4.2.c
         NodeRef template = NEW_COMMENT_NOTIFICATION_EMAIL_TEMPLATE;
         ReflectionUtils.callSetterIfDeclared(notificationContext, "setBodyTemplate", template);
@@ -102,7 +101,7 @@ public class NewCommentNotificationService {
                 )
         );
         Set<String> assignedAuthorities = getNotificationListeners(nodeRef);
-	    assignedAuthorities.addAll(new HashSet<>(Arrays.asList(subscribersString.split(","))));
+        assignedAuthorities.addAll(new HashSet<>(Arrays.asList(subscribersString.split(","))));
         for (String authority : assignedAuthorities) {
             notificationContext.addTo(authority);
         }
@@ -169,9 +168,9 @@ public class NewCommentNotificationService {
         this.authorityService = authorityService;
     }
 
-	public void setNodeOwnerDAO(NodeOwnerDAO nodeOwnerDAO) {
-		this.nodeOwnerDAO = nodeOwnerDAO;
-	}
+    public void setNodeOwnerDAO(NodeOwnerDAO nodeOwnerDAO) {
+        this.nodeOwnerDAO = nodeOwnerDAO;
+    }
 
     public void setAsyncNotification(boolean asyncNotification) {
         this.asyncNotification = asyncNotification;

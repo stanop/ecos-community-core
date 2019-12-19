@@ -191,16 +191,7 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
                                 taskSubjectTemplate.get(qNameConverter.mapQNameToName(nodeService.getType((NodeRef) docsInfo.get(0)))),
                                 model);
                     }
-                } /*else {
-                    String processDef = task.getProcessDefinitionId();
-                    String wfkey = processDef.substring(0, processDef.indexOf(":"));
-                    if (subjectTemplatesForWorkflow != null && subjectTemplatesForWorkflow.containsKey(wfkey)) {
-                        HashMap<String, Object> model = new HashMap<>(1);
-                        model.put(nodeVariable, docsInfo.get(0));
-                        subject = services.getTemplateService().processTemplateString(
-                                templateEngine, subjectTemplatesForWorkflow.get(wfkey), model);
-                    }
-                }*/
+                }
                 if (subject == null) {
                     subject = task.getName();
                 }

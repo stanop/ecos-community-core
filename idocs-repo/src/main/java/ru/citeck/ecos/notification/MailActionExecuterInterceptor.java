@@ -47,129 +47,122 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
     
     private static final Log logger = LogFactory.getLog(MailActionExecuterInterceptor.class);
     private NodeService nodeService;
-	private NodeInfoFactory nodeInfoFactory;
-	private AuthorityService authorityService;
-	private WorkflowMirrorService workflowMirrorService;
-	private NodeRef notificationLoggingRoot;
-	private QName notificationLoggingAssoc;
+    private NodeInfoFactory nodeInfoFactory;
+    private AuthorityService authorityService;
+    private WorkflowMirrorService workflowMirrorService;
+    private NodeRef notificationLoggingRoot;
+    private QName notificationLoggingAssoc;
     private WorkflowService workflowService;
-	private boolean enabled;
+    private boolean enabled;
 
-	public Object invoke(MethodInvocation methodInvocation) throws Throwable {
+    public Object invoke(MethodInvocation methodInvocation) throws Throwable {
 
-		if("execute".equals(methodInvocation.getMethod().getName()) && isEnabled())
-		{
-			boolean isSent = false;
-			Object[] args = methodInvocation.getArguments();
-			Action act = (Action)args[0];
-			Date currentDate = new Date();
-			try {
-				Object result = methodInvocation.proceed();
-				isSent = true;
-				//createLoggingItem(act, currentDate, true);
-				logger.debug("COMPLETED!!!");
-				return result;
+        if ("execute".equals(methodInvocation.getMethod().getName()) && isEnabled()) {
+            boolean isSent = false;
+            Object[] args = methodInvocation.getArguments();
+            Action act = (Action)args[0];
+            Date currentDate = new Date();
+            try {
+                Object result = methodInvocation.proceed();
+                isSent = true;
+                logger.debug("COMPLETED!!!");
+                return result;
 
-			} catch (MailSendException e) {
-					isSent = false;
-					//createLoggingItem(act, currentDate, false);
-					logger.error("MailSendException COMPLETED!!!");
-				throw e;
-			}  catch (NullPointerException e) {
-					isSent = false;
-					//createLoggingItem(act, currentDate, false);
-					logger.error("NullPointerException COMPLETED!!!");
-				throw e;
-			} catch (Exception e) {
-					isSent = false;
-					//createLoggingItem(act, currentDate, false);
-					logger.error("Exception COMPLETED!!!");
-				throw e;
-			}
-			finally
-			{
-				createLoggingItem(act, currentDate, isSent);
-			}
-		}
-		return methodInvocation.proceed();
-	}
-	
-	private void createLoggingItem(Action act, Date currentDate, boolean isSent)
-	{
-		logger.debug("!!!!createLoggingItem");
-		NodeInfo nodeInfo = nodeInfoFactory.createNodeInfo();
-		logger.debug("act.getParameterValue "+act.getParameterValues());
-		Map<String, Serializable> template_modelParameterValue = (Map<String, Serializable>)act.getParameterValue("template_model");
-		if(template_modelParameterValue!=null)
-		{
-			Map<String, Serializable> argsParameterValues = (Map<String, Serializable>)template_modelParameterValue.get("args");
-			if(argsParameterValues!=null)
-			{
-				String autoSent = (String)argsParameterValues.get("autoSent");
-				if("true".equals(autoSent))
-				{
-					nodeInfo.setProperty(NotificationLoggingModel.PROP_EVENT_TYPE, NotificationLoggingModel.EventType.Other);
-				}
-				else
-				{
-					nodeInfo.setProperty(NotificationLoggingModel.PROP_EVENT_TYPE, NotificationLoggingModel.EventType.NotificationForTask);
-				}
-				Map<String, Serializable> taskParameterValues = (Map<String, Serializable>)argsParameterValues.get("task");
-				Map<String, Serializable> workflowParameterValues = (Map<String, Serializable>)argsParameterValues.get("workflow");
-				if(taskParameterValues!=null)
-				{
-					NodeRef task = workflowMirrorService.getTaskMirror("activiti$"+(String)taskParameterValues.get("id"));
-					if(task==null)
-					{
-						task = workflowMirrorService.getTaskMirror((String)taskParameterValues.get("id"));
-					}
-					if(task!=null && nodeService.exists(task))
-					{
-						nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_TASK, task);
-						nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_DOCUMENT, nodeService.getProperty(task, WorkflowMirrorModel.PROP_DOCUMENT));
-					}
-				}
-				else if (workflowParameterValues!=null)
-				{
-					WorkflowInstance wf = workflowService.getWorkflowById("activiti$"+workflowParameterValues.get("id"));
-					logger.debug("wf "+wf);
-					if(wf!=null)
-					{
-						WorkflowDefinition definition = wf.getDefinition();
-						logger.debug("definition "+definition);
-						if(definition!=null)
-						{
-							logger.debug("definition.getTitle() "+definition.getTitle());
-							nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_WOKFLOW_ID,  definition.getTitle());
-						}
-					}
+            } catch (MailSendException e) {
+                isSent = false;
+                logger.error("MailSendException COMPLETED!!!");
+                throw e;
+            }  catch (NullPointerException e) {
+                isSent = false;
+                logger.error("NullPointerException COMPLETED!!!");
+                throw e;
+            } catch (Exception e) {
+                isSent = false;
+                logger.error("Exception COMPLETED!!!");
+                throw e;
+            } finally {
+                createLoggingItem(act, currentDate, isSent);
+            }
+        }
+        return methodInvocation.proceed();
+    }
 
-					nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_DOCUMENT, workflowParameterValues.get("documents"));
-				}
-			}
-		}
-		else
-		{
-			if(act.getParameterValue("document")!=null)
-			{
-				nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_DOCUMENT, act.getParameterValue("document"));
-				nodeInfo.setProperty(NotificationLoggingModel.PROP_EVENT_TYPE, NotificationLoggingModel.EventType.NotificationForTask);
-			}
-		}
-		
-		nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_DATE, currentDate);
-		logger.debug("currentDate "+currentDate);
-		String mailTo = (String)act.getParameterValue("to");
-		List mailToMany = (List)act.getParameterValue("to_many");
-		logger.debug("mailTo "+mailTo);
-		logger.debug("mailToMany "+mailToMany);
-		if(mailTo!=null)
-		{
-			NodeRef recipient = authorityService.getAuthorityNodeRef(mailTo);
-			if (recipient != null) {
-				nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_RECIPIENT, recipient);
-				logger.debug("mailTo "+mailTo+" nodeService.getType(recipient) "+nodeService.getType(recipient));
-				if(nodeService.getType(recipient).equals(ContentModel.TYPE_PERSON))
+    private void createLoggingItem(Action act, Date currentDate, boolean isSent)
+    {
+        logger.debug("!!!!createLoggingItem");
+        NodeInfo nodeInfo = nodeInfoFactory.createNodeInfo();
+        logger.debug("act.getParameterValue "+act.getParameterValues());
+        Map<String, Serializable> template_modelParameterValue = (Map<String, Serializable>)act.getParameterValue("template_model");
+        if(template_modelParameterValue!=null)
+        {
+            Map<String, Serializable> argsParameterValues = (Map<String, Serializable>)template_modelParameterValue.get("args");
+            if(argsParameterValues!=null)
+            {
+                String autoSent = (String)argsParameterValues.get("autoSent");
+                if("true".equals(autoSent))
+                {
+                    nodeInfo.setProperty(NotificationLoggingModel.PROP_EVENT_TYPE, NotificationLoggingModel.EventType.Other);
+                }
+                else
+                {
+                    nodeInfo.setProperty(NotificationLoggingModel.PROP_EVENT_TYPE, NotificationLoggingModel.EventType.NotificationForTask);
+                }
+                Map<String, Serializable> taskParameterValues = (Map<String, Serializable>)argsParameterValues.get("task");
+                Map<String, Serializable> workflowParameterValues = (Map<String, Serializable>)argsParameterValues.get("workflow");
+                if(taskParameterValues!=null)
+                {
+                    NodeRef task = workflowMirrorService.getTaskMirror("activiti$"+(String)taskParameterValues.get("id"));
+                    if(task==null)
+                    {
+                        task = workflowMirrorService.getTaskMirror((String)taskParameterValues.get("id"));
+                    }
+                    if(task!=null && nodeService.exists(task))
+                    {
+                        nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_TASK, task);
+                        nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_DOCUMENT, nodeService.getProperty(task, WorkflowMirrorModel.PROP_DOCUMENT));
+                    }
+                }
+                else if (workflowParameterValues!=null)
+                {
+                    WorkflowInstance wf = workflowService.getWorkflowById("activiti$"+workflowParameterValues.get("id"));
+                    logger.debug("wf "+wf);
+                    if(wf!=null)
+                    {
+                        WorkflowDefinition definition = wf.getDefinition();
+                        logger.debug("definition "+definition);
+                        if(definition!=null)
+                        {
+                            logger.debug("definition.getTitle() "+definition.getTitle());
+                            nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_WOKFLOW_ID,  definition.getTitle());
+                        }
+                    }
+
+                    nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_DOCUMENT, workflowParameterValues.get("documents"));
+                }
+            }
+        }
+        else
+        {
+            if(act.getParameterValue("document")!=null)
+            {
+                nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_DOCUMENT, act.getParameterValue("document"));
+                nodeInfo.setProperty(NotificationLoggingModel.PROP_EVENT_TYPE, NotificationLoggingModel.EventType.NotificationForTask);
+            }
+        }
+
+        nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_DATE, currentDate);
+        logger.debug("currentDate "+currentDate);
+        String mailTo = (String)act.getParameterValue("to");
+        List mailToMany = (List)act.getParameterValue("to_many");
+        logger.debug("mailTo "+mailTo);
+        logger.debug("mailToMany "+mailToMany);
+        if(mailTo!=null)
+        {
+            NodeRef recipient = authorityService.getAuthorityNodeRef(mailTo);
+            if (recipient != null) {
+                nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_RECIPIENT, recipient);
+                logger.debug("mailTo "+mailTo+" nodeService.getType(recipient) "+nodeService.getType(recipient));
+                if(nodeService.getType(recipient).equals(ContentModel.TYPE_PERSON))
                 {
                     nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_EMAIL, nodeService.getProperty(recipient, ContentModel.PROP_EMAIL));
                 }
@@ -177,101 +170,101 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
                 {
                     nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_EMAIL, getEmailsForGroupMembers(recipient).toString());
                 }
-			}
-		}
-		else if(mailToMany!=null)
-		{
-			LinkedList<NodeRef> recipients = new LinkedList<>();
-			ArrayList<String> emails = new ArrayList<>();
-			for(int i=0; i<mailToMany.size(); i++)
-			{
-				NodeRef recipient = authorityService.getAuthorityNodeRef((String)mailToMany.get(i));
-				if(recipient!=null && nodeService.exists(recipient))
-				{
-					logger.debug("mailToMany "+mailToMany+" nodeService.getType(recipient) "+nodeService.getType(recipient));
-					logger.debug("recipient "+recipient);
-					recipients.add(recipient);
-					if(nodeService.getType(recipient).equals(ContentModel.TYPE_PERSON))
-					{
-						emails.add((String)nodeService.getProperty(recipient, ContentModel.PROP_EMAIL));
-					}
-					else if(nodeService.getType(recipient).equals(ContentModel.TYPE_AUTHORITY_CONTAINER))
-					{
-						emails.addAll(getEmailsForGroupMembers(recipient));
-					}
-				}
-			}
-			nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_RECIPIENT, recipients);
-			nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_EMAIL, emails.toString());
-			logger.debug("recipients "+recipients);
-		}
-		nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_SUBJECT, (String)act.getParameterValue("subject"));
-		nodeInfo.setProperty(NotificationLoggingModel.PROP_IS_NOTIFICATION_SENT, isSent);
+            }
+        }
+        else if(mailToMany!=null)
+        {
+            LinkedList<NodeRef> recipients = new LinkedList<>();
+            ArrayList<String> emails = new ArrayList<>();
+            for(int i=0; i<mailToMany.size(); i++)
+            {
+                NodeRef recipient = authorityService.getAuthorityNodeRef((String)mailToMany.get(i));
+                if(recipient!=null && nodeService.exists(recipient))
+                {
+                    logger.debug("mailToMany "+mailToMany+" nodeService.getType(recipient) "+nodeService.getType(recipient));
+                    logger.debug("recipient "+recipient);
+                    recipients.add(recipient);
+                    if(nodeService.getType(recipient).equals(ContentModel.TYPE_PERSON))
+                    {
+                        emails.add((String)nodeService.getProperty(recipient, ContentModel.PROP_EMAIL));
+                    }
+                    else if(nodeService.getType(recipient).equals(ContentModel.TYPE_AUTHORITY_CONTAINER))
+                    {
+                        emails.addAll(getEmailsForGroupMembers(recipient));
+                    }
+                }
+            }
+            nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_RECIPIENT, recipients);
+            nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_EMAIL, emails.toString());
+            logger.debug("recipients "+recipients);
+        }
+        nodeInfo.setProperty(NotificationLoggingModel.PROP_NOTIFICATION_SUBJECT, (String)act.getParameterValue("subject"));
+        nodeInfo.setProperty(NotificationLoggingModel.PROP_IS_NOTIFICATION_SENT, isSent);
 
-		if(mailToMany!=null || mailTo!=null)
-		{
-			QName assocQName = QName.createQName(notificationLoggingAssoc.getNamespaceURI(), act.getId());
-			ChildAssociationRef notificationLogItemRef = nodeService.createNode(notificationLoggingRoot, notificationLoggingAssoc, assocQName, NotificationLoggingModel.TYPE_NOTIFICATION_LOG_ITEM);
-			nodeInfoFactory.persist(notificationLogItemRef.getChildRef(), nodeInfo, true);
-			logger.debug("notificationLogItemRef.getChildRef()! "+notificationLogItemRef.getChildRef());
-			logger.debug("nodeInfo! "+nodeInfo);
-		}
+        if(mailToMany!=null || mailTo!=null)
+        {
+            QName assocQName = QName.createQName(notificationLoggingAssoc.getNamespaceURI(), act.getId());
+            ChildAssociationRef notificationLogItemRef = nodeService.createNode(notificationLoggingRoot, notificationLoggingAssoc, assocQName, NotificationLoggingModel.TYPE_NOTIFICATION_LOG_ITEM);
+            nodeInfoFactory.persist(notificationLogItemRef.getChildRef(), nodeInfo, true);
+            logger.debug("notificationLogItemRef.getChildRef()! "+notificationLogItemRef.getChildRef());
+            logger.debug("nodeInfo! "+nodeInfo);
+        }
 
-	}
-	
-	public ArrayList<String> getEmailsForGroupMembers(NodeRef recipient)
-	{
-		ArrayList<String> emails = new ArrayList<>();
-		List<ChildAssociationRef> memberAssocs = nodeService.getChildAssocs(recipient, ContentModel.ASSOC_MEMBER, RegexQNamePattern.MATCH_ALL);
-		for (ChildAssociationRef memberAssoc : memberAssocs)
-		{
-			NodeRef memberNode = memberAssoc.getChildRef();
-			if(nodeService.getType(memberNode).equals(ContentModel.TYPE_PERSON))
-			{
-				emails.add((String)nodeService.getProperty(memberNode, ContentModel.PROP_EMAIL));
-			}
-			else if(nodeService.getType(memberNode).equals(ContentModel.TYPE_AUTHORITY_CONTAINER))
-			{
-				emails.addAll(getEmailsForGroupMembers(memberNode));
-			}
-		}
-		return emails;
-	}
+    }
 
-	public boolean isEnabled() {
-		return enabled;
-	}
+    public ArrayList<String> getEmailsForGroupMembers(NodeRef recipient)
+    {
+        ArrayList<String> emails = new ArrayList<>();
+        List<ChildAssociationRef> memberAssocs = nodeService.getChildAssocs(recipient, ContentModel.ASSOC_MEMBER, RegexQNamePattern.MATCH_ALL);
+        for (ChildAssociationRef memberAssoc : memberAssocs)
+        {
+            NodeRef memberNode = memberAssoc.getChildRef();
+            if(nodeService.getType(memberNode).equals(ContentModel.TYPE_PERSON))
+            {
+                emails.add((String)nodeService.getProperty(memberNode, ContentModel.PROP_EMAIL));
+            }
+            else if(nodeService.getType(memberNode).equals(ContentModel.TYPE_AUTHORITY_CONTAINER))
+            {
+                emails.addAll(getEmailsForGroupMembers(memberNode));
+            }
+        }
+        return emails;
+    }
 
-	public void setNodeService(NodeService nodeService) {
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
     }
-	
+
     public void setWorkflowService(WorkflowService workflowService) {
         this.workflowService = workflowService;
     }
-	
 
-	public void setNodeInfoFactory(NodeInfoFactory nodeInfoFactory) {
-		this.nodeInfoFactory = nodeInfoFactory;
-	}
 
-	public void setAuthorityService(AuthorityService authorityService) {
-		this.authorityService = authorityService;
-	}
+    public void setNodeInfoFactory(NodeInfoFactory nodeInfoFactory) {
+        this.nodeInfoFactory = nodeInfoFactory;
+    }
 
-	public void setWorkflowMirrorService(WorkflowMirrorService workflowMirrorService) {
-		this.workflowMirrorService = workflowMirrorService;
-	}
+    public void setAuthorityService(AuthorityService authorityService) {
+        this.authorityService = authorityService;
+    }
 
-	public void setNotificationLoggingRoot(NodeRef notificationLoggingRoot) {
-		this.notificationLoggingRoot = notificationLoggingRoot;
-	}
+    public void setWorkflowMirrorService(WorkflowMirrorService workflowMirrorService) {
+        this.workflowMirrorService = workflowMirrorService;
+    }
 
-	public void setNotificationLoggingAssoc(QName notificationLoggingAssoc) {
-		this.notificationLoggingAssoc = notificationLoggingAssoc;
-	}
+    public void setNotificationLoggingRoot(NodeRef notificationLoggingRoot) {
+        this.notificationLoggingRoot = notificationLoggingRoot;
+    }
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
+    public void setNotificationLoggingAssoc(QName notificationLoggingAssoc) {
+        this.notificationLoggingAssoc = notificationLoggingAssoc;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 }

@@ -28,18 +28,15 @@ import org.alfresco.service.cmr.workflow.WorkflowService;
 
 import java.util.List;
 
-//import org.activiti.engine.impl.cmd.SetProcessDefinitionVersionCmd;
-
-//http://docs.camunda.org/latest/guides/user-guide/#process-engine-process-versioning
-
-// example
-
-//      workflowId - activiti$<processInstanceId>, e.g., activiti$3233  -> processInstanceId == "3233",
-//      workflowDefinitionId - activiti$<processDefinitionId>,
-//      e.g., "activiti$maxxium-disagreement:24:6293" -> newProcessDefinitionId == "maxxium-disagreement:24:6293"
-//      or newProcessDefinitionId == "activiti$maxxium-disagreement:24:6293" (там есть replace, убирающий activiti$)
-//      processDefinitionVersion.migrateVersionForWorkflow("3233", 24, "maxxium-disagreement:24:6293");
-
+/*
+ *  http://docs.camunda.org/latest/guides/user-guide/#process-engine-process-versioning
+ *  Example:
+ *  workflowId - activiti$<processInstanceId>, e.g., activiti$3233  -> processInstanceId == "3233",
+ *  workflowDefinitionId - activiti$<processDefinitionId>,
+ *  e.g., "activiti$maxxium-disagreement:24:6293" -> newProcessDefinitionId == "maxxium-disagreement:24:6293"
+ *  or newProcessDefinitionId == "activiti$maxxium-disagreement:24:6293" (там есть replace, убирающий activiti$)
+ *  processDefinitionVersion.migrateVersionForWorkflow("3233", 24, "maxxium-disagreement:24:6293");
+ */
 public class ProcessDefinitionMigrateVersion extends BaseProcessorExtension {
 
     private WorkflowService workflowService;

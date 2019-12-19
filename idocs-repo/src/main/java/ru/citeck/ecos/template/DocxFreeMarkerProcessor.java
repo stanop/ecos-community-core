@@ -118,13 +118,6 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 		} catch (IOException e) {
 			logger.error("Write failed", e);
 		}
-
-		// closing ByteArrayOutputStream is not necessary
-//		try {
-//			outputStream.close();
-//		} catch (IOException e) {
-//			logger.error("Close failed", e);
-//		}
 	}
 
 	public void process(String template, Object model, OutputStream out) {

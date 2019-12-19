@@ -75,7 +75,6 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
     // get notification template arguments for the task
     protected Map<String, Serializable> getNotificationArgs(ExecutionEntity task) {
         Map<String, Serializable> args = new HashMap<>();
-        //args.put(ARG_TASK, getTaskInfo(task));
         args.put(ARG_WORKFLOW, getWorkflowInfo(task));
         String userName = authenticationService.getCurrentUserName();
         NodeRef person = personService.getPerson(userName);
