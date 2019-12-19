@@ -105,35 +105,38 @@ public class ReportOutputCSV extends AbstractDataBundleLine {
     }
     
     private void createSheetData(StringBuilder builder, List<List<Map<String, Object>>> reportData) {
-        if (reportData != null && !reportData.isEmpty()) {
-            for (int i = 0; i < reportData.size(); i++) {
-                List<Map<String, Object>> rowData = reportData.get(i);
+        if (reportData == null || reportData.isEmpty()) {
+            return;
+        }
 
-                if (rowData != null && !rowData.isEmpty()) {
-                    for (int j = 0; j < rowData.size(); j++) {
-                        Map<String, Object> cellData = rowData.get(j);
+        for (int i = 0; i < reportData.size(); i++) {
+            List<Map<String, Object>> rowData = reportData.get(i);
 
-                        String value;
+            if (rowData == null || rowData.isEmpty()) {
+                continue;
+            }
 
-                        if (cellData != null && cellData.get(ReportProducer.DATA_VALUE_ATTR) != null) {
-                            value = cellData.get(ReportProducer.DATA_VALUE_ATTR).toString();
-                        } else {
-                            value = "";
-                        }
+            for (int j = 0; j < rowData.size(); j++) {
+                Map<String, Object> cellData = rowData.get(j);
 
-                        builder.append(clean(value));
-
-                        // add delimeter between cells in the row only if the cell is not the last
-                        if (j != rowData.size() - 1) {
-                            builder.append(delimeter);
-                        }
-                    }
-
-                    // add separator only if the row is not the last
-                    if (i != reportData.size() - 1) {
-                        builder.append(separator);
-                    }
+                String value;
+                if (cellData != null && cellData.get(ReportProducer.DATA_VALUE_ATTR) != null) {
+                    value = cellData.get(ReportProducer.DATA_VALUE_ATTR).toString();
+                } else {
+                    value = "";
                 }
+
+                builder.append(clean(value));
+
+                // add delimeter between cells in the row only if the cell is not the last
+                if (j != rowData.size() - 1) {
+                    builder.append(delimeter);
+                }
+            }
+
+            // add separator only if the row is not the last
+            if (i != reportData.size() - 1) {
+                builder.append(separator);
             }
         }
     }

@@ -90,7 +90,9 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
             }
 
             ChildAssociationRef parentAssoc = nodeService.getPrimaryParent(configRef);
-            if (!configsRoot.equals(parentAssoc.getParentRef())) {
+            if (configsRoot.equals(parentAssoc.getParentRef())) {
+                skipped.incrementAndGet();
+            } else {
 
                 String key = (String) nodeService.getProperty(configRef, ConfigModel.PROP_KEY);
 
@@ -105,15 +107,11 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
                     String baseName = (String) nodeService.getProperty(configRef, ContentModel.PROP_NAME);
                     String name = baseName;
 
-                    NodeRef configWithSameName = nodeService.getChildByName(configsRoot,
-                            ContentModel.ASSOC_CONTAINS,
-                            name);
+                    NodeRef configWithSameName = nodeService.getChildByName(configsRoot, ContentModel.ASSOC_CONTAINS, name);
                     int idx = 1;
                     while (configWithSameName != null) {
                         name = baseName + " (" + idx + ")";
-                        configWithSameName = nodeService.getChildByName(configsRoot,
-                                ContentModel.ASSOC_CONTAINS,
-                                name);
+                        configWithSameName = nodeService.getChildByName(configsRoot, ContentModel.ASSOC_CONTAINS, name);
                         idx++;
                     }
 
@@ -121,16 +119,10 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
                         nodeService.setProperty(configRef, ContentModel.PROP_NAME, name);
                     }
 
-                    QName assocQName = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI,
-                            QName.createValidLocalName(key));
-                    nodeService.moveNode(configRef,
-                            configsRoot,
-                            ContentModel.ASSOC_CONTAINS,
-                            assocQName);
+                    QName assocQName = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, QName.createValidLocalName(key));
+                    nodeService.moveNode(configRef, configsRoot, ContentModel.ASSOC_CONTAINS, assocQName);
                 }
                 fixed.incrementAndGet();
-            } else {
-                skipped.incrementAndGet();
             }
         }, config);
 

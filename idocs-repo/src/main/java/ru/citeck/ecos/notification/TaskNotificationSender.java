@@ -115,7 +115,7 @@ class TaskNotificationSender extends AbstractNotificationSender<WorkflowTask> {
                     if (type.equals(ContentModel.TYPE_PERSON)) {
                         String name = (String) nodeService.getProperty(pooledActor, ContentModel.PROP_USERNAME);
                         recipients.add(name);
-                    } else if(type.equals(ContentModel.TYPE_AUTHORITY_CONTAINER)) {
+                    } else if (type.equals(ContentModel.TYPE_AUTHORITY_CONTAINER)) {
                         String name = (String) nodeService.getProperty(pooledActor, ContentModel.PROP_AUTHORITY_NAME);
                         recipients.add(name);
                     }
@@ -265,39 +265,30 @@ class TaskNotificationSender extends AbstractNotificationSender<WorkflowTask> {
         }
     }
 
-    protected void sendToInitiator(WorkflowTask task, Set<String> authorities)
-    {
-        if(task.getPath()!=null && task.getPath().getInstance()!=null && task.getPath().getInstance().getInitiator()!=null)
-        {
+    protected void sendToInitiator(WorkflowTask task, Set<String> authorities) {
+        if (task.getPath() != null && task.getPath().getInstance() != null && task.getPath().getInstance().getInitiator() != null) {
             NodeRef initiator = task.getPath().getInstance().getInitiator();
-            String initiator_name = (String) nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
-            authorities.add(initiator_name);
+            String initiatorName = (String) nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
+            authorities.add(initiatorName);
         }
     }
 
 
-    protected void sendToSubscribers(WorkflowTask task, Set<String> authorities, List<String> taskSubscribers)
-    {
-        for(String subscriber : taskSubscribers)
-        {
+    protected void sendToSubscribers(WorkflowTask task, Set<String> authorities, List<String> taskSubscribers) {
+        for (String subscriber : taskSubscribers) {
             QName sub = qNameConverter.mapNameToQName(subscriber);
-            if(task.getPath()!=null && task.getPath().getInstance()!=null)
-            {
+            if (task.getPath() != null && task.getPath().getInstance() != null) {
                 NodeRef workflowPackage = task.getPath().getInstance().getWorkflowPackage();
-                if(workflowPackage!=null)
-                {
+                if (workflowPackage != null) {
                     List<ChildAssociationRef> children = nodeService.getChildAssocs(workflowPackage);
-                    for(ChildAssociationRef child : children)
-                    {
+                    for (ChildAssociationRef child : children) {
                         NodeRef node = child.getChildRef();
                         Collection<AssociationRef> assocs = nodeService.getTargetAssocs(node, sub);
-                        for (AssociationRef assoc : assocs)
-                        {
+                        for (AssociationRef assoc : assocs) {
                             NodeRef ref = assoc.getTargetRef();
-                            if(nodeService.exists(ref))
-                            {
-                                String sub_name = (String) nodeService.getProperty(ref, ContentModel.PROP_USERNAME);
-                                authorities.add(sub_name);
+                            if (nodeService.exists(ref)) {
+                                String subName = (String) nodeService.getProperty(ref, ContentModel.PROP_USERNAME);
+                                authorities.add(subName);
                             }
                         }
                     }

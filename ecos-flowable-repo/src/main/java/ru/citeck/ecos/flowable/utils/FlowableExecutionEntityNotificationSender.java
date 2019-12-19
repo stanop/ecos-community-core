@@ -78,9 +78,9 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
         args.put(ARG_WORKFLOW, getWorkflowInfo(task));
         String userName = authenticationService.getCurrentUserName();
         NodeRef person = personService.getPerson(userName);
-        String last_name = (String) nodeService.getProperty(person, ContentModel.PROP_FIRSTNAME);
-        String first_name = (String) nodeService.getProperty(person, ContentModel.PROP_LASTNAME);
-        args.put(ARG_MODIFIER, last_name + " " + first_name);
+        String lastName = (String) nodeService.getProperty(person, ContentModel.PROP_FIRSTNAME);
+        String firstName = (String) nodeService.getProperty(person, ContentModel.PROP_LASTNAME);
+        args.put(ARG_MODIFIER, lastName + " " + firstName);
         return args;
     }
 
@@ -190,8 +190,8 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
 
     protected void sendToInitiator(ExecutionEntity task, Set<String> authorities) {
         NodeRef initiator = (NodeRef) task.getVariable("initiator");
-        String initiator_name = (String) nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
-        authorities.add(initiator_name);
+        String initiatorName = (String) nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
+        authorities.add(initiatorName);
     }
 
     protected void sendToOwner(Set<String> authorities, NodeRef node) {
@@ -217,8 +217,8 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
                     for (AssociationRef assoc : assocs) {
                         NodeRef ref = assoc.getTargetRef();
                         if (nodeService.exists(ref)) {
-                            String sub_name = (String) nodeService.getProperty(ref, ContentModel.PROP_USERNAME);
-                            authorities.add(sub_name);
+                            String subName = (String) nodeService.getProperty(ref, ContentModel.PROP_USERNAME);
+                            authorities.add(subName);
                         }
                     }
                 }

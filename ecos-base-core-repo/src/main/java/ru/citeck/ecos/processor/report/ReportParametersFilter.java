@@ -77,7 +77,8 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
         if (criteriaObj instanceof String) {
             try {
                 criteriaJSON = new JSONObject((String) criteriaObj);
-            } catch (JSONException e) {
+            } catch (JSONException ignored) {
+                // Empty
             }
         } else if (criteriaObj instanceof JSONObject) {
             criteriaJSON = (JSONObject) criteriaObj;
@@ -89,10 +90,12 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
                 String name = (String) criteriaKeys.next();
                 if (name.startsWith("report")) {
                     try {
-                        if (name.equals("reportFilename"))
+                        if (name.equals("reportFilename")) {
                             model.put(ProcessorConstants.KEY_FILENAME, simpleJSON2Java(criteriaJSON.get(name)));
+                        }
                         model.put(name, simpleJSON2Java(criteriaJSON.get(name)));
-                    } catch (JSONException e) {
+                    } catch (JSONException ignored) {
+                        // Empty
                     }
                 }
             }

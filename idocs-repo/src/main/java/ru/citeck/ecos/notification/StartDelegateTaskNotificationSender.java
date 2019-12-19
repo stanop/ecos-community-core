@@ -176,9 +176,9 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
         String userName = authenticationService.getCurrentUserName();
         NodeRef person = personService.getPerson(userName);
         if (nodeService.exists(person)) {
-            String last_name = (String) nodeService.getProperty(person, ContentModel.PROP_FIRSTNAME);
-            String first_name = (String) nodeService.getProperty(person, ContentModel.PROP_LASTNAME);
-            taskInfo.put(ARG_TASK_EDITOR, last_name + " " + first_name);
+            String lastName = (String) nodeService.getProperty(person, ContentModel.PROP_FIRSTNAME);
+            String firstName = (String) nodeService.getProperty(person, ContentModel.PROP_LASTNAME);
+            taskInfo.put(ARG_TASK_EDITOR, lastName + " " + firstName);
         }
         return taskInfo;
     }
@@ -466,8 +466,8 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
                     for (AssociationRef assoc : assocs) {
                         NodeRef ref = assoc.getTargetRef();
                         if (nodeService.exists(ref)) {
-                            String sub_name = (String) nodeService.getProperty(ref, ContentModel.PROP_USERNAME);
-                            authorities.add(sub_name);
+                            String subName = (String) nodeService.getProperty(ref, ContentModel.PROP_USERNAME);
+                            authorities.add(subName);
                         }
                     }
                 }
