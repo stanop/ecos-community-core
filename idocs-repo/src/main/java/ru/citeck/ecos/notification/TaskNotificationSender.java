@@ -108,18 +108,16 @@ class TaskNotificationSender extends AbstractNotificationSender<WorkflowTask> {
         // try with pool:
         @SuppressWarnings("unchecked")
         Collection<NodeRef> pool = (Collection<NodeRef>) properties.get(WorkflowModel.ASSOC_POOLED_ACTORS);
-        if(recipients.size()==0&&pool != null) {
-                for(NodeRef pooledActor : pool) {
-                    if(nodeService.exists(pooledActor)){
-
-                        QName type = nodeService.getType(pooledActor);
-                        if(type.equals(ContentModel.TYPE_PERSON)) {
-                            String name = (String) nodeService.getProperty(pooledActor, ContentModel.PROP_USERNAME);
-                            recipients.add(name);
-                        } else if(type.equals(ContentModel.TYPE_AUTHORITY_CONTAINER)) {
-                            String name = (String) nodeService.getProperty(pooledActor, ContentModel.PROP_AUTHORITY_NAME);
-                            recipients.add(name);
-
+        if (recipients.size() == 0 && pool != null) {
+            for (NodeRef pooledActor : pool) {
+                if (nodeService.exists(pooledActor)) {
+                    QName type = nodeService.getType(pooledActor);
+                    if (type.equals(ContentModel.TYPE_PERSON)) {
+                        String name = (String) nodeService.getProperty(pooledActor, ContentModel.PROP_USERNAME);
+                        recipients.add(name);
+                    } else if (type.equals(ContentModel.TYPE_AUTHORITY_CONTAINER)) {
+                        String name = (String) nodeService.getProperty(pooledActor, ContentModel.PROP_AUTHORITY_NAME);
+                        recipients.add(name);
                     }
                 }
             }
