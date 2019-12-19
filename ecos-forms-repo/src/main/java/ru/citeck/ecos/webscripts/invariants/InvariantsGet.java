@@ -39,7 +39,7 @@ import java.util.*;
 
 public class InvariantsGet extends DeclarativeWebScript {
 
-    final private static Logger logger = Logger.getLogger(InvariantsGet.class);
+    private static final Logger logger = Logger.getLogger(InvariantsGet.class);
 
     private static final String PARAM_TYPE = "type";
     private static final String PARAM_NODEREF = "nodeRef";

@@ -38,8 +38,7 @@ public class SupplementaryFilesSplit extends AbstractAssociationSplit
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected List<Object> getAssociatedObjects(NodeRef nodeRef) {
-		List supplementaryFiles = dao.getSupplementaryFiles(nodeRef);
-		return supplementaryFiles;
+		return (List) dao.getSupplementaryFiles(nodeRef);
 	}
 
 	public void setDao(SupplementaryFilesDAO dao) {

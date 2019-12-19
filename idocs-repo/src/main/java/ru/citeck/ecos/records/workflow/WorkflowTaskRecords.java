@@ -1,11 +1,14 @@
 package ru.citeck.ecos.records.workflow;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Getter;
 import lombok.Setter;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.service.cmr.dictionary.*;
+import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
@@ -132,7 +135,9 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 documentProps.set(getEcmFieldName(n), v);
             }
             if (n.startsWith(OUTCOME_PREFIX)) {
-                outcome[0] = n.substring(OUTCOME_PREFIX.length());
+                if (v.isBoolean() && v.asBoolean()) {
+                    outcome[0] = n.substring(OUTCOME_PREFIX.length());
+                }
             } else {
 
                 if (v.isTextual()) {
@@ -379,7 +384,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
             Set<String> customAttributes = new HashSet<>();
 
-            for (String att : attributesMap.keySet()) {
+            for (Map.Entry<String, String> entry : attributesMap.entrySet()) {
+                String att = entry.getKey();
                 switch (att) {
                     case ATT_DOC_DISP_NAME:
                         documentAttributes.put(ATT_DOC_DISP_NAME, "cm:title");
@@ -400,7 +406,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     default:
                         if (att.startsWith(DOCUMENT_FIELD_PREFIX)) {
                             String ecmFieldName = getEcmFieldName(att);
-                            String fieldAtt = attributesMap.get(att).replace(att, ecmFieldName);
+                            String fieldAtt = entry.getValue().replace(att, ecmFieldName);
 
                             documentAttributes.put(att, fieldAtt);
                         }
@@ -453,7 +459,13 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             }
 
             if (documentInfo.has(name)) {
-                return new InnerMetaValue(documentInfo.get(name));
+                JsonNode node = documentInfo.get(name);
+                if (node instanceof ArrayNode) {
+                    List<InnerMetaValue> result = new ArrayList<>();
+                    node.forEach(jsonNode -> result.add(new InnerMetaValue(jsonNode)));
+                    return result;
+                }
+                return new InnerMetaValue(node);
             }
 
             if (RecordConstants.ATT_FORM_KEY.equals(name)) {

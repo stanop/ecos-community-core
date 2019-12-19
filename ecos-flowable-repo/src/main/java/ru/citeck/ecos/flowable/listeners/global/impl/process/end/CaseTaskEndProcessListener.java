@@ -34,15 +34,12 @@ public class CaseTaskEndProcessListener implements GlobalEndExecutionListener {
      */
     @Override
     public void notify(DelegateExecution delegateExecution) {
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-            @Override
-            public Object doWork() throws Exception {
-                if (FlowableListenerUtils.getDocument(delegateExecution, nodeService) == null) {
-                    return null;
-                }
-                stopActivity(delegateExecution);
+        AuthenticationUtil.runAsSystem(() -> {
+            if (FlowableListenerUtils.getDocument(delegateExecution, nodeService) == null) {
                 return null;
             }
+            stopActivity(delegateExecution);
+            return null;
         });
     }
 

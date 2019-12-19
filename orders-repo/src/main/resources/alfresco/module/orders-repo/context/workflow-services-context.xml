@@ -41,7 +41,6 @@
           class="ru.citeck.ecos.workflow.listener.SetConfirmationStatusToOrdersListener"
           abstract="true">
         <property name="nodeService" ref="nodeService"/>
-        <property name="workflowService" ref="WorkflowService"/>
         <property name="requiredDocType" value="orders:internal"/>
         <property name="requiredWorkflowName" value="confirm"/>
         <property name="fieldToSet" value="orders:currentConfirmationStatus"/>

@@ -213,30 +213,6 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
         return managementService.executeCustomSql(sqlExecution);
     }
 
-    private void createProcessHistoryModel(ModelHistory model) {
-        CustomSqlExecution<ModelMapper, String> insertModelSqlExecution =
-                new AbstractCustomSqlExecution<ModelMapper, String>(ModelMapper.class) {
-                    @Override
-                    public String execute(ModelMapper modelMapper) {
-                        modelMapper.insertHistoryModel(model);
-                        return null;
-                    }
-                };
-
-        managementService.executeCustomSql(insertModelSqlExecution);
-    }
-
-    private List<Model> getProcessModelsByModelKey(String modelKey) {
-        CustomSqlExecution<ModelMapper, List<Model>> sqlExecution =
-                new AbstractCustomSqlExecution<ModelMapper, List<Model>>(ModelMapper.class) {
-                    @Override
-                    public List<Model> execute(ModelMapper modelMapper) {
-                        return modelMapper.getProcessModelsByModelKey(modelKey);
-                    }
-                };
-        return managementService.executeCustomSql(sqlExecution);
-    }
-
     private boolean existProcessModel(String modelKey) {
         /* Load process models by model key */
         CustomSqlExecution<ModelMapper, Long> countExecution =
@@ -248,49 +224,6 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
                 };
        Long result = managementService.executeCustomSql(countExecution);
        return result > 0;
-    }
-
-    private Integer getLastProcessModelVersion(String modelKey) {
-        CustomSqlExecution<ModelMapper, Integer> versionExecution =
-                new AbstractCustomSqlExecution<ModelMapper, Integer>(ModelMapper.class) {
-                    @Override
-                    public Integer execute(ModelMapper modelMapper) {
-                        return modelMapper.getLastProcessModelVersionByModelKey(modelKey);
-                    }
-                };
-        return managementService.executeCustomSql(versionExecution);
-    }
-
-    private void deleteProcessModelsByIds(String modelId) {
-        CustomSqlExecution<ModelMapper, String> deleteModelSqlExecution =
-                new AbstractCustomSqlExecution<ModelMapper, String>(ModelMapper.class) {
-                    @Override
-                    public String execute(ModelMapper modelMapper) {
-                        modelMapper.deleteProcessModelsById(modelId);
-                        return null;
-                    }
-                };
-
-        managementService.executeCustomSql(deleteModelSqlExecution);
-    }
-
-    private ModelHistory createHistoryModelFromModel(Model model, String modelId) {
-        ModelHistory result = new ModelHistory();
-        result.setModelId(modelId);
-
-        result.setId(UUID.randomUUID().toString());
-        result.setName(model.getName());
-        result.setKey(model.getKey());
-        result.setDescription(model.getDescription());
-        result.setCreated(model.getCreated());
-        result.setCreatedBy(model.getCreatedBy());
-        result.setLastUpdated(model.getLastUpdated());
-        result.setLastUpdatedBy(model.getLastUpdatedBy());
-        result.setVersion(model.getVersion());
-        result.setModelEditorJson(model.getModelEditorJson());
-        result.setModelType(model.getModelType());
-
-        return result;
     }
 
     @Override
@@ -331,8 +264,7 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
     private List<String> getBootstrapDefinitions() {
         List<String> bootstrapLocations = new ArrayList<>();
         Map<String, WorkflowDeployer> deployerMap = applicationContext.getBeansOfType(WorkflowDeployer.class);
-        for (String key : deployerMap.keySet()) {
-            WorkflowDeployer deployer = deployerMap.get(key);
+        for (WorkflowDeployer deployer : deployerMap.values()) {
             if (deployer != null && !CollectionUtils.isEmpty(deployer.getWorkflowDefinitions())) {
                 for (Properties definitionProperties : deployer.getWorkflowDefinitions()) {
                     String engineId = definitionProperties.getProperty("engineId");

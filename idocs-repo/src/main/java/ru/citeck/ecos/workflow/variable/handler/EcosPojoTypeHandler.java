@@ -17,6 +17,7 @@ import ru.citeck.ecos.workflow.variable.type.PojoVariableWrapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class EcosPojoTypeHandler<T> implements VariableType {
 
@@ -24,7 +25,7 @@ public class EcosPojoTypeHandler<T> implements VariableType {
 
     private static final int MAX_TEXT_LENGTH = 4000;
     private static final String TYPE_NAME = "ecos-pojo";
-    private static final Charset STRING_CHARSET = Charset.forName("utf-8");
+    private static final Charset STRING_CHARSET = StandardCharsets.UTF_8;
     private static final byte[] STRING_BYTES_MARKER = {(byte) 0xAB, (byte) 0xCD, (byte) 0xEF};
 
     private VariableTypeUtils utils;
@@ -86,26 +87,22 @@ public class EcosPojoTypeHandler<T> implements VariableType {
     }
 
     private T deserialize(byte[] bytes, String variableName) {
-        T result;
-        try {
-            if (isStringBytes(bytes)) {
-                try {
-                    int offset = STRING_BYTES_MARKER.length;
-                    int length = bytes.length - offset;
-                    String textValue = new String(bytes, offset, length, STRING_CHARSET);
-                    result = toObject(textValue);
-                } catch (Exception e) {
-                    logger.debug("Error while parsing string bytes value. Let's try to deserialize", e);
-                    result = utils.deserialize(bytes);
-                }
-            } else {
-                result = utils.deserialize(bytes);
+        if (isStringBytes(bytes)) {
+            try {
+                int offset = STRING_BYTES_MARKER.length;
+                int length = bytes.length - offset;
+                String textValue = new String(bytes, offset, length, STRING_CHARSET);
+                return toObject(textValue);
+            } catch (Exception e) {
+                logger.debug("Error while parsing string bytes value. Let's try to deserialize", e);
             }
-        } catch (IOException | ClassNotFoundException e) {
-            throw new ActivitiException("Couldn't deserialize object " +
-                                        "in variable '" + variableName + "'", e);
         }
-        return result;
+
+        try {
+            return utils.deserialize(bytes);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new ActivitiException("Couldn't deserialize object in variable '" + variableName + "'", e);
+        }
     }
 
     private T toObject(String text) {
@@ -114,7 +111,7 @@ public class EcosPojoTypeHandler<T> implements VariableType {
             @SuppressWarnings("unchecked")
             PojoVariableWrapper<T> wrapper = objectMapper.readValue(text, PojoVariableWrapper.class);
             result = wrapper.variable;
-        } catch(IOException e){
+        } catch(IOException e) {
             throw new AlfrescoRuntimeException("Error!", e);
         }
         return result;

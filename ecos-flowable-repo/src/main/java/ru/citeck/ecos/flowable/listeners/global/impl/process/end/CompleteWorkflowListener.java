@@ -29,10 +29,8 @@ public class CompleteWorkflowListener implements GlobalEndExecutionListener {
         if(enabled) {
             ExecutionEntity entity = (ExecutionEntity) delegateExecution;
             Boolean value = (Boolean)entity.getVariable("cwf_sendNotification");
-            if (Boolean.TRUE.equals(value)) {
-                if(!entity.isDeleted() && entity.isEnded()) {
-                    sender.sendNotification((ExecutionEntity) delegateExecution);
-                }
+            if (Boolean.TRUE.equals(value) && !entity.isDeleted() && entity.isEnded()) {
+                sender.sendNotification((ExecutionEntity) delegateExecution);
             }
         }
     }

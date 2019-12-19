@@ -98,10 +98,6 @@ public class AssociationIndexing implements OnCreateAssociationPolicy,
         updateAssocMirrorProp(node, assocQName);
     }
 
-    private void updateAssociationMirrorProperty(NodeRef node, QName assocQName) {
-        updateAssocMirrorProp(node, assocQName);
-        }
-
     private void updateAssocMirrorProp(NodeRef node, QName assocName) {
         Map<NodeRef, Set<QName>> assocsToUpdate = TransactionalResourceHelper.getMap(ASSOCS_TO_UPDATE_TXN_KEY);
         TransactionUtils.processBatchAfterCommit(NODES_TO_UPDATE_TXN_KEY, node, nodeRefs -> {

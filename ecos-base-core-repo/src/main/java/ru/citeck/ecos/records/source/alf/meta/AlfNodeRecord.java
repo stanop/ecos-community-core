@@ -17,25 +17,26 @@ import ru.citeck.ecos.apps.app.module.type.ui.action.ActionModule;
 import ru.citeck.ecos.attr.prov.VirtualScriptAttributes;
 import ru.citeck.ecos.document.sum.DocSumService;
 import ru.citeck.ecos.graphql.AlfGqlContext;
-import ru.citeck.ecos.node.AlfNodeContentPathRegistry;
-import ru.citeck.ecos.node.AlfNodeInfo;
-import ru.citeck.ecos.node.DisplayNameService;
-import ru.citeck.ecos.records.meta.MetaUtils;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
+import ru.citeck.ecos.node.AlfNodeContentPathRegistry;
+import ru.citeck.ecos.node.AlfNodeInfo;
+import ru.citeck.ecos.node.DisplayNameService;
+import ru.citeck.ecos.records.RecordsUtils;
+import ru.citeck.ecos.records.meta.MetaUtils;
+import ru.citeck.ecos.records.source.alf.AlfNodeMetaEdge;
 import ru.citeck.ecos.records.source.alf.file.FileRepresentation;
 import ru.citeck.ecos.records.source.common.MLTextValue;
 import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.RecordConstants;
-import ru.citeck.ecos.records.RecordsUtils;
-import ru.citeck.ecos.records.source.alf.AlfNodeMetaEdge;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaEdge;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.state.ItemsUpdateState;
+import ru.citeck.ecos.utils.NodeUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -57,6 +58,7 @@ public class AlfNodeRecord implements MetaValue {
     public static final String ATTR_CASE_STATUS = "caseStatus";
 
     private static final String CASE_STATUS_NAME_SCHEMA = "icase:caseStatusAssoc.cm:name";
+    public static final String ASSOC_SRC_ATTR_PREFIX = "assoc_src_";
 
     private NodeRef nodeRef;
     private RecordRef recordRef;
@@ -153,8 +155,8 @@ public class AlfNodeRecord implements MetaValue {
                     }
 
                     MetaValue value = context.getServiceFactory()
-                            .getMetaValuesConverter()
-                            .toMetaValue(RecordRef.create("emodel", "type", etype));
+                        .getMetaValuesConverter()
+                        .toMetaValue(RecordRef.create("emodel", "type", etype));
                     value.init(context, field);
 
                     attribute = Collections.singletonList(value);
@@ -173,9 +175,9 @@ public class AlfNodeRecord implements MetaValue {
             case ATTR_ASPECTS:
 
                 attribute = node.aspects()
-                        .stream()
-                        .map(o -> toMetaValue(null, o, field))
-                        .collect(Collectors.toList());
+                    .stream()
+                    .map(o -> toMetaValue(null, o, field))
+                    .collect(Collectors.toList());
                 break;
 
             case ATTR_IS_CONTAINER:
@@ -241,7 +243,7 @@ public class AlfNodeRecord implements MetaValue {
                 VersionService versionService = context.getServiceRegistry().getVersionService();
                 Version currentVersion = versionService.getCurrentVersion(new NodeRef(node.nodeRef()));
                 String versionLabel = currentVersion != null && StringUtils.isNotBlank(currentVersion.getVersionLabel())
-                        ? currentVersion.getVersionLabel() : DEFAULT_VERSION_LABEL;
+                    ? currentVersion.getVersionLabel() : DEFAULT_VERSION_LABEL;
                 attribute = Collections.singletonList(toMetaValue(null, versionLabel, field));
                 break;
 
@@ -263,7 +265,7 @@ public class AlfNodeRecord implements MetaValue {
                 String caseStatusName = getCaseStatusName(context.getRecordsService());
                 if (StringUtils.isNotBlank(caseStatusName)) {
                     MetaValue statusMeta = context.getServiceFactory().getMetaValuesConverter()
-                            .toMetaValue(RecordRef.create("", "status", caseStatusName));
+                        .toMetaValue(RecordRef.create("", "status", caseStatusName));
                     statusMeta.init(context, field);
 
                     attribute = Collections.singletonList(statusMeta);
@@ -274,7 +276,13 @@ public class AlfNodeRecord implements MetaValue {
             default:
 
                 Attribute nodeAtt = node.attribute(name);
-                if (Attribute.Type.UNKNOWN.equals(nodeAtt.type())) {
+                if (nodeAtt == null) {
+                    return Collections.emptyList();
+                }
+
+                if (name.contains(ASSOC_SRC_ATTR_PREFIX)) {
+                    attribute = getSourceAssocs(node.nodeRef(), name, field);
+                } else if (Attribute.Type.UNKNOWN.equals(nodeAtt.type())) {
                     Optional<QName> attQname = context.getQName(name).map(GqlQName::getQName);
                     if (attQname.isPresent()) {
                         VirtualScriptAttributes attributes = context.getService(VIRTUAL_SCRIPT_ATTS_ID);
@@ -284,11 +292,12 @@ public class AlfNodeRecord implements MetaValue {
                         }
                     }
                 }
+
                 if (attribute == null) {
                     attribute = nodeAtt.getValues()
-                            .stream()
-                            .map(v -> toMetaValue(nodeAtt, v, field))
-                            .collect(Collectors.toList());
+                        .stream()
+                        .map(v -> toMetaValue(nodeAtt, v, field))
+                        .collect(Collectors.toList());
                 }
         }
 
@@ -366,6 +375,23 @@ public class AlfNodeRecord implements MetaValue {
             value = att.value().orElse(null);
         }
         return value != null && NodeRef.isNodeRef(value) ? new NodeRef(value) : null;
+    }
+
+    private List<? extends MetaValue> getSourceAssocs(String nodeRefStr, String attrName, MetaField field) {
+        if (StringUtils.isBlank(attrName) || !NodeRef.isNodeRef(nodeRefStr)) {
+            return Collections.emptyList();
+        }
+        String attrQNameValue = attrName.replace(ASSOC_SRC_ATTR_PREFIX, StringUtils.EMPTY);
+        QName attr = QName.resolveToQName(context.getNamespaceService(), attrQNameValue);
+        NodeUtils nodeUtils = context.getService(NodeUtils.QNAME);
+        List<NodeRef> nodeRefs = nodeUtils.getAssocSources(new NodeRef(nodeRefStr), attr);
+        return nodeRefs.stream()
+            .map(nodeRef -> {
+                MetaValue record = new AlfNodeRecord(RecordRef.valueOf(nodeRef.toString()));
+                record.init(context, field);
+                return record;
+            })
+            .collect(Collectors.toList());
     }
 
     @Override

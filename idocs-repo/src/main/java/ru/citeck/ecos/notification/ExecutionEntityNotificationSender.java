@@ -18,17 +18,10 @@
  */
 package ru.citeck.ecos.notification;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import java.util.Set;
-
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.notification.EMailNotificationProvider;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
 import org.alfresco.service.ServiceRegistry;
@@ -36,15 +29,16 @@ import org.alfresco.service.cmr.notification.NotificationContext;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.TemplateService;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.alfresco.service.cmr.repository.TemplateService;
-import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
-
 import ru.citeck.ecos.security.NodeOwnerDAO;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Notification sender for tasks (ItemType = ExecutionEntity).
@@ -74,287 +68,265 @@ import ru.citeck.ecos.security.NodeOwnerDAO;
  */
 class ExecutionEntityNotificationSender extends AbstractNotificationSender<ExecutionEntity> {
 
-	private static final String DOCS_INFO_KEY = ExecutionEntityNotificationSender.class.getName() + ".docsInfo";
+    private static final String DOCS_INFO_KEY = ExecutionEntityNotificationSender.class.getName() + ".docsInfo";
 
-	// template argument names:
-	public static final String ARG_TASK = "task";
-	public static final String ARG_TASK_ID = "id";
-	public static final String ARG_TASK_NAME = "name";
-	public static final String ARG_TASK_DESCRIPTION = "description";
-	public static final String ARG_TASK_EDITOR = "editor";
-	public static final String ARG_TASK_PROPERTIES = "properties";
-	public static final String ARG_TASK_PROPERTIES_PRIORITY = "bpm_priority";
-	public static final String ARG_TASK_PROPERTIES_DESCRIPTION = "bpm_description";
-	public static final String ARG_TASK_PROPERTIES_DUEDATE = "bpm_dueDate";
-	public static final String ARG_WORKFLOW = "workflow";
-	public static final String ARG_WORKFLOW_ID = "id";
-	public static final String ARG_WORKFLOW_PROPERTIES = "properties";
-	public static final String ARG_WORKFLOW_DOCUMENTS = "documents";
-	private Map<String, Map<String,List<String>>> taskSubscribers;
-	protected WorkflowQNameConverter qNameConverter;
-	protected PersonService personService;
-	protected AuthenticationService authenticationService;
-	protected boolean sendToOwner;
-	private NodeOwnerDAO nodeOwnerDAO;
-	private static final Log logger = LogFactory.getLog(ExecutionEntityNotificationSender.class);
-	public static final String ARG_MODIFIER = "modifier";
-	List<String> allowDocList;
-	Map<String, Map<String,String>> subjectTemplates;
-	private TemplateService templateService;
-	private String nodeVariable;
-	private String templateEngine;
+    // template argument names:
+    public static final String ARG_TASK = "task";
+    public static final String ARG_TASK_ID = "id";
+    public static final String ARG_TASK_NAME = "name";
+    public static final String ARG_TASK_DESCRIPTION = "description";
+    public static final String ARG_TASK_EDITOR = "editor";
+    public static final String ARG_TASK_PROPERTIES = "properties";
+    public static final String ARG_TASK_PROPERTIES_PRIORITY = "bpm_priority";
+    public static final String ARG_TASK_PROPERTIES_DESCRIPTION = "bpm_description";
+    public static final String ARG_TASK_PROPERTIES_DUEDATE = "bpm_dueDate";
+    public static final String ARG_WORKFLOW = "workflow";
+    public static final String ARG_WORKFLOW_ID = "id";
+    public static final String ARG_WORKFLOW_PROPERTIES = "properties";
+    public static final String ARG_WORKFLOW_DOCUMENTS = "documents";
+    protected WorkflowQNameConverter qNameConverter;
+    protected PersonService personService;
+    protected AuthenticationService authenticationService;
+    protected boolean sendToOwner;
+    private NodeOwnerDAO nodeOwnerDAO;
+    private static final Log logger = LogFactory.getLog(ExecutionEntityNotificationSender.class);
+    public static final String ARG_MODIFIER = "modifier";
+    List<String> allowDocList;
+    Map<String, Map<String,String>> subjectTemplates;
+    private TemplateService templateService;
+    private String nodeVariable;
+    private String templateEngine;
 
-	@Override
+    @Override
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-    	super.setServiceRegistry(serviceRegistry);
-		this.qNameConverter = new WorkflowQNameConverter(namespaceService);
-		this.authenticationService = serviceRegistry.getAuthenticationService();
-		this.personService = serviceRegistry.getPersonService();
-	}	
-	
-	/**
-	* Recipients provided as parameter taskSubscribers: "task name"-{"doc type1"-"recepient field1", ...}
-	* @param task subscribers
-	*/
-	public void setTaskSubscribers(Map<String, Map<String,List<String>>> taskSubscribers) {
-    	this.taskSubscribers = taskSubscribers;
+        super.setServiceRegistry(serviceRegistry);
+        this.qNameConverter = new WorkflowQNameConverter(namespaceService);
+        this.authenticationService = serviceRegistry.getAuthenticationService();
+        this.personService = serviceRegistry.getPersonService();
+    }
+
+    /**
+    * Recipients provided as parameter taskSubscribers: "task name"-{"doc type1"-"recepient field1", ...}
+    * @param task subscribers
+    */
+    @Deprecated
+    public void setTaskSubscribers(Map<String, Map<String,List<String>>> taskSubscribers) {
+        // not used
     }
 
   // get notification template arguments for the task
-	protected Map<String, Serializable> getNotificationArgs(ExecutionEntity task) {
-		Map<String, Serializable> args = new HashMap<>();
-		//args.put(ARG_TASK, getTaskInfo(task));
-		args.put(ARG_WORKFLOW, getWorkflowInfo(task));
-		String userName = authenticationService.getCurrentUserName();
-		NodeRef person = personService.getPerson(userName);
-		String lastName = (String)nodeService.getProperty(person,ContentModel.PROP_FIRSTNAME);
-		String firstName = (String)nodeService.getProperty(person,ContentModel.PROP_LASTNAME);
-		args.put(ARG_MODIFIER, lastName +" "+ firstName);
-		return args;
-	}
-	
-	/*private Serializable getTaskInfo(DelegateTask task) {
-		HashMap<String, Object> taskInfo = new HashMap<String, Object>();
-		taskInfo.put(ARG_TASK_ID, task.getId());
-		taskInfo.put(ARG_TASK_NAME, task.getName());
-		taskInfo.put(ARG_TASK_DESCRIPTION, task.getDescription());
-		HashMap<String, Serializable> properties = new HashMap<String, Serializable>();
-		taskInfo.put(ARG_TASK_PROPERTIES, properties);
-		properties.put(ARG_TASK_PROPERTIES_PRIORITY, task.getPriority());
-		properties.put(ARG_TASK_PROPERTIES_DESCRIPTION, task.getDescription());
-		properties.put(ARG_TASK_PROPERTIES_DUEDATE, task.getDueDate());
-		String userName = authenticationService.getCurrentUserName();
-		NodeRef person = personService.getPerson(userName);
-		String last_name = (String)nodeService.getProperty(person,ContentModel.PROP_FIRSTNAME);
-		String first_name = (String)nodeService.getProperty(person,ContentModel.PROP_LASTNAME);
-		taskInfo.put(ARG_TASK_EDITOR,last_name+" "+first_name);
-		return taskInfo;
-	}*/
-	
-	private Serializable getWorkflowInfo(ExecutionEntity task) {
-		HashMap<String, Object> workflowInfo = new HashMap<>();
-		//workflowInfo.put(ARG_WORKFLOW_ID, "activiti$" +task.getId());
-		workflowInfo.put(ARG_WORKFLOW_ID, task.getId());
-		HashMap<String, Serializable> properties = new HashMap<>();
-		workflowInfo.put(ARG_WORKFLOW_PROPERTIES, properties);
-		for(Map.Entry<String, Object> entry : task.getVariables().entrySet()) {
-			if(entry.getValue()!=null)
-			{
-				properties.put(entry.getKey(), entry.getValue().toString());
-			}
-			else
-			{
-				properties.put(entry.getKey(), null);
-			}
-		}
-		workflowInfo.put(ARG_WORKFLOW_DOCUMENTS, getDocsInfo());
-		return workflowInfo;
-	}
+    protected Map<String, Serializable> getNotificationArgs(ExecutionEntity task) {
+        Map<String, Serializable> args = new HashMap<>();
+        args.put(ARG_WORKFLOW, getWorkflowInfo(task));
+        String userName = authenticationService.getCurrentUserName();
+        NodeRef person = personService.getPerson(userName);
+        String lastName = (String)nodeService.getProperty(person,ContentModel.PROP_FIRSTNAME);
+        String firstName = (String)nodeService.getProperty(person,ContentModel.PROP_LASTNAME);
+        args.put(ARG_MODIFIER, lastName +" "+ firstName);
+        return args;
+    }
 
-	/**
-	* Method send notificatiion about start task to notification recipients.
-	* Mail sends to each document to subscriber because task can containls a lot of different documents 
-	* and these documents can contains different subscriber.
-	* @param Delegate Task
-	*/
-	@Override
-	public void sendNotification(ExecutionEntity task)
-	{
-		String subject = null;
-		NodeRef workflowPackage = null;
-		Vector<String> recipient = new Vector<>();
-		//ExecutionEntity executionEntity = ((ExecutionEntity)task.getExecution()).getProcessInstance();
-		ActivitiScriptNode scriptNode = (ActivitiScriptNode)task.getVariable("bpm_package");
-		if (scriptNode != null)
-		{
-			workflowPackage = scriptNode.getNodeRef();
-		}
-		if(workflowPackage!=null && nodeService.exists(workflowPackage))
-		{
-			List<ChildAssociationRef> children = services.getNodeService().getChildAssocs(workflowPackage);
-			for(ChildAssociationRef child : children) {
-				recipient.clear();
-				NodeRef node = child.getChildRef();
-				if(node!=null  && nodeService.exists(node))
-				{
-					if(allowDocList==null)
-					{
-						setDocsInfo(node);
-						break;
-					}
-					else
-					{
-						if(allowDocList.contains(qNameConverter.mapQNameToName(nodeService.getType(node))))
-						{
-							setDocsInfo(node);
-							break;
-						}
-					}
-				}
-			}
+    private Serializable getWorkflowInfo(ExecutionEntity task) {
+        HashMap<String, Object> workflowInfo = new HashMap<>();
+        workflowInfo.put(ARG_WORKFLOW_ID, task.getId());
+        HashMap<String, Serializable> properties = new HashMap<>();
+        workflowInfo.put(ARG_WORKFLOW_PROPERTIES, properties);
+        for(Map.Entry<String, Object> entry : task.getVariables().entrySet()) {
+            if(entry.getValue()!=null)
+            {
+                properties.put(entry.getKey(), entry.getValue().toString());
+            }
+            else
+            {
+                properties.put(entry.getKey(), null);
+            }
+        }
+        workflowInfo.put(ARG_WORKFLOW_DOCUMENTS, getDocsInfo());
+        return workflowInfo;
+    }
+
+    /**
+    * Method send notificatiion about start task to notification recipients.
+    * Mail sends to each document to subscriber because task can containls a lot of different documents
+    * and these documents can contains different subscriber.
+    * @param Delegate Task
+    */
+    @Override
+    public void sendNotification(ExecutionEntity task)
+    {
+        String subject = null;
+        NodeRef workflowPackage = null;
+        Vector<String> recipient = new Vector<>();
+        ActivitiScriptNode scriptNode = (ActivitiScriptNode)task.getVariable("bpm_package");
+        if (scriptNode != null)
+        {
+            workflowPackage = scriptNode.getNodeRef();
+        }
+        if(workflowPackage!=null && nodeService.exists(workflowPackage))
+        {
+            List<ChildAssociationRef> children = services.getNodeService().getChildAssocs(workflowPackage);
+            for(ChildAssociationRef child : children) {
+                NodeRef node = child.getChildRef();
+                if(node!=null  && nodeService.exists(node))
+                {
+                    if(allowDocList==null)
+                    {
+                        setDocsInfo(node);
+                        break;
+                    }
+                    else
+                    {
+                        if(allowDocList.contains(qNameConverter.mapQNameToName(nodeService.getType(node))))
+                        {
+                            setDocsInfo(node);
+                            break;
+                        }
+                    }
+                }
+            }
             if(getDocsInfo()!=null && nodeService.exists(getDocsInfo()))
             {
-				NotificationContext notificationContext = new NotificationContext();
-				NodeRef template = getNotificationTemplate(task);
-				if(template!=null && nodeService.exists(template))
-				{
+                NotificationContext notificationContext = new NotificationContext();
+                NodeRef template = getNotificationTemplate(task);
+                if(template!=null && nodeService.exists(template))
+                {
                     recipient.addAll(getRecipients(task, template, getDocsInfo()));
-					String notificationProviderName = EMailNotificationProvider.NAME;
-					if(subjectTemplates!=null)
-					{
-						String processDef = task.getProcessDefinitionId();
-						String wfkey = "activiti$"+processDef.substring(0,processDef.indexOf(':'));
-						if(subjectTemplates.containsKey(wfkey))
-						{
-							Map<String,String> taskSubjectTemplate = subjectTemplates.get(wfkey);
-							if(taskSubjectTemplate.containsKey(qNameConverter.mapQNameToName(nodeService.getType(getDocsInfo()))))
-							{
-								HashMap<String,Object> model = new HashMap<>(1);
-								model.put(nodeVariable, getDocsInfo());
-								subject = templateService.processTemplateString(templateEngine, taskSubjectTemplate.get(qNameConverter.mapQNameToName(nodeService.getType(getDocsInfo()))), model);
-							}
-						}
-						else
-						{
-							subject = (String) nodeService.getProperty(template, ContentModel.PROP_TITLE);
-						}
-					}
-					else
-					{
-						subject = (String) nodeService.getProperty(template, ContentModel.PROP_TITLE);
-					}
-					for(String to : recipient) {
-						notificationContext.addTo(to);
-					}
-					notificationContext.setSubject(subject);
-					setBodyTemplate(notificationContext, template);
-					notificationContext.setTemplateArgs(getNotificationArgs(task));
-					notificationContext.setAsyncNotification(getAsyncNotification());
-					// send
-					logger.debug("Send notification");
-					services.getNotificationService().sendNotification(notificationProviderName, notificationContext);
-				}
+                    String notificationProviderName = EMailNotificationProvider.NAME;
+                    if(subjectTemplates!=null)
+                    {
+                        String processDef = task.getProcessDefinitionId();
+                        String wfkey = "activiti$"+processDef.substring(0,processDef.indexOf(':'));
+                        if(subjectTemplates.containsKey(wfkey))
+                        {
+                            Map<String,String> taskSubjectTemplate = subjectTemplates.get(wfkey);
+                            if(taskSubjectTemplate.containsKey(qNameConverter.mapQNameToName(nodeService.getType(getDocsInfo()))))
+                            {
+                                HashMap<String,Object> model = new HashMap<>(1);
+                                model.put(nodeVariable, getDocsInfo());
+                                subject = templateService.processTemplateString(templateEngine, taskSubjectTemplate.get(qNameConverter.mapQNameToName(nodeService.getType(getDocsInfo()))), model);
+                            }
+                        }
+                        else
+                        {
+                            subject = (String) nodeService.getProperty(template, ContentModel.PROP_TITLE);
+                        }
+                    }
+                    else
+                    {
+                        subject = (String) nodeService.getProperty(template, ContentModel.PROP_TITLE);
+                    }
+                    for(String to : recipient) {
+                        notificationContext.addTo(to);
+                    }
+                    notificationContext.setSubject(subject);
+                    setBodyTemplate(notificationContext, template);
+                    notificationContext.setTemplateArgs(getNotificationArgs(task));
+                    notificationContext.setAsyncNotification(getAsyncNotification());
+                    // send
+                    logger.debug("Send notification");
+                    services.getNotificationService().sendNotification(notificationProviderName, notificationContext);
+                }
             }
-		}
+        }
 
-	}
-	
-	public NodeRef getNotificationTemplate(ExecutionEntity task)
-	{
-		String processDef = task.getProcessDefinitionId();
-		String wfkey = "activiti$"+processDef.substring(0,processDef.indexOf(':'));
-		String tkey = (String)task.getVariableLocal("taskFormKey");
-		logger.debug("template for notification "+getNotificationTemplate(wfkey, tkey));
-		return getNotificationTemplate(wfkey, tkey, nodeService.getType(getDocsInfo()));
-	}
-
-	/**
-	* Include initiator of process to recipients
-	* @param true or false
-	*/
-	public void setSendToOwner(Boolean sendToOwner) {
-    	this.sendToOwner = sendToOwner.booleanValue();
     }
-	
-	public void setNodeOwnerDAO(NodeOwnerDAO nodeOwnerDAO) {
-		this.nodeOwnerDAO = nodeOwnerDAO;
-	}
+
+    public NodeRef getNotificationTemplate(ExecutionEntity task)
+    {
+        String processDef = task.getProcessDefinitionId();
+        String wfkey = "activiti$"+processDef.substring(0,processDef.indexOf(':'));
+        String tkey = (String)task.getVariableLocal("taskFormKey");
+        logger.debug("template for notification "+getNotificationTemplate(wfkey, tkey));
+        return getNotificationTemplate(wfkey, tkey, nodeService.getType(getDocsInfo()));
+    }
+
+    /**
+    * Include initiator of process to recipients
+    * @param true or false
+    */
+    public void setSendToOwner(Boolean sendToOwner) {
+        this.sendToOwner = sendToOwner.booleanValue();
+    }
+
+    public void setNodeOwnerDAO(NodeOwnerDAO nodeOwnerDAO) {
+        this.nodeOwnerDAO = nodeOwnerDAO;
+    }
     
-	protected void sendToAssignee(ExecutionEntity task, Set<String> authorities)
-	{
+    protected void sendToAssignee(ExecutionEntity task, Set<String> authorities)
+    {
 
-	}
+    }
 
-	protected void sendToInitiator(ExecutionEntity task, Set<String> authorities)
-	{
-		NodeRef initiator = ((ActivitiScriptNode)task.getVariable("initiator")).getNodeRef();
-		String initiatorName = (String) nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
-		authorities.add(initiatorName);
-	}
-	protected void sendToOwner(Set<String> authorities, NodeRef node)
-	{
-		String owner = nodeOwnerDAO.getOwner(node);
-		authorities.add(owner);
-	}
-	
-	public void setAllowDocList(List<String> allowDocList) {
-		this.allowDocList = allowDocList;
-	}
+    protected void sendToInitiator(ExecutionEntity task, Set<String> authorities)
+    {
+        NodeRef initiator = ((ActivitiScriptNode)task.getVariable("initiator")).getNodeRef();
+        String initiatorName = (String) nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
+        authorities.add(initiatorName);
+    }
+    protected void sendToOwner(Set<String> authorities, NodeRef node)
+    {
+        String owner = nodeOwnerDAO.getOwner(node);
+        authorities.add(owner);
+    }
 
-	
-	protected void sendToSubscribers(ExecutionEntity task, Set<String> authorities, List<String> taskSubscribers)
-	{
-		for(String subscriber : taskSubscribers)
-		{
-			QName sub = qNameConverter.mapNameToQName(subscriber);
-			NodeRef workflowPackage = null;
-			ActivitiScriptNode scriptNode = (ActivitiScriptNode)task.getVariable("bpm_package");
-			if (scriptNode != null)
-			{
-				workflowPackage = scriptNode.getNodeRef();
-			}
-			if(workflowPackage!=null)
-			{
-				List<ChildAssociationRef> children = nodeService.getChildAssocs(workflowPackage);
-				for(ChildAssociationRef child : children) 
-				{
-					NodeRef node = child.getChildRef();
-					Collection<AssociationRef> assocs = nodeService.getTargetAssocs(node, sub);
-					for (AssociationRef assoc : assocs) 
-					{
-						NodeRef ref = assoc.getTargetRef();
-						if(nodeService.exists(ref))
-						{
-							String subName = (String) nodeService.getProperty(ref, ContentModel.PROP_USERNAME);
-							authorities.add(subName);
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	public void setTemplateService(TemplateService templateService) {
-		this.templateService = templateService;
-	}
+    public void setAllowDocList(List<String> allowDocList) {
+        this.allowDocList = allowDocList;
+    }
 
-	public void setTemplateEngine(String templateEngine) {
-		this.templateEngine = templateEngine;
-	}
+
+    protected void sendToSubscribers(ExecutionEntity task, Set<String> authorities, List<String> taskSubscribers)
+    {
+        for(String subscriber : taskSubscribers)
+        {
+            QName sub = qNameConverter.mapNameToQName(subscriber);
+            NodeRef workflowPackage = null;
+            ActivitiScriptNode scriptNode = (ActivitiScriptNode)task.getVariable("bpm_package");
+            if (scriptNode != null)
+            {
+                workflowPackage = scriptNode.getNodeRef();
+            }
+            if(workflowPackage!=null)
+            {
+                List<ChildAssociationRef> children = nodeService.getChildAssocs(workflowPackage);
+                for(ChildAssociationRef child : children)
+                {
+                    NodeRef node = child.getChildRef();
+                    Collection<AssociationRef> assocs = nodeService.getTargetAssocs(node, sub);
+                    for (AssociationRef assoc : assocs)
+                    {
+                        NodeRef ref = assoc.getTargetRef();
+                        if(nodeService.exists(ref))
+                        {
+                            String subName = (String) nodeService.getProperty(ref, ContentModel.PROP_USERNAME);
+                            authorities.add(subName);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
+    }
+
+    public void setTemplateEngine(String templateEngine) {
+        this.templateEngine = templateEngine;
+    }
 
     public void setSubjectTemplates(Map<String, Map<String,String>> subjectTemplates) {
         this.subjectTemplates = subjectTemplates;
     }
 
-	public void setNodeVariable(String nodeVariable) {
-		this.nodeVariable = nodeVariable;
-	}
+    public void setNodeVariable(String nodeVariable) {
+        this.nodeVariable = nodeVariable;
+    }
 
-	private void setDocsInfo(NodeRef docsInfo) {
-		AlfrescoTransactionSupport.bindResource(DOCS_INFO_KEY, docsInfo);
-	}
+    private void setDocsInfo(NodeRef docsInfo) {
+        AlfrescoTransactionSupport.bindResource(DOCS_INFO_KEY, docsInfo);
+    }
 
-	private NodeRef getDocsInfo() {
-		return AlfrescoTransactionSupport.getResource(DOCS_INFO_KEY);
-	}
+    private NodeRef getDocsInfo() {
+        return AlfrescoTransactionSupport.getResource(DOCS_INFO_KEY);
+    }
 }

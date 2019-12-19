@@ -18,31 +18,25 @@
  */
 package ru.citeck.ecos.processor.pdf;
 
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.*;
+import org.alfresco.error.AlfrescoRuntimeException;
+import org.alfresco.service.cmr.repository.ContentReader;
+import org.alfresco.service.cmr.repository.ContentService;
+import org.alfresco.service.cmr.repository.ContentWriter;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.processor.AbstractDataBundleLine;
+import ru.citeck.ecos.processor.CompositeDataBundleProcessor;
+import ru.citeck.ecos.processor.DataBundle;
+import ru.citeck.ecos.processor.DataBundleProcessor;
+import ru.citeck.ecos.processor.transform.AffineTransformCalculator;
+
 import java.awt.geom.AffineTransform;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.alfresco.error.AlfrescoRuntimeException;
-import org.alfresco.service.cmr.repository.ContentReader;
-import org.alfresco.service.cmr.repository.ContentService;
-import org.alfresco.service.cmr.repository.ContentWriter;
-
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfImportedPage;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.PdfStamper;
-import com.itextpdf.text.pdf.BaseFont;
-
-import ru.citeck.ecos.processor.CompositeDataBundleProcessor;
-import ru.citeck.ecos.processor.DataBundleProcessor;
-import ru.citeck.ecos.processor.AbstractDataBundleLine;
-import ru.citeck.ecos.processor.DataBundle;
-import ru.citeck.ecos.processor.transform.AffineTransformCalculator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Document Stamp is Data Bundle Decorator (Line), that creates new page and puts stamp and document id on it.
@@ -62,8 +56,6 @@ public class DocStamp extends AbstractDataBundleLine
 	private Boolean foreground;
 	private String appendStringTo;
 	private String appendStringFrom;
-	private String appendIDFrom;
-	private String appendIDTo;
 	private float leftMargin;
     private static final Log logger = LogFactory.getLog(DocStamp.class);
 	

@@ -141,7 +141,6 @@ public class TaskDeputyListener extends AbstractDeputyListener {
 
     @Override
     public void onUserAvailable(String userName) {
-//        AdvancedTaskQuery query = new AdvancedTaskQuery().setClaimOwner(userName);
         AdvancedTaskQuery query = new AdvancedTaskQuery().setOriginalOwner(userName).withoutGroupCandidates();
         List<WorkflowTask> tasks = advancedWorkflowService.queryTasks(query);
         
@@ -165,7 +164,6 @@ public class TaskDeputyListener extends AbstractDeputyListener {
 
     @Override
     public void onUserUnavailable(String userName) {
-//        AdvancedTaskQuery query = new AdvancedTaskQuery().setClaimOwner(userName);
         AdvancedTaskQuery query = new AdvancedTaskQuery().setAssignee(userName).withoutGroupCandidates();
         List<WorkflowTask> tasks = advancedWorkflowService.queryTasks(query);
 
@@ -281,16 +279,6 @@ public class TaskDeputyListener extends AbstractDeputyListener {
         public void process(WorkflowTask task) throws Throwable {
             strategy.perform(task);
         }
-    }
-    
-    @Override
-    public void onAssistantAdded(String userName) {
-        //addDeputiesToTasks(userName);
-    }
-
-    @Override
-    public void onAssistantRemoved(String userName, String deputyName) {
-        //removeDeputiesFromTasks(userName, Collections.singletonList(deputyName));
     }
 
     public ArrayList<String> getActorsList(String userName) {

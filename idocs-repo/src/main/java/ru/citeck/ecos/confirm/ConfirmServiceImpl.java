@@ -30,7 +30,6 @@ import org.alfresco.service.namespace.QName;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import ru.citeck.ecos.confirm.ConfirmConfigService;
 
 import java.io.Serializable;
 import java.util.HashMap;

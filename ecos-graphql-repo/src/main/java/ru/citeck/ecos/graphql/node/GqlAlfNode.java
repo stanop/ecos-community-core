@@ -130,6 +130,9 @@ public class GqlAlfNode {
     }
 
     private Attribute getAttribute(QName qname) {
+        if (qname == null) {
+            return null;
+        }
         return attributes.computeIfAbsent(qname, attName -> {
             QName prefixedName = attName.getPrefixedQName(context.getNamespaceService());
             return new Attribute(prefixedName, getAttributeType(prefixedName), this, context);

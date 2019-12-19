@@ -60,14 +60,12 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
         } catch (IOException e) {
             Logger.getLogger(ReportParametersFilter.class).error(e.getMessage(), e);
         }
-
         DataBundle copyDB = new DataBundle(copyIS, model);
 
         ContentReader contentReader = helper.getContentReader(copyDB);
         Object criteriaObj = evaluateExpression(contentReader.getContentString(), model);
 
-        HashMap<String, Object> newModel = new HashMap<>();
-        newModel.putAll(model);
+        HashMap<String, Object> newModel = new HashMap<>(model);
         newModel = insertReportParams(criteriaObj, newModel);
 
         return new DataBundle(newIS, newModel);

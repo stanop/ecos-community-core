@@ -165,9 +165,11 @@ public class RepoContentDAOImpl<T> implements RepoContentDAO<T> {
         Map<QName, Serializable> notNullProps = new HashMap<>();
         Set<QName> nullProps = new HashSet<>();
 
-        for (QName key : keys.keySet()) {
-            if (keys.get(key) != null) {
-                notNullProps.put(key, keys.get(key));
+        for (Map.Entry<QName, Serializable> entry : keys.entrySet()) {
+            QName key = entry.getKey();
+            Serializable value = entry.getValue();
+            if (value != null) {
+                notNullProps.put(key, value);
             } else {
                 nullProps.add(key);
             }

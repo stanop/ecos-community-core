@@ -115,26 +115,20 @@ public class BranchAssignBehavior implements OnCreateNodePolicy {
                     
                     for (String groupName : branches) {
                         NodeRef groupRef = authorityService.getAuthorityNodeRef(groupName);
-//                        Set<QName> aspects = nodeService.getAspects(groupRef);
-                        if (targetDefinition == null)
-                        {
+                        if (targetDefinition == null) {
                             PropertyDefinition propertyDefinition = dictionaryService.getProperty(targetAssociationOrProperty);
-                            if (propertyDefinition != null)
-                            {
+                            if (propertyDefinition != null) {
                                 Serializable propValue = null;
-                                if(authorityContainerProperty!=null)
-                                {
+                                if (authorityContainerProperty != null) {
                                     propValue = nodeService.getProperty(groupRef, authorityContainerProperty);
-                                }
-                                else
-                                {
+                                } else {
                                     propValue = nodeService.getProperty(groupRef, ContentModel.PROP_NODE_REF);
                                 }
                                 nodeService.setProperty(nodeRef, targetAssociationOrProperty, propValue);
                             }
-                        }
-                        else
+                        } else {
                             nodeService.createAssociation(nodeRef, groupRef, targetAssociationOrProperty);
+                        }
                     }
                 }
                 return null;

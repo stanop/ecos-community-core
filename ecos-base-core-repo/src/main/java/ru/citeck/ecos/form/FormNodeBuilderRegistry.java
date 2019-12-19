@@ -27,32 +27,33 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 
 public class FormNodeBuilderRegistry {
-	
-	private DictionaryService dictionaryService;
-	private NamespaceService namespaceService;
-	
-	private Map<String, FormNodeBuilder> registry = new HashMap<>();
-	
-	public void addFormNodeBuilder(String typeName, FormNodeBuilder builder) {
-		registry.put(typeName, builder);
-	}
-	
-	public FormNodeBuilder getNodeBuilder(TypeDefinition typeDef) {
-		// search for typeDef:
-		for(String builderTypeName : registry.keySet()) {
-			if(dictionaryService.isSubClass(typeDef.getName(), QName.resolveToQName(namespaceService, builderTypeName))) {
-				return registry.get(builderTypeName);
-			}
-		}
-		return null;
-	}
 
-	public void setDictionaryService(DictionaryService dictionaryService) {
-		this.dictionaryService = dictionaryService;
-	}
+    private DictionaryService dictionaryService;
+    private NamespaceService namespaceService;
 
-	public void setNamespaceService(NamespaceService namespaceService) {
-		this.namespaceService = namespaceService;
-	}
-	
+    private Map<String, FormNodeBuilder> registry = new HashMap<>();
+
+    public void addFormNodeBuilder(String typeName, FormNodeBuilder builder) {
+        registry.put(typeName, builder);
+    }
+
+    public FormNodeBuilder getNodeBuilder(TypeDefinition typeDef) {
+        // search for typeDef:
+        for (Map.Entry<String, FormNodeBuilder> regEntry : registry.entrySet()) {
+            QName qName = QName.resolveToQName(namespaceService, regEntry.getKey());
+            if (dictionaryService.isSubClass(typeDef.getName(), qName)) {
+                return regEntry.getValue();
+            }
+        }
+        return null;
+    }
+
+    public void setDictionaryService(DictionaryService dictionaryService) {
+        this.dictionaryService = dictionaryService;
+    }
+
+    public void setNamespaceService(NamespaceService namespaceService) {
+        this.namespaceService = namespaceService;
+    }
+
 }

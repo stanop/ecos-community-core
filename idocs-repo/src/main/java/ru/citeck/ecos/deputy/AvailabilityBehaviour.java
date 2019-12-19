@@ -36,64 +36,63 @@ import java.util.Map;
 
 public class AvailabilityBehaviour implements NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.OnAddAspectPolicy
 {
-	private PolicyComponent policyComponent;
-	private NodeService nodeService;
-	private DeputyService deputyService;
-	
-	public void init() {
-		policyComponent.bindClassBehaviour(NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME, DeputyModel.ASPECT_AVAILABILITY, 
-				new JavaBehaviour(this, "onUpdateProperties", NotificationFrequency.EVERY_EVENT));
+    private PolicyComponent policyComponent;
+    private NodeService nodeService;
+    private DeputyService deputyService;
 
-		policyComponent.bindClassBehaviour(NodeServicePolicies.OnAddAspectPolicy.QNAME, DeputyModel.ASPECT_AVAILABILITY,
-				new JavaBehaviour(this, "onAddAspect", NotificationFrequency.FIRST_EVENT));
-	}
-	
-	public void setPolicyComponent(PolicyComponent policyComponent) {
-		this.policyComponent = policyComponent;
-	}
+    public void init() {
+        policyComponent.bindClassBehaviour(NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME, DeputyModel.ASPECT_AVAILABILITY,
+                new JavaBehaviour(this, "onUpdateProperties", NotificationFrequency.EVERY_EVENT));
 
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
+        policyComponent.bindClassBehaviour(NodeServicePolicies.OnAddAspectPolicy.QNAME, DeputyModel.ASPECT_AVAILABILITY,
+                new JavaBehaviour(this, "onAddAspect", NotificationFrequency.FIRST_EVENT));
+    }
 
-	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-//		this.nodeService = serviceRegistry.getNodeService();
-		this.deputyService = (DeputyService) serviceRegistry.getService(CiteckServices.DEPUTY_SERVICE);
-	}
-	
-	@Override
-	public void onUpdateProperties(NodeRef nodeRef,
-			Map<QName, Serializable> before, 
-			Map<QName, Serializable> after) 
-	{
-		if(!nodeService.exists(nodeRef)) {
-			return;
-		}
-		Boolean availableBefore = (Boolean) before.get(DeputyModel.PROP_AVAILABLE);
-		Boolean availableAfter = (Boolean) after.get(DeputyModel.PROP_AVAILABLE);
-		if(availableAfter.equals(availableBefore)) {
-			return;
-		}
-		
-		String userName = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_USERNAME);
-		if(userName == null) {
-			return;
-		}
+    public void setPolicyComponent(PolicyComponent policyComponent) {
+        this.policyComponent = policyComponent;
+    }
 
-		deputyService.userAvailabilityChanged(userName);
-	}
-	@Override
-	public void onAddAspect(NodeRef nodeRef, QName aspectTypeQName) {
-		if(!nodeService.exists(nodeRef)) {
-			return;
-		}
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 
-		String userName = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_USERNAME);
-		if(userName == null) {
-			return;
-		}
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.deputyService = (DeputyService) serviceRegistry.getService(CiteckServices.DEPUTY_SERVICE);
+    }
 
-		deputyService.userAvailabilityChanged(userName);
-	}
+    @Override
+    public void onUpdateProperties(NodeRef nodeRef,
+            Map<QName, Serializable> before,
+            Map<QName, Serializable> after)
+    {
+        if(!nodeService.exists(nodeRef)) {
+            return;
+        }
+        Boolean availableBefore = (Boolean) before.get(DeputyModel.PROP_AVAILABLE);
+        Boolean availableAfter = (Boolean) after.get(DeputyModel.PROP_AVAILABLE);
+        if(availableAfter.equals(availableBefore)) {
+            return;
+        }
+
+        String userName = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_USERNAME);
+        if(userName == null) {
+            return;
+        }
+
+        deputyService.userAvailabilityChanged(userName);
+    }
+    @Override
+    public void onAddAspect(NodeRef nodeRef, QName aspectTypeQName) {
+        if(!nodeService.exists(nodeRef)) {
+            return;
+        }
+
+        String userName = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_USERNAME);
+        if(userName == null) {
+            return;
+        }
+
+        deputyService.userAvailabilityChanged(userName);
+    }
 
 }

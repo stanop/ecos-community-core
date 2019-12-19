@@ -18,42 +18,31 @@
  */
 package ru.citeck.ecos.behavior.common;
 
+import org.alfresco.model.ContentModel;
+import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
+import org.alfresco.repo.i18n.MessageService;
+import org.alfresco.repo.node.NodeServicePolicies;
+import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
+import org.alfresco.repo.policy.PolicyComponent;
+import org.alfresco.repo.workflow.WorkflowQNameConverter;
+import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.dictionary.*;
+import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.security.PersonService;
+import org.alfresco.service.namespace.NamespaceService;
+import org.alfresco.service.namespace.QName;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.behavior.JavaBehaviour;
+import ru.citeck.ecos.notification.DocumentNotificationSender;
+import ru.citeck.ecos.processor.ProcessorHelper;
+import ru.citeck.ecos.security.NodeOwnerDAO;
+import ru.citeck.ecos.service.AlfrescoServices;
+
 import java.io.Serializable;
 import java.util.*;
 
-import org.alfresco.model.ContentModel;
-import org.alfresco.repo.i18n.MessageService;
-import org.alfresco.repo.node.NodeServicePolicies;
-import ru.citeck.ecos.behavior.JavaBehaviour;
-import org.alfresco.repo.policy.PolicyComponent;
-import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.namespace.QName;
-import org.alfresco.service.namespace.NamespaceService;
-import org.alfresco.service.ServiceRegistry;
-import org.alfresco.repo.workflow.WorkflowQNameConverter;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.dictionary.PropertyDefinition;
-import org.alfresco.service.cmr.dictionary.AspectDefinition;
-import org.alfresco.service.cmr.dictionary.ConstraintDefinition;
-import org.alfresco.service.cmr.dictionary.Constraint;
-import org.alfresco.service.cmr.dictionary.AssociationDefinition;
-import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
-
-import ru.citeck.ecos.notification.DocumentNotificationSender;
-import org.alfresco.service.cmr.repository.AssociationRef;
-import ru.citeck.ecos.processor.ProcessorHelper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
-import ru.citeck.ecos.security.NodeOwnerDAO;
-import org.alfresco.service.cmr.security.PersonService;
-import org.alfresco.service.cmr.repository.AssociationExistsException;
-import org.alfresco.service.cmr.repository.InvalidNodeRefException;
-import ru.citeck.ecos.service.AlfrescoServices;
-
-public class DocumentChangeSendNotificationBehaviour implements NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.OnCreateAssociationPolicy, 
+public class DocumentChangeSendNotificationBehaviour implements NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.OnCreateAssociationPolicy,
 		NodeServicePolicies.OnDeleteAssociationPolicy, NodeServicePolicies.OnCreateChildAssociationPolicy, NodeServicePolicies.OnDeleteChildAssociationPolicy, 
 		NodeServicePolicies.OnCreateNodePolicy {
 	public enum PropertiesMode {INCLUDE, EXCLUDE}
@@ -125,7 +114,7 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 				if (propertiesMode == PropertiesMode.INCLUDE && isContains
 						|| propertiesMode == PropertiesMode.EXCLUDE && !isContains) {
 
-					if ((propBefore!=null && !propBefore.equals(propAfter))||(propBefore==null && propAfter!=null)) {
+					if (!Objects.equals(propBefore, propAfter)) {
 						PropertyDefinition propDefinition = dictionaryService.getProperty(entry.getKey());
 						String propTitle = null;
 						if (propDefinition!=null) {

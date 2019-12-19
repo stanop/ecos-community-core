@@ -60,12 +60,6 @@ public class SelectChildNodes extends AbstractDataBundleLine {
         return helper.getDataBundle(helper.getContentReader(input), newModel);
     }
 
-    private QNamePattern createQNamePattern(String property, Map<String, Object> model) {
-        return property == null || property.isEmpty() ?
-                RegexQNamePattern.MATCH_ALL :
-                QName.createQName((String) evaluateExpression(property, model));
-    }
-
     public void setParentNodeRef(String parentNodeRef) {
         this.parentNodeRef = parentNodeRef;
     }

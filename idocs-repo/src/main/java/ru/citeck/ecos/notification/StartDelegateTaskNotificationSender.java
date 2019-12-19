@@ -92,7 +92,6 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
     public static final String ARG_WORKFLOW_PROPERTIES = "properties";
     public static final String ARG_WORKFLOW_DOCUMENTS = "documents";
     private static final String ARG_RECIPIENTS_FROM_ROLE = "iCase_Role";
-    private Map<String, Map<String, List<String>>> taskSubscribers;
     protected WorkflowQNameConverter qNameConverter;
     protected PersonService personService;
     protected AuthenticationService authenticationService;
@@ -100,7 +99,6 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
     protected boolean sendToOwner;
     protected boolean mandatoryFieldsFilled = true;
     private NodeOwnerDAO nodeOwnerDAO;
-    private Map<String, Map<String, String>> taskProperties;
     private Map<String, Boolean> checkAssignee;
     private Map<String, List<String>> additionRecipients;
     private Map<String, List<String>> supervisors;
@@ -127,8 +125,9 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
      *
      * @param taskSubscribers subscribers
      */
+    @Deprecated
     public void setTaskSubscribers(Map<String, Map<String, List<String>>> taskSubscribers) {
-        this.taskSubscribers = taskSubscribers;
+        // not used
     }
 
     // get notification template arguments for the task
@@ -206,12 +205,9 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
      */
     @Override
     public void sendNotification(final DelegateTask task) {
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-            @Override
-            public Void doWork() throws Exception {
-                send(task);
-                return null;
-            }
+        AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
+            send(task);
+            return null;
         });
     }
 
@@ -255,7 +251,6 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
         if (workflowPackage != null && sendBasedOnUser) {
             List<ChildAssociationRef> children = services.getNodeService().getChildAssocs(workflowPackage);
             for (ChildAssociationRef child : children) {
-                recipient.clear();
                 NodeRef node = child.getChildRef();
                 if (node != null && nodeService.exists(node)) {
                     if (allowDocList == null) {
@@ -283,9 +278,7 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
                 if (additionRecipients != null) {
                     List<String> addition = additionRecipients.get(task.getName());
                     if (addition != null && addition.size() > 0) {
-                        for (String add : addition) {
-                            recipients.add(add);
-                        }
+                        recipients.addAll(addition);
                     }
 
                     List<String> recipientsFromRole = additionRecipients.get(ARG_RECIPIENTS_FROM_ROLE);
@@ -293,9 +286,7 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
                         Set<String> roleRecipients = RecipientsUtils.getRecipientsFromRole(recipientsFromRole,
                                 getDocsInfo(), nodeService, dictionaryService);
                         if (!roleRecipients.isEmpty()) {
-                            for (String roleRecipient : roleRecipients) {
-                                recipients.add(roleRecipient);
-                            }
+                            recipients.addAll(roleRecipients);
                         }
                     }
 
@@ -314,9 +305,7 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
                     setBodyTemplate(notificationContext, template);
                 }
                 notificationContext.setSubject(subject);
-                for (String to : recipient) {
-                    recipients.add(to);
-                }
+                recipients.addAll(recipient);
                 notificationContext.setTemplateArgs(getNotificationArgs(task));
                 notificationContext.setAsyncNotification(getAsyncNotification());
 
@@ -395,8 +384,9 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
         this.nodeOwnerDAO = nodeOwnerDAO;
     }
 
+    @Deprecated
     public void setTaskProperties(Map<String, Map<String, String>> taskProperties) {
-        this.taskProperties = taskProperties;
+        // not used
     }
 
     public void setAdditionRecipients(Map<String, List<String>> additionRecipients) {

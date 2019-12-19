@@ -143,11 +143,7 @@ public class PathDetailsGet extends BaseAbstractWebscript {
     }
 
     private Boolean getIsContainer(final NodeRef nodeRef) {
-        return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Boolean>() {
-            public Boolean doWork() throws Exception {
-                return fileFolderService.getFileInfo(nodeRef).isFolder();
-            }
-        });
+        return AuthenticationUtil.runAsSystem(() -> fileFolderService.getFileInfo(nodeRef).isFolder());
     }
 
     private String getDisplayPath(NodeRef nodeRef, String nodeName) {
