@@ -265,9 +265,6 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                             assocs.put(fieldName, targetRefs);
                         }
                     }
-                } else {
-                    logger.warn("Attribute definition not found" +
-                            " (should be either PropertyDefinition or AssociationDefinition): " + name);
                 }
             }
         }
