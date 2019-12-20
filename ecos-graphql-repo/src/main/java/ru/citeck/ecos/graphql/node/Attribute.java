@@ -48,7 +48,7 @@ public class Attribute {
 
     public Optional<String> value() {
         List<?> values = getValues();
-        Object value = values.size() > 0 ? values.get(0) : null;
+        Object value = !values.isEmpty() ? values.get(0) : null;
         return Optional.ofNullable(getAsString(value));
     }
 
@@ -78,7 +78,7 @@ public class Attribute {
 
     public Optional<GqlQName> qname() {
         List<GqlQName> qnames = qnames();
-        return qnames.size() > 0 ? Optional.of(qnames.get(0)) : Optional.empty();
+        return !qnames.isEmpty() ? Optional.of(qnames.get(0)) : Optional.empty();
     }
 
     public List<GqlAlfNode> nodes() {
@@ -87,7 +87,7 @@ public class Attribute {
 
     public Optional<GqlAlfNode> node() {
         List<GqlAlfNode> nodes = nodes();
-        return nodes.size() > 0 ? Optional.of(nodes.get(0)) : Optional.empty();
+        return !nodes.isEmpty() ? Optional.of(nodes.get(0)) : Optional.empty();
     }
 
     public QName getScopeType() {

@@ -102,10 +102,10 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
             createSheetData(wb, sheet, reportColumns, reportData);
 
             // remove rows if no columns defined or no data presents
-            if ((reportColumns == null) || (reportColumns.size() == 0)) {
+            if ((reportColumns == null) || (reportColumns.isEmpty())) {
                 removeRow(sheet, 0);
                 removeRow(sheet, 0);
-            } else if ((reportData == null) || (reportData.size() == 0)) {
+            } else if ((reportData == null) || (reportData.isEmpty())) {
                 removeRow(sheet, 1);
             }    
             

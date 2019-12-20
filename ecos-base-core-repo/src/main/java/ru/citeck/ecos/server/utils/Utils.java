@@ -31,7 +31,7 @@ public class Utils {
             throw new IllegalArgumentException("Value of the \"filename\" parameter cannot be null!");
         }
 
-        if (fileExtension != null && fileExtension.length() > 0) {
+        if (fileExtension != null && !fileExtension.isEmpty()) {
             // Removing file extension from the name if any
             int dot_index = fileName.lastIndexOf('.');
             if (dot_index > -1) {

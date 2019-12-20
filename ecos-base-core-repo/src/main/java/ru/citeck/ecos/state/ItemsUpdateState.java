@@ -62,7 +62,7 @@ public final class ItemsUpdateState {
                 ItemData data = items.get(item);
                 if (data != null) {
                     data.keys.remove(key);
-                    if (data.keys.size() == 0) {
+                    if (data.keys.isEmpty()) {
                         items.remove(item);
                     }
                 }

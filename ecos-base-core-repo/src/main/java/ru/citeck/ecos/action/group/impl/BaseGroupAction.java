@@ -43,7 +43,7 @@ public abstract class BaseGroupAction<T> implements GroupAction<T> {
 
     @Override
     public final ActionResults<T> complete() {
-        if (input.size() > 0) {
+        if (!input.isEmpty()) {
             processNodes();
         }
         onComplete();
@@ -122,7 +122,7 @@ public abstract class BaseGroupAction<T> implements GroupAction<T> {
     }
 
     private void processNodes() {
-        if (input.size() > 0) {
+        if (!input.isEmpty()) {
             processNodesImpl(input);
             processedCount += input.size();
             input.clear();

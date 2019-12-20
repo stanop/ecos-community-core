@@ -275,7 +275,7 @@ class InvariantsRuntime {
                 // Moreover, considering invariant value here can create infinite loops,
                 //   if the model is created for the value calculation.
                 combinedModel.addComposited(new SingletonGetterMap<>(InvariantConstants.MODEL_VALUE, this::getPersistedValue));
-                if (node.model != null && node.model.size() > 0) {
+                if (node.model != null && !node.model.isEmpty()) {
                     combinedModel.addComposited(node.model);
                 }
                 model = combinedModel;

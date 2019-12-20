@@ -47,52 +47,52 @@ import ru.citeck.ecos.processor.ProcessorConstants;
  */
 public class PDFMerge extends AbstractDataBundleMerge
 {
-	private ContentService contentService;
-	private DataBundleMerge modelMerge;
+    private ContentService contentService;
+    private DataBundleMerge modelMerge;
 
-	@Override
-	public void init() {
-		this.contentService = serviceRegistry.getContentService();
-	}
+    @Override
+    public void init() {
+        this.contentService = serviceRegistry.getContentService();
+    }
 
-	@Override
-	public DataBundle merge(List<DataBundle> inputs) {
+    @Override
+    public DataBundle merge(List<DataBundle> inputs) {
 
-		// check for null or empty list
-		if(inputs == null || inputs.size() == 0) {
-			return null;
-		}
-		
-		// leave only PDFs
-		List<DataBundle> pdfInputs = new ArrayList<>(inputs.size());
-		List<PdfReader> pdfReaders = new ArrayList<>(inputs.size());
-		for(DataBundle input : inputs) {
-			Object mimetype = input.getModel().get(ProcessorConstants.KEY_MIMETYPE);
-			if(mimetype == null || !mimetype.equals(MimetypeMap.MIMETYPE_PDF)) {
-				continue;
-			}
-			try {
-				PdfReader reader = new PdfReader(input.getInputStream());
-				pdfReaders.add(reader);
-			} catch (IOException e) {
-				continue;
-			}
-			
-			pdfInputs.add(input);
-		}
-		
-		if(pdfInputs.size() == 1) {
-			return pdfInputs.get(0);
-		}
-		
-		// merge model:
-		DataBundle modelBundle = modelMerge.merge(pdfInputs);
+        // check for null or empty list
+        if (inputs == null || inputs.isEmpty()) {
+            return null;
+        }
 
-		// merge content:
-		
-		ContentWriter contentWriter = contentService.getTempWriter();
-		OutputStream outputStream = contentWriter.getContentOutputStream();
-		
+        // leave only PDFs
+        List<DataBundle> pdfInputs = new ArrayList<>(inputs.size());
+        List<PdfReader> pdfReaders = new ArrayList<>(inputs.size());
+        for (DataBundle input : inputs) {
+            Object mimetype = input.getModel().get(ProcessorConstants.KEY_MIMETYPE);
+            if (mimetype == null || !mimetype.equals(MimetypeMap.MIMETYPE_PDF)) {
+                continue;
+            }
+            try {
+                PdfReader reader = new PdfReader(input.getInputStream());
+                pdfReaders.add(reader);
+            } catch (IOException e) {
+                continue;
+            }
+
+            pdfInputs.add(input);
+        }
+
+        if (pdfInputs.size() == 1) {
+            return pdfInputs.get(0);
+        }
+
+        // merge model:
+        DataBundle modelBundle = modelMerge.merge(pdfInputs);
+
+        // merge content:
+
+        ContentWriter contentWriter = contentService.getTempWriter();
+        OutputStream outputStream = contentWriter.getContentOutputStream();
+
         PdfCopyFields resultPdf = null;
         try {
             resultPdf = new PdfCopyFields(outputStream);
@@ -107,9 +107,9 @@ public class PDFMerge extends AbstractDataBundleMerge
         } catch (IOException | DocumentException e) {
             return null;
         } finally {
-            if(resultPdf != null) {
+            if (resultPdf != null) {
                 resultPdf.close();
-            } else if(outputStream != null) {
+            } else if (outputStream != null) {
                 try {
                     outputStream.close();
                 } catch (IOException e) {
@@ -117,10 +117,10 @@ public class PDFMerge extends AbstractDataBundleMerge
                 }
             }
         }
-	}
-	
-	public void setModelMerge(DataBundleMerge modelMerge) {
-		this.modelMerge = modelMerge;
-	}
+    }
+
+    public void setModelMerge(DataBundleMerge modelMerge) {
+        this.modelMerge = modelMerge;
+    }
 
 }

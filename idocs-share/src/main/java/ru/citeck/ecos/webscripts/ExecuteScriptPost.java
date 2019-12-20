@@ -43,7 +43,7 @@ public class ExecuteScriptPost  extends AbstractWebScript {
 
             Map<String, Object> result = new HashMap<>();
             result.put("result", resultJava);
-            if (messages.size() > 0) {
+            if (!messages.isEmpty()) {
                 result.put("messages", messages);
             }
 

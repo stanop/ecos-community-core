@@ -73,7 +73,7 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
 
             Map<String, String> mapping = dictUtils.getPropertyDisplayNameMapping(scopeType, definition.getName());
 
-            if (mapping != null && mapping.size() > 0) {
+            if (mapping != null && !mapping.isEmpty()) {
                 mapping.forEach((value, title) ->
                     options.add(new AttOption(value, title))
                 );

@@ -29,47 +29,47 @@ import org.alfresco.service.cmr.security.AuthorityType;
 
 public class AuthorityFormNodeBuilder extends AbstractFormNodeBuilder
 {
-	private AuthorityService authorityService;
-	private static String PROP_NAME = "prop_cm_authorityName";
-	
-	@Override
-	public NodeRef createNode(TypeDefinition typeDef, FormData data)
-	{
-		// get parent group, if any:
-		FieldData destination = data.getFieldData(DESTINATION);
-		String parentAuthority = destination == null ? null : (String) destination.getValue();
-		data.removeFieldData(DESTINATION);
-		
-		// get authority name:
-		FieldData nameData = data.getFieldData(PROP_NAME);
-		String name = nameData == null ? null : (String) nameData.getValue();
-		if (name == null || name.length() == 0) {
-			throw new FormException("Authority name should be specified on form");
-		}
-		data.removeFieldData(PROP_NAME);
-		
-		// check if authority exists:
-		if(authorityService.authorityExists(authorityService.getName(AuthorityType.GROUP, name))) {
-			throw new AlfrescoRuntimeException("Can't create group " + name + ", because it already exists");
-		}
-		
-		// create authority:
-		String fullName = authorityService.createAuthority(AuthorityType.GROUP, name);
-		if(fullName == null) {
-			return null;
-		}
-		
-		// if there is parent group - put new group inside parent:
-		if(parentAuthority != null && parentAuthority.length() > 0) {
-			authorityService.addAuthority(parentAuthority, fullName);
-		}
-		
-		// finally return authority nodeRef:
-		return authorityService.getAuthorityNodeRef(fullName);
-	}
-	
-	public void setAuthorityService(AuthorityService authorityService) {
-		this.authorityService = authorityService;
-	}
-	
+    private AuthorityService authorityService;
+    private static String PROP_NAME = "prop_cm_authorityName";
+
+    @Override
+    public NodeRef createNode(TypeDefinition typeDef, FormData data)
+    {
+        // get parent group, if any:
+        FieldData destination = data.getFieldData(DESTINATION);
+        String parentAuthority = destination == null ? null : (String) destination.getValue();
+        data.removeFieldData(DESTINATION);
+
+        // get authority name:
+        FieldData nameData = data.getFieldData(PROP_NAME);
+        String name = nameData == null ? null : (String) nameData.getValue();
+        if (name == null || name.isEmpty()) {
+            throw new FormException("Authority name should be specified on form");
+        }
+        data.removeFieldData(PROP_NAME);
+
+        // check if authority exists:
+        if (authorityService.authorityExists(authorityService.getName(AuthorityType.GROUP, name))) {
+            throw new AlfrescoRuntimeException("Can't create group " + name + ", because it already exists");
+        }
+
+        // create authority:
+        String fullName = authorityService.createAuthority(AuthorityType.GROUP, name);
+        if (fullName == null) {
+            return null;
+        }
+
+        // if there is parent group - put new group inside parent:
+        if(parentAuthority != null && !parentAuthority.isEmpty()) {
+            authorityService.addAuthority(parentAuthority, fullName);
+        }
+
+        // finally return authority nodeRef:
+        return authorityService.getAuthorityNodeRef(fullName);
+    }
+
+    public void setAuthorityService(AuthorityService authorityService) {
+        this.authorityService = authorityService;
+    }
+
 }

@@ -138,7 +138,7 @@ public class NodeViewGet extends DeclarativeWebScript {
 
         if (value instanceof List) {
             List<?> attributeList = (List<?>) value;
-            if (attributeList.size() > 0) {
+            if (!attributeList.isEmpty()) {
                 value = attributeList.get(0);
             }
         }
