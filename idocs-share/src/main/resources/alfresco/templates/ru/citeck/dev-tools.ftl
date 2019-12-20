@@ -61,6 +61,25 @@
             localStorage.forceEnableNewForms = localStorage.forceEnableNewForms != 'true';
             updateForceNewFormsBtn();
         }
+
+
+
+        function updateLoggerNewFormsBtn() {
+            var isEnabled = localStorage.enableLoggerForNewForms === 'true';
+            var btn = $('#logger-new-forms-btn');
+            if (isEnabled) {
+                btn.addClass('toogle_btn_enabled');
+                btn.removeClass('toogle_btn_disabled');
+            } else {
+                btn.addClass('toogle_btn_disabled');
+                btn.removeClass('toogle_btn_enabled');
+            }
+        }
+
+        function toggleLoggerNewForms() {
+            localStorage.enableLoggerForNewForms = localStorage.enableLoggerForNewForms !== 'true';
+            updateLoggerNewFormsBtn();
+        }
     </script>
     <style>
         iframe {
@@ -103,13 +122,16 @@
         <div style="margin-left: 20px; display: inline-block">
             <input id="force-new-forms-btn" type="button" value="Force New Forms" onclick="toggleForceNewForms()" />
         </div>
+        <div style="margin-left: 20px; display: inline-block">
+            <input id="logger-new-forms-btn" type="button" value="Enable logger for New Forms" onclick="toggleLoggerNewForms()" />
+        </div>
     </div>
     <iframe name="repo-webscripts" width="500px"></iframe>
     <iframe name="repo-js-debugger" src="/share/proxy/alfresco/api/javascript/debugger"></iframe>
     <iframe name="repo-modules" src="/share/proxy/alfresco/modules/info.html" width="500px"></iframe>
 
     <h2>Share Tools</h2>
-    
+
     <form action="${url.context}/page/index" method="post" target="share-webscripts">
         <input type="hidden" name="reset" value="on" />
         <input type="submit" name="submit" value="Refresh Web Scripts" />
@@ -117,7 +139,7 @@
     <iframe name="share-webscripts" width="500px"></iframe>
     <iframe name="share-js-debugger" src="${url.context}/page/api/javascript/debugger"></iframe>
     <iframe name="share-modules" src="${url.context}/page/modules/info.html" width="500px"></iframe>
-    
+
     <form action="${url.context}/page/caches/dependency/clear" method="post" target="share-caches">
         <input type="submit" name="submit" value="Clear Dependency Caches" />
     </form>
