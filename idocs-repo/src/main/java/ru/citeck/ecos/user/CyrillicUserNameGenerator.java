@@ -167,7 +167,7 @@ public class CyrillicUserNameGenerator {
     }
 
     private String getInitial(String name) {
-        if (name.length() == 0) {
+        if (name.isEmpty()) {
             return "";
         } else {
             return name.toLowerCase().substring(0, 1);

@@ -89,7 +89,9 @@ public class GrantWorkflowPackageHelper {
                 getProcessPermissionProvider(task.getExecution()) :
                 getTaskPermissionProvider(task);
 
-        if(authorities.size() == 0 || workflowPackage == null) return;
+        if (authorities.isEmpty() || workflowPackage == null) {
+            return;
+        }
 
         // grant specified permission on workflow package to all task actors:
         AuthenticationUtil.runAsSystem(() -> {
@@ -117,7 +119,9 @@ public class GrantWorkflowPackageHelper {
         final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(task);
         final String provider = getTaskPermissionProvider(task);
 
-        if (authorities.size() == 0 || workflowPackage == null) return;
+        if (authorities.isEmpty() || workflowPackage == null) {
+            return;
+        }
 
         // grant specified permission on workflow package to all task actors:
         AuthenticationUtil.runAsSystem(() -> {

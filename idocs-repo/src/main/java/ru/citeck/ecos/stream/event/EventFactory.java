@@ -135,7 +135,7 @@ public class EventFactory {
             } else {
                 roleName = taskHistoryUtils.getRoleName(packageAssocs, assignee, task.getId(),
                         ActivitiConstants.ENGINE_ID);
-                if (packageAssocs.size() > 0) {
+                if (!packageAssocs.isEmpty()) {
                     NodeRef caseTask = packageAssocs.get(0).getSourceRef();
 
                     dto.setCaseTask(caseTask.toString());

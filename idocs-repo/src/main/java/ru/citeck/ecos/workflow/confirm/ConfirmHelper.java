@@ -267,7 +267,7 @@ public class ConfirmHelper
 
     public void saveConfirmersForOldVersions(DelegateExecution execution, ArrayList<NodeRef> confirmerForOldVersions) {
         execution.setVariable(qNameConverter.mapQNameToName(ConfirmWorkflowModel.ASSOC_CONFIRMERS), confirmerForOldVersions);
-		if (confirmerForOldVersions.size()>0) {
+		if (!confirmerForOldVersions.isEmpty()) {
 			StringBuilder precedenceLine = new StringBuilder(confirmerForOldVersions.get(0).toString());
 			for (int i=1; i<confirmerForOldVersions.size(); i++) {
 				precedenceLine.append("|").append(confirmerForOldVersions.get(i).toString());

@@ -126,7 +126,7 @@ public class OverDueTaskGeneration extends AbstractWebScript {
         List<ChildAssociationRef> agreementChilds = serviceRegistry
                 .getNodeService().getChildAssocs(workflowPackage);
 
-        if (agreementChilds.size() > 0) {
+        if (!agreementChilds.isEmpty()) {
             Serializable agreementNumber = serviceRegistry.getNodeService()
                     .getProperty(agreementChilds.get(0).getChildRef(),
                             DmsModel.PROP_AGREEMENT_NUMBER);
@@ -142,8 +142,8 @@ public class OverDueTaskGeneration extends AbstractWebScript {
                             DmsModel.AGREEMENT_TO_CONTRACTOR);
 
             Serializable contractor = "-";
-            if (targetAssocs.size()>0) {
-                contractor=serviceRegistry.getNodeService()
+            if (!targetAssocs.isEmpty()) {
+                contractor = serviceRegistry.getNodeService()
                         .getProperty(targetAssocs.get(0).getTargetRef(),
                                 ContentModel.PROP_NAME);
             }

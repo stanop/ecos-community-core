@@ -172,7 +172,7 @@ public class GrantPermissionServiceImpl implements
         // check if there is such permission:
         List<ChildAssociationRef> grantedPermissions = nodeService.getChildAssocs(nodeRef, GrantModel.ASSOC_PERMISSIONS, permissionAssocQName);
 
-        if(grantedPermissions != null && grantedPermissions.size() > 0) {
+        if(grantedPermissions != null && !grantedPermissions.isEmpty()) {
             return grantedPermissions.get(0).getChildRef();
         } else {
             return null;

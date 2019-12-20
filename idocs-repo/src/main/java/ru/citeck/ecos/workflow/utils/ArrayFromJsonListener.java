@@ -36,68 +36,66 @@ import java.util.List;
  */
 public class ArrayFromJsonListener extends AbstractExecutionListener {
 
-	private static Log log = LogFactory.getLog(ArrayFromJsonListener.class);
+    private static Log log = LogFactory.getLog(ArrayFromJsonListener.class);
 
-	private Expression var;
-	private Expression json;
-	private Expression path;
+    private Expression var;
+    private Expression json;
+    private Expression path;
 
-	@Override
-	protected void notifyImpl(DelegateExecution execution) throws Exception {
-		List<Object> result = new ArrayList<>();
-		String variableName = (String)var.getValue(execution);
-		Object jsonObject = json.getValue(execution);
-		String pathLine = (String)path.getValue(execution);
+    @Override
+    protected void notifyImpl(DelegateExecution execution) throws Exception {
+        List<Object> result = new ArrayList<>();
+        String variableName = (String)var.getValue(execution);
+        Object jsonObject = json.getValue(execution);
+        String pathLine = (String)path.getValue(execution);
 
-		extractElements(jsonObject, pathLine, result);
-		execution.setVariable(variableName, result);
-	}
+        extractElements(jsonObject, pathLine, result);
+        execution.setVariable(variableName, result);
+    }
 
-	private static void extractElements(Object json, String path, List<Object> result) {
-		if (path == null || json == null || path.length() == 0)
-			return;
-		String element = null;
-		String pathRest = null;
-		int pos = path.indexOf('.');
-		if (pos < 0) {
-			element = path;
-		}
-		else if (pos == 0) {
-			pathRest = path.substring(1);
-		}
-		else {
-			element = path.substring(0, pos);
-			pathRest = path.substring(pos + 1);
-		}
-		if (element == null || element.length() == 0) {
-			if (pathRest == null || pathRest.isEmpty())
-				result.add(json);
-			else
-				extractElements(json, pathRest, result);
-		}
-		else {
-			if (json instanceof JSONObject) {
-				JSONObject json2 = (JSONObject)json;
-				Object v = json2.get(element);
-				if (v != null) {
-					if (pathRest == null || pathRest.isEmpty()) {
-						result.add(v);
-					}
-					else {
-						extractElements(v, pathRest, result);
-					}
-				}
-			}
-			else if (json instanceof JSONArray) {
-				JSONArray json2 = (JSONArray)json;
-				for (Object v : json2)
-					extractElements(v, path, result);
-			}
-			else {
-				if (log.isDebugEnabled())
-					log.debug("Can not extract element for class=" + json.getClass().getName());
-			}
-		}
-	}
+    private static void extractElements(Object json, String path, List<Object> result) {
+        if (path == null || json == null || path.isEmpty()) {
+            return;
+        }
+        String element = null;
+        String pathRest = null;
+        int pos = path.indexOf('.');
+        if (pos < 0) {
+            element = path;
+        } else if (pos == 0) {
+            pathRest = path.substring(1);
+        } else {
+            element = path.substring(0, pos);
+            pathRest = path.substring(pos + 1);
+        }
+        if (element == null || element.isEmpty()) {
+            if (pathRest == null || pathRest.isEmpty()) {
+                result.add(json);
+            } else {
+                extractElements(json, pathRest, result);
+            }
+        } else {
+            if (json instanceof JSONObject) {
+                JSONObject json2 = (JSONObject)json;
+                Object v = json2.get(element);
+                if (v != null) {
+                    if (pathRest == null || pathRest.isEmpty()) {
+                        result.add(v);
+                    } else {
+                        extractElements(v, pathRest, result);
+                    }
+                }
+            } else if (json instanceof JSONArray) {
+                JSONArray json2 = (JSONArray)json;
+                for (Object v : json2) {
+                    extractElements(v, path, result);
+                }
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Can not extract element for class=" + json.getClass().getName());
+                }
+            }
+        }
+    }
 
 }

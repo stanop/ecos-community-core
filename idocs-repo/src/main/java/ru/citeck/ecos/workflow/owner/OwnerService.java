@@ -54,7 +54,7 @@ public class OwnerService {
             assistants.addAll(deputyService.getUserAssistants(action == OwnerAction.CLAIM ? owner : claimOwner));
         }
 
-        boolean hasAssistants = assistants.size() > 0;
+        boolean hasAssistants = !assistants.isEmpty();
         if (hasAssistants) {
             assistants.add(action == OwnerAction.CLAIM ? owner : claimOwner);
             taskDeputyListener.updatePooledActors(Collections.singletonList(workflowTask),

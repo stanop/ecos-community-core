@@ -59,14 +59,14 @@ public class ProcessDefinitionMigrateVersion extends BaseProcessorExtension {
 
     public void changeVersionForAllInstances(String oldProcessDefinitionId, int newVersion, String newProcessDefinitionId) {
 
-        if(newProcessDefinitionId != null){
+        if (newProcessDefinitionId != null) {
             newProcessDefinitionId = newProcessDefinitionId.replace("activiti$", "");
         }
 
         if (oldProcessDefinitionId != null && !"".equals(oldProcessDefinitionId)) {
             //find all active and inactive workflowInstances by oldProcessDefinitionId
             List<WorkflowInstance> workflows = getWorkflows(oldProcessDefinitionId);
-            if (workflows != null && workflows.size() > 0) {
+            if (workflows != null && !workflows.isEmpty()) {
                 for (int i = 0; i < workflows.size(); i++) {
                     WorkflowInstance workflowInstance = workflows.get(i);
                     String workflowId = workflowInstance.getId().replace("activiti$", "");

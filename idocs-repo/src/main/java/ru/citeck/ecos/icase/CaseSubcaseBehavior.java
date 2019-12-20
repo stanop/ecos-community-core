@@ -190,7 +190,7 @@ public class CaseSubcaseBehavior implements
                 continue;
             }
             List<NodeRef> elements = getElements(caseNodeRef, config);
-            if (elements.size() > 0) {
+            if (!elements.isEmpty()) {
                 return false;
             }
         }

@@ -108,14 +108,14 @@ public class DocumentTasksGet extends DeclarativeWebScript {
 
         List<?> pooledActors = (List<?>) properties.get(WorkflowModel.ASSOC_POOLED_ACTORS);
 
-        boolean hasPooledActors = pooledActors != null && pooledActors.size() > 0;
+        boolean hasPooledActors = pooledActors != null && !pooledActors.isEmpty();
         boolean hasOwner = properties.get(ContentModel.PROP_OWNER) != null;
         model.put(MODEL_IS_CLAIMABLE, isTaskClaimable(properties, hasOwner, hasPooledActors));
         model.put(MODEL_IS_RELEASABLE, isTaskReleasable(properties, hasOwner, hasPooledActors));
         model.put(MODEL_IS_REASSIGNABLE, isTaskReassignable(properties, hasOwner));
 
         QName outcomeProperty = (QName) properties.get(WorkflowModel.PROP_OUTCOME_PROPERTY_NAME);
-        if(outcomeProperty != null) {
+        if (outcomeProperty != null) {
             model.put(MODEL_OUTCOME_PROP, outcomeProperty);
             model.put(MODEL_OUTCOMES, getAllowedValues(outcomeProperty));
         } else {

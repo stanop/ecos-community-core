@@ -90,11 +90,11 @@ public class ListenerUtils {
 
         List<ChildAssociationRef> childAssocs;
         childAssocs = nodeService.getChildAssocs(wfPackage, WorkflowModel.ASSOC_PACKAGE_CONTAINS, RegexQNamePattern.MATCH_ALL);
-        if (childAssocs.size() > 0) {
+        if (!childAssocs.isEmpty()) {
             return childAssocs.get(0).getChildRef();
         }
         childAssocs = nodeService.getChildAssocs(wfPackage, ContentModel.ASSOC_CONTAINS, RegexQNamePattern.MATCH_ALL);
-        if (childAssocs.size() > 0) {
+        if (!childAssocs.isEmpty()) {
             return childAssocs.get(0).getChildRef();
         }
         return null;

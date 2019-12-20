@@ -45,7 +45,7 @@ public class GetSubmitMessage extends AbstractWebScript {
         Result result = new Result();
         if (messageKey != null) {
             String message = I18NUtil.getMessage(messageKey);
-            if (!messageKey.equals("disabled") && message != null && message.length() > 0) {
+            if (!messageKey.equals("disabled") && message != null && !message.isEmpty()) {
                 result.setDisabled(false);
                 result.setMessage(message);
             } else {

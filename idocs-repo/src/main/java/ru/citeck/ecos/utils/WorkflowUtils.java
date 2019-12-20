@@ -220,7 +220,7 @@ public class WorkflowUtils {
         if (actor != null) {
             matches = actor.equals(userName);
         } else {
-            matches = pooledActors != null && CollectionUtils.intersection(pooledActors, authorities).size() > 0;
+            matches = pooledActors != null && !CollectionUtils.intersection(pooledActors, authorities).isEmpty();
         }
         return matches;
     }
@@ -301,7 +301,7 @@ public class WorkflowUtils {
                     WorkflowModel.ASSOC_PACKAGE_CONTAINS,
                     RegexQNamePattern.MATCH_ALL);
 
-            if (packageContent != null && packageContent.size() > 0) {
+            if (packageContent != null && !packageContent.isEmpty()) {
 
                 documentRef = packageContent.get(0).getChildRef();
             }

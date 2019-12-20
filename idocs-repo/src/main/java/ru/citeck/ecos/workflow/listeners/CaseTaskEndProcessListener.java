@@ -66,7 +66,7 @@ public class CaseTaskEndProcessListener extends AbstractExecutionListener {
 
         List<AssociationRef> packageAssocs = nodeService.getSourceAssocs(bpmPackage, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
 
-        if(packageAssocs != null && packageAssocs.size() > 0) {
+        if (packageAssocs != null && !packageAssocs.isEmpty()) {
             ActionConditionUtils.getProcessVariables().putAll(delegateExecution.getVariables());
             caseActivityService.stopActivity(packageAssocs.get(0).getSourceRef());
         }

@@ -323,7 +323,7 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
         List<NodeRef> elementConfigs = RepoUtils.getTargetNodeRefs(elementType,
                                                                    ICaseTemplateModel.ASSOC_ELEMENT_CONFIG,
                                                                    nodeService);
-        if (elementConfigs.size() == 0) {
+        if (elementConfigs.isEmpty()) {
             throw new IllegalStateException("Template element type does not contain " +
                                             "element config reference: " + elementType);
         }
@@ -461,7 +461,7 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
         for (ElementConfigDto config : configs) {
             CaseElementDAO<ElementConfigDto> strategy = getStrategy(config);
             List<NodeRef> caseNodes = strategy.getCases(element, config);
-            if (caseNodes.size() > 0) {
+            if (!caseNodes.isEmpty()) {
                 elementHasCases = true;
             }
             for (NodeRef caseNode : caseNodes) {

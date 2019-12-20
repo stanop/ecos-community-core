@@ -27,30 +27,30 @@ import org.activiti.engine.delegate.Expression;
 
 public class SplitVariableTask implements ExecutionListener {
 
-	private Expression source;
-	private Expression target;
-	private Expression separator;
-	private Expression removeEmpty;
-	
-	@Override
-	public void notify(DelegateExecution execution) throws Exception {
-		String sourceVariableName = (String)source.getValue(execution);
-		String targetVariableName = (String)target.getValue(execution);
-		String sourceValue = (String) execution.getVariable(sourceVariableName);
-		ArrayList<String> target = null;
-		if(sourceValue.length() == 0) {
-			target = new ArrayList<>();
-		} else {
-			String separatorString = (String) separator.getValue(execution);
-			String[] parts = sourceValue.split("\\" + separatorString);
-			target = new ArrayList<>(parts.length);
-			target.addAll(Arrays.asList(parts));
-		}
-		// remove empty values
-		if(removeEmpty != null && removeEmpty.getValue(execution).toString().equals("true")) {
-			target.removeAll(Arrays.asList(new String[] { "" }));
-		}
-		execution.setVariable(targetVariableName, target);
-	}
+    private Expression source;
+    private Expression target;
+    private Expression separator;
+    private Expression removeEmpty;
+
+    @Override
+    public void notify(DelegateExecution execution) throws Exception {
+        String sourceVariableName = (String)source.getValue(execution);
+        String targetVariableName = (String)target.getValue(execution);
+        String sourceValue = (String) execution.getVariable(sourceVariableName);
+        ArrayList<String> target = null;
+        if (sourceValue.length() == 0) {
+            target = new ArrayList<>();
+        } else {
+            String separatorString = (String) separator.getValue(execution);
+            String[] parts = sourceValue.split("\\" + separatorString);
+            target = new ArrayList<>(parts.length);
+            target.addAll(Arrays.asList(parts));
+        }
+        // remove empty values
+        if (removeEmpty != null && removeEmpty.getValue(execution).toString().equals("true")) {
+            target.removeAll(Arrays.asList(new String[] { "" }));
+        }
+        execution.setVariable(targetVariableName, target);
+    }
 
 }
