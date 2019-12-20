@@ -45,89 +45,89 @@ import ru.citeck.ecos.utils.LazyQName;
  */
 public class SupplementaryFilesDAOChildImpl extends SupplementaryFilesDAOAbstractImpl implements SupplementaryFilesDAO
 {
-	// assocTypeName - child-association, where supplementary files are stored
-	// aspectTypeName - aspect, that declares child-association
-	private String assocTypeName;
-	private String aspectTypeName;
-	private LazyQName assocTypeQName;
-	private LazyQName aspectTypeQName;
-	private NodeService nodeService;
-	private NamespaceService namespaceService;
+    // assocTypeName - child-association, where supplementary files are stored
+    // aspectTypeName - aspect, that declares child-association
+    private String assocTypeName;
+    private String aspectTypeName;
+    private LazyQName assocTypeQName;
+    private LazyQName aspectTypeQName;
+    private NodeService nodeService;
+    private NamespaceService namespaceService;
 
-	public void init() {
-		this.assocTypeQName = new LazyQName(namespaceService, assocTypeName);
-		this.aspectTypeQName = new LazyQName(namespaceService, aspectTypeName);
-	}
+    public void init() {
+        this.assocTypeQName = new LazyQName(namespaceService, assocTypeName);
+        this.aspectTypeQName = new LazyQName(namespaceService, aspectTypeName);
+    }
 
-	@Override
-	public List<NodeRef> getSupplementaryFiles(NodeRef document) {
-		List<ChildAssociationRef> assocs = nodeService.getChildAssocs(document, assocTypeQName.getQName(), RegexQNamePattern.MATCH_ALL);
-		List<NodeRef> files = new ArrayList<>(assocs.size());
-		for(ChildAssociationRef assoc : assocs) {
-			NodeRef file = assoc.getChildRef();
-			if(file.getStoreRef().equals(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE)) {
-				files.add(file);
-			}
-		}
-		return files;
-	}
+    @Override
+    public List<NodeRef> getSupplementaryFiles(NodeRef document) {
+        List<ChildAssociationRef> assocs = nodeService.getChildAssocs(document, assocTypeQName.getQName(), RegexQNamePattern.MATCH_ALL);
+        List<NodeRef> files = new ArrayList<>(assocs.size());
+        for (ChildAssociationRef assoc : assocs) {
+            NodeRef file = assoc.getChildRef();
+            if (file.getStoreRef().equals(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE)) {
+                files.add(file);
+            }
+        }
+        return files;
+    }
 
-	@Override
-	public List<NodeRef> getParentFiles(NodeRef document) {
-		List<ChildAssociationRef> assocs = nodeService.getParentAssocs(document, assocTypeQName.getQName(), RegexQNamePattern.MATCH_ALL);
-		List<NodeRef> files = new ArrayList<>(assocs.size());
-		for(ChildAssociationRef assoc : assocs) {
-			NodeRef file = assoc.getParentRef();
-			if(file.getStoreRef().equals(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE)) {
-				files.add(file);
-			}
-		}
-		return files;
-	}
+    @Override
+    public List<NodeRef> getParentFiles(NodeRef document) {
+        List<ChildAssociationRef> assocs = nodeService.getParentAssocs(document, assocTypeQName.getQName(), RegexQNamePattern.MATCH_ALL);
+        List<NodeRef> files = new ArrayList<>(assocs.size());
+        for (ChildAssociationRef assoc : assocs) {
+            NodeRef file = assoc.getParentRef();
+            if (file.getStoreRef().equals(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE)) {
+                files.add(file);
+            }
+        }
+        return files;
+    }
 
-	@Override
-	public void addSupplementaryFiles(final NodeRef document, List<NodeRef> files) {
-		if(files.size() > 0 && !nodeService.hasAspect(document, aspectTypeQName.getQName())) {
-			AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-				public Object doWork() throws Exception {
-					nodeService.addAspect(document, aspectTypeQName.getQName(), Collections.<QName, Serializable> emptyMap());
-					return null;
-				}
-			});
-		}
-		for(NodeRef file : files) {
-			ChildAssociationRef parent = nodeService.getPrimaryParent(file);
-			nodeService.moveNode(file, document, assocTypeQName.getQName(), parent.getQName());
-		}
-	}
+    @Override
+    public void addSupplementaryFiles(final NodeRef document, List<NodeRef> files) {
+        if (!files.isEmpty() && !nodeService.hasAspect(document, aspectTypeQName.getQName())) {
+            AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
+                public Object doWork() throws Exception {
+                    nodeService.addAspect(document, aspectTypeQName.getQName(), Collections.<QName, Serializable> emptyMap());
+                    return null;
+                }
+            });
+        }
+        for (NodeRef file : files) {
+            ChildAssociationRef parent = nodeService.getPrimaryParent(file);
+            nodeService.moveNode(file, document, assocTypeQName.getQName(), parent.getQName());
+        }
+    }
 
-	@Override
-	public void removeSupplementaryFiles(NodeRef document, List<NodeRef> files) {
-		for(NodeRef file : files) {
-			List<ChildAssociationRef> parents = nodeService.getParentAssocs(file, assocTypeQName.getQName(), RegexQNamePattern.MATCH_ALL);
-			for(ChildAssociationRef parent : parents) {
-				if(parent.getParentRef().equals(document)) {
-					nodeService.removeChildAssociation(parent);
-					break;
-				}
-			}
-		}
-	}
+    @Override
+    public void removeSupplementaryFiles(NodeRef document, List<NodeRef> files) {
+        for (NodeRef file : files) {
+            List<ChildAssociationRef> parents = nodeService.getParentAssocs(file, assocTypeQName.getQName(), RegexQNamePattern.MATCH_ALL);
+            for (ChildAssociationRef parent : parents) {
+                if (parent.getParentRef().equals(document)) {
+                    nodeService.removeChildAssociation(parent);
+                    break;
+                }
+            }
+        }
+    }
 
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 
-	public void setNamespaceService(NamespaceService namespaceService) {
-		this.namespaceService = namespaceService;
-	}
+    public void setNamespaceService(NamespaceService namespaceService) {
+        this.namespaceService = namespaceService;
+    }
 
-	public void setAssocTypeName(String assocTypeName) {
-		this.assocTypeName = assocTypeName;
-	}
+    public void setAssocTypeName(String assocTypeName) {
+        this.assocTypeName = assocTypeName;
+    }
 
-	public void setAspectTypeName(String aspectTypeName) {
-		this.aspectTypeName = aspectTypeName;
-	}
+    public void setAspectTypeName(String aspectTypeName) {
+        this.aspectTypeName = aspectTypeName;
+    }
 
 }

@@ -65,7 +65,7 @@ public class CardletMetadataSyncBehaviour extends AbstractBehaviour {
 
         Map<QName, Serializable> changedProps = getChangedProps(before, after);
 
-        if (changedProps.size() > 0) {
+        if (!changedProps.isEmpty()) {
 
             Optional<ContentData<Cardlet>> contentData = registry.getContentData(nodeRef);
 

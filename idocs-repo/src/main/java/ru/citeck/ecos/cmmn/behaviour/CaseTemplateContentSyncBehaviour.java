@@ -64,7 +64,7 @@ public class CaseTemplateContentSyncBehaviour extends AbstractBehaviour
             }
         }
 
-        if (changedProps.size() > 0) {
+        if (!changedProps.isEmpty()) {
 
             Optional<ContentData<Definitions>> configData = registry.getContentData(nodeRef);
 

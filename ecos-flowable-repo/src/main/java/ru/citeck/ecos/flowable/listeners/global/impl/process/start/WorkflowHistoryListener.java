@@ -99,7 +99,7 @@ public class WorkflowHistoryListener implements GlobalStartExecutionListener, Gl
         if (wfPackage != null) {
             List<ChildAssociationRef> packageAssocs = nodeService.getChildAssocs(wfPackage,
                     WorkflowModel.ASSOC_PACKAGE_CONTAINS, RegexQNamePattern.MATCH_ALL);
-            if (packageAssocs != null && packageAssocs.size() > 0) {
+            if (packageAssocs != null && !packageAssocs.isEmpty()) {
                 document = packageAssocs.get(0).getChildRef();
             }
         }

@@ -100,17 +100,17 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
         }
 
         NodeRef template;
-        if (nodeService.getTargetAssocs(node, DmsModel.ASSOC_TEMPLATE).size() > 0) {
+        if (!nodeService.getTargetAssocs(node, DmsModel.ASSOC_TEMPLATE).isEmpty()) {
             template = nodeService.getTargetAssocs(node, DmsModel.ASSOC_TEMPLATE).get(0).getTargetRef();
             nodeService.setProperty(node, DmsModel.PROP_UPDATE_CONTENT, true);
         } else {
             template = getTemplateBasedOnKind(node)!= null ? getTemplateBasedOnKind(node) : getTemplateBasedOnType(node);
         }
 
-        if(template == null) {
+        if (template == null) {
             template = getTemplateBasedOnTag(node, tags);
         }
-        if(template != null) {
+        if (template != null) {
             if (!containsAssoc(node, template)) {
                 nodeService.createAssociation(node, template, DmsModel.ASSOC_TEMPLATE);
             }
@@ -122,8 +122,7 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
                 actionService.executeAction(actionGenerateContent, node);
             }
             /*end*/
-        }
-        else {
+        } else {
             logger.info("Can't find template for document");
         }
     }

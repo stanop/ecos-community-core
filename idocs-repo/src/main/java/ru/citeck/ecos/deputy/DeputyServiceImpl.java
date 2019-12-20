@@ -567,7 +567,7 @@ public class DeputyServiceImpl implements DeputyService
         Map<NodeRef, NodeRef> results = new HashMap<>(deputationRecords.size());
         for(NodeRef deputationRecord : deputationRecords) {
             List<AssociationRef> assocs = nodeService.getTargetAssocs(deputationRecord, assocName);
-            if(assocs == null || assocs.size() == 0) {
+            if (assocs == null || assocs.isEmpty()) {
                 continue;
             }
 
@@ -582,17 +582,17 @@ public class DeputyServiceImpl implements DeputyService
     // get deputation record or null, if no such
     private NodeRef getDeputationRecord(NodeRef deputiedAuthority, NodeRef deputy, boolean isAssistantRecord) {
         List<AssociationRef> assocs = nodeService.getSourceAssocs(deputy, DeputyModel.ASSOC_DEPUTY);
-        for(AssociationRef assoc : assocs) {
+        for (AssociationRef assoc : assocs) {
             NodeRef deputyRecord = assoc.getSourceRef();
             Boolean isAssistant = isAssistantDeputyRecord(deputyRecord);
             if (isAssistantRecord != isAssistant) {
                 continue;
             }
             List<AssociationRef> authorityRefs = nodeService.getTargetAssocs(deputyRecord, DeputyModel.ASSOC_DEPUTIED_AUTHORITY);
-            if(authorityRefs == null || authorityRefs.size() == 0) {
+            if (authorityRefs == null || authorityRefs.isEmpty()) {
                 continue;
             }
-            if(deputiedAuthority.equals(authorityRefs.get(0).getTargetRef())) {
+            if (deputiedAuthority.equals(authorityRefs.get(0).getTargetRef())) {
                 return deputyRecord;
             }
         }

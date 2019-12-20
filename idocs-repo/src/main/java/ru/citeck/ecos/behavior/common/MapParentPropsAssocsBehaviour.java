@@ -93,7 +93,7 @@ public class MapParentPropsAssocsBehaviour implements NodeServicePolicies.OnCrea
 
         }
 
-        if (newProperties.size() > 0) {
+        if (!newProperties.isEmpty()) {
             nodeService.addProperties(node, newProperties);
         }
 

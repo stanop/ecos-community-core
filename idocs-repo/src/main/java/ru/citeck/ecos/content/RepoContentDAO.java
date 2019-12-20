@@ -39,7 +39,7 @@ public interface RepoContentDAO<T> {
 
     default Optional<ContentData<T>> getFirstContentData(Map<QName, Serializable> keys, boolean ignoreWithoutData) {
         List<ContentData<T>> configs = getContentData(keys, ignoreWithoutData);
-        return Optional.ofNullable(configs.size() > 0 ? configs.get(0) : null);
+        return Optional.ofNullable(!configs.isEmpty() ? configs.get(0) : null);
     }
 
     void forEach(Consumer<ContentData<T>> consumer);

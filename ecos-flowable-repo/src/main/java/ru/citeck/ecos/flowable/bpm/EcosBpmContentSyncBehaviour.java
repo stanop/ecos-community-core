@@ -102,7 +102,7 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
             if (model != null) {
 
                 List<Process> processes = model.getProcesses();
-                if (processes.size() > 0) {
+                if (!processes.isEmpty()) {
                     nodeService.addProperties(nodeRef, readProperties(processes.get(0)));
                 }
             }
@@ -208,7 +208,7 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
 
             BpmnModel bpmnModel = readModelFromXml(input);
 
-            if (bpmnModel.getLocationMap().size() == 0) {
+            if (bpmnModel.getLocationMap().isEmpty()) {
                 BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
                 bpmnLayout.execute();
             }

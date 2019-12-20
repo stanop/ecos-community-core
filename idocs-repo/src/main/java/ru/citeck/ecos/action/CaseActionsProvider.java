@@ -108,7 +108,7 @@ public class CaseActionsProvider extends NodeActionsProvider {
         userAuthorities.add(userName);
 
         userAuthorities.retainAll(authorizedAuthorities);
-        return userAuthorities.size() > 0;
+        return !userAuthorities.isEmpty();
     }
 
     public void setEventService(EventService eventService) {
