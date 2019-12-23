@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Iterables;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
@@ -52,7 +53,6 @@ public class ChildrenGet extends AbstractWebScript {
     private static final String PARAM_SUB_TYPES = "subTypes";
     private static final String PARAM_SHOW_DISABLED = "showdisabled";
     private static final String PARAM_EXCLUDE_AUTHORITIES = "excludeAuthorities";
-    private static final String PARAM_EXCLUDE_CHILDS = "excludeChilds";
 
     private static final String CONFIG_KEY_SHOW_INACTIVE = "orgstruct-show-inactive-user-only-for-admin";
     private static final String CONFIG_KEY_HIDE_INACTIVE_FOR_ALL = "hide-disabled-users-for-everyone";
@@ -365,6 +365,14 @@ public class ChildrenGet extends AbstractWebScript {
         return Collections.emptySet();
     }
 
+    private List<String> strToList(String value, String delimiter) {
+        if (StringUtils.isNotBlank(value)) {
+            String[] arr = value.split(delimiter);
+            return new ArrayList<>(Arrays.asList(arr));
+        }
+        return Collections.emptyList();
+    }
+
     private FilterOptions getFilterOptions(WebScriptRequest req) {
 
         Map<String, String> templateVars = req.getServiceMatch().getTemplateVars();
@@ -435,10 +443,7 @@ public class ChildrenGet extends AbstractWebScript {
         }
 
         Set<String> excludeAuthorities = new HashSet<>();
-        excludeAuthorities.addAll(strToSet(req.getParameter(PARAM_EXCLUDE_AUTHORITIES)));
-        if (ConfigUtils.strToBool(req.getParameter(PARAM_EXCLUDE_CHILDS), false)) {
-            excludeAuthorities.addAll(getExcludedChildAuthorities(strToSet(req.getParameter(PARAM_EXCLUDE_AUTHORITIES))));
-        }
+        excludeAuthorities.addAll(getExcludedGroups(strToSet(req.getParameter(PARAM_EXCLUDE_AUTHORITIES))));
         excludeAuthorities.addAll(strToSet((String) ecosConfigService.getParamValue(CONFIG_KEY_HIDE_IN_ORGSTRUCT)));
 
         options.excludeAuthorities = new HashSet<>();
@@ -452,14 +457,54 @@ public class ChildrenGet extends AbstractWebScript {
         return options;
     }
 
-    private List<String> getExcludedChildAuthorities(Set<String> rootAuthorities) {
-        List<String> excludedChilds = new ArrayList<>();
+    private List<String> getExcludedGroups(Set<String> rootAuthorities) {
+        List<String> excludedAllGroups = new ArrayList<>();
+        List<String> excludedMainGroups = new ArrayList<>();
+
         for (String rootGroupName : rootAuthorities) {
-            excludedChilds.addAll(authorityService.getContainedAuthorities(AuthorityType.GROUP,
-                    rootGroupName,
-                    false));
+            List<String> parsedLogicList = strToList(rootGroupName, "/");
+            if (parsedLogicList.size() > 1) {
+                String markerElement = Iterables.getLast(parsedLogicList);
+                String groupElement = parsedLogicList.get(0);
+                if (markerElement.equals("**")) {
+                    excludedAllGroups.addAll(authorityService.getContainedAuthorities(AuthorityType.GROUP,
+                            groupElement,
+                            false));
+                } else if (markerElement.equals("*")) {
+                    excludedAllGroups.addAll(authorityService.getContainedAuthorities(AuthorityType.GROUP,
+                            groupElement,
+                            true));
+                }
+                excludedAllGroups.add(groupElement);
+                excludedMainGroups.add(groupElement);
+            } else {
+                excludedAllGroups.add(rootGroupName);
+                excludedMainGroups.add(rootGroupName);
+            }
         }
-        return excludedChilds.stream().distinct().collect(Collectors.toList());
+
+        excludedMainGroups.addAll(filterContainingAuthorities(excludedAllGroups
+                .stream()
+                .distinct()
+                .collect(Collectors.toList())));
+
+        return excludedMainGroups;
+    }
+
+    private List<String> filterContainingAuthorities(List<String> excludedAuthorities) {
+        List<String> filteredAuthorities = new ArrayList<>(excludedAuthorities);
+        for (String authority : excludedAuthorities) {
+            Set<String> parentAuthorities = authorityService.getContainingAuthorities(AuthorityType.GROUP,
+                    authority,
+                    true)
+                    .stream()
+                    .filter(parentGroupStr -> orgStructService.getGroupType(parentGroupStr) != null)
+                    .collect(Collectors.toSet());
+            if (!filteredAuthorities.containsAll(parentAuthorities)) {
+                filteredAuthorities.remove(authority);
+            }
+        }
+        return filteredAuthorities;
     }
 
     private static class RequestParams {

@@ -2,7 +2,7 @@
   <shortname>Org.Struct children groups</shortname>
   <description>All children groups (branches, roles and ordinary groups)</description>
   <url>/api/orgstruct/v2/group/{groupname}/v2/children/</url>
-  <url>/api/orgstruct/v2/group/{groupname}/children?branch={includeBranches?}&amp;role={includeRoles?}&amp;group={includeGroups?}&amp;user={includeUsers?}&amp;filter={filter?}&amp;recurse={recurse}&amp;showdisabled={showDisabled}&amp;excludeAuthorities={excludeAuthorities}&amp;excludeChilds={excludeChilds}</url>
+  <url>/api/orgstruct/v2/group/{groupname}/children?branch={includeBranches?}&amp;role={includeRoles?}&amp;group={includeGroups?}&amp;user={includeUsers?}&amp;filter={filter?}&amp;recurse={recurse}&amp;showdisabled={showDisabled}&amp;excludeAuthorities={excludeAuthorities}</url>
   <format default="json">argument</format>
   <authentication>user</authentication>
   <transaction allow="readonly">required</transaction>
@@ -42,10 +42,6 @@
     <arg>
       <shortname>excludeAuthorities</shortname>
       <description>exclude authorities (groups and users)</description>
-    </arg>
-    <arg>
-        <shortname>excludeChilds</shortname>
-        <description>exclude child groups of excluded authorities</description>
     </arg>
   </args>
   <responses>
