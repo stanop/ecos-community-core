@@ -275,14 +275,17 @@ public class AlfNodeRecord implements MetaValue {
 
             default:
 
+                if (name.contains(ASSOC_SRC_ATTR_PREFIX)) {
+                    attribute = getSourceAssocs(node.nodeRef(), name, field);
+                    break;
+                }
+
                 Attribute nodeAtt = node.attribute(name);
                 if (nodeAtt == null) {
                     return Collections.emptyList();
                 }
 
-                if (name.contains(ASSOC_SRC_ATTR_PREFIX)) {
-                    attribute = getSourceAssocs(node.nodeRef(), name, field);
-                } else if (Attribute.Type.UNKNOWN.equals(nodeAtt.type())) {
+                if (Attribute.Type.UNKNOWN.equals(nodeAtt.type())) {
                     Optional<QName> attQname = context.getQName(name).map(GqlQName::getQName);
                     if (attQname.isPresent()) {
                         VirtualScriptAttributes attributes = context.getService(VIRTUAL_SCRIPT_ATTS_ID);
