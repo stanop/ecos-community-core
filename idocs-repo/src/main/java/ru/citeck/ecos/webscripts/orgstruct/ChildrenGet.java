@@ -486,12 +486,12 @@ public class ChildrenGet extends AbstractWebScript {
         excludedMainGroups.addAll(filterContainingAuthorities(excludedAllGroups
                 .stream()
                 .distinct()
-                .collect(Collectors.toList())));
+                .collect(Collectors.toList()), excludedMainGroups));
 
         return excludedMainGroups;
     }
 
-    private List<String> filterContainingAuthorities(List<String> excludedAuthorities) {
+    private List<String> filterContainingAuthorities(List<String> excludedAuthorities, List<String> mainAuthorities) {
         List<String> filteredAuthorities = new ArrayList<>(excludedAuthorities);
         for (String authority : excludedAuthorities) {
             Set<String> parentAuthorities = authorityService.getContainingAuthorities(AuthorityType.GROUP,
@@ -500,8 +500,11 @@ public class ChildrenGet extends AbstractWebScript {
                     .stream()
                     .filter(parentGroupStr -> orgStructService.getGroupType(parentGroupStr) != null)
                     .collect(Collectors.toSet());
-            if (!filteredAuthorities.containsAll(parentAuthorities)) {
+            if (!excludedAuthorities.containsAll(parentAuthorities) && !mainAuthorities.contains(authority)) {
                 filteredAuthorities.remove(authority);
+                filteredAuthorities.removeAll(authorityService.getContainedAuthorities(AuthorityType.GROUP,
+                        authority,
+                        false));
             }
         }
         return filteredAuthorities;
