@@ -76,6 +76,8 @@
             <header key="formKey" default="true" />
             <header key="title" default="true" />
             <header key="description" default="true" />
+            <header key="publishStatus" default="true" />
+            <header key="publishMsg" default="true" />
         </headers>
     </journal>
 
