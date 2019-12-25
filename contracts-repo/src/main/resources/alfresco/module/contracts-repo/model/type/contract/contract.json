@@ -2,5 +2,25 @@
     "id": "contracts-cat-doctype-contract",
     "name": "Договор",
     "parent": "model/type$base",
-    "inheritActions": true
+    "inheritActions": true,
+    "associations": [
+        {
+            "id": "contracts:closingDocumentAgreement",
+            "name": "Доп. соглашения",
+            "direction": "SOURCE",
+            "target": "model/type$base"
+        },
+        {
+            "id": "payments:basis",
+            "name": "Счета",
+            "direction": "SOURCE",
+            "target": "model/type$base"
+        },
+        {
+            "id": "contracts:mainAgreement",
+            "name": "Доп. соглашения",
+            "direction": "SOURCE",
+            "target": "model/type$base"
+        }
+    ]
 }

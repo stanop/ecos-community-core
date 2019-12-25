@@ -29,8 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.*;
-import ru.citeck.ecos.apps.app.module.type.ui.action.ActionModule;
-import ru.citeck.ecos.apps.app.module.type.ui.action.EvaluatorDto;
+import ru.citeck.ecos.apps.app.module.ModuleRef;
 import ru.citeck.ecos.journals.*;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.predicate.PredicateService;
@@ -52,7 +51,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * @author Pavel Simonov
@@ -350,8 +348,10 @@ public class JournalConfigGet extends AbstractWebScript {
         }
     }
 
-    private List<ActionModule> getActions(JournalType journal) {
-        return journal.getActions()
+    private List<ModuleRef> getActions(JournalType journal) {
+        return Collections.emptyList();
+        //todo
+        /*return journal.getActions()
                 .stream()
                 .map(journalAction -> {
                     ActionModule action = new ActionModule();
@@ -362,7 +362,7 @@ public class JournalConfigGet extends AbstractWebScript {
 
                     JournalActionEvaluator evaluator = journalAction.getEvaluator();
                     if (evaluator != null) {
-                        EvaluatorDto ev = new EvaluatorDto();
+                        RecordEvaluatorDto ev = new RecordEvaluatorDto();
                         ev.setId(evaluator.getId());
                         ev.setConfig(optionsToNode(evaluator.getOptions()));
 
@@ -371,7 +371,7 @@ public class JournalConfigGet extends AbstractWebScript {
 
                     return action;
                 })
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
     }
 
     private ObjectNode optionsToNode(Map<String, String> options) {
@@ -573,7 +573,7 @@ public class JournalConfigGet extends AbstractWebScript {
         JsonNode groupBy;
         String metaRecord;
         List<CreateVariantsGet.ResponseVariant> createVariants;
-        List<ActionModule> actions;
+        List<ModuleRef> actions;
         List<GroupAction> groupActions;
     }
 
