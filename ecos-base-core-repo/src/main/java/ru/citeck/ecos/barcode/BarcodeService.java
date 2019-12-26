@@ -39,11 +39,11 @@ public class BarcodeService {
     /**
      * Common method to generate and get barcode as string in BASE64 format.
      *
-     * @param nodeRef node reference in alfresco
+     * @param nodeRef       node reference in alfresco
      * @param propertyQName node's property as {@link QName} based on which will be generated barcode
-     * @param width width of result image of barcode
-     * @param height height of result image of barcode
-     * @param format format of barcode
+     * @param width         width of result image of barcode
+     * @param height        height of result image of barcode
+     * @param format        format of barcode
      */
     public String getBarcodeAsBase64FromProp(NodeRef nodeRef, QName propertyQName, int width, int height,
                                              BarcodeFormat format) {
@@ -66,9 +66,9 @@ public class BarcodeService {
      * Convert content of barcode to barcode and then return String in BASE64 format.
      *
      * @param barcodeContent barcode content
-     * @param width   barcode width
-     * @param height  barcode height
-     * @param format  format of barcode
+     * @param width          barcode width
+     * @param height         barcode height
+     * @param format         format of barcode
      */
     public String getBarcodeAsBase64FromContent(String barcodeContent, int width, int height,
                                                 BarcodeFormat format) {
