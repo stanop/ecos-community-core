@@ -149,7 +149,8 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
     }
 
     private List<ElementConfigDto> getRequirementScopes(NodeRef requirement) {
-        List<NodeRef> configRefs = RepoUtils.getTargetAssoc(requirement, RequirementModel.ASSOC_REQUIREMENT_SCOPE, nodeService);
+        List<NodeRef> configRefs =
+            RepoUtils.getTargetAssoc(requirement, RequirementModel.ASSOC_REQUIREMENT_SCOPE, nodeService);
         List<ElementConfigDto> configs = new ArrayList<>();
         configRefs.forEach(ref -> caseElementService.getConfig(ref).ifPresent(configs::add));
         return configs;
@@ -170,9 +171,10 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
         this.currentLevelsResolvers.add(resolver);
     }
 
-    private CaseDocumentDto extractCaseDocumentFromChildNodeRef(NodeRef nodeRef, String quantifier, boolean hasLevel) {
+    private CaseDocumentDto extractCaseDocumentFromConsequent(NodeRef nodeRef, String quantifier, boolean hasLevel) {
         boolean mandatory = false;
-        if ((quantifier.equals(EXACTLY_ONE_QUANTIFIER_VALUE) || quantifier.equals(EXISTS_QUANTIFIER_VALUE)) && hasLevel) {
+        if ((quantifier.equals(EXACTLY_ONE_QUANTIFIER_VALUE) || quantifier.equals(EXISTS_QUANTIFIER_VALUE)) &&
+            hasLevel) {
             mandatory = true;
         }
 
@@ -218,7 +220,7 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
                 Set<CaseDocumentDto> extractedCaseDocumentDtos = childAssociations.stream()
                     .map(ChildAssociationRef::getChildRef)
                     .filter(this::isKindPredicate)
-                    .map(childNodeRef -> extractCaseDocumentFromChildNodeRef(childNodeRef, quantifier,
+                    .map(childNodeRef -> extractCaseDocumentFromConsequent(childNodeRef, quantifier,
                         currentLevels.contains(levelNodeRef)))
                     .collect(Collectors.toSet());
 
