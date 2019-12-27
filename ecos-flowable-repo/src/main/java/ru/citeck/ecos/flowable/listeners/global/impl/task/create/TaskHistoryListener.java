@@ -154,7 +154,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
                     getRoleName(packageAssocs, assignee, delegateTask.getId());
         } else {
             roleName = getRoleName(packageAssocs, assignee, delegateTask.getId());
-            if (packageAssocs.size() > 0) {
+            if (!packageAssocs.isEmpty()) {
                 eventProperties.put(HistoryModel.PROP_CASE_TASK, packageAssocs.get(0).getSourceRef());
             }
         }
@@ -296,7 +296,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
         }
 
         if (roleName == null || roleName.equals("")) {
-            if (packageAssocs.size() > 0) {
+            if (!packageAssocs.isEmpty()) {
                 NodeRef currentTask = packageAssocs.get(0).getSourceRef();
                 List<AssociationRef> performerRoles = nodeService.getTargetAssocs(currentTask,
                         CasePerformModel.ASSOC_PERFORMERS_ROLES);

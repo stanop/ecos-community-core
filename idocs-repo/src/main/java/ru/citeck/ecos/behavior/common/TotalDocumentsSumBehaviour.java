@@ -174,7 +174,7 @@ public class TotalDocumentsSumBehaviour implements
 
     private Currency getCurrencyByAssocName(NodeRef nodeRef, QName assocName) {
         List<AssociationRef> refs = nodeService.getTargetAssocs(nodeRef, assocName);
-        if(refs == null || refs.size() == 0) {
+        if (refs == null || refs.isEmpty()) {
             return null;
         }
         return currencyService.getCurrencyByNodeRef(refs.get(0).getTargetRef());

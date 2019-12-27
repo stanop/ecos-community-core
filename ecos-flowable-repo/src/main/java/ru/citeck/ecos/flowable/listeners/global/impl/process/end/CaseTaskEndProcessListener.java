@@ -53,7 +53,7 @@ public class CaseTaskEndProcessListener implements GlobalEndExecutionListener {
         nodeService.setProperty(bpmPackage, CiteckWorkflowModel.PROP_IS_WORKFLOW_ACTIVE, false);
         List<AssociationRef> packageAssocs = nodeService.getSourceAssocs(bpmPackage, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
 
-        if(packageAssocs != null && packageAssocs.size() > 0) {
+        if (packageAssocs != null && !packageAssocs.isEmpty()) {
             ActionConditionUtils.getProcessVariables().putAll(delegateExecution.getVariables());
             caseActivityService.stopActivity(packageAssocs.get(0).getSourceRef());
         }

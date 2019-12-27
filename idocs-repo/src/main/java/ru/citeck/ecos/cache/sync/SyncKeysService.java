@@ -83,7 +83,7 @@ public class SyncKeysService {
         List<ChildAssociationRef> children =
                 nodeService.getChildAssocsByPropertyValue(ROOT_REF, EcosCommonModel.PROP_KEY, key);
 
-        if (children != null && children.size() > 0) {
+        if (children != null && !children.isEmpty()) {
             return children.get(0).getChildRef();
         }
         return null;

@@ -37,119 +37,105 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolicies.OnCreateChildAssociationPolicy {
-	// common properties
-	protected PolicyComponent policyComponent;
-	protected NodeService nodeService;
-	protected ServiceRegistry services;
-	protected DictionaryService dictionaryService;
-	private SupplementaryFilesDAO supplFilesDAO;
+    // common properties
+    protected PolicyComponent policyComponent;
+    protected NodeService nodeService;
+    protected ServiceRegistry services;
+    protected DictionaryService dictionaryService;
+    private SupplementaryFilesDAO supplFilesDAO;
 
-	// distinct properties
-	protected QName className;
-	protected List<QName> allowedDocTypes;
+    // distinct properties
+    protected QName className;
+    protected List<QName> allowedDocTypes;
     private static final Log logger = LogFactory.getLog(CreateSupplementaryFilesAssocBehaviour.class);
-	protected List <QName> ignoredTypes;
+    protected List <QName> ignoredTypes;
 
-	public void init() {
-		policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnCreateChildAssociationPolicy.QNAME, className,
-				new JavaBehaviour(this, "onCreateChildAssociation", NotificationFrequency.TRANSACTION_COMMIT)
-		);
-	}
-	
+    public void init() {
+        policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnCreateChildAssociationPolicy.QNAME, className,
+                new JavaBehaviour(this, "onCreateChildAssociation", NotificationFrequency.TRANSACTION_COMMIT)
+        );
+    }
 
-	@Override
-	public void onCreateChildAssociation(ChildAssociationRef childAssociationRef, boolean isNew) {
-		logger.debug("onCreateChildAssociation event");
-		List<NodeRef> suppFiles = new ArrayList<>();
-		NodeRef nodeTarget = childAssociationRef.getChildRef(); //supp file
-		if(nodeService.exists(nodeTarget) && (ignoredTypes==null || !ignoredTypes.contains(nodeService.getType(nodeTarget))))
-		{
-			suppFiles.add(nodeTarget);
-		}
-		NodeRef nodeSource = childAssociationRef.getParentRef(); //folder
-		if(nodeService.exists(nodeSource) && ContentModel.ASSOC_CONTAINS.equals(childAssociationRef.getTypeQName()))
-		{
-			for(ChildAssociationRef child : nodeService.getChildAssocs(nodeSource,ContentModel.ASSOC_CONTAINS, RegexQNamePattern.MATCH_ALL))
-			{
-				NodeRef docNode = child.getChildRef();
-				if(nodeService.exists(docNode) && allowedDocTypes!=null && allowedDocTypes.size()>0 && allowedDocTypes.contains(nodeService.getType(docNode)) && !nodeTarget.equals(docNode))
-				{
-					QName folderType = nodeService.getType(nodeSource);
-					if (folderType != null && folderType.equals(className)) {
-						try
-						{
-							List<ChildAssociationRef> existingAssocs = nodeService.getChildAssocs(docNode, DmsModel.ASSOC_SUPPLEMENARY_FILES, RegexQNamePattern.MATCH_ALL);
-							for (ChildAssociationRef assoc : existingAssocs)
-							{
-								if (assoc.getChildRef().equals(nodeTarget))
-								{
-									logger.debug("Attempt to add existing association prevented. " + assoc);
-									return;
-								}
-							}
-							supplFilesDAO.addSupplementaryFiles(docNode,suppFiles);
-							logger.debug("assoc added between document "+docNode+" and files "+suppFiles);
-						}
-						catch(DuplicateChildNodeNameException e)
-						{
-							logger.error("DuplicateChildNodeNameException: Duplicate child name not allowed");
-						}
-						catch(CyclicChildRelationshipException e)
-						{
-							logger.error("CyclicChildRelationshipException: Node has been pasted into its own tree");
-						}
-						catch(AssociationExistsException e)
-						{
-							logger.error("AssociationExistsException: Association Already Exists");
-						}
-					}
-				}
-			}
-		}
-	}
+    @Override
+    public void onCreateChildAssociation(ChildAssociationRef childAssociationRef, boolean isNew) {
+        logger.debug("onCreateChildAssociation event");
+        List<NodeRef> suppFiles = new ArrayList<>();
+        NodeRef nodeTarget = childAssociationRef.getChildRef(); //supp file
+        if (nodeService.exists(nodeTarget) && (ignoredTypes==null || !ignoredTypes.contains(nodeService.getType(nodeTarget)))) {
+            suppFiles.add(nodeTarget);
+        }
+        NodeRef nodeSource = childAssociationRef.getParentRef(); //folder
+        if (nodeService.exists(nodeSource) && ContentModel.ASSOC_CONTAINS.equals(childAssociationRef.getTypeQName())) {
+            for(ChildAssociationRef child : nodeService.getChildAssocs(nodeSource,ContentModel.ASSOC_CONTAINS, RegexQNamePattern.MATCH_ALL)) {
+                NodeRef docNode = child.getChildRef();
+                if (nodeService.exists(docNode) && allowedDocTypes!=null && !allowedDocTypes.isEmpty() && allowedDocTypes.contains(nodeService.getType(docNode)) && !nodeTarget.equals(docNode)) {
+                    QName folderType = nodeService.getType(nodeSource);
+                    if (folderType != null && folderType.equals(className)) {
+                        try {
+                            List<ChildAssociationRef> existingAssocs = nodeService.getChildAssocs(docNode, DmsModel.ASSOC_SUPPLEMENARY_FILES, RegexQNamePattern.MATCH_ALL);
+                            for (ChildAssociationRef assoc : existingAssocs) {
+                                if (assoc.getChildRef().equals(nodeTarget)) {
+                                    logger.debug("Attempt to add existing association prevented. " + assoc);
+                                    return;
+                                }
+                            }
+                            supplFilesDAO.addSupplementaryFiles(docNode,suppFiles);
+                            logger.debug("assoc added between document " + docNode + " and files " + suppFiles);
+                        } catch(DuplicateChildNodeNameException e) {
+                            logger.error("DuplicateChildNodeNameException: Duplicate child name not allowed");
+                        } catch(CyclicChildRelationshipException e) {
+                            logger.error("CyclicChildRelationshipException: Node has been pasted into its own tree");
+                        } catch(AssociationExistsException e) {
+                            logger.error("AssociationExistsException: Association Already Exists");
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-		this.services = serviceRegistry;
-		this.dictionaryService = services.getDictionaryService();
-	}
-	
-	public void setPolicyComponent(PolicyComponent policyComponent) {
-		this.policyComponent = policyComponent;
-	}
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.services = serviceRegistry;
+        this.dictionaryService = services.getDictionaryService();
+    }
 
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
+    public void setPolicyComponent(PolicyComponent policyComponent) {
+        this.policyComponent = policyComponent;
+    }
 
-	@Deprecated
-	public void setTemplateService(TemplateService templateService) {
-		// not used
-	}
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 
-	public void setClassName(QName className) {
-		this.className = className;
-	}
+    @Deprecated
+    public void setTemplateService(TemplateService templateService) {
+        // not used
+    }
 
-	@Deprecated
-	public void setTemplateEngine(String templateEngine) {
-		// not used
-	}
+    public void setClassName(QName className) {
+        this.className = className;
+    }
 
-	@Deprecated
-	public void setNodeVariable(String nodeVariable) {
-		// not used
-	}
+    @Deprecated
+    public void setTemplateEngine(String templateEngine) {
+        // not used
+    }
 
-	public void setAllowedDocTypes(List<QName> allowedDocTypes) {
-		this.allowedDocTypes = allowedDocTypes;
-	}
+    @Deprecated
+    public void setNodeVariable(String nodeVariable) {
+        // not used
+    }
 
-	public void setSupplFilesDAO(SupplementaryFilesDAO supplFilesDAO) {
-		this.supplFilesDAO = supplFilesDAO;
-	}
-	
-	public void setIgnoredTypes(List <QName> ignoredTypes) {
-		this.ignoredTypes = ignoredTypes;
-	}
+    public void setAllowedDocTypes(List<QName> allowedDocTypes) {
+        this.allowedDocTypes = allowedDocTypes;
+    }
+
+    public void setSupplFilesDAO(SupplementaryFilesDAO supplFilesDAO) {
+        this.supplFilesDAO = supplFilesDAO;
+    }
+
+    public void setIgnoredTypes(List <QName> ignoredTypes) {
+        this.ignoredTypes = ignoredTypes;
+    }
 
 }

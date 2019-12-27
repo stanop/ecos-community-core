@@ -24,7 +24,7 @@ public class FlowablePrecedenceToJsonListener extends AbstractExecutionListener 
         JSONObject result = new JSONObject();
         JSONArray stages = new JSONArray();
         result.put("stages", stages);
-        if (precedence != null && precedence.length() != 0) {
+        if (precedence != null && !precedence.isEmpty()) {
             String[] stageLines = precedence.split("[,]");
             for (String line : stageLines) {
                 JSONObject stage = new JSONObject();
@@ -35,7 +35,7 @@ public class FlowablePrecedenceToJsonListener extends AbstractExecutionListener 
                 stage.put("confirmers", confirmers);
                 String[] confirmLines = line.split("[|]");
                 for (String confirmer : confirmLines) {
-                    if (confirmer.length() != 0) {
+                    if (!confirmer.isEmpty()) {
                         JSONObject conf = new JSONObject();
                         String[] splittedStrings = confirmer.split("_");
                         conf.put("nodeRef", splittedStrings[0]);

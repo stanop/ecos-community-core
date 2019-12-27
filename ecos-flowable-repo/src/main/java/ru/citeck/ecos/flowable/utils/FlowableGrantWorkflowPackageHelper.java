@@ -84,7 +84,7 @@ public class FlowableGrantWorkflowPackageHelper {
                 getProcessPermissionProvider(task) :
                 getTaskPermissionProvider(task);
 
-        if (authorities.size() == 0 || workflowPackage == null) {
+        if (authorities.isEmpty() || workflowPackage == null) {
             return;
         }
         AuthenticationUtil.runAsSystem(() -> {
@@ -109,7 +109,7 @@ public class FlowableGrantWorkflowPackageHelper {
         final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(task);
         final String provider = getTaskPermissionProvider(task);
 
-        if (authorities.size() == 0 || workflowPackage == null) {
+        if (authorities.isEmpty() || workflowPackage == null) {
             return;
         }
 

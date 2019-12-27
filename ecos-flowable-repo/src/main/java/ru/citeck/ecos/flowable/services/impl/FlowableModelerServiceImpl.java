@@ -128,7 +128,7 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
             throw new IllegalArgumentException("No process found in metadata");
         }
 
-        if (bpmnModel.getLocationMap().size() == 0) {
+        if (bpmnModel.getLocationMap().isEmpty()) {
             BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
             bpmnLayout.execute();
         }
@@ -316,7 +316,7 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
             throw new IllegalArgumentException("No process found in metadata");
         }
 
-        if (bpmnModel.getLocationMap().size() == 0) {
+        if (bpmnModel.getLocationMap().isEmpty()) {
             BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
             bpmnLayout.execute();
         }

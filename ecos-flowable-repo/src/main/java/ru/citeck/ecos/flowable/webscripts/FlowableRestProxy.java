@@ -155,7 +155,7 @@ public class FlowableRestProxy extends AbstractWebScript {
 
         for (String header : HEADERS_FROM) {
             List<String> values = headers.get(header);
-            if (values != null && values.size() > 0) {
+            if (values != null && !values.isEmpty()) {
                 BiConsumer<WebScriptResponse, String> consumer = HEADERS_FROM_CONSUMER.get(header);
                 if (consumer != null) {
                     consumer.accept(res, values.get(0));

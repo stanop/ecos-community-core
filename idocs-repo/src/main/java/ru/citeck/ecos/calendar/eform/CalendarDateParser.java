@@ -22,7 +22,7 @@ class CalendarDateParser {
     static Date parseDate(String date) {
 
         // Is there one at all?
-        if (date == null || date.length() == 0) {
+        if (date == null || date.isEmpty()) {
             return null;
         }
 

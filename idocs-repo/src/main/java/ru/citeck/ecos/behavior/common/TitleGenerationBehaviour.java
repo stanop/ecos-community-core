@@ -132,7 +132,7 @@ public class TitleGenerationBehaviour implements NodeServicePolicies.OnUpdatePro
     private void setProperty(final NodeRef nodeRef, final QName property,
                              final Map<Locale, String> mlTemplate) {
         MLText mlValue = getProcessedMLText(nodeRef, mlTemplate);
-        if (mlValue != null && mlValue.size() > 0) {
+        if (mlValue != null && !mlValue.isEmpty()) {
             setProperty(nodeRef, property, mlValue);
         }
     }

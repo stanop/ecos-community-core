@@ -180,7 +180,7 @@ public class RepoContentDAOImpl<T> implements RepoContentDAO<T> {
                                          .type(configNodeType)
                                          .transactional();
 
-        if (notNullProps.size() > 0) {
+        if (!notNullProps.isEmpty()) {
             query.and().values(notNullProps, BinOperator.AND, true);
         }
 

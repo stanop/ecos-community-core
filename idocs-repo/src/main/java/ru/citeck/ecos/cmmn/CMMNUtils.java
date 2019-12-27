@@ -292,7 +292,7 @@ public class CMMNUtils implements ContentValueConverter {
 
         NodeRef storeRoot = nodeService.getRootNode(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
         List<NodeRef> nodeRefs = searchService.selectNodes(storeRoot, path, null, namespaceService, false);
-        NodeRef result = nodeRefs != null && nodeRefs.size() > 0 ? nodeRefs.get(0) : null;
+        NodeRef result = nodeRefs != null && !nodeRefs.isEmpty() ? nodeRefs.get(0) : null;
 
         if (result == null) {
             log.warn("Node doesn't found! Path: " + path);

@@ -182,7 +182,7 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
             } else {
                 NodeRef root = nodeService.getRootNode(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
                 List<NodeRef> results = searchService.selectNodes(root, node, null, namespaceService, false);
-                nodeRef = results.size() > 0 ? results.get(0) : null;
+                nodeRef = !results.isEmpty() ? results.get(0) : null;
             }
         }
         return nodeRef;

@@ -140,9 +140,9 @@ public class SubscribersMigration extends BaseScopableProcessorExtension {
     public void addSubscribers(final NodeRef document, final List<NodeRef> subscribers) {
         final LazyQName assocTypeQName = new LazyQName(namespaceService, assocTypeName);
         final LazyQName aspectTypeQName = new LazyQName(namespaceService, aspectTypeName);
-        if(subscribers.size() > 0) {
+        if (!subscribers.isEmpty()) {
             AuthenticationUtil.runAsSystem(() -> {
-                for(final NodeRef ref : subscribers) {
+                for (final NodeRef ref : subscribers) {
                     try {
                         nodeService.addAspect(document, aspectTypeQName.getQName(), Collections.<QName, Serializable>emptyMap());
                         nodeService.createAssociation(document, ref, assocTypeQName.getQName());

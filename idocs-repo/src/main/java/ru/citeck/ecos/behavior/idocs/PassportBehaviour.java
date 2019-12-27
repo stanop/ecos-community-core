@@ -35,54 +35,54 @@ import ru.citeck.ecos.model.PassportModel;
 
 public class PassportBehaviour implements NodeServicePolicies.OnCreateNodePolicy
 {
-	private PolicyComponent policyComponent;
-	private NodeService nodeService;
-	private PermissionService permissionService;
-	
-	public void init() {
-		policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, 
-				PassportModel.TYPE_PASSPORT, 
-				new JavaBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT));
-	}
-	
-	@Override
-	public void onCreateNode(ChildAssociationRef childAssocRef) {
-		NodeRef passport = childAssocRef.getChildRef();
-		if(!nodeService.exists(passport)) {
-			return;
-		}
-		
-		NodeRef passportOwner = getPassportOwner(passport);
-		if(passportOwner == null || !nodeService.exists(passportOwner)) {
-			return;
-		}
-		
-		String passportOwnerName = (String) nodeService.getProperty(passportOwner, ContentModel.PROP_USERNAME);
-		if(passportOwnerName == null) {
-			return;
-		}
-		
-		permissionService.setPermission(passport, passportOwnerName, PermissionService.EDITOR, true);
-	}
+    private PolicyComponent policyComponent;
+    private NodeService nodeService;
+    private PermissionService permissionService;
 
-	private NodeRef getPassportOwner(NodeRef passport) {
-		List<AssociationRef> owners = nodeService.getTargetAssocs(passport, PassportModel.ASSOC_PERSON);
-		if(owners.size() > 0) {
-			return owners.get(0).getTargetRef();
-		} else {
-			return null;
-		}
-	}
+    public void init() {
+        policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME,
+                PassportModel.TYPE_PASSPORT,
+                new JavaBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT));
+    }
 
-	public void setPolicyComponent(PolicyComponent policyComponent) {
-		this.policyComponent = policyComponent;
-	}
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
-	public void setPermissionService(PermissionService permissionService) {
-		this.permissionService = permissionService;
-	}
+    @Override
+    public void onCreateNode(ChildAssociationRef childAssocRef) {
+        NodeRef passport = childAssocRef.getChildRef();
+        if(!nodeService.exists(passport)) {
+            return;
+        }
+
+        NodeRef passportOwner = getPassportOwner(passport);
+        if(passportOwner == null || !nodeService.exists(passportOwner)) {
+            return;
+        }
+
+        String passportOwnerName = (String) nodeService.getProperty(passportOwner, ContentModel.PROP_USERNAME);
+        if(passportOwnerName == null) {
+            return;
+        }
+
+        permissionService.setPermission(passport, passportOwnerName, PermissionService.EDITOR, true);
+    }
+
+    private NodeRef getPassportOwner(NodeRef passport) {
+        List<AssociationRef> owners = nodeService.getTargetAssocs(passport, PassportModel.ASSOC_PERSON);
+        if (!owners.isEmpty()) {
+            return owners.get(0).getTargetRef();
+        } else {
+            return null;
+        }
+    }
+
+    public void setPolicyComponent(PolicyComponent policyComponent) {
+        this.policyComponent = policyComponent;
+    }
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
+    public void setPermissionService(PermissionService permissionService) {
+        this.permissionService = permissionService;
+    }
 
 }
 
