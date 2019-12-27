@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.icase.completeness.CaseCompletenessService;
-import ru.citeck.ecos.icase.completeness.dto.CaseDocumentDto;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
@@ -25,7 +24,6 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO
 
     public final static String ID = "documents";
     private static final String DOCUMENT_TYPES_QUERY_LANGUAGE = "document-types";
-    private final static CaseDocumentRecord EMPTY_RECORD = new CaseDocumentRecord(new CaseDocumentDto());
 
     private final CaseCompletenessService caseCompletenessService;
 
