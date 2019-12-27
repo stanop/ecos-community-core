@@ -1,5 +1,6 @@
 package ru.citeck.ecos.icase.completeness.records;
 
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,10 +14,12 @@ import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.v2.LocalRecordsQueryWithMetaDAO;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class CaseDocumentRecordsDAO extends LocalRecordsDAO
     implements LocalRecordsQueryWithMetaDAO<CaseDocumentRecord> {
 
@@ -46,7 +49,9 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO
             RecordRef recordRef = RecordRef.valueOf(recordRefStr);
 
             if (!NodeRef.isNodeRef(recordRef.getId())) {
-                throw new IllegalArgumentException("RecordRef id is not nodeRef");
+                log.warn("RecordRef id is not nodeRef");
+                result.setRecords(Collections.emptyList());
+                return result;
             }
 
             NodeRef nodeRef = new NodeRef(recordRef.getId());
