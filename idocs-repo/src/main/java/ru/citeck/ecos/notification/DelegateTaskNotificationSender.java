@@ -182,7 +182,7 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
             }
             if (subject == null) {
                 ArrayList<Object> docsInfo = getWorkflowDocuments(task);
-                if (docsInfo.size() > 0 && subjectTemplates != null && subjectTemplates.containsKey(taskFormKey)) {
+                if (!docsInfo.isEmpty() && subjectTemplates != null && subjectTemplates.containsKey(taskFormKey)) {
                     Map<String, String> taskSubjectTemplate = subjectTemplates.get(taskFormKey);
                     if (taskSubjectTemplate.containsKey(qNameConverter.mapQNameToName(nodeService.getType((NodeRef) docsInfo.get(0))))) {
                         HashMap<String, Object> model = new HashMap<>(1);
@@ -356,7 +356,7 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
     }
 
     public boolean isResending(DelegateTask task) {
-        if (getWorkflowDocuments(task) != null && getWorkflowDocuments(task).size() > 0) {
+        if (getWorkflowDocuments(task) != null && !getWorkflowDocuments(task).isEmpty()) {
             String query = "TYPE:\"wfgfam:familiarizeTask\" AND @wfm:document:\"" + getWorkflowDocuments(task).get(0) + "\"";
             ResultSet nodes = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "fts-alfresco", query);
             return (nodes.length() > 0);

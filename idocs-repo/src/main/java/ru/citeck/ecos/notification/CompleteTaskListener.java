@@ -43,39 +43,36 @@ public class CompleteTaskListener
 
     public void notify(DelegateTask task)
     {
-        if(enabled)
-        {
+        if (enabled) {
             ExecutionEntity executionEntity = ((ExecutionEntity)task.getExecution()).getProcessInstance();
             Boolean value = (Boolean)executionEntity.getVariable("cwf_sendNotification");
 
-            if (Boolean.TRUE.equals(value))
-            {
-                WorkflowTask wfTask = serviceRegistry.getWorkflowService().getTaskById("activiti$"+task.getId());
+            if (Boolean.TRUE.equals(value)) {
+                WorkflowTask wfTask = serviceRegistry.getWorkflowService().getTaskById("activiti$" + task.getId());
                 nodeService = serviceRegistry.getNodeService();
                 namespaceService = serviceRegistry.getNamespaceService();
                 qNameConverter = new WorkflowQNameConverter(namespaceService);
-                if(conditions!=null && wfTask!=null)
-                {
+                if (conditions != null && wfTask != null) {
                     Map <String,String> condition = conditions.get(wfTask.getName());
                     int result = 0;
-                    if(condition!=null && condition.size()>0)
-                    {
+                    if (condition!=null && !condition.isEmpty()) {
                         for (Map.Entry<String,String> entry : condition.entrySet()) {
                             String actualValue = (String) wfTask.getProperties().get(qNameConverter.mapNameToQName(entry.getKey()));
-                            if(!actualValue.equals(entry.getValue()))
+                            if (!actualValue.equals(entry.getValue())) {
                                 result++;
+                            }
                         }
                     }
-                    if(result==0)
+                    if (result == 0) {
                         sender.sendNotification(task);
-                }
-                else
-                {
+                    }
+                } else {
                     sender.sendNotification(task);
                 }
             }
         }
     }
+
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
     }

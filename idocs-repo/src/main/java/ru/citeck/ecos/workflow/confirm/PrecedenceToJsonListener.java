@@ -52,7 +52,7 @@ public class PrecedenceToJsonListener extends AbstractExecutionListener {
         JSONObject result = new JSONObject();
         JSONArray stages = new JSONArray();
         result.put(FIELD_STAGES, stages);
-        if (precedence != null && precedence.length() != 0) {
+        if (precedence != null && !precedence.isEmpty()) {
             String[] stageLines = precedence.split("[,]");
             for (String line : stageLines) {
                 JSONObject stage = new JSONObject();
@@ -63,7 +63,7 @@ public class PrecedenceToJsonListener extends AbstractExecutionListener {
                 stage.put(FIELD_CONFIRMERS, confirmers);
                 String[] confirmLines = line.split("[|]");
                 for (String confirmer : confirmLines) {
-                    if (confirmer.length() != 0) {
+                    if (!confirmer.isEmpty()) {
                         JSONObject conf = new JSONObject();
                         String[] splittedStrings = confirmer.split("_");
                         conf.put(FIELD_NODEREF, splittedStrings[0]);

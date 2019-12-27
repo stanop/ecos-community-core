@@ -148,7 +148,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
                     packageAssocs, assignee, task.getId(), ActivitiConstants.ENGINE_ID);
         } else {
             roleName = taskHistoryUtils.getRoleName(packageAssocs, assignee, task.getId(), ActivitiConstants.ENGINE_ID);
-            if (packageAssocs.size() > 0) {
+            if (!packageAssocs.isEmpty()) {
                 eventProperties.put(HistoryModel.PROP_CASE_TASK, packageAssocs.get(0).getSourceRef());
             }
         }

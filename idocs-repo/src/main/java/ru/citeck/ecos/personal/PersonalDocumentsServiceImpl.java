@@ -185,7 +185,7 @@ public class PersonalDocumentsServiceImpl extends AbstractLifecycleBean implemen
         NodeRef atLeastOneCheckList = RepoUtils.getFirstTargetAssoc(personalDocsFolder,
                 RequirementModel.ASSOC_COMPLETENESS_LEVELS,
                 nodeService);
-        if (atLeastOneCheckList == null && checkLists != null && checkLists.size() > 0) {
+        if (atLeastOneCheckList == null && checkLists != null && !checkLists.isEmpty()) {
             for (NodeRef checkList : checkLists) {
                 if (checkList != null && nodeService.exists(checkList)) {
                     RepoUtils.createAssociation(personalDocsFolder,
