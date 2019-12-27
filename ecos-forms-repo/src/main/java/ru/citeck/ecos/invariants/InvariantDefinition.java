@@ -356,26 +356,26 @@ public class InvariantDefinition {
             isFinal = data.isFinal() != null ? data.isFinal() : false;
             
             List<Serializable> contents = filterContent(data.getContent());
-            if(contents.size() > 0) {
+            if (!contents.isEmpty()) {
                 Serializable first = contents.get(0);
-                if(first instanceof String) {
-                    if(contents.size() > 1) {
+                if (first instanceof String) {
+                    if (contents.size() > 1) {
                         throw new IllegalArgumentException("Invariant should contain either text, or nested elements, but not both");
                     }
                     expression = (String) first;
                     value = first;
-                } else if(first instanceof JAXBElement) {
+                } else if (first instanceof JAXBElement) {
                     
                     Object firstElement = ((JAXBElement<?>) first).getValue();
-                    if(firstElement instanceof String) {
+                    if (firstElement instanceof String) {
 
                         value = getElementList(contents, String.class);
                         
-                    } else if(firstElement instanceof Criterion) {
+                    } else if (firstElement instanceof Criterion) {
                         
                         List<Criterion> criterionList = getElementList(contents, Criterion.class);
                         SearchCriteria criteria = new SearchCriteria(prefixResolver);
-                        for(Criterion criterion : criterionList) {
+                        for (Criterion criterion : criterionList) {
                             criteria.addCriteriaTriplet(criterion.getAttribute(), criterion.getPredicate(), criterion.getValue());
                         }
                         value = criteria;

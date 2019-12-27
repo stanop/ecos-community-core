@@ -64,7 +64,7 @@ public class LazyNodeRef {
         NodeRef root = getNodeService().getRootNode(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
         NamespaceService nss = getNamespaceService();
         List<NodeRef> results = getSearchService().selectNodes(root, path, null, nss, false);
-        return results.size() > 0 ? results.get(0) : null;
+        return !results.isEmpty() ? results.get(0) : null;
     }
 
     private NodeService getNodeService() {

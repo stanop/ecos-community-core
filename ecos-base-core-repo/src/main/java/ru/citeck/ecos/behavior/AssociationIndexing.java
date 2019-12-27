@@ -157,7 +157,7 @@ public class AssociationIndexing implements OnCreateAssociationPolicy,
             List<NodeRef> before = (List<NodeRef>) nodeProps.get(propQName);
 
             if (!equals(actual, before)) {
-                if (actual.size() > 0) {
+                if (!actual.isEmpty()) {
                     properties.put(propQName, new ArrayList<>(actual));
                 } else if (before != null) {
                     toRemoveProps.add(propQName);
@@ -169,7 +169,7 @@ public class AssociationIndexing implements OnCreateAssociationPolicy,
             nodeService.removeProperty(node, toRemoveProp);
         }
 
-        if (properties.size() > 0) {
+        if (!properties.isEmpty()) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Update node " + node + " props: " + properties);
             }

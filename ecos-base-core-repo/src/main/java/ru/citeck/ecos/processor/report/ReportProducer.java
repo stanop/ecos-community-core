@@ -262,10 +262,10 @@ public class ReportProducer extends AbstractDataBundleLine {
 
     private String appendValue(String result, Map<String, Serializable> props, String customKey, String defaultKey) {
         if (!customKey.startsWith("${") && props.get(customKey) != null) {
-            result += (result.length() > 0) ? " " : "";
+            result += (!result.isEmpty()) ? " " : "";
             result += props.get(customKey);
         } else if (props.get(defaultKey) != null) {
-            result += (result.length() > 0) ? " " : "";
+            result += (!result.isEmpty()) ? " " : "";
             result += props.get(defaultKey);
         }
         return result;

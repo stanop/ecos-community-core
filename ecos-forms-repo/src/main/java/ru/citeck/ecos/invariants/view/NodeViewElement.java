@@ -109,9 +109,9 @@ public abstract class NodeViewElement {
     
     public String toFullString() {
         StringBuilder sb = new StringBuilder().append(toString());
-        if(elements.size() > 0) {
+        if (!elements.isEmpty()) {
             sb.append(":elements=[\n");
-            for(NodeViewElement element : elements) {
+            for (NodeViewElement element : elements) {
                 sb.append("\t").append(element).append("\n");
             }
         }

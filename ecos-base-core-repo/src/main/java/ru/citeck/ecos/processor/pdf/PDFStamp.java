@@ -51,133 +51,133 @@ import ru.citeck.ecos.processor.transform.AffineTransformCalculator;
  */
 public class PDFStamp extends AbstractDataBundleLine
 {
-	private ContentService contentService;
-	private AffineTransformCalculator transformCalculator;
-	
-	private DataBundleProcessor stampProcessor;
-	private List<DataBundleProcessor> stampProcessors;
-	private Boolean foreground;
-	
-	public void init() {
-		this.contentService = serviceRegistry.getContentService();
-		if(stampProcessor instanceof CompositeDataBundleProcessor) {
-			((CompositeDataBundleProcessor)stampProcessor).setProcessors(stampProcessors);
-		}
-	}
-	
-	@Override
-	public DataBundle process(DataBundle input) {
+    private ContentService contentService;
+    private AffineTransformCalculator transformCalculator;
 
-		// get main stream:
-		InputStream pdfInputStream = input.getInputStream();
+    private DataBundleProcessor stampProcessor;
+    private List<DataBundleProcessor> stampProcessors;
+    private Boolean foreground;
 
-		// get stamp stream:
-		List<DataBundle> stampInputs = new ArrayList<>(1);
-		stampInputs.add(new DataBundle(input.getModel()));
-		List<DataBundle> stampOutputs = stampProcessor.process(stampInputs);
-		
-		InputStream pdfStampStream = null;
-		if(stampOutputs.size() > 0) {
-			pdfStampStream = stampOutputs.get(0).getInputStream();
-		} else {
-			return input;
-		}
-		
-		ContentWriter contentWriter = contentService.getTempWriter();
-		helper.putContentProperties(contentWriter, input.getModel());
-		
-		OutputStream outputStream = contentWriter.getContentOutputStream();
+    public void init() {
+        this.contentService = serviceRegistry.getContentService();
+        if(stampProcessor instanceof CompositeDataBundleProcessor) {
+            ((CompositeDataBundleProcessor)stampProcessor).setProcessors(stampProcessors);
+        }
+    }
 
-		// do actual stamping
-		stampPDF(outputStream, pdfInputStream, pdfStampStream);
+    @Override
+    public DataBundle process(DataBundle input) {
 
-		ContentReader contentReader = contentWriter.getReader();
-		if(contentReader != null && contentReader.exists()) {
-		    return new DataBundle(input, contentReader.getContentInputStream());
-		} else {
-		    return null;
-		}
-	}
+        // get main stream:
+        InputStream pdfInputStream = input.getInputStream();
 
-	// stamp pdf with stamp
-	private void stampPDF(OutputStream outputStream, InputStream pdfInputStream, InputStream pdfStampStream) {
+        // get stamp stream:
+        List<DataBundle> stampInputs = new ArrayList<>(1);
+        stampInputs.add(new DataBundle(input.getModel()));
+        List<DataBundle> stampOutputs = stampProcessor.process(stampInputs);
 
-		PdfReader reader = null;
-		PdfReader stampReader = null;
-		PdfStamper stamper = null;
-		
-		try {
-			reader = new PdfReader(pdfInputStream);
-			stamper = new PdfStamper(reader, outputStream);
-			stampReader = new PdfReader(pdfStampStream);
+        InputStream pdfStampStream = null;
+        if (!stampOutputs.isEmpty()) {
+            pdfStampStream = stampOutputs.get(0).getInputStream();
+        } else {
+            return input;
+        }
 
-			PdfImportedPage stamp = stamper.getImportedPage(stampReader, 1);
-			Rectangle stampSize = stampReader.getPageSize(1);
+        ContentWriter contentWriter = contentService.getTempWriter();
+        helper.putContentProperties(contentWriter, input.getModel());
 
-			int numOfPages = reader.getNumberOfPages();
-			for (int i = 1; i <= numOfPages; i++) {
-				// calculate affine transform:
-				Rectangle pageSize = reader.getPageSize(i);
+        OutputStream outputStream = contentWriter.getContentOutputStream();
 
-				// get transformation matrix
-				double[] m = new double[6];
-				AffineTransform transform = transformCalculator.calculate(stampSize.getWidth(), stampSize.getHeight(), pageSize.getWidth(), pageSize.getHeight());
-				transform.getMatrix(m);
+        // do actual stamping
+        stampPDF(outputStream, pdfInputStream, pdfStampStream);
 
-				PdfContentByte page = foreground ? stamper.getOverContent(i) : stamper.getUnderContent(i);
-				page.addTemplate(stamp, (float) m[0], (float) m[1], (float) m[2], (float) m[3], (float) m[4], (float) m[5]);
+        ContentReader contentReader = contentWriter.getReader();
+        if(contentReader != null && contentReader.exists()) {
+            return new DataBundle(input, contentReader.getContentInputStream());
+        } else {
+            return null;
+        }
+    }
 
-			}
-		} catch (Exception e) {
-			throw new AlfrescoRuntimeException("Caught exception", e);
-		} finally {
-			if(reader != null) {
-				reader.close();
-			}
-			if(stampReader != null) {
-				stampReader.close();
-			}
-			if(stamper != null) {
-				try {
-					stamper.close();
-				} catch (Exception e) {
-					throw new AlfrescoRuntimeException("Caught exception", e);
-				}
-			}
-		}
-	}
+    // stamp pdf with stamp
+    private void stampPDF(OutputStream outputStream, InputStream pdfInputStream, InputStream pdfStampStream) {
 
-	
-	/**
-	 * Set affine transform calculator.
-	 * It is used to calculate stamp position on the page.
-	 * 
-	 * @param transformCalculator
-	 */
-	public void setTransformCalculator(AffineTransformCalculator transformCalculator) {
-		this.transformCalculator = transformCalculator;
-	}
+        PdfReader reader = null;
+        PdfReader stampReader = null;
+        PdfStamper stamper = null;
 
-	/**
-	 * Set Data Bundle Processor, that is used to produce stamp.
-	 * 
-	 * @param stampProcessor
-	 */
-	public void setStampProcessor(DataBundleProcessor stampProcessor) {
-		this.stampProcessor = stampProcessor;
-	}
+        try {
+            reader = new PdfReader(pdfInputStream);
+            stamper = new PdfStamper(reader, outputStream);
+            stampReader = new PdfReader(pdfStampStream);
 
-	public void setStampProcessors(List<DataBundleProcessor> stampProcessors) {
-		this.stampProcessors = stampProcessors;
-	}
+            PdfImportedPage stamp = stamper.getImportedPage(stampReader, 1);
+            Rectangle stampSize = stampReader.getPageSize(1);
 
-	/**
-	 * Specify if the stamp should be set above the page (foreground = true), or under it (foreground = false).
-	 * 
-	 * @param foreground
-	 */
-	public void setForeground(Boolean foreground) {
-		this.foreground = foreground;
-	}
+            int numOfPages = reader.getNumberOfPages();
+            for (int i = 1; i <= numOfPages; i++) {
+                // calculate affine transform:
+                Rectangle pageSize = reader.getPageSize(i);
+
+                // get transformation matrix
+                double[] m = new double[6];
+                AffineTransform transform = transformCalculator.calculate(stampSize.getWidth(), stampSize.getHeight(), pageSize.getWidth(), pageSize.getHeight());
+                transform.getMatrix(m);
+
+                PdfContentByte page = foreground ? stamper.getOverContent(i) : stamper.getUnderContent(i);
+                page.addTemplate(stamp, (float) m[0], (float) m[1], (float) m[2], (float) m[3], (float) m[4], (float) m[5]);
+
+            }
+        } catch (Exception e) {
+            throw new AlfrescoRuntimeException("Caught exception", e);
+        } finally {
+            if(reader != null) {
+                reader.close();
+            }
+            if(stampReader != null) {
+                stampReader.close();
+            }
+            if(stamper != null) {
+                try {
+                    stamper.close();
+                } catch (Exception e) {
+                    throw new AlfrescoRuntimeException("Caught exception", e);
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Set affine transform calculator.
+     * It is used to calculate stamp position on the page.
+     *
+     * @param transformCalculator
+     */
+    public void setTransformCalculator(AffineTransformCalculator transformCalculator) {
+        this.transformCalculator = transformCalculator;
+    }
+
+    /**
+     * Set Data Bundle Processor, that is used to produce stamp.
+     *
+     * @param stampProcessor
+     */
+    public void setStampProcessor(DataBundleProcessor stampProcessor) {
+        this.stampProcessor = stampProcessor;
+    }
+
+    public void setStampProcessors(List<DataBundleProcessor> stampProcessors) {
+        this.stampProcessors = stampProcessors;
+    }
+
+    /**
+     * Specify if the stamp should be set above the page (foreground = true), or under it (foreground = false).
+     *
+     * @param foreground
+     */
+    public void setForeground(Boolean foreground) {
+        this.foreground = foreground;
+    }
 
 }

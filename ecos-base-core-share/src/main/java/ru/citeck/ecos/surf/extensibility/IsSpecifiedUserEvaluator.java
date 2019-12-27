@@ -49,7 +49,7 @@ public class IsSpecifiedUserEvaluator extends AbstractUniversalEvaluator {
     }
 
     private boolean isNotEmpty(String value) {
-        return value != null && value.length() > 0;
+        return value != null && !value.isEmpty();
     }
 
 }

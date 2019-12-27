@@ -36,30 +36,25 @@ import org.springframework.extensions.webscripts.UriTemplate;
  */
 public class IDocsPageViewResolver extends SlingshotPageViewResolver 
 {
-	
-	@Override
+
+    @Override
     public UriTemplateListIndex generateUriTemplateListIndexFromConfig(WebFrameworkServiceRegistry serviceRegistry, String targetElement)
     {
         List<UriTemplate> uriTemplates = null;
         
         Config config = serviceRegistry.getConfigService().getConfig("UriTemplate");
-        if (config != null)
-        {
+        if (config != null) {
             ConfigElement uriConfig = config.getConfigElement(targetElement);
-            if (uriConfig != null)
-            {
+            if (uriConfig != null) {
                 List<ConfigElement> uriElements = uriConfig.getChildren("uri-template");
-                if (uriElements != null)
-                {
+                if (uriElements != null) {
                     uriTemplates = new ArrayList<>(uriElements.size());
                     HashMap<String,UriTemplate> templatesByName = new HashMap<>(uriElements.size());
 
-                    for (ConfigElement uriElement : uriElements)
-                    {
+                    for (ConfigElement uriElement : uriElements) {
                         String template = uriElement.getValue();
                         String id = uriElement.getAttribute("id");
-                        if (template == null || template.trim().length() == 0)
-                        {
+                        if (template == null || template.trim().isEmpty()) {
                             throw new IllegalArgumentException("<uri-template> config element must contain a value.");
                         }
 
@@ -71,16 +66,16 @@ public class IDocsPageViewResolver extends SlingshotPageViewResolver
                         String before = uriElement.getAttribute("before");
 
                         // store the Uri Template
-                        if(before == null) {
-                        	uriTemplates.add(uriTemplate);
+                        if (before == null) {
+                            uriTemplates.add(uriTemplate);
                         } else {
-                        	UriTemplate beforeTemplate = templatesByName.get(before);
-                        	int index = uriTemplates.indexOf(beforeTemplate);
-                        	if(index != -1) {
-                        		uriTemplates.add(index, uriTemplate);
-                        	} else {
-                        		uriTemplates.add(uriTemplate);
-                        	}
+                            UriTemplate beforeTemplate = templatesByName.get(before);
+                            int index = uriTemplates.indexOf(beforeTemplate);
+                            if (index != -1) {
+                                uriTemplates.add(index, uriTemplate);
+                            } else {
+                                uriTemplates.add(uriTemplate);
+                            }
                         }
                     }
                 }

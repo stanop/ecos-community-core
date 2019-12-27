@@ -108,7 +108,7 @@ public class GraphQLServiceImpl implements GraphQLService {
 
                 List<SourceLocation> locations = error.getLocations();
                 String locationsMsg = "";
-                if (locations != null && locations.size() > 0) {
+                if (locations != null && !locations.isEmpty()) {
                     locationsMsg = " at " + locations.stream()
                             .map(l -> l.getLine() + ":" + l.getColumn())
                             .collect(Collectors.joining(", ")) + " ";

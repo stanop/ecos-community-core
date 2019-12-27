@@ -300,7 +300,7 @@ public class CreateVariantsGet extends AbstractWebScript {
         result.setTitle(title);
 
         List<NodeRef> destinations = nodeUtils.getAssocTargets(variant, JournalsModel.ASSOC_DESTINATION);
-        result.setDestination(destinations.size() > 0 ? destinations.get(0) : null);
+        result.setDestination(!destinations.isEmpty() ? destinations.get(0) : null);
         result.setType(getShortQName(properties.get(JournalsModel.PROP_TYPE)));
         result.setFormId((String) properties.get(JournalsModel.PROP_FORM_ID));
         result.setCreateArguments((String) properties.get(JournalsModel.PROP_CREATE_ARGUMENTS));

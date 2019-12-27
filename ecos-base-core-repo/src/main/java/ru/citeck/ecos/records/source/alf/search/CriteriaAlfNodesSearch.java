@@ -42,7 +42,7 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
     public RecordsQueryResult<RecordRef> queryRecords(RecordsQuery query, Long afterDbId, Date afterCreated) {
 
         SearchCriteria criteria = criteriaParser.parse(query.getQuery());
-        if (criteria.getTriplets().size() == 0) {
+        if (criteria.getTriplets().isEmpty()) {
             return new RecordsQueryResult<>();
         }
 

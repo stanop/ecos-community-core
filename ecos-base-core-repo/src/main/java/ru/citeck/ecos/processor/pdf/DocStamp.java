@@ -80,7 +80,7 @@ public class DocStamp extends AbstractDataBundleLine
 		List<DataBundle> stampOutputs = stampProcessor.process(stampInputs);
 		
 		InputStream pdfStampStream = null;
-		if(stampOutputs.size() > 0) {
+		if (!stampOutputs.isEmpty()) {
 			pdfStampStream = stampOutputs.get(0).getInputStream();
 		} else {
 			return input;

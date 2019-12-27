@@ -43,7 +43,7 @@ public class ModuleShareConfigDeployer implements BeanNameAware, ConfigDeployer 
     public List<ConfigDeployment> initConfig() {
         List<String> configs = getModuleConfigs();
         List<ConfigDeployment> deployed = null;
-        if (configService != null && configs != null && configs.size() != 0) {
+        if (configService != null && configs != null && !configs.isEmpty()) {
             UrlConfigSource configSource = new UrlConfigSource(configs);
             deployed = configService.appendConfig(configSource);
         }

@@ -35,54 +35,54 @@ import org.alfresco.service.namespace.QName;
 
 public class PersonFormNodeBuilder extends AbstractFormNodeBuilder
 {
-	private PersonService personService;
-	private AuthorityService authorityService;
-	private static String PROP_NAME = "prop_cm_userName";
-	
-	@Override
-	public NodeRef createNode(TypeDefinition typeDef, FormData data)
-	{
-		// get parent group, if any:
-		FieldData destination = data.getFieldData(DESTINATION);
-		String parentAuthority = destination == null ? null : (String) destination.getValue();
-		data.removeFieldData(DESTINATION);
-		
-		// get user name:
-		FieldData nameData = data.getFieldData(PROP_NAME);
-		String name = nameData == null ? null : (String) nameData.getValue();
-		if (name == null || name.length() == 0) {
-			throw new FormException("Authority name should be specified on form");
-		}
-		data.removeFieldData(PROP_NAME);
-		
-		// check, if person already exists
-		if(personService.personExists(name)) {
-			throw new AlfrescoRuntimeException("Can't create user " + name + ", because it already exists");
-		}
-		
-		// create authority:
-		Map<QName, Serializable> properties = new HashMap<>();
-		properties.put(ContentModel.PROP_USERNAME, name);
-		NodeRef person = personService.createPerson(properties);
-		if(person == null) {
-			return null;
-		}
-		
-		// if there is parent group - put new group inside parent:
-		if(parentAuthority != null && parentAuthority.length() > 0) {
-			authorityService.addAuthority(parentAuthority, name);
-		}
-		
-		// finally return person nodeRef:
-		return person;
-	}
-	
-	public void setPersonService(PersonService personService) {
-		this.personService = personService;
-	}
+    private PersonService personService;
+    private AuthorityService authorityService;
+    private static String PROP_NAME = "prop_cm_userName";
 
-	public void setAuthorityService(AuthorityService authorityService) {
-		this.authorityService = authorityService;
-	}
-	
+    @Override
+    public NodeRef createNode(TypeDefinition typeDef, FormData data)
+    {
+        // get parent group, if any:
+        FieldData destination = data.getFieldData(DESTINATION);
+        String parentAuthority = destination == null ? null : (String) destination.getValue();
+        data.removeFieldData(DESTINATION);
+
+        // get user name:
+        FieldData nameData = data.getFieldData(PROP_NAME);
+        String name = nameData == null ? null : (String) nameData.getValue();
+        if (name == null || name.isEmpty()) {
+            throw new FormException("Authority name should be specified on form");
+        }
+        data.removeFieldData(PROP_NAME);
+
+        // check, if person already exists
+        if (personService.personExists(name)) {
+            throw new AlfrescoRuntimeException("Can't create user " + name + ", because it already exists");
+        }
+
+        // create authority:
+        Map<QName, Serializable> properties = new HashMap<>();
+        properties.put(ContentModel.PROP_USERNAME, name);
+        NodeRef person = personService.createPerson(properties);
+        if (person == null) {
+            return null;
+        }
+
+        // if there is parent group - put new group inside parent:
+        if (parentAuthority != null && !parentAuthority.isEmpty()) {
+            authorityService.addAuthority(parentAuthority, name);
+        }
+
+        // finally return person nodeRef:
+        return person;
+    }
+
+    public void setPersonService(PersonService personService) {
+        this.personService = personService;
+    }
+
+    public void setAuthorityService(AuthorityService authorityService) {
+        this.authorityService = authorityService;
+    }
+
 }

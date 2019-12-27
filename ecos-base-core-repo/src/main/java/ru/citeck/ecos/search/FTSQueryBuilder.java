@@ -399,7 +399,7 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
                                             .filter(t -> !t.isEmpty())
                                             .collect(Collectors.toList());
 
-            if (nonEmptyTerms.size() == 0) {
+            if (nonEmptyTerms.isEmpty()) {
                 return;
             }
 

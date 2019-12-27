@@ -45,7 +45,7 @@ public class SelectSignerBehaviour implements NodeServicePolicies.OnCreateAssoci
         final NodeRef contractRef = associationRef.getSourceRef();
         if (nodeService.exists(contractRef)) {
             List<AssociationRef> signers = nodeService.getTargetAssocs(contractRef, IdocsModel.ASSOC_SIGNER);
-            if (signers != null && signers.size() > 0) {
+            if (signers != null && !signers.isEmpty()) {
                 AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
                     @Override
                     public Void doWork() throws Exception {
