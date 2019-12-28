@@ -405,6 +405,7 @@
                 <formKey>ecos-module-upload</formKey>
             </variant>
         </create>
+        <option name="metaRecord">@</option>
         <option name="actionFormatter">
             [
                 {
