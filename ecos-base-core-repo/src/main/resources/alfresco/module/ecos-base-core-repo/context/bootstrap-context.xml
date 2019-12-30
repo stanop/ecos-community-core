@@ -22,6 +22,7 @@
                 <value>alfresco/module/${project.artifactId}/model/ecosCommon.xml</value>
                 <value>alfresco/module/${project.artifactId}/model/classificationModel.xml</value>
                 <value>alfresco/module/${project.artifactId}/model/invariantsModel.xml</value>
+                <value>alfresco/module/${project.artifactId}/model/ecosTypeModel.xml</value>
             </list>
         </property>
         <property name="labels">
