@@ -19,7 +19,7 @@
         {
             "id": "contracts:mainAgreement",
             "name": "Доп. соглашения",
-            "direction": "SOURCE",
+            "direction": "BOTH",
             "target": "model/type$base"
         }
     ]
