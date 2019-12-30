@@ -5,12 +5,6 @@
     "inheritActions": true,
     "associations": [
         {
-            "id": "contracts:closingDocumentAgreement",
-            "name": "Доп. соглашения",
-            "direction": "SOURCE",
-            "target": "model/type$base"
-        },
-        {
             "id": "payments:basis",
             "name": "Счета",
             "direction": "SOURCE",
@@ -18,7 +12,7 @@
         },
         {
             "id": "contracts:mainAgreement",
-            "name": "Доп. соглашения",
+            "name": "Связь с Договором",
             "direction": "BOTH",
             "target": "model/type$base"
         }
