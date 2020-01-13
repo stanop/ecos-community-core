@@ -41,8 +41,11 @@ public class CaseStatusChangeNotificationBehaviour extends AbstractICaseDocument
 
     @Override
     public void onCaseStatusChanged(NodeRef caseRef, NodeRef caseStatusBefore, NodeRef caseStatusAfter) {
+        if (!nodeService.exists(caseRef)) {
+            return;
+        }
 
-        if (!isEnabled() || sender == null || !nodeService.exists(caseRef) || !nodeService.exists(caseStatusAfter)) {
+        if (!isActive(caseRef) || sender == null || !nodeService.exists(caseStatusAfter)) {
             return;
         }
 
