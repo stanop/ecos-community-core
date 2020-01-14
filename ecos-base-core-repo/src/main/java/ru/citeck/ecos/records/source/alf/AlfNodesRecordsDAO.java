@@ -162,6 +162,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             JsonNode fieldValue = attributes.path(name);
             JsonNode fieldRawValue = attributes.get(name);
 
+            handleETypeAttribute(name, fieldValue, props);
+
             if (attsToIgnore.containsKey(name)) {
                 log.warn("Found att " + attsToIgnore.get(name) + ", att " + name + " will be ignored");
                 continue;
@@ -349,6 +351,29 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         if (!attributeFieldValue.isNull() && !attributeFieldValue.isMissingNode()) {
             attributes.remove(CONTENT_ATTRIBUTE_NAME);
             attributes.set(CM_CONTENT_ATTRIBUTE_NAME, attributeFieldValue);
+        }
+    }
+
+    private void handleETypeAttribute(String attributeName,
+                                      JsonNode attributeFieldValue,
+                                      Map<QName, Serializable> props) {
+
+        if (StringUtils.equals(attributeName, ETYPE_ATTRIBUTE_NAME)) {
+            String attrValue = attributeFieldValue.asText();
+            String typeId = RecordRef.valueOf(attrValue).getId();
+
+            int slashIndex = typeId.indexOf(SLASH_DELIMITER);
+            if (slashIndex != -1) {
+
+                String firstPartOfTypeId = typeId.substring(0, slashIndex);
+                props.put(PROP_DOCUMENT_TYPE, WORKSPACE_PREFIX + firstPartOfTypeId);
+
+                String secondPartOfRecordId = typeId.substring(slashIndex + 1);
+                props.put(PROP_DOCUMENT_KIND, WORKSPACE_PREFIX + secondPartOfRecordId);
+
+            } else {
+                props.put(PROP_DOCUMENT_TYPE, WORKSPACE_PREFIX + typeId);
+            }
         }
     }
 
