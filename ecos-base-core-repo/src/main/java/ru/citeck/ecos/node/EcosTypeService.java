@@ -6,11 +6,8 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.records2.RecordRef;
 
-import java.io.Serializable;
-import java.util.Map;
 import java.util.function.Function;
 
 @Service("ecosTypeService")
@@ -38,24 +35,4 @@ public class EcosTypeService {
         evaluators.register(nodeType, evaluator);
     }
 
-    public RecordRef evalDefaultEcosType(AlfNodeInfo info) {
-
-        Map<QName, Serializable> props = info.getProperties();
-
-        NodeRef type = (NodeRef) props.get(ClassificationModel.PROP_DOCUMENT_TYPE);
-
-        if (type == null) {
-            log.warn("Type property of nodeRef is null");
-            return null;
-        }
-
-        String ecosType = type.getId();
-
-        NodeRef kind = (NodeRef) props.get(ClassificationModel.PROP_DOCUMENT_KIND);
-        if (kind != null) {
-            ecosType = ecosType + "/" + kind.getId();
-        }
-
-        return RecordRef.create("emodel", "type", ecosType);
-    }
 }
