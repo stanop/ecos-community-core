@@ -2,6 +2,7 @@ package ru.citeck.ecos.records.source.alf;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.*;
@@ -13,8 +14,6 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.GUID;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.group.ActionResults;
@@ -50,19 +49,22 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-@Component
-public class AlfNodesRecordsDAO extends LocalRecordsDAO
-    implements RecordsQueryDAO,
-    RecordsMetaLocalDAO<MetaValue>,
-    RecordsQueryWithMetaLocalDAO<Object>,
-    MutableRecordsDAO,
-    RecordsActionExecutor {
+import static ru.citeck.ecos.model.ClassificationModel.PROP_DOCUMENT_KIND;
+import static ru.citeck.ecos.model.ClassificationModel.PROP_DOCUMENT_TYPE;
 
-    private static final Log logger = LogFactory.getLog(AlfNodesRecordsDAO.class);
+@Component
+@Slf4j
+public class AlfNodesRecordsDAO extends LocalRecordsDAO
+    implements RecordsQueryDAO, RecordsMetaLocalDAO<MetaValue>, RecordsQueryWithMetaLocalDAO<Object>,
+    MutableRecordsDAO, RecordsActionExecutor {
 
     public static final String ID = "";
-    public static final String ADD_CMD_PREFIX = "att_add_";
-    public static final String REMOVE_CMD_PREFIX = "att_rem_";
+    private static final String ADD_CMD_PREFIX = "att_add_";
+    private static final String REMOVE_CMD_PREFIX = "att_rem_";
+    private static final String ETYPE_ATTRIBUTE_NAME = "_etype";
+    private static final String SLASH_DELIMITER = "/";
+    private static final String WORKSPACE_PREFIX = "workspace://SpacesStore/";
+    private static final String STATE_ATTRIBUTE_NAME = "_state";
     private static final String CONTENT_ATTRIBUTE_NAME = "_content";
     private static final String CM_CONTENT_ATTRIBUTE_NAME = "cm:content";
 
@@ -159,12 +161,14 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             JsonNode fieldValue = attributes.path(name);
             JsonNode fieldRawValue = attributes.get(name);
 
+            handleETypeAttribute(name, fieldValue, props);
+
             if (attsToIgnore.containsKey(name)) {
-                logger.warn("Found att " + attsToIgnore.get(name) + ", att " + name + " will be ignored");
+                log.warn("Found att " + attsToIgnore.get(name) + ", att " + name + " will be ignored");
                 continue;
             }
 
-            if ("_state".equals(name)) {
+            if (STATE_ATTRIBUTE_NAME.equals(name)) {
                 String strValue = fieldValue.asText();
                 props.put(InvariantsModel.PROP_IS_DRAFT, "draft".equals(strValue));
                 continue;
@@ -175,20 +179,20 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 addOrRemoveCmd = ADD_CMD_PREFIX;
                 name = name.substring(ADD_CMD_PREFIX.length());
                 if (!name.contains(":")) {
-                    logger.warn("Attribute doesn't exist: " + name);
+                    log.warn("Attribute doesn't exist: " + name);
                     continue;
                 }
             } else if (record.getId() != RecordRef.EMPTY && name.startsWith(REMOVE_CMD_PREFIX)) {
                 addOrRemoveCmd = REMOVE_CMD_PREFIX;
                 name = name.substring(REMOVE_CMD_PREFIX.length());
                 if (!name.contains(":")) {
-                    logger.warn("Attribute doesn't exist: " + name);
+                    log.warn("Attribute doesn't exist: " + name);
                     continue;
                 }
             }
 
             if (ecosPermissionService.isAttributeProtected(nodeRef, name)) {
-                logger.warn("You can't change '" + name +
+                log.warn("You can't change '" + name +
                     "' attribute of '" + nodeRef +
                     "' because it is protected! Value: " + fieldRawValue);
                 continue;
@@ -205,7 +209,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
                 QName typeName = propDef.getDataType().getName();
                 if (addOrRemoveCmd != null) {
-                    logger.warn("Attribute action " + addOrRemoveCmd + " is not supported for node properties." +
+                    log.warn("Attribute action " + addOrRemoveCmd + " is not supported for node properties." +
                         " Atttribute: " + name);
                     continue;
                 }
@@ -231,7 +235,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
                     if (contentFileHelper.isFileFromEformFormat(fieldValue)) {
                         if (addOrRemoveCmd != null) {
-                            logger.warn("Attribute action " + addOrRemoveCmd + " is not supported for fileFromEformFormat." +
+                            log.warn("Attribute action " + addOrRemoveCmd + " is not supported for fileFromEformFormat." +
                                 " Atttribute: " + name);
                             continue;
                         }
@@ -311,6 +315,29 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         attachmentAssocEformFiles.forEach((qName, jsonNodes) -> contentFileHelper.processAssocFilesContent(
             qName, jsonNodes, finalNodeRef, false));
         return resultRecord;
+    }
+
+    private void handleETypeAttribute(String attributeName,
+                                      JsonNode attributeFieldValue,
+                                      Map<QName, Serializable> props) {
+
+        if (StringUtils.equals(attributeName, ETYPE_ATTRIBUTE_NAME)) {
+            String attrValue = attributeFieldValue.asText();
+            String typeId = RecordRef.valueOf(attrValue).getId();
+
+            int slashIndex = typeId.indexOf(SLASH_DELIMITER);
+            if (slashIndex != -1) {
+
+                String firstPartOfTypeId = typeId.substring(0, slashIndex);
+                props.put(PROP_DOCUMENT_TYPE, WORKSPACE_PREFIX + firstPartOfTypeId);
+
+                String secondPartOfRecordId = typeId.substring(slashIndex + 1);
+                props.put(PROP_DOCUMENT_KIND, WORKSPACE_PREFIX + secondPartOfRecordId);
+
+            } else {
+                props.put(PROP_DOCUMENT_TYPE, WORKSPACE_PREFIX + typeId);
+            }
+        }
     }
 
     private void handleContentAttribute(ObjectNode attributes) {
@@ -476,8 +503,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 }
             }
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Query records with query: " + query +
+        if (log.isDebugEnabled()) {
+            log.debug("Query records with query: " + query +
                 " afterIdValue: " + afterIdValue + " afterCreated: " + afterCreated);
         }
         return alfNodesSearch.queryRecords(query, afterIdValue, afterCreated);
