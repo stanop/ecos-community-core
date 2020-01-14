@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model name="etype:model" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+<model name="ecosType:model" xmlns="http://www.alfresco.org/model/dictionary/1.0">
 
     <description>ECOS type model</description>
     <author>Citeck</author>

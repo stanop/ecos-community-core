@@ -1,7 +1,7 @@
 {
-    "id": "contracts-cat-doctype-contract",
+    "id": "supplementary-agreement",
     "name": "Договор",
-    "parent": "model/type$base",
+    "parent": "model/type$contracts-cat-doctype-contract",
     "inheritActions": true,
     "associations": [
         {
@@ -13,13 +13,7 @@
         {
             "id": "contracts:mainAgreement",
             "name": "Relationship to the contract",
-            "direction": "SOURCE",
-            "target": "model/type$base"
-        },
-        {
-            "id": "contracts:closingDocumentAgreement",
-            "name": "Accounting Documents",
-            "direction": "SOURCE",
+            "direction": "TARGET",
             "target": "model/type$base"
         }
     ]

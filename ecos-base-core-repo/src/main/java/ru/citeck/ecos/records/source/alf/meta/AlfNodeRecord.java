@@ -11,6 +11,8 @@ import org.alfresco.service.cmr.version.Version;
 import org.alfresco.service.cmr.version.VersionService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.action.node.NodeActionsService;
 import ru.citeck.ecos.apps.app.module.type.ui.action.ActionModule;
@@ -23,6 +25,7 @@ import ru.citeck.ecos.graphql.node.GqlQName;
 import ru.citeck.ecos.node.AlfNodeContentPathRegistry;
 import ru.citeck.ecos.node.AlfNodeInfo;
 import ru.citeck.ecos.node.DisplayNameService;
+import ru.citeck.ecos.node.EcosTypeService;
 import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records.meta.MetaUtils;
 import ru.citeck.ecos.records.source.alf.AlfNodeMetaEdge;
@@ -65,6 +68,9 @@ public class AlfNodeRecord implements MetaValue {
     private NodeRef nodeRef;
     private RecordRef recordRef;
     private GqlAlfNode node;
+
+    // it is too bad that dto aware about context
+    // TODO: rework all business logic based on this
     private AlfGqlContext context;
 
     @Getter(lazy = true)
@@ -131,6 +137,17 @@ public class AlfNodeRecord implements MetaValue {
         return values != null && !values.isEmpty();
     }
 
+    private MetaValue getMetaValueForEcosType(MetaField field) {
+        NodeRef nodeRef = new NodeRef(node.nodeRef());
+        EcosTypeService ecosTypeService = context.getService(EcosTypeService.QNAME);
+        RecordRef etypeRecordRef = ecosTypeService.getEcosType(nodeRef);
+        MetaValue metaValue = context.getServiceFactory()
+            .getMetaValuesConverter()
+            .toMetaValue(etypeRecordRef);
+        metaValue.init(context, field);
+        return metaValue;
+    }
+
     @Override
     public List<? extends MetaValue> getAttribute(String name, MetaField field) {
 
@@ -147,30 +164,8 @@ public class AlfNodeRecord implements MetaValue {
         switch (name) {
 
             case "_etype":
-
-                NodeRef type = getNodeRefFromProp("tk:type");
-
-                if (type != null) {
-
-                    String etype = type.getId();
-
-                    NodeRef kind = getNodeRefFromProp("tk:kind");
-
-                    if (kind != null) {
-                        etype += "/" + kind.getId();
-                    }
-
-                    MetaValue value = context.getServiceFactory()
-                        .getMetaValuesConverter()
-                        .toMetaValue(RecordRef.create("emodel", "type", etype));
-                    value.init(context, field);
-
-                    attribute = Collections.singletonList(value);
-
-                } else {
-                    return null;
-                }
-
+                MetaValue metaValue = this.getMetaValueForEcosType(field);
+                attribute = Collections.singletonList(metaValue);
                 break;
 
             case RecordConstants.ATT_TYPE:
