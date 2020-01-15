@@ -150,6 +150,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             }
         });
 
+        handleContentAttribute(attributes);
+
         Iterator<String> names = attributes.fieldNames();
         while (names.hasNext()) {
 
@@ -311,7 +313,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         return resultRecord;
     }
 
-    private void handleContentAttribute(ObjectNode attributes, Map<QName, Serializable> props) {
+    private void handleContentAttribute(ObjectNode attributes, Map<QName) {
 
         JsonNode attributeFieldValue = attributes.path(CONTENT_ATTRIBUTE_NAME);
         if (!attributeFieldValue.isNull()) {
