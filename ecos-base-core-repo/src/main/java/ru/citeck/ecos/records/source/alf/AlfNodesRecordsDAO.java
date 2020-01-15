@@ -162,8 +162,6 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             JsonNode fieldValue = attributes.path(name);
             JsonNode fieldRawValue = attributes.get(name);
 
-            handleETypeAttribute(name, fieldValue, props);
-
             if (attsToIgnore.containsKey(name)) {
                 log.warn("Found att " + attsToIgnore.get(name) + ", att " + name + " will be ignored");
                 continue;
@@ -354,11 +352,11 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         }
     }
 
-    private void handleETypeAttribute(String attributeName,
-                                      JsonNode attributeFieldValue,
-                                      Map<QName, Serializable> props) {
+    private void handleETypeAttribute(ObjectNode attributes, Map<QName, Serializable> props) {
 
-        if (StringUtils.equals(attributeName, ETYPE_ATTRIBUTE_NAME)) {
+        JsonNode attributeFieldValue = attributes.path(ETYPE_ATTRIBUTE_NAME);
+        if (!attributeFieldValue.isNull()) {
+
             String attrValue = attributeFieldValue.asText();
             String typeId = RecordRef.valueOf(attrValue).getId();
 
@@ -374,6 +372,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             } else {
                 props.put(PROP_DOCUMENT_TYPE, WORKSPACE_PREFIX + typeId);
             }
+
+            attributes.remove(ETYPE_ATTRIBUTE_NAME);
         }
     }
 
