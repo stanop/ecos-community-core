@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2020 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -18,6 +18,7 @@
  */
 package ru.citeck.ecos.notification;
 
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
@@ -28,8 +29,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.workflow.WorkflowInstance;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.QName;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang3.StringUtils;
 import ru.citeck.ecos.security.NodeOwnerDAO;
 
 import java.io.Serializable;
@@ -37,33 +37,34 @@ import java.util.*;
 
 /**
  * Notification sender for tasks (ItemType = WorkflowTask).
- *
+ * <p>
  * The following implementation is used:
  * - subject line: default
  * - template: retrieved by key = process-definition
- * - template args: 
- *   {
- *     "task": {
- *       "id": "task id",
- *       "name": "task name",
- *       "description": "task description",
- *       "properties": {
- *         "property1": value1,
- *         ...
- *       }
- *     },
- *     "workflow": {
- *       "id": "workflow id",
- *       "documents": [
- *         "nodeRef1",
- *         ...
- *       ]
- *     }
- *   }
+ * - template args:
+ * {
+ * "task": {
+ * "id": "task id",
+ * "name": "task name",
+ * "description": "task description",
+ * "properties": {
+ * "property1": value1,
+ * ...
+ * }
+ * },
+ * "workflow": {
+ * "id": "workflow id",
+ * "documents": [
+ * "nodeRef1",
+ * ...
+ * ]
+ * }
+ * }
  * - notification recipients - assignee or pooled actors, whichever present
  *
  * @author Sergey Tiunov
  */
+@Slf4j
 class TaskNotificationSender extends AbstractNotificationSender<WorkflowTask> {
 
     // template argument names:
@@ -75,53 +76,54 @@ class TaskNotificationSender extends AbstractNotificationSender<WorkflowTask> {
     public static final String ARG_TASK_PROPERTIES = "properties";
     public static final String ARG_WORKFLOW = "workflow";
     public static final String ARG_WORKFLOW_ID = "id";
-    public static final String ARG_WORKFLOW_PROPERTIES = "properties";
     public static final String ARG_WORKFLOW_DOCUMENTS = "documents";
 
     protected WorkflowQNameConverter qNameConverter;
     protected boolean sendToInitiator;
     protected boolean sendToOwner;
-    protected Map<String,Boolean> docMandatory;
-    private static Log logger = LogFactory.getLog(TaskNotificationSender.class);
+    protected Map<String, Boolean> docMandatory;
     List<String> allowDocList;
     private NodeOwnerDAO nodeOwnerDAO;
-
-    @Override
-    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        super.setServiceRegistry(serviceRegistry);
-        this.qNameConverter = new WorkflowQNameConverter(namespaceService);
-    }
 
     @Override
     protected Collection<String> getNotificationRecipients(WorkflowTask task) {
         Set<String> recipients = new HashSet<>();
         // add default recipients:
-        if(defaultRecipients != null) {
+        if (defaultRecipients != null) {
+            log.debug("Add default recipients: {}", defaultRecipients);
             recipients.addAll(defaultRecipients);
         }
         Map<QName, Serializable> properties = task.getProperties();
         // try with user:
-        if(getNotificationTemplate(task)!=null)
-        {
-            recipients.addAll(getRecipients(task, getNotificationTemplate(task), null));
+        if (getNotificationTemplate(task) != null) {
+            Set<String> recipientsFromTemplate = getRecipients(task, getNotificationTemplate(task), null);
+            log.debug("Add recipients from template: {}", recipientsFromTemplate);
+            recipients.addAll(recipientsFromTemplate);
         }
         // try with pool:
         @SuppressWarnings("unchecked")
         Collection<NodeRef> pool = (Collection<NodeRef>) properties.get(WorkflowModel.ASSOC_POOLED_ACTORS);
-        if (recipients.size() == 0 && pool != null) {
-            for (NodeRef pooledActor : pool) {
-                if (nodeService.exists(pooledActor)) {
-                    QName type = nodeService.getType(pooledActor);
-                    if (type.equals(ContentModel.TYPE_PERSON)) {
-                        String name = (String) nodeService.getProperty(pooledActor, ContentModel.PROP_USERNAME);
-                        recipients.add(name);
-                    } else if (type.equals(ContentModel.TYPE_AUTHORITY_CONTAINER)) {
-                        String name = (String) nodeService.getProperty(pooledActor, ContentModel.PROP_AUTHORITY_NAME);
-                        recipients.add(name);
+        if (recipients.size() == 0) {
+            if (pool != null) {
+                for (NodeRef pooledActor : pool) {
+                    if (nodeService.exists(pooledActor)) {
+                        QName type = nodeService.getType(pooledActor);
+                        if (type.equals(ContentModel.TYPE_PERSON)) {
+                            String name = (String) nodeService.getProperty(pooledActor, ContentModel.PROP_USERNAME);
+                            log.debug("Add pooled person recipient: {}", name);
+                            recipients.add(name);
+                        } else if (type.equals(ContentModel.TYPE_AUTHORITY_CONTAINER)) {
+                            String name = (String) nodeService.getProperty(pooledActor, ContentModel.PROP_AUTHORITY_NAME);
+                            log.debug("Add pooled authority recipient: {}", name);
+                            recipients.add(name);
+                        }
                     }
                 }
             }
         }
+
+        log.debug("All recipients: {}", recipients);
+
         return recipients;
     }
 
@@ -152,7 +154,7 @@ class TaskNotificationSender extends AbstractNotificationSender<WorkflowTask> {
         taskInfo.put(ARG_TASK_DESCRIPTION, task.getDescription());
         HashMap<String, Serializable> properties = new HashMap<>();
         taskInfo.put(ARG_TASK_PROPERTIES, properties);
-        for(Map.Entry<QName, Serializable> entry : task.getProperties().entrySet()) {
+        for (Map.Entry<QName, Serializable> entry : task.getProperties().entrySet()) {
             properties.put(qNameConverter.mapQNameToName(entry.getKey()), entry.getValue());
         }
         return taskInfo;
@@ -169,18 +171,14 @@ class TaskNotificationSender extends AbstractNotificationSender<WorkflowTask> {
         if (wfPackage == null) {
             return workflowInfo;
         }
-        if(nodeService.exists(wfPackage))
-        {
+        if (nodeService.exists(wfPackage)) {
             List<ChildAssociationRef> children = services.getNodeService().getChildAssocs(wfPackage);
-            for(ChildAssociationRef child : children) {
-                if(allowDocList==null)
-                {
+            for (ChildAssociationRef child : children) {
+                if (allowDocList == null) {
                     docsInfo.add(child.getChildRef());
-                }
-                else
-                {
-                    if(allowDocList.contains(qNameConverter.mapQNameToName(services.getNodeService().getType(child.getChildRef()))))
-                    {
+                } else {
+                    if (allowDocList.contains(qNameConverter.mapQNameToName(services.getNodeService().getType(
+                        child.getChildRef())))) {
                         docsInfo.add(child.getChildRef());
                     }
                 }
@@ -188,88 +186,51 @@ class TaskNotificationSender extends AbstractNotificationSender<WorkflowTask> {
         }
         return workflowInfo;
     }
-    /**
-     * Include initiator of process to recipients
-     * @param true or false
-     */
-    public void setSendToOwner(Boolean sendToOwner) {
-        this.sendToOwner = sendToOwner.booleanValue();
-    }
-
-    /**
-     * Include initiator of process to recipients
-     * @param true or false
-     */
-    public void setSendToInitiator(Boolean sendToInitiator) {
-        this.sendToInitiator = sendToInitiator.booleanValue();
-    }
-
-    /**
-     * Flag for document mandatory notifications
-     * @param map of values
-     */
-    public void setDocMandatory(Map<String,Boolean> docMandatory) {
-        this.docMandatory = docMandatory;
-    }
-
-    /**
-     * List of document's types for notifications
-     * @param list of values
-     */
-    public void setAllowDocList(List<String> allowDocList) {
-        this.allowDocList = allowDocList;
-    }
 
     @Override
-    public void sendNotification(WorkflowTask task)
-    {
+    public void sendNotification(WorkflowTask task) {
         boolean docNecessary = false;
         boolean contains = false;
-        if(docMandatory!=null && docMandatory.get(task.getDefinition().getId())!=null)
-        {
+        if (docMandatory != null && docMandatory.get(task.getDefinition().getId()) != null) {
             docNecessary = docMandatory.get(task.getDefinition().getId()).booleanValue();
         }
-        if(docNecessary)
-        {
+        if (docNecessary) {
             NodeRef wfPackage = task.getPath().getInstance().getWorkflowPackage();
-            if(nodeService.exists(wfPackage))
-            {
+            if (nodeService.exists(wfPackage)) {
                 List<ChildAssociationRef> children = services.getNodeService().getChildAssocs(wfPackage);
-                for(ChildAssociationRef child : children) {
-                    if(allowDocList!=null && allowDocList.contains(qNameConverter.mapQNameToName(services.getNodeService().getType(child.getChildRef()))))
-                    {
+                for (ChildAssociationRef child : children) {
+                    if (allowDocList != null && allowDocList.contains(qNameConverter.mapQNameToName(
+                        services.getNodeService().getType(child.getChildRef())))) {
                         contains = true;
-                    }
-                    else
-                    {
-                        if(allowDocList==null && WorkflowModel.ASSOC_PACKAGE_CONTAINS.equals(child.getTypeQName()))
-                        {
+                    } else {
+                        if (allowDocList == null && WorkflowModel.ASSOC_PACKAGE_CONTAINS.equals(child.getTypeQName())) {
                             contains = true;
                         }
                     }
                 }
-                if(contains)
-                {
+                if (contains) {
                     super.sendNotification(task);
                 }
             }
-        }
-        else
+        } else
             super.sendNotification(task);
     }
-    protected void sendToAssignee(WorkflowTask task, Set<String> authorities)
-    {
+
+    protected void sendToAssignee(WorkflowTask task, Set<String> authorities) {
         String username = (String) task.getProperties().get(ContentModel.PROP_OWNER);
-        if (username != null && !"".equals(username)) {
+        if (StringUtils.isNoneBlank(username)) {
+            log.debug("Add assignee: {}", username);
             authorities.add(username);
         }
     }
 
     protected void sendToInitiator(WorkflowTask task, Set<String> authorities) {
-        if (task.getPath() != null && task.getPath().getInstance() != null && task.getPath().getInstance().getInitiator() != null) {
+        if (task.getPath() != null && task.getPath().getInstance() != null && task.getPath().getInstance()
+            .getInitiator() != null) {
             NodeRef initiator = task.getPath().getInstance().getInitiator();
-            String initiatorName = (String) nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
-            authorities.add(initiatorName);
+            String initiator_name = (String) nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
+            log.debug("Add initiator: {}", initiator_name);
+            authorities.add(initiator_name);
         }
     }
 
@@ -287,8 +248,9 @@ class TaskNotificationSender extends AbstractNotificationSender<WorkflowTask> {
                         for (AssociationRef assoc : assocs) {
                             NodeRef ref = assoc.getTargetRef();
                             if (nodeService.exists(ref)) {
-                                String subName = (String) nodeService.getProperty(ref, ContentModel.PROP_USERNAME);
-                                authorities.add(subName);
+                                String sub_name = (String) nodeService.getProperty(ref, ContentModel.PROP_USERNAME);
+                                log.debug("Add subscriber: {}", sub_name);
+                                authorities.add(sub_name);
                             }
                         }
                     }
@@ -296,16 +258,55 @@ class TaskNotificationSender extends AbstractNotificationSender<WorkflowTask> {
             }
         }
     }
-    protected void sendToOwner(Set<String> authorities, NodeRef node)
-    {
+
+    protected void sendToOwner(Set<String> authorities, NodeRef node) {
         String owner = nodeOwnerDAO.getOwner(node);
-        if (owner != null && !"".equals(owner)) {
+        if (StringUtils.isNoneBlank(owner)) {
+            log.debug("Add owner: {}", owner);
             authorities.add(owner);
         }
     }
 
     public void setNodeOwnerDAO(NodeOwnerDAO nodeOwnerDAO) {
         this.nodeOwnerDAO = nodeOwnerDAO;
+    }
+
+    @Override
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        super.setServiceRegistry(serviceRegistry);
+        this.qNameConverter = new WorkflowQNameConverter(namespaceService);
+    }
+
+    /**
+     * Include initiator of process to recipients
+     */
+    public void setSendToOwner(Boolean sendToOwner) {
+        this.sendToOwner = sendToOwner.booleanValue();
+    }
+
+    /**
+     * Include initiator of process to recipients
+     */
+    public void setSendToInitiator(Boolean sendToInitiator) {
+        this.sendToInitiator = sendToInitiator.booleanValue();
+    }
+
+    /**
+     * Flag for document mandatory notifications
+     *
+     * @param docMandatory map of values
+     */
+    public void setDocMandatory(Map<String, Boolean> docMandatory) {
+        this.docMandatory = docMandatory;
+    }
+
+    /**
+     * List of document's types for notifications
+     *
+     * @param allowDocList list of values
+     */
+    public void setAllowDocList(List<String> allowDocList) {
+        this.allowDocList = allowDocList;
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2020 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -31,12 +31,12 @@ import org.alfresco.service.cmr.notification.NotificationContext;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
-import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.transaction.TransactionService;
 import org.alfresco.util.transaction.TransactionListenerAdapter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.DmsModel;
@@ -467,7 +467,7 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
         }
         String additionRecipientsStr = (String) nodeService.getProperty(template,
                 qNameConverter.mapNameToQName("dms_additionRecipients"));
-        if (additionRecipientsStr != null && !"".equals(additionRecipientsStr)) {
+        if (StringUtils.isNoneBlank(additionRecipientsStr)) {
             String[] additionRecipientsArr = additionRecipientsStr.split(",");
             ArrayList<String> additionRecipients = new ArrayList<>(Arrays.asList(additionRecipientsArr));
 
