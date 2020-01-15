@@ -6,19 +6,19 @@
     "associations": [
         {
             "id": "payments:basis",
-            "name": "Invoices",
+            "name": "Счета",
             "direction": "SOURCE",
             "target": "model/type$base"
         },
         {
             "id": "contracts:mainAgreement",
-            "name": "Relationship to the contract",
+            "name": "Связь с договором",
             "direction": "SOURCE",
             "target": "model/type$base"
         },
         {
             "id": "contracts:closingDocumentAgreement",
-            "name": "Accounting Documents",
+            "name": "Учетные документы",
             "direction": "SOURCE",
             "target": "model/type$base"
         }

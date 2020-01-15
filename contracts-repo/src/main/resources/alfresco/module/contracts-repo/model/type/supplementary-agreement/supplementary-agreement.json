@@ -5,12 +5,6 @@
     "inheritActions": true,
     "associations": [
         {
-            "id": "payments:basis",
-            "name": "Invoices",
-            "direction": "SOURCE",
-            "target": "model/type$base"
-        },
-        {
             "id": "contracts:mainAgreement",
             "name": "Relationship to the contract",
             "direction": "TARGET",

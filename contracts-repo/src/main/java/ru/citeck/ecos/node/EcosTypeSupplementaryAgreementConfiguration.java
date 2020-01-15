@@ -14,14 +14,13 @@ import java.io.Serializable;
 import java.util.Map;
 
 @Configuration
-@Slf4j
 public class EcosTypeSupplementaryAgreementConfiguration {
 
     @Autowired
     private EcosTypeService ecosTypeService;
 
     private final static String SLASH_DELIMITER = "/";
-    private final static String SUPPLEMENTARY_AGREEMENT_PREFIX = "supplementary-agreement";
+    private final static String SUPPLEMENTARY_AGREEMENT_TYPE = "supplementary-agreement";
 
     @PostConstruct
     public void init() {
@@ -34,11 +33,10 @@ public class EcosTypeSupplementaryAgreementConfiguration {
 
         NodeRef kind = (NodeRef) props.get(ClassificationModel.PROP_DOCUMENT_KIND);
         if (kind == null) {
-            log.warn("Evaluation to supplementary agreement type receive 'null' in kind property");
-            return null;
+            return RecordRef.create("emodel", "type", SUPPLEMENTARY_AGREEMENT_TYPE);
         }
 
-        String ecosType = SUPPLEMENTARY_AGREEMENT_PREFIX + SLASH_DELIMITER + kind.getId();
+        String ecosType = SUPPLEMENTARY_AGREEMENT_TYPE + SLASH_DELIMITER + kind.getId();
 
         return RecordRef.create("emodel", "type", ecosType);
     }

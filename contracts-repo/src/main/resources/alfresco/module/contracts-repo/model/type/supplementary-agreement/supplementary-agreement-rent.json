@@ -1,6 +1,6 @@
 {
     "id": "supplementary-agreement/contracts-cat-contract-rent",
     "name": "Договор аренды",
-    "parent": "model/type$contracts-cat-doctype-contract",
+    "parent": "model/type$supplementary-agreement",
     "inheritActions": true
 }

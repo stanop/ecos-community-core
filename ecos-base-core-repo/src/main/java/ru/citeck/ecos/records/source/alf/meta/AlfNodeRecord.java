@@ -68,9 +68,6 @@ public class AlfNodeRecord implements MetaValue {
     private NodeRef nodeRef;
     private RecordRef recordRef;
     private GqlAlfNode node;
-
-    // it is too bad that dto aware about context
-    // TODO: rework all business logic based on this
     private AlfGqlContext context;
 
     @Getter(lazy = true)
