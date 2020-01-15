@@ -89,5 +89,5 @@
         <property name="name" value="ecos-base-core.module-component.MoveConfigsToRoot"/>
         <property name="description" value="ecos-base-core.module-component.MoveConfigsToRoot"/>
     </bean>
-
+    
 </beans>
