@@ -343,7 +343,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         }
     }
 
-    private void handleContentAttribute(ObjectNode attributes) {
+    private void handleContentAttribute(ObjectNode attributes, Map<QName, Serializable> props) {
 
         JsonNode attributeFieldValue = attributes.path(CONTENT_ATTRIBUTE_NAME);
         if (!attributeFieldValue.isNull() && !attributeFieldValue.isMissingNode()) {
