@@ -313,7 +313,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         return resultRecord;
     }
 
-    private void handleContentAttribute(ObjectNode attributes, Map<QName) {
+    private void handleContentAttribute(ObjectNode attributes) {
 
         JsonNode attributeFieldValue = attributes.path(CONTENT_ATTRIBUTE_NAME);
         if (!attributeFieldValue.isNull()) {
