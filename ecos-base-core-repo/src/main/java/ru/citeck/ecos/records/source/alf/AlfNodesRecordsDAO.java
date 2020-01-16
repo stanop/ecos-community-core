@@ -52,17 +52,19 @@ import java.util.stream.StreamSupport;
 
 @Component
 public class AlfNodesRecordsDAO extends LocalRecordsDAO
-                                implements RecordsQueryDAO,
-                                           RecordsMetaLocalDAO<MetaValue>,
-                                           RecordsQueryWithMetaLocalDAO<Object>,
-                                           MutableRecordsDAO,
-                                           RecordsActionExecutor {
+    implements RecordsQueryDAO,
+    RecordsMetaLocalDAO<MetaValue>,
+    RecordsQueryWithMetaLocalDAO<Object>,
+    MutableRecordsDAO,
+    RecordsActionExecutor {
 
     private static final Log logger = LogFactory.getLog(AlfNodesRecordsDAO.class);
 
     public static final String ID = "";
     public static final String ADD_CMD_PREFIX = "att_add_";
     public static final String REMOVE_CMD_PREFIX = "att_rem_";
+    private static final String CONTENT_ATTRIBUTE_NAME = "_content";
+    private static final String CM_CONTENT_ATTRIBUTE_NAME = "cm:content";
 
     private Map<String, AlfNodesSearch> searchByLanguage = new ConcurrentHashMap<>();
 
@@ -148,6 +150,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             }
         });
 
+        handleContentAttribute(attributes);
+
         Iterator<String> names = attributes.fieldNames();
         while (names.hasNext()) {
 
@@ -185,8 +189,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
             if (ecosPermissionService.isAttributeProtected(nodeRef, name)) {
                 logger.warn("You can't change '" + name +
-                        "' attribute of '" + nodeRef +
-                        "' because it is protected! Value: " + fieldRawValue);
+                    "' attribute of '" + nodeRef +
+                    "' because it is protected! Value: " + fieldRawValue);
                 continue;
             }
 
@@ -202,7 +206,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 QName typeName = propDef.getDataType().getName();
                 if (addOrRemoveCmd != null) {
                     logger.warn("Attribute action " + addOrRemoveCmd + " is not supported for node properties." +
-                            " Atttribute: " + name);
+                        " Atttribute: " + name);
                     continue;
                 }
 
@@ -214,8 +218,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                         Serializable converted = convertValue(fieldValue);
 
                         if (!DataTypeDefinition.TEXT.equals(typeName)
-                                && converted instanceof String
-                                && ((String) converted).isEmpty()) {
+                            && converted instanceof String
+                            && ((String) converted).isEmpty()) {
                             converted = null;
                         }
                         props.put(fieldName, converted);
@@ -228,7 +232,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                     if (contentFileHelper.isFileFromEformFormat(fieldValue)) {
                         if (addOrRemoveCmd != null) {
                             logger.warn("Attribute action " + addOrRemoveCmd + " is not supported for fileFromEformFormat." +
-                                    " Atttribute: " + name);
+                                " Atttribute: " + name);
                             continue;
                         }
                         if (assocDef instanceof ChildAssociationDefinition) {
@@ -242,13 +246,13 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                             refsStream = Arrays.stream(fieldValue.asText().split(","));
                         } else if (fieldValue.isArray()) {
                             refsStream = StreamSupport.stream(fieldValue.spliterator(), false)
-                                    .map(JsonNode::asText);
+                                .map(JsonNode::asText);
                         }
                         if (refsStream != null) {
                             Set<NodeRef> targetRefs = refsStream
-                                    .filter(NodeRef::isNodeRef)
-                                    .map(NodeRef::new)
-                                    .collect(Collectors.toSet());
+                                .filter(NodeRef::isNodeRef)
+                                .map(NodeRef::new)
+                                .collect(Collectors.toSet());
 
                             if (!targetRefs.isEmpty() && addOrRemoveCmd != null) {
                                 Set<NodeRef> existedAssocTargets = assocs.get(fieldName);
@@ -303,10 +307,19 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         contentProps.forEach((name, value) -> contentFileHelper.processPropFileContent(finalNodeRef, name, value));
         assocs.forEach((name, value) -> nodeUtils.setAssocs(finalNodeRef, value, name, true));
         childAssocEformFiles.forEach((qName, jsonNodes) -> contentFileHelper.processAssocFilesContent(
-                qName, jsonNodes, finalNodeRef, true));
+            qName, jsonNodes, finalNodeRef, true));
         attachmentAssocEformFiles.forEach((qName, jsonNodes) -> contentFileHelper.processAssocFilesContent(
-                qName, jsonNodes, finalNodeRef, false));
+            qName, jsonNodes, finalNodeRef, false));
         return resultRecord;
+    }
+
+    private void handleContentAttribute(ObjectNode attributes) {
+
+        JsonNode attributeFieldValue = attributes.path(CONTENT_ATTRIBUTE_NAME);
+        if (!attributeFieldValue.isNull() && !attributeFieldValue.isMissingNode()) {
+            attributes.remove(CONTENT_ATTRIBUTE_NAME);
+            attributes.set(CM_CONTENT_ATTRIBUTE_NAME, attributeFieldValue);
+        }
     }
 
     private String extractActualAttName(String name) {
@@ -391,7 +404,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
         NodeRef root = nodeService.getRootNode(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
         List<NodeRef> results = searchService.selectNodes(root, path, null,
-                                                          namespaceService, false);
+            namespaceService, false);
         if (results.isEmpty()) {
             throw new IllegalArgumentException("Node not found by path: " + path);
         }
@@ -442,7 +455,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
                 if (afterIdType == null) {
                     throw new IllegalArgumentException("Page parameter afterId is not supported " +
-                                                       "by language " + query.getLanguage() + ". query: " + query);
+                        "by language " + query.getLanguage() + ". query: " + query);
                 }
                 switch (afterIdType) {
                     case DB_ID:
@@ -465,7 +478,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         }
         if (logger.isDebugEnabled()) {
             logger.debug("Query records with query: " + query +
-                         " afterIdValue: " + afterIdValue + " afterCreated: " + afterCreated);
+                " afterIdValue: " + afterIdValue + " afterCreated: " + afterCreated);
         }
         return alfNodesSearch.queryRecords(query, afterIdValue, afterCreated);
     }
@@ -478,8 +491,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     @Override
     public List<MetaValue> getMetaValues(List<RecordRef> recordRef) {
         return recordRef.stream()
-                        .map(this::createMetaValue)
-                        .collect(Collectors.toList());
+            .map(this::createMetaValue)
+            .collect(Collectors.toList());
     }
 
     private MetaValue createMetaValue(RecordRef recordRef) {

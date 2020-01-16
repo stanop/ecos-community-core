@@ -58,7 +58,9 @@ public class AlfNodeRecord implements MetaValue {
     public static final String ATTR_CASE_STATUS = "caseStatus";
 
     private static final String CASE_STATUS_NAME_SCHEMA = "icase:caseStatusAssoc.cm:name";
-    public static final String ASSOC_SRC_ATTR_PREFIX = "assoc_src_";
+    private static final String ASSOC_SRC_ATTR_PREFIX = "assoc_src_";
+    private static final String CONTENT_ATTRIBUTE_NAME = "_content";
+    private static final String CM_CONTENT_ATTRIBUTE_NAME = "cm:content";
 
     private NodeRef nodeRef;
     private RecordRef recordRef;
@@ -137,6 +139,10 @@ public class AlfNodeRecord implements MetaValue {
         }
 
         List<? extends MetaValue> attribute = null;
+
+        if (StringUtils.equals(name, CONTENT_ATTRIBUTE_NAME)) {
+            name = CM_CONTENT_ATTRIBUTE_NAME;
+        }
 
         switch (name) {
 
