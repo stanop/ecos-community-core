@@ -42,24 +42,24 @@ import java.util.*;
  * - subject line: default
  * - template: retrieved by key = process-definition
  * - template args:
- * {
- * "task": {
- * "id": "task id",
- * "name": "task name",
- * "description": "task description",
- * "properties": {
- * "property1": value1,
- * ...
- * }
- * },
- * "workflow": {
- * "id": "workflow id",
- * "documents": [
- * "nodeRef1",
- * ...
- * ]
- * }
- * }
+ *   {
+ *     "task": {
+ *       "id": "task id",
+ *       "name": "task name",
+ *       "description": "task description",
+ *       "properties": {
+ *         "property1": value1,
+ *         ...
+ *       }
+ *     },
+ *     "workflow": {
+ *       "id": "workflow id",
+ *       "documents": [
+ *         "nodeRef1",
+ *         ...
+ *       ]
+ *     }
+ *   }
  * - notification recipients - assignee or pooled actors, whichever present
  *
  * @author Sergey Tiunov
