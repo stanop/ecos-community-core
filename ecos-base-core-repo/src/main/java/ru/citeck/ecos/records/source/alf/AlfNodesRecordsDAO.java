@@ -316,7 +316,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     private void handleContentAttribute(ObjectNode attributes) {
 
         JsonNode attributeFieldValue = attributes.path(CONTENT_ATTRIBUTE_NAME);
-        if (!attributeFieldValue.isNull()) {
+        if (!attributeFieldValue.isNull() && !attributeFieldValue.isMissingNode()) {
             attributes.remove(CONTENT_ATTRIBUTE_NAME);
             attributes.set(CM_CONTENT_ATTRIBUTE_NAME, attributeFieldValue);
         }
