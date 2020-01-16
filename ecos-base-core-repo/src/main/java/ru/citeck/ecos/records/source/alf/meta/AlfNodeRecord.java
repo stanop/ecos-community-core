@@ -2,6 +2,7 @@ package ru.citeck.ecos.records.source.alf.meta;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
+import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.MLPropertyInterceptor;
 import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -150,16 +151,16 @@ public class AlfNodeRecord implements MetaValue {
 
         if (StringUtils.equals(ATTR_MODIFIED, name)) {
             name = ATTR_CM_MODIFIED;
-        } else if (StringUtils.equals(ATTR_MODIFIER, name)) {
-            name = ATTR_CM_MODIFIER;
         }
 
         switch (name) {
 
-            case ATTR_CM_MODIFIER: {
-                NodeRef nodeRef = getNodeRefFromProp(ATTR_CM_MODIFIER);
-                if (nodeRef != null) {
-                    RecordRef recordRef = RecordRef.create(PEOPLE_SOURCE_ID, nodeRef.getId());
+            case ATTR_MODIFIER: {
+                NodeRef nodeRef = new NodeRef(node.nodeRef());
+                String propertyValue = (String) context.getNodeService().getProperty(nodeRef,
+                    ContentModel.PROP_MODIFIER);
+                if (propertyValue != null) {
+                    RecordRef recordRef = RecordRef.create(PEOPLE_SOURCE_ID, propertyValue);
                     MetaValue metaValue = new AlfNodeRecord(recordRef);
                     return Collections.singletonList(metaValue);
                 }
