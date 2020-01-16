@@ -319,22 +319,24 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     private void handleETypeAttribute(ObjectNode attributes, Map<QName, Serializable> props) {
 
         JsonNode attributeFieldValue = attributes.path(ETYPE_ATTRIBUTE_NAME);
-        if (!attributeFieldValue.isNull()) {
+        if (!attributeFieldValue.isNull() && !attributeFieldValue.isMissingNode()) {
 
             String attrValue = attributeFieldValue.asText();
-            String typeId = RecordRef.valueOf(attrValue).getId();
+            if (!StringUtils.isBlank(attrValue)) {
 
-            int slashIndex = typeId.indexOf(SLASH_DELIMITER);
-            if (slashIndex != -1) {
+                String typeId = RecordRef.valueOf(attrValue).getId();
+                int slashIndex = typeId.indexOf(SLASH_DELIMITER);
+                if (slashIndex != -1) {
 
-                String firstPartOfTypeId = typeId.substring(0, slashIndex);
-                props.put(PROP_DOCUMENT_TYPE, WORKSPACE_PREFIX + firstPartOfTypeId);
+                    String firstPartOfTypeId = typeId.substring(0, slashIndex);
+                    props.put(PROP_DOCUMENT_TYPE, WORKSPACE_PREFIX + firstPartOfTypeId);
 
-                String secondPartOfRecordId = typeId.substring(slashIndex + 1);
-                props.put(PROP_DOCUMENT_KIND, WORKSPACE_PREFIX + secondPartOfRecordId);
+                    String secondPartOfRecordId = typeId.substring(slashIndex + 1);
+                    props.put(PROP_DOCUMENT_KIND, WORKSPACE_PREFIX + secondPartOfRecordId);
 
-            } else {
-                props.put(PROP_DOCUMENT_TYPE, WORKSPACE_PREFIX + typeId);
+                } else {
+                    props.put(PROP_DOCUMENT_TYPE, WORKSPACE_PREFIX + typeId);
+                }
             }
 
             attributes.remove(ETYPE_ATTRIBUTE_NAME);
