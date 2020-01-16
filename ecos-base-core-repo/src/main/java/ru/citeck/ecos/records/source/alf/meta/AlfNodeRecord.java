@@ -166,9 +166,10 @@ public class AlfNodeRecord implements MetaValue {
             case ATTR_ETYPE:
                 MetaValue metaValue = this.getMetaValueForEcosType(field);
                 if (metaValue == null) {
-                    return Collections.emptyList();
+                    attribute = null;
+                } else {
+                    attribute = Collections.singletonList(metaValue);
                 }
-                attribute = Collections.singletonList(metaValue);
                 break;
 
             case RecordConstants.ATT_TYPE:
