@@ -156,7 +156,7 @@ public class AlfNodeRecord implements MetaValue {
 
         switch (name) {
 
-            case ATTR_CM_MODIFIER:
+            case ATTR_CM_MODIFIER: {
                 NodeRef nodeRef = getNodeRefFromProp(ATTR_CM_MODIFIER);
                 if (nodeRef != null) {
                     RecordRef recordRef = RecordRef.create(PEOPLE_SOURCE_ID, nodeRef.getId());
@@ -164,6 +164,7 @@ public class AlfNodeRecord implements MetaValue {
                     return Collections.singletonList(metaValue);
                 }
                 return null;
+            }
 
             case ATTR_ETYPE:
 

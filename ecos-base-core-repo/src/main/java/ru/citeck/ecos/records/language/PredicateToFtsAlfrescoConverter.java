@@ -155,13 +155,15 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                     break;
 
                 case MODIFIER_ATTRIBUTE:
-                    ((ValuePredicate) predicate).setAttribute(CM_MODIFIER_ATTRIBUTE);
-                    processPredicate(predicate, query);
+                    ValuePredicate predCopyForModifierAttr = valuePred.copy();
+                    predCopyForModifierAttr.setAttribute(CM_MODIFIER_ATTRIBUTE);
+                    processPredicate(predCopyForModifierAttr, query);
                     break;
 
                 case MODIFIED_ATTRIBUTE:
-                    ((ValuePredicate) predicate).setAttribute(CM_MODIFIED_ATTRIBUTE);
-                    processPredicate(predicate, query);
+                    ValuePredicate predCopyForModifiedAttr = valuePred.copy();
+                    predCopyForModifiedAttr.setAttribute(CM_MODIFIED_ATTRIBUTE);
+                    processPredicate(predCopyForModifiedAttr, query);
                     break;
 
                 default:
@@ -455,7 +457,7 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
             Instant timeInstant = Instant.parse(time);
             return DateTimeFormatter.ISO_ZONED_DATE_TIME.format(timeInstant.atZone(offset));
         } catch (Exception e) {
-            log.error(e);
+            log.error("Cannot parse time", e);
             return time;
         }
     }
