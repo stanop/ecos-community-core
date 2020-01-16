@@ -50,16 +50,16 @@ public class AlfNodeRecord implements MetaValue {
     private static final String VIRTUAL_SCRIPT_ATTS_ID = "virtualScriptAttributesProvider";
     private static final String DEFAULT_VERSION_LABEL = "1.0";
 
-    public static final String ATTR_ASPECTS = "attr:aspects";
-    public static final String ATTR_IS_DOCUMENT = "attr:isDocument";
-    public static final String ATTR_IS_CONTAINER = "attr:isContainer";
-    public static final String ATTR_PARENT = "attr:parent";
-    public static final String ATTR_PERMISSIONS = "permissions";
-    public static final String ATTR_PENDING_UPDATE = "pendingUpdate";
-    public static final String ATTR_VERSION = "version";
     public static final String ATTR_DOC_SUM = "docSum";
-    public static final String ATTR_CASE_STATUS = "caseStatus";
-
+    private static final String ATTR_ASPECTS = "attr:aspects";
+    private static final String ATTR_IS_DOCUMENT = "attr:isDocument";
+    private static final String ATTR_IS_CONTAINER = "attr:isContainer";
+    private static final String ATTR_PARENT = "attr:parent";
+    private static final String ATTR_PERMISSIONS = "permissions";
+    private static final String ATTR_PENDING_UPDATE = "pendingUpdate";
+    private static final String ATTR_VERSION = "version";
+    private static final String ATTR_CASE_STATUS = "caseStatus";
+    private static final String ATTR_ETYPE = "_etype";
     private static final String CASE_STATUS_NAME_SCHEMA = "icase:caseStatusAssoc.cm:name";
     private static final String ASSOC_SRC_ATTR_PREFIX = "assoc_src_";
     private static final String CONTENT_ATTRIBUTE_NAME = "_content";
@@ -138,6 +138,9 @@ public class AlfNodeRecord implements MetaValue {
         NodeRef nodeRef = new NodeRef(node.nodeRef());
         EcosTypeService ecosTypeService = context.getService(EcosTypeService.QNAME);
         RecordRef etypeRecordRef = ecosTypeService.getEcosType(nodeRef);
+        if (etypeRecordRef == null) {
+            return null;
+        }
         MetaValue metaValue = context.getServiceFactory()
             .getMetaValuesConverter()
             .toMetaValue(etypeRecordRef);
@@ -160,8 +163,11 @@ public class AlfNodeRecord implements MetaValue {
 
         switch (name) {
 
-            case "_etype":
+            case ATTR_ETYPE:
                 MetaValue metaValue = this.getMetaValueForEcosType(field);
+                if (metaValue == null) {
+                    return Collections.emptyList();
+                }
                 attribute = Collections.singletonList(metaValue);
                 break;
 
