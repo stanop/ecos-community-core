@@ -30,7 +30,6 @@ public class EcosTypeConfiguration {
         NodeRef type = (NodeRef) props.get(ClassificationModel.PROP_DOCUMENT_TYPE);
 
         if (type == null) {
-            log.warn("Type property of nodeRef is null");
             return null;
         }
 
