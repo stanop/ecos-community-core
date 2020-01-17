@@ -26,15 +26,6 @@ timestamps {
           sh "mvn clean deploy -Penterprise -DskipTests=true"
         }
       }
-      stage('Building an ecos docker image') {
-        build job: 'build_ecos_image', parameters: [
-          string(name: 'DOCKER_BUILD_DIR', value: '/docker/centos/ecos'), 
-          string(name: 'ECOS', value: 'community'), 
-          string(name: 'ECOS_VERSION', value: "${project_version}"), 
-          string(name: 'ECOS_CLASSIFIER', value: '5.1.f-com'), 
-          string(name: 'FLOWABLE_VERSION', value: '1.5.0')
-        ]
-      }
     }
     catch (Exception e) {
       currentBuild.result = 'FAILURE'
