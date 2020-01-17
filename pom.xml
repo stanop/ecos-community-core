@@ -538,13 +538,6 @@
                 <scope>provided</scope>
             </dependency>
 
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>ecos-order-pass-repo</artifactId>
-                <version>${project.parent.version}</version>
-                <scope>provided</scope>
-            </dependency>
-
             <!-- flowable -->
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -869,42 +862,6 @@
 
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
-                            <artifactId>contracts-repo</artifactId>
-                            <version>${project.version}</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-                        <moduleDependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>letters-repo</artifactId>
-                            <version>${project.version}</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-                        <moduleDependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>ecos-order-pass-repo</artifactId>
-                            <version>${project.version}</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-
-                        <moduleDependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>meetings-repo</artifactId>
-                            <version>${project.version}</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-                        <moduleDependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>orders-repo</artifactId>
-                            <version>${project.version}</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-                        <moduleDependency>
-                            <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-flowable-repo</artifactId>
                             <version>${project.version}</version>
                             <type>amp</type>
@@ -984,34 +941,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>idocs-share</artifactId>
-                            <version>${project.version}</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-                        <moduleDependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>contracts-share</artifactId>
-                            <version>${project.version}</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-                        <moduleDependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>letters-share</artifactId>
-                            <version>${project.version}</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-                        <moduleDependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>meetings-share</artifactId>
-                            <version>${project.version}</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-                        <moduleDependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>orders-share</artifactId>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -1113,21 +1042,10 @@
         <module>1st-override-share</module>
         <module>ecos-base-core-repo</module>
         <module>ecos-base-core-share</module>
-        <module>journals-repo</module>
-        <module>journals-share</module>
         <module>ecos-forms-repo</module>
         <module>ecos-forms-share</module>
         <module>idocs-repo</module>
         <module>idocs-share</module>
-        <module>contracts-repo</module>
-        <module>contracts-share</module>
-        <module>letters-repo</module>
-        <module>letters-share</module>
-        <module>meetings-repo</module>
-        <module>meetings-share</module>
-        <module>orders-repo</module>
-        <module>orders-share</module>
-        <module>ecos-order-pass-repo</module>
         <module>ecos-flowable-repo</module>
         <module>ecos-flowable-share</module>
         <module>ecos-eform-repo</module>

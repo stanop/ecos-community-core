@@ -24,7 +24,6 @@ timestamps {
       stage('Assembling and publishing project artifacts') {
         withMaven(mavenLocalRepo: '/opt/jenkins/.m2/repository', tempBinDir: '') {
           sh "mvn clean deploy -Penterprise -DskipTests=true"
-          sh "cd war-solution/ && mvn clean deploy -Pjavamelody -DskipTests=true"
         }
       }
       stage('Building an ecos docker image') {
