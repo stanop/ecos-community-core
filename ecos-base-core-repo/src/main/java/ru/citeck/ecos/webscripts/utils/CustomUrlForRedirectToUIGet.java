@@ -35,10 +35,9 @@ public class CustomUrlForRedirectToUIGet extends AbstractWebScript {
 
         String username = authenticationService.getCurrentUserName();
         boolean isNewUIRedirectEnabled = String.valueOf(objValue).equals(Boolean.TRUE.toString());
-        boolean userContainsInGroups = checkUserInGroupsFromConfig(username);
 
         String url;
-        if (isNewUIRedirectEnabled || userContainsInGroups) {
+        if (isNewUIRedirectEnabled || checkUserInGroupsFromConfig(username)) {
             url = V2_DASHBOARD_URL;
         } else {
             url = SHARE_PAGE_URL;
