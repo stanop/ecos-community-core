@@ -1,0 +1,9 @@
+<webscript>
+    <shortname>custom-url-for-redirect-to-ui</shortname>
+    <description>Get ui url for correct redirect</description>
+    <url>/citeck/ecos/custom-url-for-redirect-to-ui</url>
+    <authentication>user</authentication>
+    <format default="json" />
+    <transaction allow="readonly">required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>
