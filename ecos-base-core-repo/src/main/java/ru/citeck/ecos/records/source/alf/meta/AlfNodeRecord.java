@@ -2,6 +2,7 @@ package ru.citeck.ecos.records.source.alf.meta;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
+import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.MLPropertyInterceptor;
 import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -44,23 +45,27 @@ import java.util.stream.Collectors;
 
 public class AlfNodeRecord implements MetaValue {
 
-    private static final String VIRTUAL_SCRIPT_ATTS_ID = "virtualScriptAttributesProvider";
-    private static final String DEFAULT_VERSION_LABEL = "1.0";
-
-    public static final String ATTR_ASPECTS = "attr:aspects";
-    public static final String ATTR_IS_DOCUMENT = "attr:isDocument";
-    public static final String ATTR_IS_CONTAINER = "attr:isContainer";
-    public static final String ATTR_PARENT = "attr:parent";
-    public static final String ATTR_PERMISSIONS = "permissions";
-    public static final String ATTR_PENDING_UPDATE = "pendingUpdate";
-    public static final String ATTR_VERSION = "version";
     public static final String ATTR_DOC_SUM = "docSum";
-    public static final String ATTR_CASE_STATUS = "caseStatus";
-
+    private static final String ATTR_ASPECTS = "attr:aspects";
+    private static final String ATTR_IS_DOCUMENT = "attr:isDocument";
+    private static final String ATTR_IS_CONTAINER = "attr:isContainer";
+    private static final String ATTR_PARENT = "attr:parent";
+    private static final String ATTR_PERMISSIONS = "permissions";
+    private static final String ATTR_PENDING_UPDATE = "pendingUpdate";
+    private static final String ATTR_VERSION = "version";
+    private static final String ATTR_CASE_STATUS = "caseStatus";
+    private static final String ATTR_MODIFIER = "_modifier";
+    private static final String ATTR_MODIFIED = "_modified";
+    private static final String ATTR_CM_MODIFIED = "cm:modified";
+    private static final String ATTR_CM_MODIFIER = "cm:modifier";
     private static final String CASE_STATUS_NAME_SCHEMA = "icase:caseStatusAssoc.cm:name";
     private static final String ASSOC_SRC_ATTR_PREFIX = "assoc_src_";
     private static final String CONTENT_ATTRIBUTE_NAME = "_content";
     private static final String CM_CONTENT_ATTRIBUTE_NAME = "cm:content";
+    private static final String PEOPLE_SOURCE_ID = "people";
+    private static final String ATTR_ETYPE = "_etype";
+    private static final String VIRTUAL_SCRIPT_ATTS_ID = "virtualScriptAttributesProvider";
+    private static final String DEFAULT_VERSION_LABEL = "1.0";
 
     private NodeRef nodeRef;
     private RecordRef recordRef;
@@ -144,9 +149,25 @@ public class AlfNodeRecord implements MetaValue {
             name = CM_CONTENT_ATTRIBUTE_NAME;
         }
 
+        if (StringUtils.equals(ATTR_MODIFIED, name)) {
+            name = ATTR_CM_MODIFIED;
+        }
+
         switch (name) {
 
-            case "_etype":
+            case ATTR_MODIFIER: {
+                NodeRef nodeRef = new NodeRef(node.nodeRef());
+                String propertyValue = (String) context.getNodeService().getProperty(nodeRef,
+                    ContentModel.PROP_MODIFIER);
+                if (propertyValue != null) {
+                    RecordRef recordRef = RecordRef.create(PEOPLE_SOURCE_ID, propertyValue);
+                    MetaValue metaValue = toMetaValue(recordRef, field);
+                    return Collections.singletonList(metaValue);
+                }
+                return null;
+            }
+
+            case ATTR_ETYPE:
 
                 NodeRef type = getNodeRefFromProp("tk:type");
 
@@ -427,6 +448,14 @@ public class AlfNodeRecord implements MetaValue {
         }
         metaValue.init(context, field);
         return metaValue;
+    }
+
+    private MetaValue toMetaValue(RecordRef recordRef, MetaField field) {
+        MetaValue value = context.getServiceFactory()
+            .getMetaValuesConverter()
+            .toMetaValue(recordRef);
+        value.init(context, field);
+        return value;
     }
 
     public class Permissions implements MetaValue {

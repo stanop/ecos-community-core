@@ -2,6 +2,7 @@ package ru.citeck.ecos.records.language;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.*;
@@ -10,8 +11,6 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.predicate.PredicateService;
@@ -42,13 +41,17 @@ import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.CONTAINS;
 import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.EQ;
 
 @Component
+@Slf4j
 public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
-    private static final Log logger = LogFactory.getLog(PredicateToFtsAlfrescoConverter.class);
     private static final String COMMA_DELIMITER = ",";
     private static final String SLASH_DELIMITER = "/";
     private static final String WORKSPACE_PREFIX = "workspace://SpacesStore/";
     private static final int INNER_QUERY_MAX_ITEMS = 20;
+    private static final String MODIFIER_ATTRIBUTE = "_modifier";
+    private static final String MODIFIED_ATTRIBUTE = "_modified";
+    private static final String CM_MODIFIED_ATTRIBUTE = "cm:modified";
+    private static final String CM_MODIFIER_ATTRIBUTE = "cm:modifier";
 
     private final DictUtils dictUtils;
     private final SearchService searchService;
@@ -71,8 +74,8 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
         this.associationIndexPropertyRegistry = associationIndexPropertyRegistry;
 
         queryLangService.register(this,
-                PredicateService.LANGUAGE_PREDICATE,
-                SearchService.LANGUAGE_FTS_ALFRESCO);
+            PredicateService.LANGUAGE_PREDICATE,
+            SearchService.LANGUAGE_FTS_ALFRESCO);
     }
 
     private void processPredicate(Predicate predicate, FTSQuery query) {
@@ -150,6 +153,19 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                     consumeQueryField(valueStr, query::isUnset);
 
                     break;
+
+                case MODIFIER_ATTRIBUTE:
+                    ValuePredicate predCopyForModifierAttr = valuePred.copy();
+                    predCopyForModifierAttr.setAttribute(CM_MODIFIER_ATTRIBUTE);
+                    processPredicate(predCopyForModifierAttr, query);
+                    break;
+
+                case MODIFIED_ATTRIBUTE:
+                    ValuePredicate predCopyForModifiedAttr = valuePred.copy();
+                    predCopyForModifiedAttr.setAttribute(CM_MODIFIED_ATTRIBUTE);
+                    processPredicate(predCopyForModifiedAttr, query);
+                    break;
+
                 default:
 
                     ClassAttributeDefinition attDef = dictUtils.getAttDefinition(attribute);
@@ -161,7 +177,7 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
                     // accepting multiple values by comma
                     if (valueStr.contains(COMMA_DELIMITER) &&
-                            (valuePred.getType().equals(EQ) || valuePred.getType().equals(CONTAINS))) {
+                        (valuePred.getType().equals(EQ) || valuePred.getType().equals(CONTAINS))) {
                         String[] values = valueStr.split(COMMA_DELIMITER);
                         ComposedPredicate orPredicate = new OrPredicate();
                         for (String s : values) {
@@ -198,7 +214,7 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                                     QName container = propertyDefinition.getContainerClass().getName();
 
                                     List<String> values = this.getPropertyValuesByConstraintsFromField(container,
-                                            field, valueStr);
+                                        field, valueStr);
                                     if (values.size() != 0) {
                                         query.any(field, new ArrayList<>(values));
                                     } else {
@@ -307,9 +323,9 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
         Map<String, String> mapping = dictUtils.getPropertyDisplayNameMappingWithChildren(container, field);
 
         return mapping.entrySet().stream()
-                .filter(e -> this.checkValueEqualsToKeyOrValue(e, inputValue))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
+            .filter(e -> this.checkValueEqualsToKeyOrValue(e, inputValue))
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toList());
     }
 
     private boolean checkValueEqualsToKeyOrValue(Map.Entry<String, String> entry, String inputValue) {
@@ -381,21 +397,21 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
         definitions.forEach(a -> props.putAll(a.getProperties()));
 
         return props.values().stream()
-                .filter(this::isTextOrMLText)
-                .flatMap(def -> {
-                    Map<QName, Serializable> attributes = new HashMap<>();
-                    attributes.put(def.getName(), assocVal);
-                    return attributes.entrySet().stream();
-                })
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            .filter(this::isTextOrMLText)
+            .flatMap(def -> {
+                Map<QName, Serializable> attributes = new HashMap<>();
+                attributes.put(def.getName(), assocVal);
+                return attributes.entrySet().stream();
+            })
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private boolean isTextOrMLText(PropertyDefinition def) {
         QName dataType = def.getDataType().getName();
         String ns = def.getName().getNamespaceURI();
         return (DataTypeDefinition.TEXT.equals(dataType) || DataTypeDefinition.MLTEXT.equals(dataType)) &&
-                !ns.equals(NamespaceService.SYSTEM_MODEL_1_0_URI) &&
-                !ns.equals(NamespaceService.CONTENT_MODEL_1_0_URI);
+            !ns.equals(NamespaceService.SYSTEM_MODEL_1_0_URI) &&
+            !ns.equals(NamespaceService.CONTENT_MODEL_1_0_URI);
     }
 
     private boolean isNodeRefAtt(ClassAttributeDefinition attDef) {
@@ -441,7 +457,7 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
             Instant timeInstant = Instant.parse(time);
             return DateTimeFormatter.ISO_ZONED_DATE_TIME.format(timeInstant.atZone(offset));
         } catch (Exception e) {
-            logger.error(e);
+            log.error("Cannot parse time", e);
             return time;
         }
     }
