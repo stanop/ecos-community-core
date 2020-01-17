@@ -1,17 +1,3 @@
-
-function isNewUiRedirectEnabled() {
-    var result = remote.call("/citeck/ecos/is-new-ui-redirect-enabled");
-
-    try {
-        if (result.status == 200 && result != "{}") {
-            return eval('(' + result + ')').enabled == "true";
-        }
-    } catch (e) {
-        //do nothing
-    }
-    return false;
-}
-
 /**
  * Login component controller GET method
  */
@@ -22,7 +8,7 @@ function main()
     model.edition = context.properties["editionInfo"].edition;
 
     model.loginUrl = url.context + "/page/dologin";
-    var successUrl = context.properties["alfRedirectUrl"];
+    var calculatedSuccessUrl, successUrl = context.properties["alfRedirectUrl"];
 
     if (successUrl === null)
     {
@@ -31,17 +17,17 @@ function main()
 
     successUrl = successUrl.replace("?error=true","");
     successUrl = successUrl.replace("&error=true","");
+    calculatedSuccessUrl = successUrl;
 
-    if ((successUrl == '/share/page'
-        || successUrl == '/share/page/'
-        || successUrl == '/share'
-        || successUrl == '/share/')
-        && isNewUiRedirectEnabled()) {
+    if (successUrl === '/share/page'
+        || successUrl === '/share/page/'
+        || successUrl === '/share'
+        || successUrl === '/share/') {
 
-        successUrl = "/v2/dashboard";
+        calculatedSuccessUrl = "/share/page/correct-redirect-to-ui";
     }
 
-    model.successUrl = successUrl;
+    model.successUrl = calculatedSuccessUrl;
     model.failureUrl = successUrl + (successUrl.indexOf("?") != -1 ? "&" : "?") + "error=true";
     model.lastUsername = context.properties["alfLastUsername"];
     model.errorDisplay = (args.errorDisplay !== null ? args.errorDisplay : "container");

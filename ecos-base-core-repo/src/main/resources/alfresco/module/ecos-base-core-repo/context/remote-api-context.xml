@@ -275,8 +275,8 @@
           parent="webscript">
     </bean>
 
-    <bean id="webscript.ru.citeck.ecos.is-new-ui-redirect-enabled.get"
-          class="ru.citeck.ecos.webscripts.utils.IsNewUIRedirectEnabledGet"
+    <bean id="webscript.ru.citeck.ecos.custom-url-for-redirect-to-ui.get"
+          class="ru.citeck.ecos.webscripts.utils.CustomUrlForRedirectToUIGet"
           parent="webscript">
     </bean>
 
