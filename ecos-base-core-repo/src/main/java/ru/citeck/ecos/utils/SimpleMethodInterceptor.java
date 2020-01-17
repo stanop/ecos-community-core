@@ -41,7 +41,7 @@ public class SimpleMethodInterceptor implements MethodInterceptor {
         Object[] args = invocation.getArguments();
         
         Method matchingMethod = this.getMatchingMethod(method, args);
-        if(matchingMethod != null) {
+        if (matchingMethod != null) {
             return matchingMethod.invoke(this, args);
         } else {
             return invocation.proceed();
@@ -50,21 +50,25 @@ public class SimpleMethodInterceptor implements MethodInterceptor {
     
     protected Method getMatchingMethod(Method method, Object[] args) {
         List<Method> overloadedMethods = getOverloadedMethods(method.getName());
-        if(overloadedMethods.size() == 0) return null;
+        if (overloadedMethods.isEmpty()) {
+            return null;
+        }
         List<Method> matchingMethods = ReflectionUtils.getMatchingMethods(overloadedMethods, args);
-        if(matchingMethods.size() == 0) return null;
+        if (matchingMethods.isEmpty()) {
+            return null;
+        }
         return matchingMethods.get(0);
     }
 
     protected List<Method> getOverloadedMethods(String methodName) {
         List<Method> overloadedMethods = methodMap.get(methodName);
-        if(overloadedMethods == null) {
+        if (overloadedMethods == null) {
             overloadedMethods = new LinkedList<>();
             methodMap.put(methodName, overloadedMethods);
             
             Method[] methods = this.getClass().getMethods();
-            for(Method method : methods) {
-                if(method.getName().equals(methodName)) {
+            for (Method method : methods) {
+                if (method.getName().equals(methodName)) {
                     overloadedMethods.add(method);
                 }
             }

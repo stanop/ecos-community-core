@@ -165,7 +165,7 @@ public class NodeUtils {
                                               .filter(r -> !targetsSet.contains(r))
                                               .collect(Collectors.toSet());
 
-            if (toAdd.size() > 0 || toRemove.size() > 0) {
+            if (!toAdd.isEmpty() || !toRemove.isEmpty()) {
 
                 if (assocDef instanceof ChildAssociationDefinition) {
 

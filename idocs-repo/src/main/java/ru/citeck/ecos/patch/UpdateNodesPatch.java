@@ -45,7 +45,7 @@ public class UpdateNodesPatch extends AbstractPatch {
 
         List<NodeRef> nodeRefs = getNodeRefs();
 
-        if (nodeRefs.size() > 0) {
+        if (!nodeRefs.isEmpty()) {
 
             BatchProcessor<NodeRef> batchProcessor = new BatchProcessor<>(
                     name,
@@ -83,7 +83,7 @@ public class UpdateNodesPatch extends AbstractPatch {
     private NodeRef getParentRef() {
         NodeRef storeRoot = nodeService.getRootNode(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
         List<NodeRef> refs = searchService.selectNodes(storeRoot, parentPath, null, namespaceService, false);
-        return refs.size() > 0 ? refs.get(0) : null;
+        return !refs.isEmpty() ? refs.get(0) : null;
     }
 
     public void setWorker(BatchProcessWorker<NodeRef> worker) {

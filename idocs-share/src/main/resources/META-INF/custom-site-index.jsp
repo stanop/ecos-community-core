@@ -23,8 +23,7 @@
    
    // redirect to site or user dashboard as appropriate
    String siteName = request.getParameter("site");
-   if (siteName == null || siteName.length() == 0)
-   {
+   if (siteName == null || siteName.isEmpty()) {
       // forward to user specific dashboard page
       response.sendRedirect(request.getContextPath() + "/page/user/" + URLEncoder.encode(userid) + "/dashboard");
    }

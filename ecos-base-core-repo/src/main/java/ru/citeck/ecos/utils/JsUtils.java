@@ -103,86 +103,7 @@ public class JsUtils {
 
         } else if (value instanceof Scriptable) {
 
-            // a scriptable object will probably indicate a multi-value property
-            // set using a JavaScript Array object
-            Scriptable values = (Scriptable) value;
-
-            if (value instanceof IdScriptableObject) {
-
-                // TODO: add code here to use the dictionary and convert to correct value type
-                if (TYPE_DATE.equals(((IdScriptableObject) value).getClassName())) {
-
-                    value = Context.jsToJava(value, Date.class);
-
-                } else if (value instanceof NativeArray) {
-
-                    // convert JavaScript array of values to a List of objects
-                    Object[] propIds = values.getIds();
-
-                    if (isArray(propIds)) {
-
-                        List<Object> propValues = new ArrayList<>(propIds.length);
-                        for (Object propId : propIds) {
-                            // work on each key in turn
-                            // we are only interested in keys that indicate a list of values
-                            if (propId instanceof Integer) {
-                                // get the value out for the specified key
-                                Object val = values.get((Integer) propId, values);
-                                // recursively call this method to convert the value
-                                propValues.add(toJava(val));
-                            }
-                        }
-
-                        value = propValues;
-
-                    } else {
-
-                        Map<Object, Object> propValues = new HashMap<>(propIds.length);
-                        for (Object propId : propIds) {
-                            // Get the value and add to the map
-                            Object val = values.get(propId.toString(), values);
-                            propValues.put(toJava(propId), toJava(val));
-                        }
-
-                        value = propValues;
-                    }
-                } else {
-
-                    // convert Scriptable object of values to a Map of objects
-                    Object[] propIds = values.getIds();
-                    Map<String, Object> propValues = new HashMap<>(propIds.length);
-
-                    for (Object propId : propIds) {
-                        // work on each key in turn
-                        // we are only interested in keys that indicate a list of values
-                        if (propId instanceof String) {
-                            // get the value out for the specified key
-                            Object val = values.get((String) propId, values);
-                            // recursively call this method to convert the value
-                            propValues.put((String) propId, toJava(val));
-                        }
-                    }
-                    value = propValues;
-                }
-            } else {
-
-                // convert Scriptable object of values to a Map of objects
-                Object[] propIds = values.getIds();
-                Map<String, Object> propValues = new HashMap<>(propIds.length);
-
-                // work on each key in turn
-                // we are only interested in keys that indicate a list of values
-                // get the value out for the specified key
-                // recursively call this method to convert the value
-                Arrays.stream(propIds)
-                        .filter(propId -> propId instanceof String)
-                        .forEach(propId -> {
-
-                            Object val = values.get((String) propId, values);
-                            propValues.put((String) propId, toJava(val));
-                        });
-                value = propValues;
-            }
+            value = scriptableToJava(value);
 
         } else if (value.getClass().isArray()) {
 
@@ -224,6 +145,98 @@ public class JsUtils {
         }
 
         return value;
+    }
+
+    private Object scriptableToJava(Object value) {
+        // a scriptable object will probably indicate a multi-value property
+        // set using a JavaScript Array object
+        Scriptable values = (Scriptable) value;
+
+        if (value instanceof IdScriptableObject) {
+            // TODO: add code here to use the dictionary and convert to correct value type
+            if (TYPE_DATE.equals(((IdScriptableObject) value).getClassName())) {
+                value = Context.jsToJava(value, Date.class);
+            } else if (value instanceof NativeArray) {
+                value = nativeArrayToJava(value);
+            } else {
+                value = idScriptableToJava(values);
+            }
+        } else {
+            // convert Scriptable object of values to a Map of objects
+            Object[] propIds = values.getIds();
+            Map<String, Object> propValues = new HashMap<>(propIds.length);
+
+            // work on each key in turn
+            // we are only interested in keys that indicate a list of values
+            // get the value out for the specified key
+            // recursively call this method to convert the value
+            Arrays.stream(propIds)
+                    .filter(propId -> propId instanceof String)
+                    .forEach(propId -> {
+
+                        Object val = values.get((String) propId, values);
+                        propValues.put((String) propId, toJava(val));
+                    });
+            value = propValues;
+        }
+
+        return value;
+    }
+
+    private Object nativeArrayToJava(Object value) {
+        Scriptable values = (Scriptable) value;
+
+        // convert JavaScript array of values to a List of objects
+        Object[] propIds = values.getIds();
+
+        if (isArray(propIds)) {
+
+            List<Object> propValues = new ArrayList<>(propIds.length);
+            for (Object propId : propIds) {
+                // work on each key in turn
+                // we are only interested in keys that indicate a list of values
+                if (propId instanceof Integer) {
+                    // get the value out for the specified key
+                    Object val = values.get((Integer) propId, values);
+                    // recursively call this method to convert the value
+                    propValues.add(toJava(val));
+                }
+            }
+
+            value = propValues;
+
+        } else {
+
+            Map<Object, Object> propValues = new HashMap<>(propIds.length);
+            for (Object propId : propIds) {
+                // Get the value and add to the map
+                Object val = values.get(propId.toString(), values);
+                propValues.put(toJava(propId), toJava(val));
+            }
+
+            value = propValues;
+        }
+
+        return value;
+    }
+
+    private Object idScriptableToJava(Scriptable values) {
+        // convert Scriptable object of values to a Map of objects
+        Object[] propIds = values.getIds();
+        Map<String, Object> propValues = new HashMap<>(propIds.length);
+
+        for (Object propId : propIds) {
+            // work on each key in turn
+            // we are only interested in keys that indicate a list of values
+            if (propId instanceof String) {
+                // get the value out for the specified key
+                Object val = values.get((String) propId, values);
+                // recursively call this method to convert the value
+                propValues.put((String) propId, toJava(val));
+            }
+        }
+
+        return propValues;
     }
 
     /**

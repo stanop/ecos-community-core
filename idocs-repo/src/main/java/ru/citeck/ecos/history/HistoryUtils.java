@@ -100,7 +100,7 @@ public class HistoryUtils {
 
             List<ConstraintDefinition> constraints = propDef.getConstraints();
 
-            if (constraints != null && constraints.size() > 0) {
+            if (constraints != null && !constraints.isEmpty()) {
 
                 for (ConstraintDefinition constrDef : constraints) {
 
@@ -130,11 +130,9 @@ public class HistoryUtils {
         } else {
             /* Single title */
             QName titleQName = getHistoryEventTitleMapperService().getTitleQName(nodeService.getType(nodeRef));
-            if (titleQName != null) {
-                if (nodeService.getProperty(nodeRef, titleQName) != null) {
-                    Serializable value = nodeService.getProperty(nodeRef, titleQName);
-                    return transformValueToString(value, nodeService);
-                }
+            if (titleQName != null && nodeService.getProperty(nodeRef, titleQName) != null) {
+                Serializable value = nodeService.getProperty(nodeRef, titleQName);
+                return transformValueToString(value, nodeService);
             }
             /* List title */
             List<QName> titlesQName = getHistoryEventTitleMapperService().getTitleQNames(nodeService.getType(nodeRef));
@@ -230,7 +228,7 @@ public class HistoryUtils {
             if (AlfrescoTransactionSupport.getResource(ASSOC_REMOVED) != null) {
                 removed.addAll(AlfrescoTransactionSupport.getResource(ASSOC_REMOVED));
             }
-            if (added.size() > 0 && removed.size() > 0) {
+            if (!added.isEmpty() && !removed.isEmpty()) {
                 Iterator<AssociationRef> iterAdded = added.iterator();
                 while (iterAdded.hasNext()) {
                     AssociationRef associationRefAdded = iterAdded.next();
@@ -252,13 +250,14 @@ public class HistoryUtils {
                                     )
                             );
                             iterAdded.remove();
-                            iterRemoved.remove();break;
+                            iterRemoved.remove();
+                            break;
                         }
                     }
                 }
                 AlfrescoTransactionSupport.bindResource(ASSOC_ADDED, added);
                 AlfrescoTransactionSupport.bindResource(ASSOC_REMOVED, removed);
-            } else if (added.size() > 0 || removed.size() > 0){
+            } else if (!added.isEmpty() || !removed.isEmpty()) {
                 if (resourceKey.equals(ASSOC_ADDED)) {
                     Iterator<AssociationRef> iter = added.iterator();
                     while (iter.hasNext()) {
@@ -314,7 +313,7 @@ public class HistoryUtils {
             if (AlfrescoTransactionSupport.getResource(CHILD_ASSOC_REMOVED) != null) {
                 removed.addAll(AlfrescoTransactionSupport.getResource(CHILD_ASSOC_REMOVED));
             }
-            if (added.size() > 0 && removed.size() > 0) {
+            if (!added.isEmpty() && !removed.isEmpty()) {
                 Iterator<ChildAssociationRef> iterAdded = added.iterator();
                 while (iterAdded.hasNext()) {
                     ChildAssociationRef childAssociationRefAdded = iterAdded.next();
@@ -342,7 +341,7 @@ public class HistoryUtils {
                 }
                 AlfrescoTransactionSupport.bindResource(CHILD_ASSOC_ADDED, added);
                 AlfrescoTransactionSupport.bindResource(CHILD_ASSOC_REMOVED, removed);
-            } else if (added.size() > 0 || removed.size() > 0){
+            } else if (!added.isEmpty() || !removed.isEmpty()) {
                 if (resourceKey.equals(CHILD_ASSOC_ADDED)) {
                     Iterator<ChildAssociationRef> iter = added.iterator();
                     while (iter.hasNext()) {

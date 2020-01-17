@@ -28,18 +28,15 @@ import org.alfresco.service.cmr.workflow.WorkflowService;
 
 import java.util.List;
 
-//import org.activiti.engine.impl.cmd.SetProcessDefinitionVersionCmd;
-
-//http://docs.camunda.org/latest/guides/user-guide/#process-engine-process-versioning
-
-// example
-
-//      workflowId - activiti$<processInstanceId>, e.g., activiti$3233  -> processInstanceId == "3233",
-//      workflowDefinitionId - activiti$<processDefinitionId>,
-//      e.g., "activiti$maxxium-disagreement:24:6293" -> newProcessDefinitionId == "maxxium-disagreement:24:6293"
-//      or newProcessDefinitionId == "activiti$maxxium-disagreement:24:6293" (там есть replace, убирающий activiti$)
-//      processDefinitionVersion.migrateVersionForWorkflow("3233", 24, "maxxium-disagreement:24:6293");
-
+/*
+ *  http://docs.camunda.org/latest/guides/user-guide/#process-engine-process-versioning
+ *  Example:
+ *  workflowId - activiti$<processInstanceId>, e.g., activiti$3233  -> processInstanceId == "3233",
+ *  workflowDefinitionId - activiti$<processDefinitionId>,
+ *  e.g., "activiti$maxxium-disagreement:24:6293" -> newProcessDefinitionId == "maxxium-disagreement:24:6293"
+ *  or newProcessDefinitionId == "activiti$maxxium-disagreement:24:6293" (там есть replace, убирающий activiti$)
+ *  processDefinitionVersion.migrateVersionForWorkflow("3233", 24, "maxxium-disagreement:24:6293");
+ */
 public class ProcessDefinitionMigrateVersion extends BaseProcessorExtension {
 
     private WorkflowService workflowService;
@@ -56,21 +53,20 @@ public class ProcessDefinitionMigrateVersion extends BaseProcessorExtension {
     public List<WorkflowInstance> getWorkflows(String workflowDefinitionId) {
 
         WorkflowInstanceQuery workflowInstanceQuery = new WorkflowInstanceQuery(workflowDefinitionId);
-        List<WorkflowInstance> workflows = workflowService.getWorkflows(workflowInstanceQuery);
 
-        return workflows;
+        return workflowService.getWorkflows(workflowInstanceQuery);
     }
 
     public void changeVersionForAllInstances(String oldProcessDefinitionId, int newVersion, String newProcessDefinitionId) {
 
-        if(newProcessDefinitionId != null){
+        if (newProcessDefinitionId != null) {
             newProcessDefinitionId = newProcessDefinitionId.replace("activiti$", "");
         }
 
         if (oldProcessDefinitionId != null && !"".equals(oldProcessDefinitionId)) {
             //find all active and inactive workflowInstances by oldProcessDefinitionId
             List<WorkflowInstance> workflows = getWorkflows(oldProcessDefinitionId);
-            if (workflows != null && workflows.size() > 0) {
+            if (workflows != null && !workflows.isEmpty()) {
                 for (int i = 0; i < workflows.size(); i++) {
                     WorkflowInstance workflowInstance = workflows.get(i);
                     String workflowId = workflowInstance.getId().replace("activiti$", "");

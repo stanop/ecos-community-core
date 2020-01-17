@@ -404,7 +404,7 @@ public class FlowablePropertyConverter {
                                 }
                             }
                         } else {
-                            if (toAdd.getValue().size() > 0) {
+                            if (!toAdd.getValue().isEmpty()) {
                                 newProperties.put(toAdd.getKey(), toAdd.getValue().get(0));
                             }
                         }
@@ -469,19 +469,19 @@ public class FlowablePropertyConverter {
         }
 
         String description = (String) existingValues.get(WorkflowModel.PROP_DESCRIPTION);
-        if (description == null || description.length() == 0) {
+        if (description == null || description.isEmpty()) {
             ProcessDefinition processDefinition = flowableProcessDefinitionService.getProcessDefinitionById(
                     task.getProcessDefinitionId());
             if (processDefinition != null && processDefinition.getKey() != null) {
                 String processDefinitionKey = processDefinition.getKey();
                 description = factory.getTaskDescription(typeDefinition, factory.buildGlobalId(processDefinitionKey),
                         null, task.getTaskDefinitionKey());
-                if (description != null && description.length() > 0) {
+                if (description != null && !description.isEmpty()) {
                     defaultValues.put(WorkflowModel.PROP_DESCRIPTION, description);
                 } else {
                     String descriptionKey = factory.mapQNameToName(WorkflowModel.PROP_WORKFLOW_DESCRIPTION);
                     description = (String) task.getVariable(descriptionKey);
-                    if (description != null && description.length() > 0) {
+                    if (description != null && !description.isEmpty()) {
                         defaultValues.put(WorkflowModel.PROP_DESCRIPTION, description);
                     } else {
                         defaultValues.put(WorkflowModel.PROP_DESCRIPTION, task.getName());
@@ -507,7 +507,7 @@ public class FlowablePropertyConverter {
             defaultValues.putIfAbsent(CiteckWorkflowModel.PROP_TASK_TITLE, taskTitle);
         }
 
-        if (defaultValues.size() > 0) {
+        if (!defaultValues.isEmpty()) {
             setTaskProperties(task, defaultValues);
         }
     }
@@ -525,7 +525,7 @@ public class FlowablePropertyConverter {
         TypeDefinition type = typeManager.getFullTaskDefinition(task);
         Map<String, Object> variablesToSet = handlerRegistry.handleVariablesToSet(properties, type, task,
                 DelegateTask.class);
-        if (variablesToSet.size() > 0) {
+        if (!variablesToSet.isEmpty()) {
             task.setVariablesLocal(variablesToSet);
         }
     }

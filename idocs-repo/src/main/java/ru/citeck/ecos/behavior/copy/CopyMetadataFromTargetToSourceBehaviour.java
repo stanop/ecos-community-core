@@ -193,7 +193,7 @@ public class CopyMetadataFromTargetToSourceBehaviour implements NodeServicePolic
         for (Map.Entry<QName, QName> pair : assocsToCopy.entrySet()) {
             List<AssociationRef> associationRefs = nodeService.getTargetAssocs(targetRef, pair.getKey());
 
-            if (associationRefs != null && associationRefs.size() > 0) {
+            if (associationRefs != null && !associationRefs.isEmpty()) {
                 List<NodeRef> targetRefs = new ArrayList<>();
 
                 for (AssociationRef associationRef : associationRefs) {

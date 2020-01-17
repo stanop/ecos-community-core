@@ -56,7 +56,7 @@ public class CasePerformWorkflowHandler implements Serializable {
 
         TaskStages stages = utils.getTaskStages(execution);
 
-        if (stages != null && stages.size() > 0) {
+        if (stages != null && !stages.isEmpty()) {
 
             Integer stageIndex = (Integer) execution.getVariable(CasePerformUtils.PERFORM_STAGE_IDX);
             if (stageIndex == null) {
@@ -117,10 +117,10 @@ public class CasePerformWorkflowHandler implements Serializable {
         }
 
         boolean skipPerforming;
-        if (performers.size() == 0) {
+        if (performers.isEmpty()) {
             String candidatesKey = utils.toString(CasePerformModel.ASSOC_CANDIDATES);
             Collection<NodeRef> candidates = utils.getNodeRefsList(execution, candidatesKey);
-            skipPerforming = candidates.size() == 0;
+            skipPerforming = candidates.isEmpty();
         } else {
             skipPerforming = !hasMandatoryTasks;
         }
@@ -152,7 +152,7 @@ public class CasePerformWorkflowHandler implements Serializable {
 
         TaskConfigs taskConfigs = new TaskConfigs();
 
-        if (performers.size() > 0) {
+        if (!performers.isEmpty()) {
 
             for (NodeRef performer : performers) {
 
@@ -287,7 +287,7 @@ public class CasePerformWorkflowHandler implements Serializable {
         boolean abortOutcomeReceived = utils.isAbortOutcomeReceived(execution, task);
         execution.setVariable(CasePerformUtils.ABORT_PROCESS, abortOutcomeReceived);
 
-        boolean abortPerforming = mandatoryTasks.size() == 0 || abortOutcomeReceived;
+        boolean abortPerforming = mandatoryTasks.isEmpty() || abortOutcomeReceived;
         execution.setVariable(CasePerformUtils.ABORT_PERFORMING, abortPerforming);
 
         execution.setVariable(CasePerformUtils.MANDATORY_TASKS, mandatoryTasks);

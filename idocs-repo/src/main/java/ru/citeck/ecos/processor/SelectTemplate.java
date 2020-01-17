@@ -35,51 +35,51 @@ import java.util.Map;
  */
 public class SelectTemplate extends AbstractDataBundleLine{
 
-	private NodeService nodeService;
-	private CardTemplateService cardTemplateService;
-	private String nodeExpr;
-	private String templateTypeExpr;
-	private String variable;
+    private NodeService nodeService;
+    private CardTemplateService cardTemplateService;
+    private String nodeExpr;
+    private String templateTypeExpr;
+    private String variable;
 
-	@Override
-	public void init() {
-		this.nodeService = serviceRegistry.getNodeService();
-		this.cardTemplateService = (CardTemplateService) serviceRegistry.getService(CiteckServices.CARD_TEMPLATE_SERVICE);
-	}
+    @Override
+    public void init() {
+        this.nodeService = serviceRegistry.getNodeService();
+        this.cardTemplateService = (CardTemplateService) serviceRegistry.getService(CiteckServices.CARD_TEMPLATE_SERVICE);
+    }
 
 
-	@Override
-	public DataBundle process(DataBundle input) {
-		Map<String,Object> model = input.needModel();
-		Map<String,Object> newModel = new HashMap<>();
-		newModel.putAll(model);
+    @Override
+    public DataBundle process(DataBundle input) {
+        Map<String,Object> model = input.needModel();
+        Map<String,Object> newModel = new HashMap<>();
+        newModel.putAll(model);
 
-		String nodeRefStr = evaluateExpression(nodeExpr, model).toString();
-		NodeRef nodeRef = new NodeRef(nodeRefStr);
-		newModel.put("document", nodeRef);
+        String nodeRefStr = evaluateExpression(nodeExpr, model).toString();
+        NodeRef nodeRef = new NodeRef(nodeRefStr);
+        newModel.put("document", nodeRef);
 
-		QName documentType = nodeService.getType(nodeRef);
-		String templateType = (String) this.evaluateExpression(templateTypeExpr, input);
-		List<NodeRef> templates = cardTemplateService.getTemplatesForType(documentType, templateType);
-		if(templates.size() > 0) {
-			String template = templates.get(0).toString();
-			newModel.put(variable, template);
-		} else {
-			throw new AlfrescoRuntimeException("There is no template of type '" + templateType + "' for document type: '" + documentType);
-		}
-		return new DataBundle(input, newModel);
-	}
+        QName documentType = nodeService.getType(nodeRef);
+        String templateType = (String) this.evaluateExpression(templateTypeExpr, input);
+        List<NodeRef> templates = cardTemplateService.getTemplatesForType(documentType, templateType);
+        if (!templates.isEmpty()) {
+            String template = templates.get(0).toString();
+            newModel.put(variable, template);
+        } else {
+            throw new AlfrescoRuntimeException("There is no template of type '" + templateType + "' for document type: '" + documentType);
+        }
+        return new DataBundle(input, newModel);
+    }
 
-	public void setNodeExpr(String nodeExpr) {
-		this.nodeExpr = nodeExpr;
-	}
+    public void setNodeExpr(String nodeExpr) {
+        this.nodeExpr = nodeExpr;
+    }
 
-	public void setTemplateType(String templateTypeExpr) {
-		this.templateTypeExpr = templateTypeExpr;
-	}
+    public void setTemplateType(String templateTypeExpr) {
+        this.templateTypeExpr = templateTypeExpr;
+    }
 
-	public void setVariable(String variable) {
-		this.variable = variable;
-	}
+    public void setVariable(String variable) {
+        this.variable = variable;
+    }
 
 }

@@ -240,8 +240,7 @@ import java.util.stream.Collectors;
     }
 
     private NodeRef findMostSuitable(List<NodeRef> objects, Comparator<NodeRef> precedenceComparator, Map<String, Object> conditionModel) {
-        List<NodeRef> objectsToEvaluate = new LinkedList<>();
-        objectsToEvaluate.addAll(objects);
+        List<NodeRef> objectsToEvaluate = new LinkedList<>(objects);
         while (objectsToEvaluate.size() > 0) {
             NodeRef mostSuitable = Collections.min(objectsToEvaluate, precedenceComparator);
             if (conditionAllows(mostSuitable, conditionModel)) {

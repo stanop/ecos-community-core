@@ -35,65 +35,58 @@ import java.text.ParseException;
 
 import org.springframework.extensions.webscripts.WebScriptException;
 
-public class BusinessCalendarGet extends DeclarativeWebScript
-{
+public class BusinessCalendarGet extends DeclarativeWebScript {
 
-	// web script arguments
-	private static final String PARAM_ADD_FIELD = "addField";
-	private static final String PARAM_ADD_AMOUNT = "addAmount";
-	private static final String PARAM_CURRENT_DATE = "currentDate";
+    // web script arguments
+    private static final String PARAM_ADD_FIELD = "addField";
+    private static final String PARAM_ADD_AMOUNT = "addAmount";
+    private static final String PARAM_CURRENT_DATE = "currentDate";
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
-	private SearchService searchService;
+    private SearchService searchService;
 
     @Override
-    protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache)
-    {
+    protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
 
-        String add_field = req.getParameter(PARAM_ADD_FIELD);
-        String add_amount = req.getParameter(PARAM_ADD_AMOUNT);
-		String current_date = req.getParameter(PARAM_CURRENT_DATE);
+        String addField = req.getParameter(PARAM_ADD_FIELD);
+        String addAmount = req.getParameter(PARAM_ADD_AMOUNT);
+        String currentDateParam = req.getParameter(PARAM_CURRENT_DATE);
 
 
-        if(add_field == null) {
+        if (addField == null) {
             status.setCode(Status.STATUS_BAD_REQUEST, "Parameter addField is mandatory");
             return null;
         }
 
-        if(add_amount == null) {
+        if (addAmount == null) {
             status.setCode(Status.STATUS_BAD_REQUEST, "Parameter addAmount is mandatory");
             return null;
         }
-		
-		Date currentDate = null;
-		try 
-		{
-			currentDate = dateFormat.parse(current_date);
 
-		} 
-		catch (ParseException ex) 
-		{
-			throw new WebScriptException("Unable to parse date: " + ex.getMessage(), ex);
-		}
-		
-		int amount = Integer.parseInt(add_amount);
+        Date currentDate = null;
+        try {
+            currentDate = dateFormat.parse(currentDateParam);
+        } catch (ParseException ex) {
+            throw new WebScriptException("Unable to parse date: " + ex.getMessage(), ex);
+        }
+
+        int amount = Integer.parseInt(addAmount);
 
         Map<String, Object> model = new HashMap<>();
-		BusinessCalendar calendar = new BusinessCalendar();
-		calendar.setSearchService(searchService);
-		calendar.setWorkingDays();
-		calendar.setDayOff();
-		calendar.setTime(currentDate);
-		if("days".equals(add_field))
-		{
-			calendar.add(Calendar.DAY_OF_YEAR, amount);
-			model.put("date", calendar.getTime());
-		}
+        BusinessCalendar calendar = new BusinessCalendar();
+        calendar.setSearchService(searchService);
+        calendar.setWorkingDays();
+        calendar.setDayOff();
+        calendar.setTime(currentDate);
+        if ("days".equals(addField)) {
+            calendar.add(Calendar.DAY_OF_YEAR, amount);
+            model.put("date", calendar.getTime());
+        }
         return model;
-    	
+
     }
 
-	public void setSearchService(SearchService searchService) {
-		this.searchService = searchService;
-	}
+    public void setSearchService(SearchService searchService) {
+        this.searchService = searchService;
+    }
 }

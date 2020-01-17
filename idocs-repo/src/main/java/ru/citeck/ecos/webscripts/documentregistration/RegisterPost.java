@@ -54,30 +54,27 @@ public class RegisterPost extends DeclarativeWebScript {
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
         String nodeRefStr = req.getParameter(PARAM_NODEREF);
-        if(nodeRefStr == null) {
+        if (nodeRefStr == null) {
             throw new RuntimeException("nodeRef is required");
         }
         final NodeRef nodeRef = new NodeRef(req.getParameter(PARAM_NODEREF));
 
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-            @Override
-            public Object doWork() throws Exception {
-                nodeService.setProperty(nodeRef, IdocsModel.PROP_REGISTRATION_DATE, new Date());
-                nodeService.setProperty(nodeRef, IdocsModel.PROP_DOCUMENT_STATUS, "onConsideration");
+        AuthenticationUtil.runAsSystem(() -> {
+            nodeService.setProperty(nodeRef, IdocsModel.PROP_REGISTRATION_DATE, new Date());
+            nodeService.setProperty(nodeRef, IdocsModel.PROP_DOCUMENT_STATUS, "onConsideration");
 
-                NodeRef template = enumerationService.getTemplate(getTemplateName(nodeRef));
-                NodeInfo nodeInfo = nodeInfoFactory.createNodeInfo(nodeRef);
+            NodeRef template = enumerationService.getTemplate(getTemplateName(nodeRef));
+            NodeInfo nodeInfo = nodeInfoFactory.createNodeInfo(nodeRef);
 
-                String number = null;
-                try {
-                    number = enumerationService.getNumber(template, nodeInfo);
-                } catch (EnumerationException e) {
-                    throw new AlfrescoRuntimeException(e.getMessage(), e);
-                }
-
-                nodeService.setProperty(nodeRef, IdocsModel.PROP_REGISTRATION_NUMBER, number);
-                return null;
+            String number = null;
+            try {
+                number = enumerationService.getNumber(template, nodeInfo);
+            } catch (EnumerationException e) {
+                throw new AlfrescoRuntimeException(e.getMessage(), e);
             }
+
+            nodeService.setProperty(nodeRef, IdocsModel.PROP_REGISTRATION_NUMBER, number);
+            return null;
         });
 
         Map<String, Object> result = new HashMap<>();
@@ -88,7 +85,7 @@ public class RegisterPost extends DeclarativeWebScript {
     //ugly solution
     private String getTemplateName(NodeRef nodeRef) {
         QName type = nodeService.getType(nodeRef);
-        if(type.isMatch(IdocsModel.TYPE_ATTORNEY)) {
+        if (type.isMatch(IdocsModel.TYPE_ATTORNEY)) {
             return "idocs-attorney-number-template";
         } else {
             return null;

@@ -52,7 +52,7 @@ public class CaseDocumentsCreateVariantsResolver implements CreateVariantsResolv
         Set<CaseDocumentDto> documentDtos = caseCompletenessService.getCaseDocuments(nodeRef);
 
         for (CaseDocumentDto documentDto : documentDtos) {
-            String documentType = documentDto.getType();
+            String documentType = documentDto.getType().getId();
             CreateVariant createVariant = new CreateVariant();
 
             String title = convertTypeToTitle(documentType);

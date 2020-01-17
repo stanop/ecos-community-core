@@ -69,7 +69,7 @@ public class OutputSpecifiedAssociatedDocumentsPdfContent extends AbstractDataBu
 
         List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(document, childAssocQname,
                 RegexQNamePattern.MATCH_ALL);
-        if (childAssocs.size() == 0) {
+        if (childAssocs.isEmpty()) {
             return null;
         }
 
@@ -105,7 +105,7 @@ public class OutputSpecifiedAssociatedDocumentsPdfContent extends AbstractDataBu
             });
         });
 
-        if (neededDocumentsDataBundles.size() == 0) {
+        if (neededDocumentsDataBundles.isEmpty()) {
             return null;
         }
 
@@ -118,9 +118,7 @@ public class OutputSpecifiedAssociatedDocumentsPdfContent extends AbstractDataBu
         modelWithFixedMimeType.putAll(resultModel);
         modelWithFixedMimeType.put(ProcessorConstants.KEY_MIMETYPE, MimetypeMap.MIMETYPE_PDF);
 
-        DataBundle resultWithFixedMimetype = new DataBundle(resultInputStream, modelWithFixedMimeType);
-
-        return resultWithFixedMimetype;
+        return new DataBundle(resultInputStream, modelWithFixedMimeType);
     }
 
     private NodeRef getNodeRef(Serializable arg) {

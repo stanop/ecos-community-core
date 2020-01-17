@@ -76,7 +76,7 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator {
 
         // get template
         List<AssociationRef> assocs = nodeService.getTargetAssocs(nodeRef, DmsModel.ASSOC_TEMPLATE);
-        if (assocs == null || assocs.size() == 0) {
+        if (assocs == null || assocs.isEmpty()) {
             if (logger.isWarnEnabled()) {
                 logger.warn("There is no template (" + DmsModel.ASSOC_TEMPLATE + ")");
             }

@@ -16,7 +16,7 @@ public class RestFormService {
 
     private static final String FLOWABLE_REST_API_KEY = "${flowable.rest-api.url}";
 
-    private final static Log logger = LogFactory.getLog(RestFormService.class);
+    private static final Log logger = LogFactory.getLog(RestFormService.class);
 
     @Value(FLOWABLE_REST_API_KEY)
     private String restApiUrl;
@@ -57,7 +57,7 @@ public class RestFormService {
         String url = baseUrl + formDefinitionsByKeyUrl;
         FormDefinitions definitions = restTemplate.getForObject(url, FormDefinitions.class, formKey);
 
-        if (definitions.data != null && definitions.data.size() > 0) {
+        if (definitions.data != null && !definitions.data.isEmpty()) {
 
             String formDefinitionId = definitions.data.get(0).id;
             url = baseUrl + formModelUrl;
@@ -72,7 +72,7 @@ public class RestFormService {
         if (initialized) {
             String url = baseUrl + formDefinitionsByKeyUrl;
             FormDefinitions definitions = restTemplate.getForObject(url, FormDefinitions.class, formKey);
-            return definitions.data != null && definitions.data.size() > 0;
+            return definitions.data != null && !definitions.data.isEmpty();
         }
         return false;
     }

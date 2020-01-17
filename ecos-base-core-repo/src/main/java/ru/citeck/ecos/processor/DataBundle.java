@@ -34,114 +34,105 @@ import java.util.Map;
  */
 public class DataBundle {
 
-	private InputStream inputStream;
-	private Map<String,Object> model;
-	
-	protected DataBundle() {
-		// leave init to child class constructor
-	}
-	
-	/**
-	 * Create Data Bundle from input stream (empty model).
-	 * @param inputStream
-	 */
-	public DataBundle(InputStream inputStream) {
-		init(inputStream, null);
-	}
-	
-	/**
-	 * Create Data Bundle from model (empty input stream).
-	 * @param model
-	 */
-	public DataBundle(Map<String,Object> model) {
-		init(null, model);
-	}
-	
-	/**
-	 * Create Data Bundle from input stream and model.
-	 * @param inputStream
-	 * @param model
-	 */
-	public DataBundle(InputStream inputStream, Map<String,Object> model) {
-		init(inputStream, model);
-	}
+    private InputStream inputStream;
+    private Map<String,Object> model;
 
-	/**
-	 * Create Data Bundle from other Data Bundle and a new input stream.
-	 * @param that
-	 * @param inputStream
-	 */
-	public DataBundle(DataBundle that, InputStream inputStream) {
-		init(inputStream, that.model);
-	}
-	
-	/**
-	 * Create Data Bundle from other Data Bundle and a new model.
-	 * @param that
-	 * @param model
-	 */
-	public DataBundle(DataBundle that, Map<String,Object> model) {
-		init(that.inputStream, model);
-	}
-	
-//	public DataBundle(DataBundle that, InputStream inputStream, Map<String,Object> model) {
-//		Map<String,Object> myModel = new HashMap<String,Object>(that.model.size() + model.size());
-//		myModel.putAll(that.model);
-//		if(model != null) {
-//			myModel.putAll(model);
-//		}
-//		init(inputStream, myModel);
-//	}
-//	
-	protected void init(InputStream inputStream, Map<String,Object> model) {
-		this.inputStream = inputStream;
-		// model is unmodifiable
-		this.model = Collections.unmodifiableMap(model);
-	}
+    protected DataBundle() {
+        // leave init to child class constructor
+    }
 
-	/**
-	 * Get input stream of Data Bundle's content.
-	 * If there is no input stream, return null.
-	 * @return
-	 */
-	public InputStream getInputStream() {
-		return inputStream;
-	}
+    /**
+     * Create Data Bundle from input stream (empty model).
+     * @param inputStream
+     */
+    public DataBundle(InputStream inputStream) {
+        init(inputStream, null);
+    }
 
-	/**
-	 * Get input stream of Data Bundle's content.
-	 * If there is no input stream, throw exception.
-	 * @return
-	 */
-	public InputStream needInputStream() {
-		if(inputStream == null) {
-			throw new IllegalStateException("Caller needs input stream, but there is no one");
-		}
-		return inputStream;
-	}
-	
-	/**
-	 * Get model of Data Bundle.
-	 * If there is no model, return null.
-	 * @return
-	 */
-	public Map<String,Object> getModel() {
-		return model;
-	}
+    /**
+     * Create Data Bundle from model (empty input stream).
+     * @param model
+     */
+    public DataBundle(Map<String,Object> model) {
+        init(null, model);
+    }
 
-	/**
-	 * Get model of Data Bundle.
-	 * If there is no model, throw exception.
-	 * @return
-	 */
-	public Map<String,Object> needModel() {
-		if(model == null) {
-			throw new IllegalStateException("Caller needs model, but there is no one");
-		}
-		return model;
-	}
-	
-	static Map<String,Object> emptyModel() {
-		return new HashMap<>();
-	}
+    /**
+     * Create Data Bundle from input stream and model.
+     * @param inputStream
+     * @param model
+     */
+    public DataBundle(InputStream inputStream, Map<String,Object> model) {
+        init(inputStream, model);
+    }
+
+    /**
+     * Create Data Bundle from other Data Bundle and a new input stream.
+     * @param that
+     * @param inputStream
+     */
+    public DataBundle(DataBundle that, InputStream inputStream) {
+        init(inputStream, that.model);
+    }
+
+    /**
+     * Create Data Bundle from other Data Bundle and a new model.
+     * @param that
+     * @param model
+     */
+    public DataBundle(DataBundle that, Map<String,Object> model) {
+        init(that.inputStream, model);
+    }
+
+    protected void init(InputStream inputStream, Map<String,Object> model) {
+        this.inputStream = inputStream;
+        // model is unmodifiable
+        this.model = Collections.unmodifiableMap(model);
+    }
+
+    /**
+     * Get input stream of Data Bundle's content.
+     * If there is no input stream, return null.
+     * @return
+     */
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    /**
+     * Get input stream of Data Bundle's content.
+     * If there is no input stream, throw exception.
+     * @return
+     */
+    public InputStream needInputStream() {
+        if(inputStream == null) {
+            throw new IllegalStateException("Caller needs input stream, but there is no one");
+        }
+        return inputStream;
+    }
+
+    /**
+     * Get model of Data Bundle.
+     * If there is no model, return null.
+     * @return
+     */
+    public Map<String,Object> getModel() {
+        return model;
+    }
+
+    /**
+     * Get model of Data Bundle.
+     * If there is no model, throw exception.
+     * @return
+     */
+    public Map<String,Object> needModel() {
+        if(model == null) {
+            throw new IllegalStateException("Caller needs model, but there is no one");
+        }
+        return model;
+    }
+
+    static Map<String,Object> emptyModel() {
+        return new HashMap<>();
+    }
 }

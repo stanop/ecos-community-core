@@ -68,7 +68,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public void fireConcreteEvent(NodeRef eventRef) {
         List<AssociationRef> eventSource = nodeService.getTargetAssocs(eventRef, EventModel.ASSOC_EVENT_SOURCE);
-        if (eventSource != null && eventSource.size() > 0) {
+        if (eventSource != null && !eventSource.isEmpty()) {
             fireConcreteEvent(eventRef, eventSource.get(0).getTargetRef());
         }
     }

@@ -11,7 +11,9 @@ import ru.citeck.ecos.menu.dto.Element;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver {
 
@@ -37,7 +39,7 @@ public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver
         String elemIdVar = toUpperCase(journalId);
         String parentElemId = StringUtils.defaultString(context.getId());
         String elemId = String.format("%s_%s_JOURNAL", parentElemId, elemIdVar);
-        Boolean displayIcon = context.getParams().containsKey("rootElement");
+        boolean displayIcon = context.getParams().containsKey("rootElement");
 
         /* icon. if journal element is placed in root category */
         String icon = null;
@@ -71,11 +73,6 @@ public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver
         element.setAction(JOURNAL_LINK_KEY, actionParams);
         element.setParams(elementParams);
         return element;
-    }
-
-    private Long journalItemsCount(RequestKey requestKey) {
-        String journalId = requestKey.getJournalId();
-        return journalService.getRecordsCount(journalId);
     }
 
     @Autowired

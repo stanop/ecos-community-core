@@ -44,7 +44,7 @@ public class CompleteTaskListener implements GlobalCompleteTaskListener {
                 if (conditions != null && wfTask != null) {
                     Map<String, String> condition = conditions.get(wfTask.getName());
                     int result = 0;
-                    if (condition != null && condition.size() > 0) {
+                    if (condition != null && !condition.isEmpty()) {
                         for (Map.Entry<String, String> entry : condition.entrySet()) {
                             String actualValue = (String) wfTask.getProperties().get(qNameConverter.mapNameToQName(entry.getKey()));
                             if (!actualValue.equals(entry.getValue())) {

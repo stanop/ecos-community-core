@@ -6,7 +6,7 @@ public enum Quantifier {
     EXACTLY_ZERO {
         @Override
         public boolean evaluate(Collection<?> matches) {
-            return matches.size() == 0;
+            return matches.isEmpty();
         }
     },
     

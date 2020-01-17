@@ -109,9 +109,9 @@ public abstract class NodeViewElement {
     
     public String toFullString() {
         StringBuilder sb = new StringBuilder().append(toString());
-        if(elements.size() > 0) {
+        if (!elements.isEmpty()) {
             sb.append(":elements=[\n");
-            for(NodeViewElement element : elements) {
+            for (NodeViewElement element : elements) {
                 sb.append("\t").append(element).append("\n");
             }
         }
@@ -181,8 +181,8 @@ public abstract class NodeViewElement {
         }
     }
     
-    @SuppressWarnings("unchecked")
-    /*package*/ static abstract class Builder<B extends Builder<?>> {
+    /*package*/
+    @SuppressWarnings("unchecked") /*package*/ abstract static class Builder<B extends Builder<?>> {
         
         protected NamespacePrefixResolver prefixResolver;
         protected DictionaryService dictionaryService;

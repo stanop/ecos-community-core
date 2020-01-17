@@ -22,13 +22,12 @@ import java.util.Map;
 
 import org.springframework.extensions.surf.RequestContext;
 
-public class UserAuthenticatedEvaluator extends AbstractUniversalEvaluator
-{
+public class UserAuthenticatedEvaluator extends AbstractUniversalEvaluator {
 
-	@Override
-	protected boolean evaluateImpl(RequestContext rc, Map<String, String> params) {
-		String userId = rc.getUserId();
-		return userId != null && userId.length() > 0 && !userId.equalsIgnoreCase("guest");
-	}
+    @Override
+    protected boolean evaluateImpl(RequestContext rc, Map<String, String> params) {
+        String userId = rc.getUserId();
+        return userId != null && !userId.isEmpty() && !userId.equalsIgnoreCase("guest");
+    }
 
 }

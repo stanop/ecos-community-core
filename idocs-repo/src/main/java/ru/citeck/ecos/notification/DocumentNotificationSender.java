@@ -51,94 +51,94 @@ import ru.citeck.ecos.security.NodeOwnerDAO;
  */
 public class DocumentNotificationSender extends AbstractNotificationSender<NodeRef>
 {
-	public static final String ARG_DOCUMENT = "document";
-	public static final String ARG_ADDITION = "addition";
-	public static final String ARG_MODIFIER = "modifier";
-	public HashMap<String, Object> add;
-	protected OwnableService ownableService;
-	protected PersonService personService;
-	protected AuthenticationService authenticationService;
-	protected boolean sendToOwner;
-	protected Set<String> documentSubscribers;
-	private NodeOwnerDAO nodeOwnerDAO;
+    public static final String ARG_DOCUMENT = "document";
+    public static final String ARG_ADDITION = "addition";
+    public static final String ARG_MODIFIER = "modifier";
+    public HashMap<String, Object> add;
+    protected OwnableService ownableService;
+    protected PersonService personService;
+    protected AuthenticationService authenticationService;
+    protected boolean sendToOwner;
+    protected Set<String> documentSubscribers;
+    private NodeOwnerDAO nodeOwnerDAO;
 
-	@Override
-	public void setServiceRegistry(ServiceRegistry services) {
-		super.setServiceRegistry(services);
-		this.ownableService = services.getOwnableService();
-		this.authenticationService = services.getAuthenticationService();
-		this.personService = services.getPersonService();
-	}
-	
-	@Override
-	protected NodeRef getNotificationTemplate(NodeRef item) {
-		String type = nodeService.getType(item).toPrefixString(namespaceService);
-		return getNotificationTemplate(type);
-	}
-
-	@Override
-	protected Map<String, Serializable> getNotificationArgs(NodeRef item) {
-		Map<String, Serializable> args = new HashMap<>();
-		args.put(ARG_DOCUMENT, item);
-		args.put(ARG_ADDITION, add);
-		String userName = authenticationService.getCurrentUserName();
-		NodeRef person = personService.getPerson(userName);
-		String last_name = (String)nodeService.getProperty(person,ContentModel.PROP_FIRSTNAME);
-		String first_name = (String)nodeService.getProperty(person,ContentModel.PROP_LASTNAME);
-		args.put(ARG_MODIFIER, last_name+" "+first_name);
-		return args;
-	}
-
-	@Override
-	protected Collection<String> getNotificationRecipients(NodeRef item) {
-		Set<String> recipients = new HashSet<>();
-		// add default recipients:
-		if(defaultRecipients != null) {
-			recipients.addAll(defaultRecipients);
-		}
-		if(documentSubscribers!=null)
-			recipients.addAll(documentSubscribers);
-		recipients.addAll(getRecipients(item, getNotificationTemplate(item), item));
-		return recipients;
-	}
-
-	public void setAdditionArgs(HashMap<String, Object> addition)
-	{
-		this.add = addition;
-	}
-	/**
-	* Include owner of document to recipients
-	* @param true or false
-	*/
-	public void setSendToOwner(Boolean sendToOwner) {
-    	this.sendToOwner = sendToOwner.booleanValue();
+    @Override
+    public void setServiceRegistry(ServiceRegistry services) {
+        super.setServiceRegistry(services);
+        this.ownableService = services.getOwnableService();
+        this.authenticationService = services.getAuthenticationService();
+        this.personService = services.getPersonService();
     }
-	/**
-	* Recipients provided as parameter documentSubscribers: "recepient field1", ...
-	* @param document subscribers
-	*/
-	public void setDocumentSubscribers(Set<String> documentSubscribers) {
-    	this.documentSubscribers = documentSubscribers;
+
+    @Override
+    protected NodeRef getNotificationTemplate(NodeRef item) {
+        String type = nodeService.getType(item).toPrefixString(namespaceService);
+        return getNotificationTemplate(type);
     }
-	public void setNodeOwnerDAO(NodeOwnerDAO nodeOwnerDAO) {
-		this.nodeOwnerDAO = nodeOwnerDAO;
-	}
+
+    @Override
+    protected Map<String, Serializable> getNotificationArgs(NodeRef item) {
+        Map<String, Serializable> args = new HashMap<>();
+        args.put(ARG_DOCUMENT, item);
+        args.put(ARG_ADDITION, add);
+        String userName = authenticationService.getCurrentUserName();
+        NodeRef person = personService.getPerson(userName);
+        String lastName = (String)nodeService.getProperty(person,ContentModel.PROP_FIRSTNAME);
+        String firstName = (String)nodeService.getProperty(person,ContentModel.PROP_LASTNAME);
+        args.put(ARG_MODIFIER, lastName +" "+ firstName);
+        return args;
+    }
+
+    @Override
+    protected Collection<String> getNotificationRecipients(NodeRef item) {
+        Set<String> recipients = new HashSet<>();
+        // add default recipients:
+        if(defaultRecipients != null) {
+            recipients.addAll(defaultRecipients);
+        }
+        if(documentSubscribers!=null)
+            recipients.addAll(documentSubscribers);
+        recipients.addAll(getRecipients(item, getNotificationTemplate(item), item));
+        return recipients;
+    }
+
+    public void setAdditionArgs(HashMap<String, Object> addition)
+    {
+        this.add = addition;
+    }
+    /**
+    * Include owner of document to recipients
+    * @param true or false
+    */
+    public void setSendToOwner(Boolean sendToOwner) {
+        this.sendToOwner = sendToOwner.booleanValue();
+    }
+    /**
+    * Recipients provided as parameter documentSubscribers: "recepient field1", ...
+    * @param document subscribers
+    */
+    public void setDocumentSubscribers(Set<String> documentSubscribers) {
+        this.documentSubscribers = documentSubscribers;
+    }
+    public void setNodeOwnerDAO(NodeOwnerDAO nodeOwnerDAO) {
+        this.nodeOwnerDAO = nodeOwnerDAO;
+    }
     
-	protected void sendToAssignee(NodeRef item, Set<String> authorities)
-	{
-	}
+    protected void sendToAssignee(NodeRef item, Set<String> authorities)
+    {
+    }
 
-	protected void sendToInitiator(NodeRef item, Set<String> authorities)
-	{
-	}
-	protected void sendToOwner(Set<String> authorities, NodeRef node)
-	{
-		String owner = nodeOwnerDAO.getOwner(node);
-		authorities.add(owner);
-	}
+    protected void sendToInitiator(NodeRef item, Set<String> authorities)
+    {
+    }
+    protected void sendToOwner(Set<String> authorities, NodeRef node)
+    {
+        String owner = nodeOwnerDAO.getOwner(node);
+        authorities.add(owner);
+    }
 
-	
-	protected void sendToSubscribers(NodeRef item, Set<String> authorities, List<String> taskSubscribers)
-	{
-	}
+
+    protected void sendToSubscribers(NodeRef item, Set<String> authorities, List<String> taskSubscribers)
+    {
+    }
 }

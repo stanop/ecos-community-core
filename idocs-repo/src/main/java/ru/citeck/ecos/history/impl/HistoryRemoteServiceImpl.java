@@ -254,7 +254,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     public void sendHistoryEventToRemoteService(NodeRef eventRef) {
         List<AssociationRef> associations = nodeService.getTargetAssocs(eventRef, HistoryModel.ASSOC_DOCUMENT);
         NodeRef documentRef = null;
-        if (associations.size() > 0) {
+        if (!associations.isEmpty()) {
             documentRef = associations.get(0).getTargetRef();
         }
         if (documentRef == null) {

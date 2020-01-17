@@ -4,7 +4,6 @@ import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import ru.citeck.ecos.icase.CaseUtils;
 import ru.citeck.ecos.icase.completeness.current.CurrentLevelsResolver;
@@ -12,14 +11,14 @@ import ru.citeck.ecos.icase.completeness.dto.CaseDocumentDto;
 import ru.citeck.ecos.icase.element.CaseElementDAO;
 import ru.citeck.ecos.icase.element.CaseElementServiceImpl;
 import ru.citeck.ecos.icase.element.config.ElementConfigDto;
+import ru.citeck.ecos.model.PredicateModel;
 import ru.citeck.ecos.model.RequirementModel;
 import ru.citeck.ecos.pred.PredicateService;
+import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static ru.citeck.ecos.constants.RequirementsConstants.*;
 
 public class CaseCompletenessServiceImpl implements CaseCompletenessService {
 
@@ -84,15 +83,15 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
     @Override
     public Set<NodeRef> getCompletedLevels(NodeRef caseRef) {
         return getAllLevels(caseRef).stream()
-                .filter(levelRef -> isLevelCompleted(caseRef, levelRef))
-                .collect(Collectors.toSet());
+            .filter(levelRef -> isLevelCompleted(caseRef, levelRef))
+            .collect(Collectors.toSet());
     }
 
     @Override
     public Set<NodeRef> getLevelRequirements(NodeRef levelRef) {
         List<NodeRef> requirements = RepoUtils.getChildrenByAssoc(levelRef,
-                RequirementModel.ASSOC_LEVEL_REQUIREMENT,
-                nodeService);
+            RequirementModel.ASSOC_LEVEL_REQUIREMENT,
+            nodeService);
         return toSet(requirements);
     }
 
@@ -135,10 +134,8 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
             }
         }
 
-        if (elementConfigs.isEmpty()) {
-            if (isElementMatched(caseRef, requirement, caseRef)) {
-                matchedElements.add(caseRef);
-            }
+        if (elementConfigs.isEmpty() && isElementMatched(caseRef, requirement, caseRef)) {
+            matchedElements.add(caseRef);
         }
 
         return matchedElements;
@@ -152,7 +149,8 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
     }
 
     private List<ElementConfigDto> getRequirementScopes(NodeRef requirement) {
-        List<NodeRef> configRefs = RepoUtils.getTargetAssoc(requirement, RequirementModel.ASSOC_REQUIREMENT_SCOPE, nodeService);
+        List<NodeRef> configRefs =
+            RepoUtils.getTargetAssoc(requirement, RequirementModel.ASSOC_REQUIREMENT_SCOPE, nodeService);
         List<ElementConfigDto> configs = new ArrayList<>();
         configRefs.forEach(ref -> caseElementService.getConfig(ref).ifPresent(configs::add));
         return configs;
@@ -173,6 +171,33 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
         this.currentLevelsResolvers.add(resolver);
     }
 
+    private CaseDocumentDto extractCaseDocumentFromConsequent(NodeRef nodeRef, String quantifier, boolean hasLevel) {
+        boolean mandatory = false;
+        if ((quantifier.equals(EXACTLY_ONE_QUANTIFIER_VALUE) || quantifier.equals(EXISTS_QUANTIFIER_VALUE)) &&
+            hasLevel) {
+            mandatory = true;
+        }
+
+        boolean multiple = false;
+        if (!quantifier.equals(EXACTLY_ONE_QUANTIFIER_VALUE) && !quantifier.equals(SINGLE_QUANTIFIER_VALUE)) {
+            multiple = true;
+        }
+
+        String documentKindProperty = nodeService.getProperty(nodeRef, PredicateModel.PROP_REQUIRED_KIND).toString();
+        String documentKindWithoutPrefix = removeNodeRefPrefix(documentKindProperty);
+
+        String documentTypeProperty = nodeService.getProperty(nodeRef, PredicateModel.PROP_REQUIRED_TYPE).toString();
+        String documentTypeWithoutPrefix = removeNodeRefPrefix(documentTypeProperty);
+
+        if (StringUtils.isNotBlank(documentKindWithoutPrefix)) {
+            documentTypeWithoutPrefix += "/" + documentKindWithoutPrefix;
+        }
+
+        RecordRef typeRecordRef = RecordRef.create("emodel", "type", documentTypeWithoutPrefix);
+
+        return new CaseDocumentDto(typeRecordRef, multiple, mandatory);
+    }
+
     @Override
     public Set<CaseDocumentDto> getCaseDocuments(NodeRef nodeRef) {
 
@@ -186,17 +211,18 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
 
             for (NodeRef requirement : levelRequirements) {
 
-                String quantifier = (String) nodeService.getProperty(requirement, QName.createQName(PRED_QUANTIFIER));
+                String quantifier = predicateService.getQuantifier(requirement).name();
 
-                List<ChildAssociationRef> childAssociations =
-                        nodeService.getChildAssocs(requirement, Collections.singleton(QName.createQName(PRED_CONSEQUENT)));
+                Set<ChildAssociationRef> childAssociations = nodeService.getChildAssocs(requirement).stream()
+                    .filter(e -> e.getTypeQName().equals(PredicateModel.ASSOC_CONSEQUENT))
+                    .collect(Collectors.toSet());
 
                 Set<CaseDocumentDto> extractedCaseDocumentDtos = childAssociations.stream()
-                        .map(ChildAssociationRef::getChildRef)
-                        .filter(this::isKindPredicate)
-                        .map(childNodeRef -> childNodeRefToCaseDocumentDto(childNodeRef, quantifier,
-                                currentLevels.contains(levelNodeRef)))
-                        .collect(Collectors.toSet());
+                    .map(ChildAssociationRef::getChildRef)
+                    .filter(this::isKindPredicate)
+                    .map(childNodeRef -> extractCaseDocumentFromConsequent(childNodeRef, quantifier,
+                        currentLevels.contains(levelNodeRef)))
+                    .collect(Collectors.toSet());
 
                 resultDtos.addAll(extractedCaseDocumentDtos);
             }
@@ -206,31 +232,7 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
     }
 
     private boolean isKindPredicate(NodeRef nodeRef) {
-        return RepoUtils.isSubType(nodeRef, QName.createQName(PRED_KIND_PREDICATE), nodeService, dictionaryService);
-    }
-
-    private CaseDocumentDto childNodeRefToCaseDocumentDto(NodeRef nodeRef, String quantifier, boolean hasLevel) {
-        boolean mandatory = false;
-        if ((quantifier.equals(EXACTLY_ONE_QUANTIFIER_VALUE) || quantifier.equals(EXISTS_QUANTIFIER_VALUE)) && hasLevel) {
-            mandatory = true;
-        }
-
-        boolean multiple = false;
-        if (!quantifier.equals(EXACTLY_ONE_QUANTIFIER_VALUE) && !quantifier.equals(SINGLE_QUANTIFIER_VALUE)) {
-            multiple = true;
-        }
-
-        String documentKind = removeNodeRefPrefix((String) nodeService.getProperty(nodeRef,
-                QName.createQName(PRED_REQUIRED_KIND)));
-        String documentType = removeNodeRefPrefix((String) nodeService.getProperty(nodeRef,
-                QName.createQName(PRED_REQUIRED_TYPE)));
-
-        String type = documentType;
-        if (StringUtils.isNotBlank(documentKind)) {
-            type += "/" + documentKind;
-        }
-
-        return new CaseDocumentDto(type, multiple, mandatory);
+        return nodeService.getType(nodeRef).equals(PredicateModel.TYPE_KIND_PREDICATE);
     }
 
     private String removeNodeRefPrefix(String nodeRef) {

@@ -44,55 +44,61 @@ public class CriteriaToPredicateConverter implements QueryLangConverter {
     private Predicate convertCriteriaTerm(FTSQueryBuilder.Term term) {
 
         if (term instanceof FTSQueryBuilder.TermGroup) {
-
-            ComposedPredicate composedPred;
-
-            FTSQueryBuilder.TermGroup group = (FTSQueryBuilder.TermGroup) term;
-
-            switch (group.getJoinBy()) {
-                case OR:
-                    composedPred = new OrPredicate();
-                    break;
-                case AND:
-                    composedPred = new AndPredicate();
-                    break;
-                default:
-                    throw new IllegalStateException("Unknown operator: " + group.getJoinBy());
-            }
-
-            for (FTSQueryBuilder.Term t : group.getTerms()) {
-                composedPred.addPredicate(convertCriteriaTerm(t));
-            }
-
-            return composedPred;
-
+            return convertCriteriaTermGroup((FTSQueryBuilder.TermGroup) term);
         } else if (term instanceof FTSQueryBuilder.FixedTerm) {
+            return convertCriteriaFixedTerm((FTSQueryBuilder.FixedTerm) term);
+        }
 
-            FTSQueryBuilder.FixedTerm fixedTerm = (FTSQueryBuilder.FixedTerm) term;
-            String termValue = fixedTerm.getValue().trim();
+        throw new RuntimeException("Unknown term: " + term);
+    }
 
-            if (termValue.startsWith("(")) {
-                termValue = termValue.substring(1, termValue.length() - 1);
-            }
+    private Predicate convertCriteriaTermGroup(FTSQueryBuilder.TermGroup group) {
+        ComposedPredicate composedPred;
 
-            if (termValue.contains(" OR ")) {
-                FTSQueryBuilder.TermGroup group = new FTSQueryBuilder.TermGroup(FTSQueryBuilder.JoinOperator.OR);
-                String[] terms = termValue.split(" OR ");
-                group.setTerms(Arrays.stream(terms)
-                                     .map(FTSQueryBuilder.FixedTerm::new)
-                                     .collect(Collectors.toList()));
-                return convertCriteriaTerm(group);
-            }
-            if (termValue.contains(" AND ")) {
-                FTSQueryBuilder.TermGroup group = new FTSQueryBuilder.TermGroup(FTSQueryBuilder.JoinOperator.AND);
-                String[] terms = termValue.split(" AND ");
-                group.setTerms(Arrays.stream(terms)
-                                     .map(FTSQueryBuilder.FixedTerm::new)
-                                     .collect(Collectors.toList()));
-                return convertCriteriaTerm(group);
-            }
+        switch (group.getJoinBy()) {
+            case OR:
+                composedPred = new OrPredicate();
+                break;
+            case AND:
+                composedPred = new AndPredicate();
+                break;
+            default:
+                throw new IllegalStateException("Unknown operator: " + group.getJoinBy());
+        }
 
-            String fixedTermValue = fixedTerm.getValue();
+        for (FTSQueryBuilder.Term t : group.getTerms()) {
+            composedPred.addPredicate(convertCriteriaTerm(t));
+        }
+
+        return composedPred;
+    }
+
+    private Predicate convertCriteriaFixedTerm(FTSQueryBuilder.FixedTerm fixedTerm) {
+        String termValue = fixedTerm.getValue().trim();
+
+        if (termValue.startsWith("(")) {
+            termValue = termValue.substring(1, termValue.length() - 1);
+        }
+
+        if (termValue.contains(" OR ")) {
+            FTSQueryBuilder.TermGroup group = new FTSQueryBuilder.TermGroup(FTSQueryBuilder.JoinOperator.OR);
+            String[] terms = termValue.split(" OR ");
+            group.setTerms(Arrays.stream(terms)
+                    .map(FTSQueryBuilder.FixedTerm::new)
+                    .collect(Collectors.toList()));
+            return convertCriteriaTerm(group);
+        }
+
+        if (termValue.contains(" AND ")) {
+            FTSQueryBuilder.TermGroup group = new FTSQueryBuilder.TermGroup(FTSQueryBuilder.JoinOperator.AND);
+            String[] terms = termValue.split(" AND ");
+            group.setTerms(Arrays.stream(terms)
+                    .map(FTSQueryBuilder.FixedTerm::new)
+                    .collect(Collectors.toList()));
+            return convertCriteriaTerm(group);
+        }
+
+        String fixedTermValue = fixedTerm.getValue();
             boolean isInverse = fixedTerm.isInverse();
             if (fixedTermValue.startsWith("NOT ")) {
                 isInverse = true;
@@ -101,30 +107,26 @@ public class CriteriaToPredicateConverter implements QueryLangConverter {
 
             Matcher matcher = FIX_VALUE_PATTERN.matcher(fixedTermValue);
 
-            if (!matcher.matches()) {
-                throw new RuntimeException("Unknown fixed term: " + fixedTerm.getValue());
-            }
-
-            String eqOrLike = matcher.group(1);
-
-            String field = matcher.group(2);
-            String value = matcher.group(3);
-
-            ValuePredicate pred = new ValuePredicate();
-            pred.setAttribute(field.replace("\\:", ":"));
-
-            if ("@".equals(eqOrLike)) {
-                pred.setType(ValuePredicate.Type.LIKE);
-                pred.setValue(value.replaceAll("\\*", "%"));
-            } else {
-                pred.setType(ValuePredicate.Type.EQ);
-                pred.setValue(value);
-            }
-
-            return isInverse ? new NotPredicate(pred) : pred;
+        if (!matcher.matches()) {
+            throw new RuntimeException("Unknown fixed term: " + fixedTerm.getValue());
         }
 
-        throw new RuntimeException("Unknown term: " + term);
+        String eqOrLike = matcher.group(1);
+        String field = matcher.group(2);
+        String value = matcher.group(3);
+
+        ValuePredicate pred = new ValuePredicate();
+        pred.setAttribute(field.replace("\\:", ":"));
+
+        if ("@".equals(eqOrLike)) {
+            pred.setType(ValuePredicate.Type.LIKE);
+            pred.setValue(value.replaceAll("\\*", "%"));
+        } else {
+            pred.setType(ValuePredicate.Type.EQ);
+            pred.setValue(value);
+        }
+
+        return isInverse ? new NotPredicate(pred) : pred;
     }
 
     @Override

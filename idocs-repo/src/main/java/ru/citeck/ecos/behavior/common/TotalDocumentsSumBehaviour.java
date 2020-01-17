@@ -162,12 +162,9 @@ public class TotalDocumentsSumBehaviour implements
             total = total.setScale(2, BigDecimal.ROUND_HALF_UP);
         }
         final BigDecimal finalTotal = total;
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-            @Override
-            public Void doWork() throws Exception {
-                nodeService.setProperty(nodeRef, totalSumField, finalTotal.doubleValue());
-                return null;
-            }
+        AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
+            nodeService.setProperty(nodeRef, totalSumField, finalTotal.doubleValue());
+            return null;
         });
         List<AssociationRef> targetRefs = nodeService.getTargetAssocs(nodeRef, assocName);
         for (AssociationRef targetRef : targetRefs) {
@@ -177,7 +174,7 @@ public class TotalDocumentsSumBehaviour implements
 
     private Currency getCurrencyByAssocName(NodeRef nodeRef, QName assocName) {
         List<AssociationRef> refs = nodeService.getTargetAssocs(nodeRef, assocName);
-        if(refs == null || refs.size() == 0) {
+        if (refs == null || refs.isEmpty()) {
             return null;
         }
         return currencyService.getCurrencyByNodeRef(refs.get(0).getTargetRef());

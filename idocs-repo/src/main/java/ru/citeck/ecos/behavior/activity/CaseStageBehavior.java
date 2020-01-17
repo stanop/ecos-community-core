@@ -51,7 +51,7 @@ public class CaseStageBehavior implements CaseActivityPolicies.BeforeCaseActivit
             nodeService.setProperty(document, IdocsModel.PROP_DOCUMENT_STATUS, documentStatus);
         }
         List<NodeRef> nodeRefs = RepoUtils.getTargetAssoc(stageRef, StagesModel.ASSOC_CASE_STATUS, nodeService);
-        if (nodeRefs != null && nodeRefs.size() != 0) {
+        if (nodeRefs != null && !nodeRefs.isEmpty()) {
             NodeRef caseStatusRef = nodeRefs.get(0);
             NodeRef document = caseActivityService.getDocument(stageRef);
             caseStatusService.setStatus(document, caseStatusRef);

@@ -85,11 +85,12 @@ public class ClearAuthorityCachesBehaviour implements OnCreateChildAssociationPo
     }
     
     private void clearCaches() {
-        for(String cacheName : caches.keySet()) {
+        for(Map.Entry<String, String> entry : caches.entrySet()) {
+            String cacheName = entry.getKey();
             String methodName = null;
             try {
                 Object cache = applicationContext.getBean(cacheName);
-                methodName = caches.get(cacheName);
+                methodName = entry.getValue();
                 Method method = cache.getClass().getMethod(methodName);
                 method.invoke(cache);
             } catch (NoSuchBeanDefinitionException e) {

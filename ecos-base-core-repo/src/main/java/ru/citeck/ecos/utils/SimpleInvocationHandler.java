@@ -36,21 +36,25 @@ public abstract class SimpleInvocationHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         List<Method> overloadedMethods = getOverloadedMethods(method.getName());
-        if(overloadedMethods.size() == 0) return null;
+        if (overloadedMethods.isEmpty()) {
+            return null;
+        }
         List<Method> matchingMethods = ReflectionUtils.getMatchingMethods(overloadedMethods, args);
-        if(matchingMethods.size() == 0) return null;
+        if (matchingMethods.isEmpty()) {
+            return null;
+        }
         return matchingMethods.get(0).invoke(this, args);
     }
 
     protected List<Method> getOverloadedMethods(String methodName) {
         List<Method> overloadedMethods = methodMap.get(methodName);
-        if(overloadedMethods == null) {
+        if (overloadedMethods == null) {
             overloadedMethods = new LinkedList<>();
             methodMap.put(methodName, overloadedMethods);
             
             Method[] methods = this.getClass().getMethods();
-            for(Method method : methods) {
-                if(method.getName().equals(methodName)) {
+            for (Method method : methods) {
+                if (method.getName().equals(methodName)) {
                     overloadedMethods.add(method);
                 }
             }

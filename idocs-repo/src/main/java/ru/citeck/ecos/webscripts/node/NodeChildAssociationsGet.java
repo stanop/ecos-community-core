@@ -202,8 +202,8 @@ public class NodeChildAssociationsGet extends DeclarativeWebScript {
      */
     private List<AbstractMap.SimpleEntry<QName, Serializable>> transformProperties(Map<QName, Serializable> properties) {
         List<AbstractMap.SimpleEntry<QName, Serializable>> result = new ArrayList<>(properties.size());
-        for (QName qName : properties.keySet()) {
-            result.add(new AbstractMap.SimpleEntry<>(qName, properties.get(qName)));
+        for (Map.Entry<QName, Serializable> entry : properties.entrySet()) {
+            result.add(new AbstractMap.SimpleEntry<>(entry.getKey(), entry.getValue()));
         }
         return result;
     }

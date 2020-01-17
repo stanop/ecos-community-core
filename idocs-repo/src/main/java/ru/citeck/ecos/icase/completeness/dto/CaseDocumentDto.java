@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import ru.citeck.ecos.records2.RecordRef;
 
 @Data
 @AllArgsConstructor
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 public class CaseDocumentDto {
 
-    private String type;
+    private RecordRef type;
     private boolean multiple;
     private boolean mandatory;
 

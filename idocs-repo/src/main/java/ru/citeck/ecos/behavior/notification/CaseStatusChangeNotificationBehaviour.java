@@ -3,10 +3,10 @@ package ru.citeck.ecos.behavior.notification;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.policy.Behaviour;
-import ru.citeck.ecos.behavior.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.behavior.OrderedBehaviour;
 import ru.citeck.ecos.icase.CaseStatusPolicies;
 import ru.citeck.ecos.model.ICaseModel;
 
@@ -24,7 +24,7 @@ public class CaseStatusChangeNotificationBehaviour extends AbstractICaseDocument
     private String caseStatus;
     private String excludeStageName;
 
-    private final static String ALL_STATUS_KEY = "AllStatus";
+    private static final String ALL_STATUS_KEY = "AllStatus";
 
     public void init() {
         OrderedBehaviour statusChangeBehaviour = new OrderedBehaviour(
@@ -41,8 +41,11 @@ public class CaseStatusChangeNotificationBehaviour extends AbstractICaseDocument
 
     @Override
     public void onCaseStatusChanged(NodeRef caseRef, NodeRef caseStatusBefore, NodeRef caseStatusAfter) {
+        if (!nodeService.exists(caseRef)) {
+            return;
+        }
 
-        if (!isEnabled() || sender == null || !nodeService.exists(caseRef) || !nodeService.exists(caseStatusAfter)) {
+        if (!isActive(caseRef) || sender == null || !nodeService.exists(caseStatusAfter)) {
             return;
         }
 

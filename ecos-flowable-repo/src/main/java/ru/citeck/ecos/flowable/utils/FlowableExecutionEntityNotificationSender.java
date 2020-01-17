@@ -43,7 +43,6 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
     public static final String ARG_WORKFLOW_PROPERTIES = "properties";
     public static final String ARG_WORKFLOW_DOCUMENTS = "documents";
 
-    private Map<String, Map<String, List<String>>> taskSubscribers;
     protected WorkflowQNameConverter qNameConverter;
     protected PersonService personService;
     protected AuthenticationService authenticationService;
@@ -68,20 +67,20 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
     /**
      * Recipients provided as parameter taskSubscribers: "task name"-{"doc type1"-"recepient field1", ...}
      */
+    @Deprecated
     public void setTaskSubscribers(Map<String, Map<String, List<String>>> taskSubscribers) {
-        this.taskSubscribers = taskSubscribers;
+        // not used
     }
 
     // get notification template arguments for the task
     protected Map<String, Serializable> getNotificationArgs(ExecutionEntity task) {
         Map<String, Serializable> args = new HashMap<>();
-        //args.put(ARG_TASK, getTaskInfo(task));
         args.put(ARG_WORKFLOW, getWorkflowInfo(task));
         String userName = authenticationService.getCurrentUserName();
         NodeRef person = personService.getPerson(userName);
-        String last_name = (String) nodeService.getProperty(person, ContentModel.PROP_FIRSTNAME);
-        String first_name = (String) nodeService.getProperty(person, ContentModel.PROP_LASTNAME);
-        args.put(ARG_MODIFIER, last_name + " " + first_name);
+        String lastName = (String) nodeService.getProperty(person, ContentModel.PROP_FIRSTNAME);
+        String firstName = (String) nodeService.getProperty(person, ContentModel.PROP_LASTNAME);
+        args.put(ARG_MODIFIER, lastName + " " + firstName);
         return args;
     }
 
@@ -115,7 +114,6 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
         if (workflowPackage != null && nodeService.exists(workflowPackage)) {
             List<ChildAssociationRef> children = services.getNodeService().getChildAssocs(workflowPackage);
             for (ChildAssociationRef child : children) {
-                recipient.clear();
                 NodeRef node = child.getChildRef();
                 if (node != null && nodeService.exists(node)) {
                     if (allowDocList == null) {
@@ -192,8 +190,8 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
 
     protected void sendToInitiator(ExecutionEntity task, Set<String> authorities) {
         NodeRef initiator = (NodeRef) task.getVariable("initiator");
-        String initiator_name = (String) nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
-        authorities.add(initiator_name);
+        String initiatorName = (String) nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
+        authorities.add(initiatorName);
     }
 
     protected void sendToOwner(Set<String> authorities, NodeRef node) {
@@ -219,8 +217,8 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
                     for (AssociationRef assoc : assocs) {
                         NodeRef ref = assoc.getTargetRef();
                         if (nodeService.exists(ref)) {
-                            String sub_name = (String) nodeService.getProperty(ref, ContentModel.PROP_USERNAME);
-                            authorities.add(sub_name);
+                            String subName = (String) nodeService.getProperty(ref, ContentModel.PROP_USERNAME);
+                            authorities.add(subName);
                         }
                     }
                 }

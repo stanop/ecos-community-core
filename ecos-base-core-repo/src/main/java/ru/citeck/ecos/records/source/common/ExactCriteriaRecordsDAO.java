@@ -44,7 +44,7 @@ public class ExactCriteriaRecordsDAO extends FilteredRecordsDAO implements Servi
                 arrayValue = strNode.isTextual() ? strNode.asText() : "";
             }
             if (StringUtils.isBlank(value)) {
-                return arrayValue.length() == 0;
+                return arrayValue.isEmpty();
             } else {
                 return Objects.equals(value, arrayValue);
             }

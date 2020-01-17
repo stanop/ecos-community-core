@@ -47,82 +47,82 @@ import org.alfresco.service.namespace.RegexQNamePattern;
  */
 public class GroupSubTypeDAOImpl implements GroupSubTypeDAO {
 
-	private NodeService nodeService;
-	private QName assocName;
-	private QName typeName;
-	private QName aspectName;
-	private NodeRef rootNode;
+    private NodeService nodeService;
+    private QName assocName;
+    private QName typeName;
+    private QName aspectName;
+    private NodeRef rootNode;
 
-	/////////////////////////////////////////////////////////////////
-	//                     SPRING INTERFACE                        //
-	/////////////////////////////////////////////////////////////////
-	
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
-	public void setAssocName(QName assocName) {
-		this.assocName = assocName;
-	}
-	public void setTypeName(QName typeName) {
-		this.typeName = typeName;
-	}
-	public void setAspectName(QName aspectName) {
-		this.aspectName = aspectName;
-	}
-	public void setRootNode(NodeRef rootNode) {
-		this.rootNode = rootNode;
-	}
+    /////////////////////////////////////////////////////////////////
+    //                     SPRING INTERFACE                        //
+    /////////////////////////////////////////////////////////////////
 
-	/////////////////////////////////////////////////////////////////
-	//              GroupSubTypeDAO IMPLEMENTATION                 //
-	/////////////////////////////////////////////////////////////////
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
+    public void setAssocName(QName assocName) {
+        this.assocName = assocName;
+    }
+    public void setTypeName(QName typeName) {
+        this.typeName = typeName;
+    }
+    public void setAspectName(QName aspectName) {
+        this.aspectName = aspectName;
+    }
+    public void setRootNode(NodeRef rootNode) {
+        this.rootNode = rootNode;
+    }
 
-	@Override
-	public NodeRef getSubType(String name) {
-		NodeRef existing = null;
-		List<ChildAssociationRef> children = nodeService.getChildAssocs(rootNode, assocName, QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, name));
-		if(children.size() > 0) {
-			existing = children.get(0).getChildRef();
-		}
-		return existing != null && nodeService.exists(existing) ? existing : null;
-	}
-	
-	@Override
-	public List<NodeRef> getAllSubTypes() {
-		List<NodeRef> all = new ArrayList<>();
-		List<ChildAssociationRef> children = nodeService.getChildAssocs(rootNode, assocName, RegexQNamePattern.MATCH_ALL);
-		for(ChildAssociationRef child : children) {
-			all.add(child.getChildRef());
-		}
-		return all;
-	}
+    /////////////////////////////////////////////////////////////////
+    //              GroupSubTypeDAO IMPLEMENTATION                 //
+    /////////////////////////////////////////////////////////////////
 
-	@Override
-	public NodeRef createSubType(String name) {
-		NodeRef existing = getSubType(name);
-		if(existing != null) {
-			return existing;
-		}
-		Map<QName, Serializable> properties = new HashMap<>();
-		properties.put(ContentModel.PROP_NAME, name);
-		ChildAssociationRef child = nodeService.createNode(rootNode, assocName, QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, name), typeName, properties);
-		if(child == null) {
-			return null;
-		}
-		nodeService.addAspect(child.getChildRef(), aspectName, new HashMap<>());
-		return child.getChildRef();
-	}
-	
-	@Override
-	public void deleteSubType(String name) {
-		NodeRef existing = getSubType(name);
-		if(existing != null) {
-			nodeService.deleteNode(existing);
-		}
-	}
-	@Override
-	public NodeRef getSubTypeRoot() {
-		return this.rootNode;
-	}
+    @Override
+    public NodeRef getSubType(String name) {
+        NodeRef existing = null;
+        List<ChildAssociationRef> children = nodeService.getChildAssocs(rootNode, assocName, QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, name));
+        if (!children.isEmpty()) {
+            existing = children.get(0).getChildRef();
+        }
+        return existing != null && nodeService.exists(existing) ? existing : null;
+    }
+
+    @Override
+    public List<NodeRef> getAllSubTypes() {
+        List<NodeRef> all = new ArrayList<>();
+        List<ChildAssociationRef> children = nodeService.getChildAssocs(rootNode, assocName, RegexQNamePattern.MATCH_ALL);
+        for(ChildAssociationRef child : children) {
+            all.add(child.getChildRef());
+        }
+        return all;
+    }
+
+    @Override
+    public NodeRef createSubType(String name) {
+        NodeRef existing = getSubType(name);
+        if(existing != null) {
+            return existing;
+        }
+        Map<QName, Serializable> properties = new HashMap<>();
+        properties.put(ContentModel.PROP_NAME, name);
+        ChildAssociationRef child = nodeService.createNode(rootNode, assocName, QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, name), typeName, properties);
+        if(child == null) {
+            return null;
+        }
+        nodeService.addAspect(child.getChildRef(), aspectName, new HashMap<>());
+        return child.getChildRef();
+    }
+
+    @Override
+    public void deleteSubType(String name) {
+        NodeRef existing = getSubType(name);
+        if(existing != null) {
+            nodeService.deleteNode(existing);
+        }
+    }
+    @Override
+    public NodeRef getSubTypeRoot() {
+        return this.rootNode;
+    }
 
 }

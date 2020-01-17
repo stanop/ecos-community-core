@@ -58,14 +58,15 @@ public class TimeUtils {
 
     private static class PrecisionByDuration {
 
-        private static final List<PrecisionByDuration> precisions = new ArrayList<PrecisionByDuration>() {{
-            add(new PrecisionByDuration("S", Calendar.SECOND));
-            add(new PrecisionByDuration("T.*[0-9]+M", Calendar.MINUTE));
-            add(new PrecisionByDuration("H", Calendar.HOUR));
-            add(new PrecisionByDuration("D", Calendar.DATE));
-            add(new PrecisionByDuration("^[^T]*[0-9]+M", Calendar.MONTH));
-            add(new PrecisionByDuration("Y", Calendar.YEAR));
-        }};
+        private static final List<PrecisionByDuration> precisions = new ArrayList<>();
+        static {
+            precisions.add(new PrecisionByDuration("S", Calendar.SECOND));
+            precisions.add(new PrecisionByDuration("T.*[0-9]+M", Calendar.MINUTE));
+            precisions.add(new PrecisionByDuration("H", Calendar.HOUR));
+            precisions.add(new PrecisionByDuration("D", Calendar.DATE));
+            precisions.add(new PrecisionByDuration("^[^T]*[0-9]+M", Calendar.MONTH));
+            precisions.add(new PrecisionByDuration("Y", Calendar.YEAR));
+        }
 
         private final Pattern pattern;
         private final int field;

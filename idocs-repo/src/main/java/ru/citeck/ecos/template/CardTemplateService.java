@@ -94,7 +94,7 @@ public class CardTemplateService {
         for (NodeRef nodeRef : nodes) {
             List<NodeRef> templatesForType = getTemplatesForType(documentType,
                     (String) nodeService.getProperty(nodeRef, ContentModel.PROP_NAME));
-            if (templatesForType != null && templatesForType.size() > 0) {
+            if (templatesForType != null && !templatesForType.isEmpty()) {
                 results.add(templatesForType.get(0));
             }
         }

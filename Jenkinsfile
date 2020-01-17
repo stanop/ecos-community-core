@@ -12,7 +12,7 @@ timestamps {
           doGenerateSubmoduleConfigurations: false,
           extensions: [],
           submoduleCfg: [],
-          userRemoteConfigs: [[credentialsId: 'bc074014-bab1-4fb0-b5a4-4cfa9ded5e66',url: 'git@bitbucket.org:citeck/ecos-community.git']]
+          userRemoteConfigs: [[credentialsId: 'bc074014-bab1-4fb0-b5a4-4cfa9ded5e66',url: 'git@bitbucket.org:citeck/ecos-community-core.git']]
         ])
       }
       def project_version = readMavenPom().getVersion()
@@ -24,17 +24,7 @@ timestamps {
       stage('Assembling and publishing project artifacts') {
         withMaven(mavenLocalRepo: '/opt/jenkins/.m2/repository', tempBinDir: '') {
           sh "mvn clean deploy -Penterprise -DskipTests=true"
-          sh "cd war-solution/ && mvn clean deploy -Pjavamelody -DskipTests=true"
         }
-      }
-      stage('Building an ecos docker image') {
-        build job: 'build_ecos_image', parameters: [
-          string(name: 'DOCKER_BUILD_DIR', value: '/docker/centos/ecos'), 
-          string(name: 'ECOS', value: 'community'), 
-          string(name: 'ECOS_VERSION', value: "${project_version}"), 
-          string(name: 'ECOS_CLASSIFIER', value: '5.1.f-com'), 
-          string(name: 'FLOWABLE_VERSION', value: '1.5.0')
-        ]
       }
     }
     catch (Exception e) {

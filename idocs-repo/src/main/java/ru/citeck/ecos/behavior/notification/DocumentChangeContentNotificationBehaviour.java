@@ -3,10 +3,10 @@ package ru.citeck.ecos.behavior.notification;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
-import ru.citeck.ecos.behavior.OrderedBehaviour;
 import org.alfresco.service.cmr.repository.ContentData;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.behavior.OrderedBehaviour;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -23,9 +23,9 @@ public class DocumentChangeContentNotificationBehaviour extends AbstractICaseDoc
     private String documentType;
     private HashMap<String, Object> addition = new HashMap<>();
 
-    private final static String PARAM_METHOD = "method";
-    private final static String PARAM_METHOD_UPDATE = "update";
-    private final static String PARAM_METHOD_DELETE = "delete";
+    private static final String PARAM_METHOD = "method";
+    private static final String PARAM_METHOD_UPDATE = "update";
+    private static final String PARAM_METHOD_DELETE = "delete";
 
     public void init() {
         this.policyComponent.bindClassBehaviour(NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME,

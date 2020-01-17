@@ -323,7 +323,7 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
         List<NodeRef> elementConfigs = RepoUtils.getTargetNodeRefs(elementType,
                                                                    ICaseTemplateModel.ASSOC_ELEMENT_CONFIG,
                                                                    nodeService);
-        if (elementConfigs.size() == 0) {
+        if (elementConfigs.isEmpty()) {
             throw new IllegalStateException("Template element type does not contain " +
                                             "element config reference: " + elementType);
         }
@@ -359,8 +359,7 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
         AlfrescoTransactionSupport.unbindResource(KEY_COPIES);
 
         // step 1: add children to copy map
-        Queue<NodeRef> queue = new LinkedList<>();
-        queue.addAll(copyMap.values());
+        Queue<NodeRef> queue = new LinkedList<>(copyMap.values());
         while (!queue.isEmpty()) {
             NodeRef node = queue.poll();
             List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(node);
@@ -462,7 +461,7 @@ public class CaseElementServiceImpl extends AbstractLifecycleBean implements Cas
         for (ElementConfigDto config : configs) {
             CaseElementDAO<ElementConfigDto> strategy = getStrategy(config);
             List<NodeRef> caseNodes = strategy.getCases(element, config);
-            if (caseNodes.size() > 0) {
+            if (!caseNodes.isEmpty()) {
                 elementHasCases = true;
             }
             for (NodeRef caseNode : caseNodes) {

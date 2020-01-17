@@ -141,11 +141,10 @@ public class TaskDeputyListener extends AbstractDeputyListener {
 
     @Override
     public void onUserAvailable(String userName) {
-//        AdvancedTaskQuery query = new AdvancedTaskQuery().setClaimOwner(userName);
         AdvancedTaskQuery query = new AdvancedTaskQuery().setOriginalOwner(userName).withoutGroupCandidates();
         List<WorkflowTask> tasks = advancedWorkflowService.queryTasks(query);
         
-        if (tasks.size() > 0) {
+        if (!tasks.isEmpty()) {
             List<String> userDeputies = new CopyOnWriteArrayList<>(deputyService.getUserDeputies(userName));
             userDeputies.add(userName);
 
@@ -165,11 +164,10 @@ public class TaskDeputyListener extends AbstractDeputyListener {
 
     @Override
     public void onUserUnavailable(String userName) {
-//        AdvancedTaskQuery query = new AdvancedTaskQuery().setClaimOwner(userName);
         AdvancedTaskQuery query = new AdvancedTaskQuery().setAssignee(userName).withoutGroupCandidates();
         List<WorkflowTask> tasks = advancedWorkflowService.queryTasks(query);
 
-        if (tasks.size() > 0) {
+        if (!tasks.isEmpty()) {
             RetryingTransactionHelper retryingTransactionHelper = transactionService.getRetryingTransactionHelper();
 
             BatchProcessor<WorkflowTask> batchProcessor = new BatchProcessor<>(
@@ -255,7 +253,7 @@ public class TaskDeputyListener extends AbstractDeputyListener {
 
             @SuppressWarnings("unchecked")
             List<NodeRef> candidates = (List<NodeRef>) task.getProperties().get(WorkflowModel.ASSOC_POOLED_ACTORS);
-            if (candidates.size() == 0) {
+            if (candidates.isEmpty()) {
                 List<String> actors = deputyService.getUserDeputies(userName);
                 actors.add(userName);
                 addPooledActors(Collections.singletonList(task), actors);
@@ -281,16 +279,6 @@ public class TaskDeputyListener extends AbstractDeputyListener {
         public void process(WorkflowTask task) throws Throwable {
             strategy.perform(task);
         }
-    }
-    
-    @Override
-    public void onAssistantAdded(String userName) {
-        //addDeputiesToTasks(userName);
-    }
-
-    @Override
-    public void onAssistantRemoved(String userName, String deputyName) {
-        //removeDeputiesFromTasks(userName, Collections.singletonList(deputyName));
     }
 
     public ArrayList<String> getActorsList(String userName) {

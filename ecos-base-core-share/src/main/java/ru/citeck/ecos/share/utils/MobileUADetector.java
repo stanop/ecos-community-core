@@ -13,7 +13,7 @@ public class MobileUADetector {
 
     private static final Log logger = LogFactory.getLog(MobileUADetector.class);
 
-    private final static String HEADER_USER_AGENT = "user-agent";
+    private static final String HEADER_USER_AGENT = "user-agent";
 
     private static ConcurrentHashMap<String, UAgentInfo> agentCache = new ConcurrentHashMap<>();
 

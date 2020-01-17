@@ -60,14 +60,12 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
         } catch (IOException e) {
             Logger.getLogger(ReportParametersFilter.class).error(e.getMessage(), e);
         }
-
         DataBundle copyDB = new DataBundle(copyIS, model);
 
         ContentReader contentReader = helper.getContentReader(copyDB);
         Object criteriaObj = evaluateExpression(contentReader.getContentString(), model);
 
-        HashMap<String, Object> newModel = new HashMap<>();
-        newModel.putAll(model);
+        HashMap<String, Object> newModel = new HashMap<>(model);
         newModel = insertReportParams(criteriaObj, newModel);
 
         return new DataBundle(newIS, newModel);
@@ -79,7 +77,8 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
         if (criteriaObj instanceof String) {
             try {
                 criteriaJSON = new JSONObject((String) criteriaObj);
-            } catch (JSONException e) {
+            } catch (JSONException ignored) {
+                // Empty
             }
         } else if (criteriaObj instanceof JSONObject) {
             criteriaJSON = (JSONObject) criteriaObj;
@@ -91,10 +90,12 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
                 String name = (String) criteriaKeys.next();
                 if (name.startsWith("report")) {
                     try {
-                        if (name.equals("reportFilename"))
+                        if (name.equals("reportFilename")) {
                             model.put(ProcessorConstants.KEY_FILENAME, simpleJSON2Java(criteriaJSON.get(name)));
+                        }
                         model.put(name, simpleJSON2Java(criteriaJSON.get(name)));
-                    } catch (JSONException e) {
+                    } catch (JSONException ignored) {
+                        // Empty
                     }
                 }
             }

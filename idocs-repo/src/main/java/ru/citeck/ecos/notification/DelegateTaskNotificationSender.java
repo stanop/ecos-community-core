@@ -84,11 +84,9 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
     public static final String ARG_WORKFLOW_ID = "id";
     public static final String ARG_WORKFLOW_PROPERTIES = "properties";
     public static final String ARG_WORKFLOW_DOCUMENTS = "documents";
-    private Map<String, Map<String, String>> taskProperties;
     List<String> allowDocList;
     Map<String, Map<String, String>> subjectTemplates;
     Map<String, String> subjectTemplatesForWorkflow;
-    private TemplateService templateService;
     private String nodeVariable;
     private String templateEngine = "freemarker";
     private static final Log logger = LogFactory.getLog(DelegateTaskNotificationSender.class);
@@ -184,7 +182,7 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
             }
             if (subject == null) {
                 ArrayList<Object> docsInfo = getWorkflowDocuments(task);
-                if (docsInfo.size() > 0 && subjectTemplates != null && subjectTemplates.containsKey(taskFormKey)) {
+                if (!docsInfo.isEmpty() && subjectTemplates != null && subjectTemplates.containsKey(taskFormKey)) {
                     Map<String, String> taskSubjectTemplate = subjectTemplates.get(taskFormKey);
                     if (taskSubjectTemplate.containsKey(qNameConverter.mapQNameToName(nodeService.getType((NodeRef) docsInfo.get(0))))) {
                         HashMap<String, Object> model = new HashMap<>(1);
@@ -193,16 +191,7 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
                                 taskSubjectTemplate.get(qNameConverter.mapQNameToName(nodeService.getType((NodeRef) docsInfo.get(0)))),
                                 model);
                     }
-                } /*else {
-                    String processDef = task.getProcessDefinitionId();
-                    String wfkey = processDef.substring(0, processDef.indexOf(":"));
-                    if (subjectTemplatesForWorkflow != null && subjectTemplatesForWorkflow.containsKey(wfkey)) {
-                        HashMap<String, Object> model = new HashMap<>(1);
-                        model.put(nodeVariable, docsInfo.get(0));
-                        subject = services.getTemplateService().processTemplateString(
-                                templateEngine, subjectTemplatesForWorkflow.get(wfkey), model);
-                    }
-                }*/
+                }
                 if (subject == null) {
                     subject = task.getName();
                 }
@@ -219,8 +208,9 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
         this.subjectTemplates = subjectTemplates;
     }
 
+    @Deprecated
     public void setTemplateService(TemplateService templateService) {
-        this.templateService = templateService;
+        // not used
     }
 
     public void setTemplateEngine(String templateEngine) {
@@ -245,8 +235,9 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
     /* Properties for tasks provided as map: "task name"-{"property1"-"value1", ...}
     * @param task subscribers
     */
+    @Deprecated
     public void setTaskProperties(Map<String, Map<String, String>> taskProperties) {
-        this.taskProperties = taskProperties;
+        // not used
     }
 
     protected void sendToAssignee(DelegateTask task, Set<String> authorities) {
@@ -265,12 +256,12 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
                 String user = item.getUserId();
                 ExecutionEntity executionEntity = ((ExecutionEntity) task.getExecution()).getProcessInstance();
                 NodeRef initiator = ((ActivitiScriptNode) executionEntity.getVariable("initiator")).getNodeRef();
-                String initiator_name = (String) nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
+                String initiatorName = (String) nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
                 String sender = (String) task.getVariable("cwf_sender");
                 logger.debug("!!!! user " + user);
                 logger.debug("!!!! sender " + sender);
-                logger.debug("!!!! initiator_name " + initiator_name);
-                if (user != null && !user.equals(initiator_name) && !user.equals(sender)) {
+                logger.debug("!!!! initiatorName " + initiatorName);
+                if (user != null && !user.equals(initiatorName) && !user.equals(sender)) {
                     authorities.add(user);
                 }
             }
@@ -308,8 +299,8 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
                     for (AssociationRef assoc : assocs) {
                         NodeRef ref = assoc.getTargetRef();
                         if (nodeService.exists(ref)) {
-                            String sub_name = (String) nodeService.getProperty(ref, ContentModel.PROP_USERNAME);
-                            authorities.add(sub_name);
+                            String subName = (String) nodeService.getProperty(ref, ContentModel.PROP_USERNAME);
+                            authorities.add(subName);
                         }
                     }
                 }
@@ -365,7 +356,7 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
     }
 
     public boolean isResending(DelegateTask task) {
-        if (getWorkflowDocuments(task) != null && getWorkflowDocuments(task).size() > 0) {
+        if (getWorkflowDocuments(task) != null && !getWorkflowDocuments(task).isEmpty()) {
             String query = "TYPE:\"wfgfam:familiarizeTask\" AND @wfm:document:\"" + getWorkflowDocuments(task).get(0) + "\"";
             ResultSet nodes = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, "fts-alfresco", query);
             return (nodes.length() > 0);

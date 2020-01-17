@@ -10,10 +10,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
 import ru.citeck.ecos.records2.QueryContext;
+import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
@@ -69,17 +69,6 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
         return records.stream()
                       .map(r -> new UserValue(r.toString()))
                       .collect(Collectors.toList());
-    }
-
-    private String getFixedUserName(RecordRef recordRef) {
-        String userName;
-        String source = recordRef.getSourceId();
-        if (StringUtils.isNotBlank(source)) {
-            userName = source + "@" + recordRef.getId();
-        } else {
-            userName = recordRef.getId();
-        }
-        return userName;
     }
 
     @Override
@@ -206,9 +195,8 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
 
         @Override
         public Object getAttribute(String name, MetaField field) {
-            switch (name) {
-                case "list":
-                    return new ArrayList<>(getAuthorities());
+            if ("list".equals(name)) {
+                return new ArrayList<>(getAuthorities());
             }
             return null;
         }

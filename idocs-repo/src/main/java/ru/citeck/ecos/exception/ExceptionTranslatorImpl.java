@@ -33,44 +33,47 @@ import org.apache.commons.logging.LogFactory;
  *
  */
 class ExceptionTranslatorImpl implements ExceptionTranslator {
-	private static final Log log = LogFactory.getLog(ExceptionTranslatorImpl.class);
-	private final Collection<ExceptionMessageConfig> configs;
+    private static final Log log = LogFactory.getLog(ExceptionTranslatorImpl.class);
+    private final Collection<ExceptionMessageConfig> configs;
 
-	public ExceptionTranslatorImpl(String config) {
-		if (StringUtils.isBlank(config)) {
-			configs = Collections.emptyList();
-		} else {
-			String[] lines = config.split(ExceptionService.ERROR_CONFIG_LINE_DELIMITER);
-			configs = new ArrayList<>(lines.length);
-			for(int i = 0; i < lines.length; i++) {
-				try {
-					ExceptionMessageConfig m = new ExceptionMessageConfig(lines[i]);
-					configs.add(m);
-				} catch(Throwable e) {
-					if (log.isErrorEnabled())
-						log.error("Skipping wrong error config line: " + lines[i], e);
-				}
-			}
-		}
-		if (configs.size() == 0 && log.isWarnEnabled())
-			log.warn("Internal config is empty! input config=" + config);
-	}
+    public ExceptionTranslatorImpl(String config) {
+        if (StringUtils.isBlank(config)) {
+            configs = Collections.emptyList();
+        } else {
+            String[] lines = config.split(ExceptionService.ERROR_CONFIG_LINE_DELIMITER);
+            configs = new ArrayList<>(lines.length);
+            for (int i = 0; i < lines.length; i++) {
+                try {
+                    ExceptionMessageConfig m = new ExceptionMessageConfig(lines[i]);
+                    configs.add(m);
+                } catch (Throwable e) {
+                    if (log.isErrorEnabled()) {
+                        log.error("Skipping wrong error config line: " + lines[i], e);
+                    }
+                }
+            }
+        }
 
-	/**
-	 * This implementation returns message from input exception if
-	 * there is no corresponded description of the one exception.
-	 */
-	@Override
-	public String translateException(Throwable t) {
-		String configuredMessage = t.getMessage();
-		for (ExceptionMessageConfig config : configs) {
-			String message = config.getMessage(t);
-			if(message != null) {
-				configuredMessage = message;
-				break;
-			}
-		}
-		return configuredMessage;
-	}
+        if (configs.isEmpty() && log.isWarnEnabled()) {
+            log.warn("Internal config is empty! input config=" + config);
+        }
+    }
+
+    /**
+     * This implementation returns message from input exception if
+     * there is no corresponded description of the one exception.
+     */
+    @Override
+    public String translateException(Throwable t) {
+        String configuredMessage = t.getMessage();
+        for (ExceptionMessageConfig config : configs) {
+            String message = config.getMessage(t);
+            if (message != null) {
+                configuredMessage = message;
+                break;
+            }
+        }
+        return configuredMessage;
+    }
 
 }

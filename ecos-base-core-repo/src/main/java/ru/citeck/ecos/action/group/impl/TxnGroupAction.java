@@ -32,7 +32,7 @@ public abstract class TxnGroupAction<T> extends BaseGroupAction<T> {
 
         List<ActionResult<T>> transactionResults = new ArrayList<>();
 
-        while (nodesToProcess.size() > 0) {
+        while (!nodesToProcess.isEmpty()) {
 
             try {
 

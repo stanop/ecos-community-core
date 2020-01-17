@@ -23,23 +23,16 @@
  */
 package org.alfresco.web.app.servlet;
 
-import java.io.IOException;
-import java.util.Locale;
-import java.util.StringTokenizer;
+import org.springframework.extensions.surf.util.I18NUtil;
+import ru.citeck.ecos.server.utils.StrictLocaleRequest;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-
-import org.springframework.extensions.surf.util.I18NUtil;
-
-import ru.citeck.ecos.server.utils.StrictLocaleRequest;
+import java.io.IOException;
+import java.util.Locale;
+import java.util.StringTokenizer;
 
 /**
  * @author Stas Sokolovsky
@@ -48,100 +41,99 @@ import ru.citeck.ecos.server.utils.StrictLocaleRequest;
  *         ALL requests.
  */
 public class GlobalLocalizationFilter implements Filter {
-	private static final String LOCALE = "locale";
-	public static final String MESSAGE_BUNDLE = "alfresco.messages.webclient";
+    public static final String MESSAGE_BUNDLE = "alfresco.messages.webclient";
 
-	/**
-	 * Run the filter
-	 * 
-	 * @param request
-	 *            ServletRequest
-	 * @param response
-	 *            ServletResponse
-	 * @param chain
-	 *            FilterChain
-	 * @exception IOException
-	 * @exception ServletException
-	 */
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    /**
+     * Run the filter
+     *
+     * @param request
+     *            ServletRequest
+     * @param response
+     *            ServletResponse
+     * @param chain
+     *            FilterChain
+     * @exception IOException
+     * @exception ServletException
+     */
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
-		// ADDON START Setting locale explicitly
-		if (request instanceof HttpServletRequest) {
-			// cast the object
-			HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-			request = new StrictLocaleRequest(httpServletRequest);
-		}
-		// ADDON END Setting locale explicitly
-		
-		setLanguageFromRequestHeader((HttpServletRequest) request);
+        // ADDON START Setting locale explicitly
+        if (request instanceof HttpServletRequest) {
+            // cast the object
+            HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+            request = new StrictLocaleRequest(httpServletRequest);
+        }
+        // ADDON END Setting locale explicitly
 
-		// continue filter chaining
-		chain.doFilter(request, new HttpServletResponseWrapper((HttpServletResponse) response) {
+        setLanguageFromRequestHeader((HttpServletRequest) request);
 
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see
-			 * javax.servlet.ServletResponseWrapper#setContentType(java.lang
-			 * .String)
-			 */
-			@Override
-			public void setContentType(String type) {
-				super.setContentType(type);
+        // continue filter chaining
+        chain.doFilter(request, new HttpServletResponseWrapper((HttpServletResponse) response) {
 
-				// Parse the parameters of the media type, since some app
-				// servers (Websphere) refuse to pay attention if the
-				// character encoding isn't explicitly set
-				int startIndex = type.indexOf(';') + 1;
-				int length = type.length();
-				while (startIndex != 0 && startIndex < length) {
-					int endIndex = type.indexOf(';', startIndex);
-					if (endIndex == -1) {
-						endIndex = length;
-					}
-					String param = type.substring(startIndex, endIndex);
-					int sepIndex = param.indexOf('=');
-					if (sepIndex != -1) {
-						String name = param.substring(0, sepIndex).trim();
-						if (name.equalsIgnoreCase("charset")) {
-							setCharacterEncoding(param.substring(sepIndex + 1).trim());
-							break;
-						}
-					}
-					startIndex = endIndex + 1;
-				}
-			}
-		});
+            /*
+             * (non-Javadoc)
+             *
+             * @see
+             * javax.servlet.ServletResponseWrapper#setContentType(java.lang
+             * .String)
+             */
+            @Override
+            public void setContentType(String type) {
+                super.setContentType(type);
 
-	}
+                // Parse the parameters of the media type, since some app
+                // servers (Websphere) refuse to pay attention if the
+                // character encoding isn't explicitly set
+                int startIndex = type.indexOf(';') + 1;
+                int length = type.length();
+                while (startIndex != 0 && startIndex < length) {
+                    int endIndex = type.indexOf(';', startIndex);
+                    if (endIndex == -1) {
+                        endIndex = length;
+                    }
+                    String param = type.substring(startIndex, endIndex);
+                    int sepIndex = param.indexOf('=');
+                    if (sepIndex != -1) {
+                        String name = param.substring(0, sepIndex).trim();
+                        if (name.equalsIgnoreCase("charset")) {
+                            setCharacterEncoding(param.substring(sepIndex + 1).trim());
+                            break;
+                        }
+                    }
+                    startIndex = endIndex + 1;
+                }
+            }
+        });
 
-	/**
-	 * Apply Client and Repository language locale based on the
-	 * 'Accept-Language' request header
-	 * 
-	 * @param request
-	 *            HttpServletRequest
-	 */
-	public void setLanguageFromRequestHeader(HttpServletRequest req) {
-		Locale locale = null;
+    }
 
-		String acceptLang = req.getHeader("Accept-Language");
-		if (acceptLang != null && acceptLang.length() > 0) {
-			StringTokenizer tokenizer = new StringTokenizer(acceptLang, ",; ");
-			// get language and convert to java locale format
-			String language = tokenizer.nextToken().replace('-', '_');
-			locale = I18NUtil.parseLocale(language);
-			I18NUtil.setLocale(locale);
-		} else {
-			I18NUtil.setLocale(Locale.getDefault());
-		}
-	}
+    /**
+     * Apply Client and Repository language locale based on the
+     * 'Accept-Language' request header
+     *
+     * @param request
+     *            HttpServletRequest
+     */
+    public void setLanguageFromRequestHeader(HttpServletRequest req) {
+        Locale locale = null;
 
-	public void init(FilterConfig filterConfig) throws ServletException {
-		// Nothing to do
-	}
+        String acceptLang = req.getHeader("Accept-Language");
+        if (acceptLang != null && !acceptLang.isEmpty()) {
+            StringTokenizer tokenizer = new StringTokenizer(acceptLang, ",; ");
+            // get language and convert to java locale format
+            String language = tokenizer.nextToken().replace('-', '_');
+            locale = I18NUtil.parseLocale(language);
+            I18NUtil.setLocale(locale);
+        } else {
+            I18NUtil.setLocale(Locale.getDefault());
+        }
+    }
 
-	public void destroy() {
-		// Nothing to do
-	}
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // Nothing to do
+    }
+
+    public void destroy() {
+        // Nothing to do
+    }
 }

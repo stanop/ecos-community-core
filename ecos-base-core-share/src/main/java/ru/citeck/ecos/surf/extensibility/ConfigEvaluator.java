@@ -89,7 +89,7 @@ public class ConfigEvaluator extends AbstractUniversalEvaluator
                 token = tokens[i];
                 if (i == 0)
                 {
-                	if(token.length() > 0) {
+                	if (!token.isEmpty()) {
                         config = configService.getConfig(token);
                 	} else {
                 		config = configService.getGlobalConfig();

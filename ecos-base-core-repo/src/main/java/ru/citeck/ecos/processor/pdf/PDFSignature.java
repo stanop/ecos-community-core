@@ -85,7 +85,7 @@ public class PDFSignature extends AbstractDataBundleLine {
         List<DataBundle> stampOutputs = stampProcessor.process(stampInputs);
 
         InputStream pdfStampStream;
-        if(stampOutputs.size() > 0) {
+        if (!stampOutputs.isEmpty()) {
             pdfStampStream = stampOutputs.get(0).getInputStream();
         } else {
             return input;

@@ -153,7 +153,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
         Map<QName, Serializable> result = new HashMap<>();
 
         attributes.forEach((k, v) -> {
-            if (v instanceof List && ((List) v).size() > 0) {
+            if (v instanceof List && !((List) v).isEmpty()) {
                 Object value = ((List) v).get(0);
                 if (value instanceof NodeRef) {
                     result.put(k, new NodeRefsList((List) v));
@@ -175,7 +175,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
 
         List<String> transmittedParameters = workflowTransmittedVariables.get(workflowDefinitionName);
 
-        if (transmittedParameters != null && transmittedParameters.size() > 0) {
+        if (transmittedParameters != null && !transmittedParameters.isEmpty()) {
 
             Map<String, Object> processVariables = ActionConditionUtils.getProcessVariables();
 
@@ -294,7 +294,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
                         "Error occurred during workflow attribute getting. Make sure that QName \"" + target + "\" exists.");
             }
             ArrayList<NodeRef> assocs = getAssociations(taskRef, source);
-            return targetAssoc.isTargetMany() ? assocs : (assocs.size() > 0 ? assocs.get(0) : null);
+            return targetAssoc.isTargetMany() ? assocs : (!assocs.isEmpty() ? assocs.get(0) : null);
         }
         throw new AlfrescoRuntimeException(source + " is not a property or association (child associations is not allowed)");
     }

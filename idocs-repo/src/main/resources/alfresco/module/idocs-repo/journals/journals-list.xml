@@ -405,6 +405,7 @@
                 <formKey>ecos-module-upload</formKey>
             </variant>
         </create>
+        <option name="metaRecord">@</option>
         <option name="actionFormatter">
             [
                 {
@@ -464,6 +465,8 @@
             <header key="description" default="true" />
             <header key="parent" default="true" />
             <header key="associations" default="true" />
+            <header key="publishStatus" default="true" />
+            <header key="publishMsg" default="true" />
         </headers>
     </journal>
 
@@ -537,6 +540,8 @@
             <header key="name" default="true" />
             <header key="description" default="true" />
             <header key="types" default="true" />
+            <header key="publishStatus" default="true" />
+            <header key="publishMsg" default="true" />
         </headers>
     </journal>
 
@@ -607,6 +612,8 @@
             <header key="key" default="true" />
             <header key="user" default="true" />
             <header key="type" default="true" />
+            <header key="publishStatus" default="true" />
+            <header key="publishMsg" default="true" />
         </headers>
     </journal>
 

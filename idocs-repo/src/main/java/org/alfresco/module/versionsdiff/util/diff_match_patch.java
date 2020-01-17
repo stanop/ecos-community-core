@@ -251,7 +251,7 @@ public class diff_match_patch {
         diffs.add(new Diff(op, longtext.substring(i + shorttext.length())));
         return diffs;
       }
-  
+
       if (shorttext.length() == 1) {
         // Single character string.
         // After the previous speedup, the character can't be an equality.
