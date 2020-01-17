@@ -161,7 +161,7 @@ public class AlfNodeRecord implements MetaValue {
                     ContentModel.PROP_MODIFIER);
                 if (propertyValue != null) {
                     RecordRef recordRef = RecordRef.create(PEOPLE_SOURCE_ID, propertyValue);
-                    MetaValue metaValue = new AlfNodeRecord(recordRef);
+                    MetaValue metaValue = toMetaValue(recordRef, field);
                     return Collections.singletonList(metaValue);
                 }
                 return null;
@@ -448,6 +448,14 @@ public class AlfNodeRecord implements MetaValue {
         }
         metaValue.init(context, field);
         return metaValue;
+    }
+
+    private MetaValue toMetaValue(RecordRef recordRef, MetaField field) {
+        MetaValue value = context.getServiceFactory()
+            .getMetaValuesConverter()
+            .toMetaValue(recordRef);
+        value.init(context, field);
+        return value;
     }
 
     public class Permissions implements MetaValue {
