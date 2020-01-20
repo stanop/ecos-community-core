@@ -24,6 +24,7 @@ import ru.citeck.ecos.graphql.node.GqlQName;
 import ru.citeck.ecos.node.AlfNodeContentPathRegistry;
 import ru.citeck.ecos.node.AlfNodeInfo;
 import ru.citeck.ecos.node.DisplayNameService;
+import ru.citeck.ecos.node.EcosTypeService;
 import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records.meta.MetaUtils;
 import ru.citeck.ecos.records.source.alf.AlfNodeMetaEdge;
@@ -57,7 +58,6 @@ public class AlfNodeRecord implements MetaValue {
     private static final String ATTR_MODIFIER = "_modifier";
     private static final String ATTR_MODIFIED = "_modified";
     private static final String ATTR_CM_MODIFIED = "cm:modified";
-    private static final String ATTR_CM_MODIFIER = "cm:modifier";
     private static final String CASE_STATUS_NAME_SCHEMA = "icase:caseStatusAssoc.cm:name";
     private static final String ASSOC_SRC_ATTR_PREFIX = "assoc_src_";
     private static final String CONTENT_ATTRIBUTE_NAME = "_content";
@@ -136,6 +136,20 @@ public class AlfNodeRecord implements MetaValue {
         return values != null && !values.isEmpty();
     }
 
+    private MetaValue getMetaValueForEcosType(MetaField field) {
+        NodeRef nodeRef = new NodeRef(node.nodeRef());
+        EcosTypeService ecosTypeService = context.getService(EcosTypeService.QNAME);
+        RecordRef etypeRecordRef = ecosTypeService.getEcosType(nodeRef);
+        if (etypeRecordRef == null) {
+            return null;
+        }
+        MetaValue metaValue = context.getServiceFactory()
+            .getMetaValuesConverter()
+            .toMetaValue(etypeRecordRef);
+        metaValue.init(context, field);
+        return metaValue;
+    }
+
     @Override
     public List<? extends MetaValue> getAttribute(String name, MetaField field) {
 
@@ -169,29 +183,12 @@ public class AlfNodeRecord implements MetaValue {
 
             case ATTR_ETYPE:
 
-                NodeRef type = getNodeRefFromProp("tk:type");
-
-                if (type != null) {
-
-                    String etype = type.getId();
-
-                    NodeRef kind = getNodeRefFromProp("tk:kind");
-
-                    if (kind != null) {
-                        etype += "/" + kind.getId();
-                    }
-
-                    MetaValue value = context.getServiceFactory()
-                        .getMetaValuesConverter()
-                        .toMetaValue(RecordRef.create("emodel", "type", etype));
-                    value.init(context, field);
-
-                    attribute = Collections.singletonList(value);
-
+                MetaValue metaValue = this.getMetaValueForEcosType(field);
+                if (metaValue == null) {
+                    attribute = null;
                 } else {
-                    return null;
+                    attribute = Collections.singletonList(metaValue);
                 }
-
                 break;
 
             case RecordConstants.ATT_TYPE:
