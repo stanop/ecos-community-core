@@ -1,5 +1,6 @@
 package ru.citeck.ecos.job;
 
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
@@ -8,14 +9,16 @@ import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
+import org.springframework.util.StopWatch;
 import ru.citeck.ecos.cases.RemoteCaseModelService;
+
 import java.util.List;
 import java.util.Properties;
 
 /**
  * Send and remove completed cases job
  */
+@Slf4j
 public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
 
     /**
@@ -61,17 +64,29 @@ public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
      * can focus only on its specific task.
      *
      * @param jobContext context of the execution for retrieving services, etc
-     * @throws JobExecutionException if a job fails to execute
      */
     @Override
-    public void executeJob(JobExecutionContext jobContext) throws JobExecutionException {
+    public void executeJob(JobExecutionContext jobContext) {
         init(jobContext.getJobDetail().getJobDataMap());
         AuthenticationUtil.runAsSystem(() -> {
+            log.info("SendToRemoteCompletedCasesJob started");
+
+            StopWatch watch = new StopWatch(SendAndRemoveCompletedCasesJob.class.getName());
+
+            runWatch(watch, "SendToRemote candidates search");
             ResultSet resultSet = getDocumentsResultSet();
+            watch.stop();
+
             List<NodeRef> documents = resultSet.getNodeRefs();
             for (NodeRef documentRef : documents) {
+                runWatch(watch, "Processing of " + documentRef.toString() + " document");
                 remoteCaseModelService.sendAndRemoveCaseModelsByDocument(documentRef);
+                watch.stop();
             }
+
+            log.debug(watch.prettyPrint());
+            log.info("SendToRemoteCompletedCasesJob stopped");
+
             return null;
         });
     }
@@ -105,6 +120,12 @@ public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
             return MAX_ITEMS_COUNT;
         } else {
             return Integer.valueOf(maxItemsRawValue);
+        }
+    }
+
+    private void runWatch(StopWatch stopWatch, String taskName) {
+        if (!stopWatch.isRunning()) {
+            stopWatch.start(taskName);
         }
     }
 
