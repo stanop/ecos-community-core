@@ -3,6 +3,7 @@ package ru.citeck.ecos.cases.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.lock.LockService;
@@ -19,14 +20,12 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
+import org.springframework.util.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.citeck.ecos.cases.RemoteCaseModelService;
 import ru.citeck.ecos.dto.*;
+import ru.citeck.ecos.job.SendAndRemoveCompletedCasesJob;
 import ru.citeck.ecos.model.*;
 
 import java.io.IOException;
@@ -37,12 +36,8 @@ import java.util.*;
 /**
  * Remote case model service
  */
+@Slf4j
 public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
-
-    /**
-     * Logger
-     */
-    private static Log LOGGER = LogFactory.getLog(RemoteCaseModelServiceImpl.class);
 
     /**
      * Exclude properties
@@ -158,13 +153,17 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
     public void sendAndRemoveCaseModelsByDocument(NodeRef documentRef) {
         LockStatus lockStatus = lockService.getLockStatus(documentRef);
         if (lockStatus != null && lockStatus!= LockStatus.NO_LOCK) {
-            LOGGER.info("Document " + documentRef.getId() + " is locked - " + lockStatus);
+            log.info("Document " + documentRef.getId() + " is locked - " + lockStatus);
             return;
         }
         transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
             ArrayNode arrayNode = objectMapper.createArrayNode();
             List<NodeRef> forDelete = new ArrayList<>();
+
+            StopWatch watch = new StopWatch(RemoteCaseModelServiceImpl.class.getName());
+
             /* Create json array */
+            runWatch(watch, "Receiving of caseModels for " + documentRef.toString());
             for (NodeRef caseRef : getCaseModelsByNode(documentRef)) {
                 ObjectNode objectNode = createObjectNodeFromCaseModel(caseRef);
                 if (objectNode != null) {
@@ -173,13 +172,23 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
                 forDelete.add(caseRef);
             }
             nodeService.setProperty(documentRef, IdocsModel.PROP_CASE_MODELS_SENT, true);
+            watch.stop();
+
             /* Send request */
+            runWatch(watch, "Post request for saving case models for " + documentRef.toString());
             postForObject(SAVE_CASE_MODELS_METHOD, arrayNode.toString(), String.class);
+            watch.stop();
+
             /* Delete nodes */
+            runWatch(watch, "Deletion of case models nodes from alfresco for " + documentRef.toString());
             for (NodeRef caseNodeRef : forDelete) {
                 nodeService.addAspect(caseNodeRef, ContentModel.ASPECT_TEMPORARY, Collections.emptyMap());
                 nodeService.deleteNode(caseNodeRef);
             }
+            watch.stop();
+
+            log.debug(watch.prettyPrint());
+
             return null;
         });
     }
@@ -1009,6 +1018,12 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         /* Body params */
         HttpEntity requestEntity = new HttpEntity<>(requestBody, headers);
         return restTemplate.postForObject(properties.getProperty(CASE_MODELS_SERVICE_HOST) + serviceMethod, requestEntity, objectClass);
+    }
+
+    private void runWatch(StopWatch stopWatch, String taskName) {
+        if (!stopWatch.isRunning()) {
+            stopWatch.start(taskName);
+        }
     }
 
     /**
