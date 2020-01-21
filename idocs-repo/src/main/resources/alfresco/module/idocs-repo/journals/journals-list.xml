@@ -547,10 +547,10 @@
 
     <journal id="ecos-dashboards">
         <datasource>eapps/module</datasource>
-        <predicate>{"t": "eq", "att": "type", "val": "dashboard"}</predicate>
+        <predicate>{"t": "eq", "att": "type", "val": "ui/dashboard"}</predicate>
         <create>
             <variant title="Upload Dashboard">
-                <recordRef>eapps/module@dashboard$</recordRef>
+                <recordRef>eapps/module@ui/dashboard$</recordRef>
                 <formKey>ecos-module-upload</formKey>
             </variant>
         </create>
