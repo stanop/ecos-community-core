@@ -21,6 +21,7 @@ package ru.citeck.ecos.journals;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.apache.commons.lang.StringUtils;
+import ru.citeck.ecos.apps.app.module.ModuleRef;
 import ru.citeck.ecos.journals.xml.Formatter;
 import ru.citeck.ecos.journals.xml.*;
 import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
@@ -32,6 +33,8 @@ import java.util.stream.Collectors;
 
 class JournalTypeImpl implements JournalType {
 
+    private static final String UI_ACTION_MODULE_TYPE = "ui/action";
+
     private final String id;
     private final String datasource;
 
@@ -40,7 +43,7 @@ class JournalTypeImpl implements JournalType {
 
     private final Map<String, String> options;
     private final List<String> attributes;
-    private final List<JournalAction> actions;
+    private final List<ModuleRef> actions;
     private final List<JournalGroupAction> groupActions;
 
     private final BitSet defaultAttributes;
@@ -260,7 +263,7 @@ class JournalTypeImpl implements JournalType {
     }
 
     @Override
-    public List<JournalAction> getActions() {
+    public List<ModuleRef> getActions() {
        return actions;
     }
 
@@ -304,14 +307,19 @@ class JournalTypeImpl implements JournalType {
         return optionMap;
     }
 
-    private static List<JournalAction> getActions(Journal journal) {
+    private static List<ModuleRef> getActions(Journal journal) {
         if (journal.getActions() == null) {
-            return Collections.emptyList();
+            return Arrays.asList(
+                ModuleRef.create(UI_ACTION_MODULE_TYPE, "content-download"),
+                ModuleRef.create(UI_ACTION_MODULE_TYPE, "edit"),
+                ModuleRef.create(UI_ACTION_MODULE_TYPE, "delete"),
+                ModuleRef.create(UI_ACTION_MODULE_TYPE, "view-dashboard"),
+                ModuleRef.create(UI_ACTION_MODULE_TYPE, "view-dashboard-in-background")
+            );
         }
-
         return journal.getActions().getAction()
                 .stream()
-                .map(JournalAction::new)
+                .map(action -> ModuleRef.valueOf(action.getRef()))
                 .collect(Collectors.toList());
     }
 

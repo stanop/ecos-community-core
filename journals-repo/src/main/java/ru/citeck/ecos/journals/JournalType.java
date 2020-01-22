@@ -18,6 +18,8 @@
  */
 package ru.citeck.ecos.journals;
 
+import ru.citeck.ecos.apps.app.module.ModuleRef;
+
 import java.util.List;
 import java.util.Map;
 
@@ -57,7 +59,7 @@ public interface JournalType {
 
     JournalFormatter getFormatter(String attributeKey);
 
-    List<JournalAction> getActions();
+    List<ModuleRef> getActions();
 
     List<JournalGroupAction> getGroupActions();
 
