@@ -224,6 +224,7 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
         String lastCommentProp = workflowUtils.mapQNameToName(CiteckWorkflowModel.PROP_LASTCOMMENT);
         taskVariables.put(lastCommentProp, comment);
 
+        taskService.setVariables(taskId, taskVariables);
         taskService.complete(taskId, taskVariables, executionVariables);
     }
 
