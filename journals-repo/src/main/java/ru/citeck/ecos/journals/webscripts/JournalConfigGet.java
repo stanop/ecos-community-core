@@ -254,7 +254,7 @@ public class JournalConfigGet extends AbstractWebScript {
         JournalRepoData journalData = repoDataByJournalRef.getUnchecked(journalRef);
         JournalMeta meta = new JournalMeta();
 
-        meta.setActions(getActions(journal));
+        meta.setActions(journal.getActions());
         meta.setGroupActions(getGroupActions(journal));
 
         try {
@@ -346,32 +346,6 @@ public class JournalConfigGet extends AbstractWebScript {
                 logger.error("Language conversion error. criteria: " + criteriaJson, e);
             }
         }
-    }
-
-    private List<ModuleRef> getActions(JournalType journal) {
-        return Collections.emptyList();
-        //todo
-        /*return journal.getActions()
-                .stream()
-                .map(journalAction -> {
-                    ActionModule action = new ActionModule();
-                    action.setId(journalAction.getId());
-                    action.setName(journalAction.getTitle());
-                    action.setType(journalAction.getType());
-                    action.setConfig(optionsToNode(journalAction.getOptions()));
-
-                    JournalActionEvaluator evaluator = journalAction.getEvaluator();
-                    if (evaluator != null) {
-                        RecordEvaluatorDto ev = new RecordEvaluatorDto();
-                        ev.setId(evaluator.getId());
-                        ev.setConfig(optionsToNode(evaluator.getOptions()));
-
-                        action.setEvaluator(ev);
-                    }
-
-                    return action;
-                })
-                .collect(Collectors.toList());*/
     }
 
     private ObjectNode optionsToNode(Map<String, String> options) {

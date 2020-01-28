@@ -265,6 +265,11 @@
                 }
             ]
         </option>
+        <actions>
+            <action ref="ui/action$ecos-module-download" />
+            <action ref="ui/action$delete" />
+            <action ref="ui/action$edit" />
+        </actions>
         <headers>
             <header key="module_id" default="true"/>
             <header key="name" default="true" />

@@ -76,13 +76,7 @@
     </xs:complexType>
     
     <xs:complexType name="action">
-        <xs:sequence>
-            <xs:element name="param" type="j:option" minOccurs="0" maxOccurs="unbounded" />
-            <xs:element name="evaluator" type="j:actionEvaluator" minOccurs="0"/>
-        </xs:sequence>
-        <xs:attribute name="id" type="xs:string"/>
-        <xs:attribute name="title" type="xs:string"/>
-        <xs:attribute name="type" type="xs:string"/>
+        <xs:attribute name="ref" type="xs:string"/>
     </xs:complexType>
 
     <xs:simpleType name="groupActionType">
@@ -146,13 +140,6 @@
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="optional" />
         <xs:attribute name="joinBy" type="j:logicJoinType" use="optional" />
-    </xs:complexType>
-
-    <xs:complexType name="actionEvaluator">
-        <xs:sequence>
-            <xs:element name="param" type="j:option" minOccurs="0" maxOccurs="unbounded" />
-        </xs:sequence>
-        <xs:attribute name="id" type="xs:string" use="required" />
     </xs:complexType>
 
     <xs:complexType name="batchEdit">

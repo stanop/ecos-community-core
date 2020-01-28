@@ -161,8 +161,22 @@ public class AlfNodeAttValue implements MetaValue {
             return MetaUtils.getReflectionValue(qName, name);
         } else if (rawValue instanceof MLText) {
             return new MLTextValue((MLText) rawValue);
-        } else if (rawValue instanceof ContentData && "previewInfo".equals(name)) {
-            return getContentInfo();
+        } else if (rawValue instanceof ContentData) {
+            ContentData content = (ContentData) rawValue;
+            switch (name) {
+                case "previewInfo":
+                    return getContentInfo();
+                case "mimetype":
+                    return content.getMimetype();
+                case "size":
+                    return content.getSize();
+                case "encoding":
+                    return content.getEncoding();
+                case "locale":
+                    return content.getLocale();
+                case "contentUrl":
+                    return content.getContentUrl();
+            }
         }
         return null;
     }
