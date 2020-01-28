@@ -18,17 +18,6 @@
  */
 package org.alfresco.repo.web.scripts.solr;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.repo.search.IndexerException;
 import org.alfresco.repo.solr.MetaDataResultsFilter;
@@ -54,15 +43,19 @@ import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptException;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.*;
+
 // todo url parameter to remove whitespace in results - make it the default?
+
 /**
  * Support for SOLR: Get metadata for nodes given IDs, ranges of IDs, etc.
  * <p/>
  *
  * @since 4.0
  */
-public class NodesMetaDataGet extends DeclarativeWebScript
-{
+public class NodesMetaDataGet extends DeclarativeWebScript {
     protected static final Log logger = LogFactory.getLog(NodesMetaDataGet.class);
     private static final int INITIAL_DEFAULT_SIZE = 100;
     private static final int BATCH_SIZE = 50;
@@ -70,35 +63,28 @@ public class NodesMetaDataGet extends DeclarativeWebScript
     private SOLRTrackingComponent solrTrackingComponent;
     private SOLRSerializer solrSerializer;
 
-    public void setSolrTrackingComponent(SOLRTrackingComponent solrTrackingComponent)
-    {
+    public void setSolrTrackingComponent(SOLRTrackingComponent solrTrackingComponent) {
         this.solrTrackingComponent = solrTrackingComponent;
     }
 
-    public void setSolrSerializer(SOLRSerializer solrSerializer)
-    {
+    public void setSolrSerializer(SOLRSerializer solrSerializer) {
         this.solrSerializer = solrSerializer;
     }
 
     @Override
-    protected Map<String, Object> executeImpl(WebScriptRequest req, Status status)
-    {
-        try
-        {
+    protected Map<String, Object> executeImpl(WebScriptRequest req, Status status) {
+        try {
             Content content = req.getContent();
-            if(content == null)
-            {
+            if (content == null) {
                 throw new WebScriptException("Failed to convert request to String");
             }
             JSONObject o = new JSONObject(content.getContent());
 
             List<Long> nodeIds = null;
-            if(o.has("nodeIds"))
-            {
-                JSONArray jsonNodeIds =  o.getJSONArray("nodeIds");
+            if (o.has("nodeIds")) {
+                JSONArray jsonNodeIds = o.getJSONArray("nodeIds");
                 nodeIds = new ArrayList<Long>(jsonNodeIds.length());
-                for(int i = 0; i < jsonNodeIds.length(); i++)
-                {
+                for (int i = 0; i < jsonNodeIds.length(); i++) {
                     Long nodeId = jsonNodeIds.getLong(i);
                     nodeIds.add(nodeId);
                 }
@@ -111,65 +97,49 @@ public class NodesMetaDataGet extends DeclarativeWebScript
             int maxResults = o.has("maxResults") ? o.getInt("maxResults") : 0;
 
             int size = 0;
-            if(maxResults != 0 && maxResults != Integer.MAX_VALUE)
-            {
+            if (maxResults != 0 && maxResults != Integer.MAX_VALUE) {
                 size = maxResults;
-            }
-            else if(nodeIds != null)
-            {
+            } else if (nodeIds != null) {
                 size = nodeIds.size();
-            }
-            else if(fromNodeId != null && toNodeId != null)
-            {
-                if((toNodeId.longValue() - fromNodeId.longValue()) > Integer.MAX_VALUE)
-                {
+            } else if (fromNodeId != null && toNodeId != null) {
+                if ((toNodeId.longValue() - fromNodeId.longValue()) > Integer.MAX_VALUE) {
                     throw new WebScriptException("Too many nodes expected, try changing the criteria");
                 }
-                size = (int)(toNodeId - fromNodeId);
+                size = (int) (toNodeId - fromNodeId);
             }
 
             final boolean noSizeCalculated = (size == 0);
 
             // filters, defaults are 'true'
             MetaDataResultsFilter filter = new MetaDataResultsFilter();
-            if(o.has("includeAclId"))
-            {
+            if (o.has("includeAclId")) {
                 filter.setIncludeAclId(o.getBoolean("includeAclId"));
             }
-            if(o.has("includeAspects"))
-            {
+            if (o.has("includeAspects")) {
                 filter.setIncludeAspects(o.getBoolean("includeAspects"));
             }
-            if(o.has("includeNodeRef"))
-            {
+            if (o.has("includeNodeRef")) {
                 filter.setIncludeNodeRef(o.getBoolean("includeNodeRef"));
             }
-            if(o.has("includeOwner"))
-            {
+            if (o.has("includeOwner")) {
                 filter.setIncludeOwner(o.getBoolean("includeOwner"));
             }
-            if(o.has("includeProperties"))
-            {
+            if (o.has("includeProperties")) {
                 filter.setIncludeProperties(o.getBoolean("includeProperties"));
             }
-            if(o.has("includePaths"))
-            {
+            if (o.has("includePaths")) {
                 filter.setIncludePaths(o.getBoolean("includePaths"));
             }
-            if(o.has("includeType"))
-            {
+            if (o.has("includeType")) {
                 filter.setIncludeType(o.getBoolean("includeType"));
             }
-            if(o.has("includeParentAssociations"))
-            {
+            if (o.has("includeParentAssociations")) {
                 filter.setIncludeParentAssociations(o.getBoolean("includeParentAssociations"));
             }
-            if(o.has("includeChildIds"))
-            {
+            if (o.has("includeChildIds")) {
                 filter.setIncludeChildIds(o.getBoolean("includeChildIds"));
             }
-            if(o.has("includeTxnId"))
-            {
+            if (o.has("includeTxnId")) {
                 filter.setIncludeTxnId(o.getBoolean("includeTxnId"));
             }
 
@@ -181,30 +151,24 @@ public class NodesMetaDataGet extends DeclarativeWebScript
             params.setToNodeId(toNodeId);
             params.setMaxResults(maxResults);
 
-            solrTrackingComponent.getNodesMetadata(params, filter, new NodeMetaDataQueryCallback()
-            {
+            solrTrackingComponent.getNodesMetadata(params, filter, new NodeMetaDataQueryCallback() {
                 private int counter = BATCH_SIZE;
                 private int numBatches = 0;
 
                 @Override
-                public boolean handleNodeMetaData(NodeMetaData nodeMetaData)
-                {
+                public boolean handleNodeMetaData(NodeMetaData nodeMetaData) {
                     // need to perform data structure conversions that are compatible with Freemarker
                     // e.g. Serializable -> String, QName -> String (because map keys must be string, number)
-                    try
-                    {
+                    try {
                         FreemarkerNodeMetaData fNodeMetaData = new FreemarkerNodeMetaData(solrSerializer, nodeMetaData);
                         nodesMetaData.add(fNodeMetaData);
-                    }
-                    catch(Exception e)
-                    {
+                    } catch (Exception e) {
                         throw new AlfrescoRuntimeException("Problem converting to Freemarker using node " + nodeMetaData.getNodeRef().toString(), e);
                     }
 
-                    if(noSizeCalculated && --counter == 0)
-                    {
+                    if (noSizeCalculated && --counter == 0) {
                         counter = BATCH_SIZE;
-                        nodesMetaData.ensureCapacity(++numBatches*BATCH_SIZE);
+                        nodesMetaData.ensureCapacity(++numBatches * BATCH_SIZE);
                     }
 
                     return true;
@@ -215,19 +179,14 @@ public class NodesMetaDataGet extends DeclarativeWebScript
             model.put("nodes", nodesMetaData);
             model.put("filter", filter);
 
-            if (logger.isDebugEnabled())
-            {
+            if (logger.isDebugEnabled()) {
                 logger.debug("Result: \n\tRequest: " + req + "\n\tModel: " + model);
             }
 
             return model;
-        }
-        catch(IOException e)
-        {
+        } catch (IOException e) {
             throw new WebScriptException("IO exception parsing request", e);
-        }
-        catch(JSONException e)
-        {
+        } catch (JSONException e) {
             throw new WebScriptException("Invalid JSON", e);
         }
     }
@@ -237,8 +196,7 @@ public class NodesMetaDataGet extends DeclarativeWebScript
      *
      * @since 4.0
      */
-    public static class FreemarkerNodeMetaData
-    {
+    public static class FreemarkerNodeMetaData {
         private final Long nodeId;
         private final NodeRef nodeRef;
         private final QName nodeType;
@@ -257,8 +215,7 @@ public class NodesMetaDataGet extends DeclarativeWebScript
         private final String tenantDomain;
 
         public FreemarkerNodeMetaData(final SOLRSerializer solrSerializer, final NodeMetaData nodeMetaData)
-            throws IOException, JSONException
-        {
+            throws IOException, JSONException {
             this.nodeId = nodeMetaData.getNodeId();
             this.tenantDomain = nodeMetaData.getTenantDomain();
             this.aclId = nodeMetaData.getAclId();
@@ -269,17 +226,14 @@ public class NodesMetaDataGet extends DeclarativeWebScript
             // convert Paths to Strings
             List<String> paths = new ArrayList<String>();
             HashSet<String> ancestors = new HashSet<String>();
-            if(nodeMetaData.getPaths() != null)
-            {
-                for(Pair<Path, QName> pair : nodeMetaData.getPaths())
-                {
+            if (nodeMetaData.getPaths() != null) {
+                for (Pair<Path, QName> pair : nodeMetaData.getPaths()) {
                     JSONObject o = new JSONObject();
                     o.put("path", solrSerializer.serializeValue(String.class, pair.getFirst()));
                     o.put("qname", solrSerializer.serializeValue(String.class, pair.getSecond()));
                     paths.add(o.toString(3));
 
-                    for (NodeRef ancestor : getAncestors(pair.getFirst()))
-                    {
+                    for (NodeRef ancestor : getAncestors(pair.getFirst())) {
                         ancestors.add(ancestor.toString());
                     }
                 }
@@ -290,14 +244,11 @@ public class NodesMetaDataGet extends DeclarativeWebScript
 
             // convert name Paths to Strings
             List<String> namePaths = new ArrayList<String>();
-            if(nodeMetaData.getNamePaths() != null)
-            {
-                for(Collection<String> namePath : nodeMetaData.getNamePaths())
-                {
+            if (nodeMetaData.getNamePaths() != null) {
+                for (Collection<String> namePath : nodeMetaData.getNamePaths()) {
                     JSONObject o = new JSONObject();
                     JSONArray array = new JSONArray();
-                    for(String element : namePath)
-                    {
+                    for (String element : namePath) {
                         array.put(solrSerializer.serializeValue(String.class, element));
                     }
                     o.put("namePath", array);
@@ -314,18 +265,14 @@ public class NodesMetaDataGet extends DeclarativeWebScript
             this.aspects = nodeMetaData.getAspects();
 
             final Map<QName, Serializable> props = nodeMetaData.getProperties();
-            if (props != null)
-            {
+            if (props != null) {
                 final Map<String, PropertyValue> properties = new HashMap<String, PropertyValue>(props.size());
-                for (final QName propName : props.keySet())
-                {
+                for (final QName propName : props.keySet()) {
                     // need to run this in tenant context because types may be in a tenant-specific
                     // dictionary registry
-                    TenantUtil.runAsTenant(new TenantRunAsWork<Void>()
-                    {
+                    TenantUtil.runAsTenant(new TenantRunAsWork<Void>() {
                         @Override
-                        public Void doWork() throws Exception
-                        {
+                        public Void doWork() throws Exception {
                             Serializable value = props.get(propName);
                             properties.put(solrSerializer.serializeValue(String.class, propName),
                                 solrSerializer.serialize(propName, value));
@@ -334,91 +281,85 @@ public class NodesMetaDataGet extends DeclarativeWebScript
                     }, tenantDomain);
                 }
                 this.properties = properties;
-            }
-            else
-            {
+            } else {
                 this.properties = null;
             }
         }
 
-        public NodeRef getNodeRef()
-        {
+        public NodeRef getNodeRef() {
             return nodeRef;
         }
-        public List<String> getPaths()
-        {
+
+        public List<String> getPaths() {
             return paths;
         }
-        public List<String> getNamePaths()
-        {
+
+        public List<String> getNamePaths() {
             return namePaths;
         }
-        public QName getNodeType()
-        {
+
+        public QName getNodeType() {
             return nodeType;
         }
-        public Long getNodeId()
-        {
+
+        public Long getNodeId() {
             return nodeId;
         }
-        public Long getAclId()
-        {
+
+        public Long getAclId() {
             return aclId;
         }
-        public Map<String, PropertyValue> getProperties()
-        {
+
+        public Map<String, PropertyValue> getProperties() {
             return properties;
         }
-        public Set<QName> getAspects()
-        {
+
+        public Set<QName> getAspects() {
             return aspects;
         }
-        public List<ChildAssociationRef> getChildAssocs()
-        {
+
+        public List<ChildAssociationRef> getChildAssocs() {
             return childAssocs;
         }
-        public List<ChildAssociationRef> getParentAssocs()
-        {
+
+        public List<ChildAssociationRef> getParentAssocs() {
             return parentAssocs;
         }
-        public Long getParentAssocsCrc()
-        {
+
+        public Long getParentAssocsCrc() {
             return parentAssocsCrc;
         }
-        public Set<String> getAncestors()
-        {
+
+        public Set<String> getAncestors() {
             return ancestors;
         }
-        public List<Long> getChildIds()
-        {
+
+        public List<Long> getChildIds() {
             return childIds;
         }
-        public String getOwner()
-        {
+
+        public String getOwner() {
             return owner;
         }
-        public Long getTxnId()
-        {
+
+        public Long getTxnId() {
             return txnId;
         }
-        public String getTenantDomain()
-        {
+
+        public String getTenantDomain() {
             return tenantDomain;
         }
-        private ArrayList<NodeRef> getAncestors(Path path)
-        {
+
+        private ArrayList<NodeRef> getAncestors(Path path) {
             ArrayList<NodeRef> ancestors = new ArrayList<NodeRef>(8);
-            for (Iterator<Path.Element> elit = path.iterator(); elit.hasNext(); /**/)
-            {
+            for (Iterator<Path.Element> elit = path.iterator(); elit.hasNext(); /**/) {
                 Path.Element element = elit.next();
-                if (!(element instanceof Path.ChildAssocElement))
-                {
+                if (!(element instanceof Path.ChildAssocElement)) {
                     throw new IndexerException("Confused path: " + path);
                 }
                 Path.ChildAssocElement cae = (Path.ChildAssocElement) element;
                 NodeRef parentRef = cae.getRef().getParentRef();
-                if(parentRef != null)
-                {
+                if (parentRef != null) {
                     ancestors.add(0, parentRef);
                 }
 
