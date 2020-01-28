@@ -139,6 +139,9 @@ public class NodesMetaDataGet extends DeclarativeWebScript {
             if (o.has("includeChildIds")) {
                 filter.setIncludeChildIds(o.getBoolean("includeChildIds"));
             }
+            if (o.has("includeChildAssociations")) {
+                filter.setIncludeChildAssociations(o.getBoolean("includeChildAssociations"));
+            }
             if (o.has("includeTxnId")) {
                 filter.setIncludeTxnId(o.getBoolean("includeTxnId"));
             }
