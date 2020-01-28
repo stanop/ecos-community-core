@@ -280,6 +280,11 @@
           parent="webscript">
     </bean>
 
+    <bean id="webscript.ru.citeck.ecos.new-ui-info.get"
+          class="ru.citeck.ecos.webscripts.utils.NewUIInfoGet"
+          parent="webscript">
+    </bean>
+
     <bean id="webscript.ru.citeck.ecos.records-group-action.post"
           class="ru.citeck.ecos.records.RecordsGroupActionPost"
           parent="webscript">

@@ -1,0 +1,9 @@
+<webscript>
+    <shortname>new-ui-info-get</shortname>
+    <description>new-ui-info-get</description>
+    <url>/citeck/ecos/new-ui-info-get?recordRef={recordRef}</url>
+    <authentication>user</authentication>
+    <format default="json" />
+    <transaction allow="readonly">required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

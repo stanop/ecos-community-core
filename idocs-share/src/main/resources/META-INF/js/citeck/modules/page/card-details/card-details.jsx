@@ -26,6 +26,7 @@ require("xstyle!./card-details.css");
 
 const DEFAULT_CARD_MODE = "default";
 const SHOW_MESSAGE_PARAM_NAME = "showStartMsg";
+const FORCE_OLD_CARD_DETAILS_PARAM_NAME = "forceOld";
 
 const store = createStore(
     rootReducer,
@@ -45,6 +46,12 @@ function CardDetailsRoot(props) {
 }
 
 export function renderPage (elementId, props) {
+
+    let forceOld = CiteckUtils.getURLParameterByName(FORCE_OLD_CARD_DETAILS_PARAM_NAME) === 'true';
+    if (!forceOld && (props.nodeBaseInfo || {}).isOldCardDetailsRequired !== true) {
+        window.location = "/v2/dashboard?recordRef=" + props.pageArgs.nodeRef;
+        return;
+    }
 
     store.dispatch(setPageArgs(props.pageArgs));
 
