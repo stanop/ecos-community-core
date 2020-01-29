@@ -1,5 +1,6 @@
 package ru.citeck.ecos.icase.completeness.records;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -95,22 +96,31 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO
 
         RecordsResult<DocumentTypeMeta> meta = recordsService.getMeta(documentRefs, DocumentTypeMeta.class);
 
-        Map<RecordRef, List<RecordRef>> docsByType = new HashMap<>();
+        Map<RecordRef, List<DocInfo>> docsByType = new HashMap<>();
 
         for (int i = 0; i < meta.getRecords().size(); i++) {
 
             DocumentTypeMeta docMeta = meta.getRecords().get(i);
 
             if (docMeta.type != null) {
-                docsByType.computeIfAbsent(docMeta.getType(), t -> new ArrayList<>()).add(documentRefs.get(i));
+
+                long order = docMeta.getCreated() != null ? docMeta.getCreated().getTime() : 0L;
+
+                DocInfo docInfo = new DocInfo(documentRefs.get(i), order);
+                docsByType.computeIfAbsent(docMeta.getType(), t -> new ArrayList<>()).add(docInfo);
             }
         }
+
+        docsByType.forEach((t, docs) -> docs.sort(Comparator.comparingLong(DocInfo::getOrder).reversed()));
 
         List<TypeDocumentsRecord> typeDocumentsList = new ArrayList<>();
 
         for (RecordRef typeRef : typesRefs) {
             typeDocumentsList.add(new TypeDocumentsRecord(typeRef,
-                docsByType.getOrDefault(typeRef, Collections.emptyList())));
+                docsByType.getOrDefault(typeRef, Collections.emptyList())
+                    .stream()
+                    .map(DocInfo::getRef)
+                    .collect(Collectors.toList())));
         }
 
         RecordsQueryResult<TypeDocumentsRecord> typeDocumentsRecords = new RecordsQueryResult<>();
@@ -175,10 +185,20 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO
     }
 
     @Data
-    private static class DocumentTypeMeta {
+    @AllArgsConstructor
+    private static class DocInfo {
+        private RecordRef ref;
+        private long order;
+    }
+
+    @Data
+    public static class DocumentTypeMeta {
 
         @MetaAtt("_etype?id")
         private RecordRef type;
+
+        @MetaAtt("cm:created?str")
+        private Date created;
     }
 
     @Data

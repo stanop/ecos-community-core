@@ -260,12 +260,10 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             document = document.substring(idx + 1);
         }
 
-        NodeRef docRef = null;
+        NodeRef docRef;
         if (NodeRef.isNodeRef(document)) {
             docRef = new NodeRef(document);
-        }
-
-        if (docRef == null) {
+        } else {
             return null;
         }
 
@@ -277,6 +275,11 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             if (isCurrentUser) {
                 return workflowUtils.getDocumentTasks(docRef, query.active, query.engine, isCurrentUser);
             }
+        }
+
+        if (query.actors == null) {
+            return AuthenticationUtil.runAsSystem(() ->
+                workflowUtils.getDocumentTasks(docRef, query.active, query.engine, false));
         }
 
         return null;
