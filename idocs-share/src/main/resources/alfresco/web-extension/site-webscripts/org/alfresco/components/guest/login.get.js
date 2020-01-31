@@ -17,15 +17,15 @@ function main()
 
     successUrl = successUrl.replace("?error=true","");
     successUrl = successUrl.replace("&error=true","");
-    calculatedSuccessUrl = successUrl;
+    calculatedSuccessUrl = "/share/page/correct-redirect-to-ui";
 
-    if (successUrl === '/share/page'
+    /*if (successUrl === '/share/page'
         || successUrl === '/share/page/'
         || successUrl === '/share'
         || successUrl === '/share/') {
 
         calculatedSuccessUrl = "/share/page/correct-redirect-to-ui";
-    }
+    }*/
 
     model.successUrl = calculatedSuccessUrl;
     model.failureUrl = successUrl + (successUrl.indexOf("?") != -1 ? "&" : "?") + "error=true";
