@@ -12,7 +12,6 @@ import java.io.Writer;
 
 public class CustomUrlForRedirectToUIGet extends AbstractWebScript {
 
-    private static final String V2_DASHBOARD_URL = "/v2/dashboard";
     private static final String SHARE_PAGE_URL = "/share/page";
 
     private static final String RESPONSE_TEMPLATE = "{\"url\":\"%s\"}";
@@ -24,7 +23,7 @@ public class CustomUrlForRedirectToUIGet extends AbstractWebScript {
 
         String url;
         if (newUIUtils.isNewUIEnabled()) {
-            url = V2_DASHBOARD_URL;
+            url = newUIUtils.getNewUIRedirectUrl();
         } else {
             url = SHARE_PAGE_URL;
         }

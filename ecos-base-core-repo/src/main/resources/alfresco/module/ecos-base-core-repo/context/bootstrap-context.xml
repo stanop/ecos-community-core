@@ -89,5 +89,23 @@
         <property name="name" value="ecos-base-core.module-component.MoveConfigsToRoot"/>
         <property name="description" value="ecos-base-core.module-component.MoveConfigsToRoot"/>
     </bean>
-    
+
+    <bean id="ecos-base-core-repo.module-component.config.new-ui-redirect-url.create" parent="module.baseComponent"
+          class="ru.citeck.ecos.config.patch.CreateConfig">
+        <property name="dependsOn">
+            <list>
+                <ref bean="ecos-base-core.module-component.ecos-config-root" />
+            </list>
+        </property>
+        <property name="configKey" value="new-ui-redirect-url" />
+        <property name="configValue" value="/v2/dashboard" />
+        <property name="configTitle" value="ecos-config.new-ui-redirect-url.title" />
+        <property name="configDescription" value="ecos-config.new-ui-redirect-url.description" />
+        <property name="moduleId" value="ecos-base-core-repo" />
+        <property name="sinceVersion" value="3.18.0" />
+        <property name="appliesFromVersion" value="3.18.0" />
+        <property name="name" value="ecos-base-core-repo.module-component.config.new-ui-redirect-url.create" />
+        <property name="description" value="ecos-base-core-repo.module-component.config.new-ui-redirect-url.create" />
+    </bean>
+
 </beans>

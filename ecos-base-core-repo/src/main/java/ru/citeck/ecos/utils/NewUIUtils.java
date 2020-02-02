@@ -27,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 public class NewUIUtils {
 
     private static final String NEW_UI_REDIRECT_ENABLED = "new-ui-redirect-enabled";
+    private static final String NEW_UI_REDIRECT_URL = "new-ui-redirect-url";
+    private static final String V2_DASHBOARD_URL_DEFAULT = "/v2/dashboard";
     private static final String DEFAULT_UI_NEW_JOURNALS_ACCESS_GROUPS = "default-ui-new-journals-access-groups";
 
     private static final String FORCE_OLD_CARD_DETAILS_ATT = "_etype.attributes.forceOldCardDetails?bool";
@@ -67,6 +69,12 @@ public class NewUIUtils {
 
     public boolean isNewUIEnabledForUser(String username) {
         return isNewUIEnabledCache.getUnchecked(username);
+    }
+
+    public String getNewUIRedirectUrl() {
+        Object objValue = ecosConfigService.getParamValue(NEW_UI_REDIRECT_URL);
+        String newUIRedirectUrl = String.valueOf(objValue);
+        return (newUIRedirectUrl != "null") ? newUIRedirectUrl : V2_DASHBOARD_URL_DEFAULT;
     }
 
     public boolean isOldCardDetailsRequired(RecordRef recordRef) {
