@@ -4,9 +4,9 @@ define([
 ], function () {
 
     var pageTemplatesToTest = [
-        /\/share\/page\/user\/[^\/]*\/dashboard\/?$/,
-        /\/share\/page\/?$/,
-        /\/share\/?$/
+        /^\/share\/page\/user\/[^\/]*\/dashboard\/?$/,
+        /^\/share\/page\/?$/,
+        /^\/share\/?$/
     ];
 
     try {
