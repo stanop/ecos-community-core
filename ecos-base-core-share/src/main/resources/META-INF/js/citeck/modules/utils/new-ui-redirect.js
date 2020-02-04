@@ -40,7 +40,7 @@ define([
                             && response.json.newUIEnabled
                             && response.json.newUIRedirectUrl) {
 
-                        window.location.href = newUIRedirectUrl;
+                        window.location.href = response.json.newUIRedirectUrl;
                     } else {
                         console.log("Strange response:", response);
                     }
