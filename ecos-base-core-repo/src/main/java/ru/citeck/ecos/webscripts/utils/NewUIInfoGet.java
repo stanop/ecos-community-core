@@ -31,6 +31,7 @@ public class NewUIInfoGet extends AbstractWebScript {
         Resp resp = new Resp();
         try {
             resp.isNewUIEnabled = newUIUtils.isNewUIEnabled();
+            resp.newUIRedirectUrl = newUIUtils.getNewUIRedirectUrl();
 
             if (StringUtils.isNotBlank(recordRef)) {
                 resp.isOldCardDetailsRequired = newUIUtils.isOldCardDetailsRequired(RecordRef.valueOf(recordRef));
@@ -53,5 +54,6 @@ public class NewUIInfoGet extends AbstractWebScript {
 
         private boolean isNewUIEnabled;
         private boolean isOldCardDetailsRequired;
+        private String newUIRedirectUrl;
     }
 }

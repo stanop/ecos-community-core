@@ -74,7 +74,10 @@ public class NewUIUtils {
     public String getNewUIRedirectUrl() {
         Object objValue = ecosConfigService.getParamValue(NEW_UI_REDIRECT_URL);
         String newUIRedirectUrl = String.valueOf(objValue);
-        return (newUIRedirectUrl != "null") ? newUIRedirectUrl : V2_DASHBOARD_URL_DEFAULT;
+        if (StringUtils.isBlank(newUIRedirectUrl) || newUIRedirectUrl.equals("null")) {
+            newUIRedirectUrl = V2_DASHBOARD_URL_DEFAULT;
+        }
+        return newUIRedirectUrl;
     }
 
     public boolean isOldCardDetailsRequired(RecordRef recordRef) {
