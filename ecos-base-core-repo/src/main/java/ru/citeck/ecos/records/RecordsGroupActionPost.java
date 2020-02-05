@@ -2,6 +2,7 @@ package ru.citeck.ecos.records;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
+@Slf4j
 public class RecordsGroupActionPost extends AbstractWebScript {
 
     private static final Log logger = LogFactory.getLog(RecordsGroupActionPost.class);
@@ -67,9 +69,14 @@ public class RecordsGroupActionPost extends AbstractWebScript {
 
     private ActionResults<RecordRef> executeAction(ActionData actionData) {
         RetryingTransactionHelper helper = transactionService.getRetryingTransactionHelper();
-        return helper.doInTransaction(() ->
-                recordsService.executeAction(actionData.nodes, actionData.config),
-            false, true);
+        return helper.doInTransaction(() -> {
+            try {
+                return recordsService.executeAction(actionData.nodes, actionData.config);
+            } catch (Exception e) {
+                log.debug("Exception while records group action execution");
+                throw e;
+            }
+        }, false, true);
     }
 
     @Autowired
@@ -91,9 +98,9 @@ public class RecordsGroupActionPost extends AbstractWebScript {
         @Override
         public String toString() {
             return "ActionData{" +
-                    ", config=" + config +
-                    ", nodes=" + nodes +
-                    '}';
+                ", config=" + config +
+                ", nodes=" + nodes +
+                '}';
         }
     }
 

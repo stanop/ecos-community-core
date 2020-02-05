@@ -3,6 +3,7 @@ package ru.citeck.ecos.webscripts.forms;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.transaction.TransactionService;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public class EcosFormNodeViewPost extends AbstractWebScript {
 
     /*========PARAMS========*/
@@ -81,10 +83,14 @@ public class EcosFormNodeViewPost extends AbstractWebScript {
 
         RetryingTransactionHelper helper = transactionService.getRetryingTransactionHelper();
         return helper.doInTransaction(() -> {
+            try {
                 return ecosFormService.saveNodeView(formType, formKey, formId, mode,
                     getParams(req, postContent), attributes);
-            },
-            false, true);
+            } catch (Exception e) {
+                log.debug("Exception while saving node view", e);
+                throw e;
+            }
+        }, false, true);
     }
 
     private Map<QName, Object> keysAsQName(Map<String, Object> attributes) {

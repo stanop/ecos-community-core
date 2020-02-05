@@ -1,5 +1,6 @@
 package ru.citeck.ecos.records.rest;
 
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.transaction.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import java.io.IOException;
 /**
  * @author Pavel Simonov
  */
+@Slf4j
 public class RecordsDeletePost extends AbstractWebScript {
 
     private RecordsService recordsService;
@@ -33,9 +35,14 @@ public class RecordsDeletePost extends AbstractWebScript {
 
     private RecordsDelResult delete(Request request) {
         RetryingTransactionHelper helper = transactionService.getRetryingTransactionHelper();
-        return helper.doInTransaction(() ->
-                recordsService.delete(request),
-            false, true);
+        return helper.doInTransaction(() -> {
+            try {
+                return recordsService.delete(request);
+            } catch (Exception e) {
+                log.debug("Exception while deletion", e);
+                throw e;
+            }
+        }, false, true);
     }
 
     @Autowired
