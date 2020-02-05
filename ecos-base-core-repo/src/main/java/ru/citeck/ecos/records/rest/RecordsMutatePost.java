@@ -2,6 +2,7 @@ package ru.citeck.ecos.records.rest;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.transaction.TransactionService;
@@ -20,6 +21,7 @@ import java.io.IOException;
 /**
  * @author Pavel Simonov
  */
+@Slf4j
 public class RecordsMutatePost extends AbstractWebScript {
 
     private static final String FIELD_ID = "id";
@@ -98,9 +100,14 @@ public class RecordsMutatePost extends AbstractWebScript {
 
     private RecordsMutResult mutate(Request request) {
         RetryingTransactionHelper helper = transactionService.getRetryingTransactionHelper();
-        return helper.doInTransaction(() ->
-                recordsService.mutate(request),
-            false, true);
+        return helper.doInTransaction(() -> {
+            try {
+                return recordsService.mutate(request);
+            } catch (Exception e) {
+                log.debug("Exception while mutation", e);
+                throw e;
+            }
+        }, false, true);
     }
 
     @Autowired

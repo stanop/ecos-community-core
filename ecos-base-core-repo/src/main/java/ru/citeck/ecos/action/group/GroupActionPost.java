@@ -3,6 +3,7 @@ package ru.citeck.ecos.action.group;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
@@ -16,6 +17,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 public class GroupActionPost extends AbstractWebScript {
 
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -44,9 +46,14 @@ public class GroupActionPost extends AbstractWebScript {
 
     private ActionResults<?> execute(ActionData actionData) {
         RetryingTransactionHelper helper = transactionService.getRetryingTransactionHelper();
-        return helper.doInTransaction(() ->
-                groupActionService.execute(actionData.nodes, actionData.config),
-            false, true);
+        return helper.doInTransaction(() -> {
+            try {
+                return groupActionService.execute(actionData.nodes, actionData.config);
+            } catch (Exception e) {
+                log.debug("Exception while group action execution", e);
+                throw e;
+            }
+        }, false, true);
     }
 
     @Autowired
