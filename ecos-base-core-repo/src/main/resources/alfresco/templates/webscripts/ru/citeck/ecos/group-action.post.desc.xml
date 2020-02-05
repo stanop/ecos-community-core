@@ -4,6 +4,5 @@
     <url>/citeck/ecos/group-action</url>
     <format default="json"/>
     <authentication>user</authentication>
-    <transaction>required</transaction>
     <lifecycle>public_api</lifecycle>
 </webscript>
