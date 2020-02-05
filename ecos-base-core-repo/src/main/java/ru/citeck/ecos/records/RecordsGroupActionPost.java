@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ public class RecordsGroupActionPost extends AbstractWebScript {
 
     private ObjectMapper objectMapper = new ObjectMapper();
     private RecordsServiceImpl recordsService;
+    private TransactionService transactionService;
 
     @PostConstruct
     public void init() {
@@ -46,7 +48,7 @@ public class RecordsGroupActionPost extends AbstractWebScript {
 
         try (Writer writer = res.getWriter()) {
             try {
-                response.results = recordsService.executeAction(actionData.nodes, actionData.config);
+                response.results = executeAction(actionData);
 
                 res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
                 objectMapper.writeValue(writer, response);
@@ -63,9 +65,21 @@ public class RecordsGroupActionPost extends AbstractWebScript {
         }
     }
 
+    private ActionResults<RecordRef> executeAction(ActionData actionData) {
+        RetryingTransactionHelper helper = transactionService.getRetryingTransactionHelper();
+        return helper.doInTransaction(() ->
+                recordsService.executeAction(actionData.nodes, actionData.config),
+            false, true);
+    }
+
     @Autowired
     public void setRecordsService(RecordsServiceImpl recordsService) {
         this.recordsService = recordsService;
+    }
+
+    @Autowired
+    public void setTransactionService(TransactionService transactionService) {
+        this.transactionService = transactionService;
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

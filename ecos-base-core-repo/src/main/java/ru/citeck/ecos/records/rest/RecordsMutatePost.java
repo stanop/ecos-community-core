@@ -3,10 +3,11 @@ package ru.citeck.ecos.records.rest;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.repo.content.MimetypeMap;
+import org.alfresco.repo.transaction.RetryingTransactionHelper;
+import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
-
 import org.springframework.extensions.webscripts.servlet.FormData;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
@@ -32,6 +33,7 @@ public class RecordsMutatePost extends AbstractWebScript {
 
     private RecordsService recordsService;
     private RecordsRestUtils utils;
+    private TransactionService transactionService;
 
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
@@ -85,13 +87,20 @@ public class RecordsMutatePost extends AbstractWebScript {
             request.setRecord(recordMeta);
 
         } else {
-
             throw new WebScriptException(Status.STATUS_BAD_REQUEST,
-                                         "Content type " + req.getContentType() + " is not supported");
+                "Content type " + req.getContentType() + " is not supported");
         }
 
-        RecordsMutResult result = recordsService.mutate(request);
+        RecordsMutResult result = mutate(request);
+
         utils.writeRespRecords(res, result, RecordsMutResult::getRecords, request.isSingleRecord);
+    }
+
+    private RecordsMutResult mutate(Request request) {
+        RetryingTransactionHelper helper = transactionService.getRetryingTransactionHelper();
+        return helper.doInTransaction(() ->
+                recordsService.mutate(request),
+            false, true);
     }
 
     @Autowired
@@ -102,6 +111,11 @@ public class RecordsMutatePost extends AbstractWebScript {
     @Autowired
     public void setUtils(RecordsRestUtils utils) {
         this.utils = utils;
+    }
+
+    @Autowired
+    public void setTransactionService(TransactionService transactionService) {
+        this.transactionService = transactionService;
     }
 
     public static class Request extends RecordsMutation {
