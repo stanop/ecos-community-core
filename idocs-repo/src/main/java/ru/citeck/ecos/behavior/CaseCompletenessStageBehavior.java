@@ -11,16 +11,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
-import ru.citeck.ecos.icase.activity.CaseActivityService;
+import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.icase.completeness.CaseCompletenessServiceImpl;
 import ru.citeck.ecos.model.StagesModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import java.util.List;
 
-/**
- * @author Maxim Strizhov
- */
 public class CaseCompletenessStageBehavior implements CaseActivityPolicies.BeforeCaseActivityStartedPolicy,
                                                       CaseActivityPolicies.BeforeCaseActivityStoppedPolicy {
 
@@ -69,7 +66,8 @@ public class CaseCompletenessStageBehavior implements CaseActivityPolicies.Befor
     }
 
     private void checkCompletenessLevel(NodeRef stageRef, QName assocTypeQName) {
-        NodeRef caseRef = caseActivityService.getDocument(stageRef);
+        String documentId = caseActivityService.getDocumentId(stageRef.toString());
+        NodeRef caseRef = new NodeRef(documentId);
         if (caseRef == null) {
             return;
         }

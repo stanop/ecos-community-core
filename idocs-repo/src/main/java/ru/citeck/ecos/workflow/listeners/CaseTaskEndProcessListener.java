@@ -18,27 +18,23 @@
  */
 package ru.citeck.ecos.workflow.listeners;
 
+import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.action.ActionConditionUtils;
-import ru.citeck.ecos.icase.activity.CaseActivityService;
+import ru.citeck.ecos.icase.activity.dto.CaseActivity;
+import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.service.CiteckServices;
 
 import java.util.List;
 
-/**
- * @author Maxim Strizhov
- */
+@Slf4j
 public class CaseTaskEndProcessListener extends AbstractExecutionListener {
-
-    private static final Log log = LogFactory.getLog(CaseTaskEndProcessListener.class);
 
     private CaseActivityService caseActivityService;
     private NodeService nodeService;
@@ -68,7 +64,13 @@ public class CaseTaskEndProcessListener extends AbstractExecutionListener {
 
         if (packageAssocs != null && !packageAssocs.isEmpty()) {
             ActionConditionUtils.getProcessVariables().putAll(delegateExecution.getVariables());
-            caseActivityService.stopActivity(packageAssocs.get(0).getSourceRef());
+
+            CaseActivity activity = caseActivityService.getActivity(packageAssocs.get(0).getSourceRef().toString());
+            if (activity != null) {
+                caseActivityService.stopActivity(activity);
+            } else {
+                log.debug("Cannot stop activity. CaseActivity is null");
+            }
         }
     }
 

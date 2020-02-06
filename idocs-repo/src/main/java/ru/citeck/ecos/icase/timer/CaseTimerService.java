@@ -8,7 +8,8 @@ import org.alfresco.util.ISO8601DateFormat;
 import org.apache.commons.lang.time.DateUtils;
 import org.joda.time.Interval;
 import ru.citeck.ecos.event.EventService;
-import ru.citeck.ecos.icase.activity.CaseActivityService;
+import ru.citeck.ecos.icase.activity.dto.CaseActivity;
+import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.icase.timer.evaluator.Evaluator;
 import ru.citeck.ecos.model.CaseTimerModel.DatePrecision;
 import ru.citeck.ecos.model.CaseTimerModel.ExpressionType;
@@ -72,13 +73,15 @@ public class CaseTimerService {
 
     public void timerOccur(NodeRef timerRef) {
 
-        if (caseActivityService.isActive(timerRef)) {
+        CaseActivity activity = caseActivityService.getActivity(timerRef.toString());
+
+        if (activity.isActive()) {
 
             Date fromDate = (Date) nodeService.getProperty(timerRef, CaseTimerModel.PROP_OCCUR_DATE);
             int counter = getRepeatCounter(timerRef) + 1;
 
             if (!startTimer(timerRef, fromDate, counter)) {
-                caseActivityService.stopActivity(timerRef);
+                caseActivityService.stopActivity(activity);
             } else {
                 eventService.fireEvent(timerRef, ICaseEventModel.CONSTR_ACTIVITY_STOPPED);
             }

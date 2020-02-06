@@ -6,7 +6,7 @@ import ru.citeck.ecos.cmmn.service.CaseTemplateRegistry;
 import ru.citeck.ecos.event.EventService;
 import ru.citeck.ecos.icase.element.CaseElementService;
 import ru.citeck.ecos.icase.CaseStatusService;
-import ru.citeck.ecos.icase.activity.CaseActivityService;
+import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.icase.timer.CaseTimerService;
 
 import static ru.citeck.ecos.service.CiteckServices.CITECK_NAMESPACE;

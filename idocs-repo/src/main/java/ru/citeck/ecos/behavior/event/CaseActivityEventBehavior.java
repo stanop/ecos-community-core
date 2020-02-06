@@ -12,8 +12,9 @@ import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.behavior.event.trigger.UserActionEventTrigger;
 import ru.citeck.ecos.event.EventPolicies;
+import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
-import ru.citeck.ecos.icase.activity.CaseActivityService;
+import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.EventModel;
 import ru.citeck.ecos.model.ICaseEventModel;
@@ -52,15 +53,16 @@ public class CaseActivityEventBehavior implements EventPolicies.OnEventPolicy,
 
         NodeRef activityRef = parentAssocRef.getParentRef();
 
+        CaseActivity activity = caseActivityService.getActivity(activityRef.toString());
         if (assocType.equals(ICaseEventModel.ASSOC_ACTIVITY_START_EVENTS)) {
-            caseActivityService.startActivity(activityRef);
+            caseActivityService.startActivity(activity);
         } else if (assocType.equals(ICaseEventModel.ASSOC_ACTIVITY_END_EVENTS)) {
-            caseActivityService.stopActivity(activityRef);
+            caseActivityService.stopActivity(activity);
         } else if (assocType.equals(ICaseEventModel.ASSOC_ACTIVITY_RESET_EVENTS)) {
-            caseActivityService.reset(activityRef);
+            caseActivityService.reset(activity.getId());
         } else if (assocType.equals(ICaseEventModel.ASSOC_ACTIVITY_RESTART_EVENTS)) {
-            caseActivityService.reset(activityRef);
-            caseActivityService.startActivity(activityRef);
+            caseActivityService.reset(activity.getId());
+            caseActivityService.startActivity(activity);
         }
     }
 

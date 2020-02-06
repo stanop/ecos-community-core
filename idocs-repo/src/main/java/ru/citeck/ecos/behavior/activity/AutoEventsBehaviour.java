@@ -12,8 +12,9 @@ import org.alfresco.service.namespace.QName;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.behavior.base.AbstractBehaviour;
 import ru.citeck.ecos.behavior.base.PolicyMethod;
+import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies.OnChildrenIndexChangedPolicy;
-import ru.citeck.ecos.icase.activity.CaseActivityService;
+import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.EventModel;
 import ru.citeck.ecos.model.ICaseEventModel;
@@ -76,19 +77,31 @@ public class AutoEventsBehaviour extends AbstractBehaviour
 
     private void updateChildren(NodeRef parentRef) {
 
-        List<NodeRef> activities = caseActivityService.getActivities(parentRef);
+        List<CaseActivity> activities = caseActivityService.getActivities(parentRef.toString());
 
         for (int i = 0; i < activities.size(); i++) {
-            NodeRef beforeRef = i > 0 ? activities.get(i - 1) : null;
-            updateActivity(parentRef, activities.get(i), beforeRef);
+
+            NodeRef beforeRef = null;
+            if (i > 0) {
+                beforeRef = new NodeRef(activities.get(i - 1).getId());
+            }
+
+            NodeRef activityRef = new NodeRef(activities.get(i).getId());
+            updateActivity(parentRef, activityRef, beforeRef);
         }
     }
 
     private void updateActivity(NodeRef activityRef) {
         NodeRef parentRef = nodeService.getPrimaryParent(activityRef).getParentRef();
-        List<NodeRef> activities = caseActivityService.getActivities(parentRef);
-        int idx = activities.indexOf(activityRef);
-        NodeRef beforeRef = idx > 0 ? activities.get(idx - 1) : null;
+
+        List<CaseActivity> activities = caseActivityService.getActivities(parentRef.toString());
+        CaseActivity selectedActivity = caseActivityService.getActivity(activityRef.toString());
+        int idx = activities.indexOf(selectedActivity);
+
+        NodeRef beforeRef = null;
+        if (idx > 0) {
+            beforeRef = new NodeRef(activities.get(idx - 1).getId());
+        }
         updateActivity(parentRef, activityRef, beforeRef);
     }
 

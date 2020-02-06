@@ -8,7 +8,8 @@ import org.flowable.engine.delegate.DelegateExecution;
 import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.flowable.listeners.global.GlobalEndExecutionListener;
 import ru.citeck.ecos.flowable.utils.FlowableListenerUtils;
-import ru.citeck.ecos.icase.activity.CaseActivityService;
+import ru.citeck.ecos.icase.activity.dto.CaseActivity;
+import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
 import java.util.List;
@@ -55,7 +56,9 @@ public class CaseTaskEndProcessListener implements GlobalEndExecutionListener {
 
         if (packageAssocs != null && !packageAssocs.isEmpty()) {
             ActionConditionUtils.getProcessVariables().putAll(delegateExecution.getVariables());
-            caseActivityService.stopActivity(packageAssocs.get(0).getSourceRef());
+
+            CaseActivity activity = caseActivityService.getActivity(packageAssocs.get(0).getSourceRef().toString());
+            caseActivityService.stopActivity(activity);
         }
     }
 

@@ -11,7 +11,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
-import ru.citeck.ecos.icase.activity.CaseActivityService;
+import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.icase.timer.CaseTimerService;
 import ru.citeck.ecos.model.CaseTimerModel;
 import ru.citeck.ecos.service.AlfrescoServices;
@@ -104,7 +104,7 @@ public class CaseTimerBehavior implements CaseActivityPolicies.BeforeCaseActivit
             if (caseTimerService.isOccurred(timerRef)) {
                 caseTimerService.timerOccur(timerRef);
             } else if (!caseTimerService.isActive(timerRef)) {
-                caseActivityService.reset(timerRef);
+                caseActivityService.reset(timerRef.toString());
             }
             return null;
         });

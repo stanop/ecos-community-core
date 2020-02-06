@@ -10,17 +10,15 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.apache.commons.lang.mutable.MutableInt;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.event.EventService;
+import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
-import ru.citeck.ecos.icase.activity.CaseActivityService;
+import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.ICaseEventModel;
 import ru.citeck.ecos.model.StagesModel;
 
 import java.util.*;
 
-/**
- * @author Pavel Simonov
- */
 public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActivityStartedPolicy,
                                                  CaseActivityPolicies.OnCaseActivityStoppedPolicy {
 
@@ -46,7 +44,8 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
 
     @Override
     public void onCaseActivityStarted(NodeRef activityRef) {
-        NodeRef document = caseActivityService.getDocument(activityRef);
+        String documentId = caseActivityService.getDocumentId(activityRef.toString());
+        NodeRef documentNodeRef = new NodeRef(documentId);
 
         TransactionData data = getTransactionData();
         boolean isDataOwner = false;
@@ -54,7 +53,7 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
             data.hasOwner = isDataOwner = true;
         }
 
-        eventService.fireEvent(activityRef, document, ICaseEventModel.CONSTR_ACTIVITY_STARTED);
+        eventService.fireEvent(activityRef, documentNodeRef, ICaseEventModel.CONSTR_ACTIVITY_STARTED);
 
         if (dictionaryService.isSubClass(nodeService.getType(activityRef), StagesModel.TYPE_STAGE)) {
             Integer version = (Integer) nodeService.getProperty(activityRef, ActivityModel.PROP_TYPE_VERSION);
@@ -64,14 +63,15 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
         }
 
         if (isDataOwner) {
-            tryToFireStageChildrenStoppedEvents(data, document);
+            tryToFireStageChildrenStoppedEvents(data, documentNodeRef);
             data.hasOwner = false;
         }
     }
 
     @Override
     public void onCaseActivityStopped(NodeRef activityRef) {
-        NodeRef document = caseActivityService.getDocument(activityRef);
+        String documentId = caseActivityService.getDocumentId(activityRef.toString());
+        NodeRef documentNodeRef = new NodeRef(documentId);
 
         TransactionData data = getTransactionData();
         boolean isDataOwner = false;
@@ -79,7 +79,7 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
             data.hasOwner = isDataOwner = true;
         }
 
-        eventService.fireEvent(activityRef, document, ICaseEventModel.CONSTR_ACTIVITY_STOPPED);
+        eventService.fireEvent(activityRef, documentNodeRef, ICaseEventModel.CONSTR_ACTIVITY_STOPPED);
 
         NodeRef parent = nodeService.getPrimaryParent(activityRef).getParentRef();
         if (parent != null && dictionaryService.isSubClass(nodeService.getType(parent), StagesModel.TYPE_STAGE)) {
@@ -87,7 +87,7 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
         }
 
         if (isDataOwner) {
-            tryToFireStageChildrenStoppedEvents(data, document);
+            tryToFireStageChildrenStoppedEvents(data, documentNodeRef);
             data.hasOwner = false;
         }
     }
@@ -104,7 +104,8 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
 
             NodeRef stage = stages.poll();
 
-            if (!caseActivityService.hasActiveChildren(stage)) {
+            CaseActivity activity = caseActivityService.getActivity(stage.toString());
+            if (!caseActivityService.hasActiveChildren(activity)) {
 
                 MutableInt completedCounter = completedStages.computeIfAbsent(stage, s -> new MutableInt(0));
                 completedCounter.increment();
