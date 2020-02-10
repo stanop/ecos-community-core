@@ -69,7 +69,7 @@ public class CaseTaskEndProcessListener extends AbstractExecutionListener {
             if (activity != null) {
                 caseActivityService.stopActivity(activity);
             } else {
-                log.debug("Cannot stop activity. CaseActivity is null");
+                log.warn("Cannot stop activity. CaseActivity is null");
             }
         }
     }

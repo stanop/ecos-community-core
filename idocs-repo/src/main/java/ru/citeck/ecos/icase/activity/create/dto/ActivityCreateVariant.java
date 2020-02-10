@@ -61,7 +61,7 @@ public class ActivityCreateVariant {
         return children;
     }
 
-    public void setViewParam(String key, String value) {
+    public void addViewParam(String key, String value) {
         this.viewParams.put(key, value);
     }
 
@@ -69,7 +69,7 @@ public class ActivityCreateVariant {
         return viewParams;
     }
 
-    public boolean getCanBeCreated() {
+    public boolean canBeCreated() {
         return canBeCreated;
     }
 
