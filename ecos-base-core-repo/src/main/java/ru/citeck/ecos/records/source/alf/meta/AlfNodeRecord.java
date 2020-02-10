@@ -38,6 +38,7 @@ import ru.citeck.ecos.records2.graphql.meta.value.MetaEdge;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.state.ItemsUpdateState;
+import ru.citeck.ecos.utils.NewUIUtils;
 import ru.citeck.ecos.utils.NodeUtils;
 
 import java.io.Serializable;
@@ -47,6 +48,7 @@ import java.util.stream.Collectors;
 public class AlfNodeRecord implements MetaValue {
 
     public static final String ATTR_DOC_SUM = "docSum";
+    private static final String ATTR_UI_TYPE = "uiType";
     private static final String ATTR_ASPECTS = "attr:aspects";
     private static final String ATTR_IS_DOCUMENT = "attr:isDocument";
     private static final String ATTR_IS_CONTAINER = "attr:isContainer";
@@ -168,6 +170,12 @@ public class AlfNodeRecord implements MetaValue {
         }
 
         switch (name) {
+
+            case ATTR_UI_TYPE:
+
+                NewUIUtils utils = context.getService(NewUIUtils.QNAME);
+                attribute = Collections.singletonList(new AlfNodeAttValue(utils.getUITypeForRecord(recordRef)));
+                break;
 
             case ATTR_MODIFIER: {
                 NodeRef nodeRef = new NodeRef(node.nodeRef());

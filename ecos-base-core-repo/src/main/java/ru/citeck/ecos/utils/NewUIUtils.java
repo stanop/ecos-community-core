@@ -1,13 +1,13 @@
 package ru.citeck.ecos.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.BooleanNode;
 import ecos.com.google.common.cache.CacheBuilder;
 import ecos.com.google.common.cache.CacheLoader;
 import ecos.com.google.common.cache.LoadingCache;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.AuthorityService;
+import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,19 +26,25 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class NewUIUtils {
 
+    public static final QName QNAME = QName.createQName("", "newUIUtils");
+
+    public static final String UI_TYPE_SHARE = "share";
+    public static final String UI_TYPE_REACT = "react";
+
     private static final String NEW_UI_REDIRECT_ENABLED = "new-ui-redirect-enabled";
     private static final String NEW_UI_REDIRECT_URL = "new-ui-redirect-url";
     private static final String V2_DASHBOARD_URL_DEFAULT = "/v2/dashboard";
     private static final String DEFAULT_UI_NEW_JOURNALS_ACCESS_GROUPS = "default-ui-new-journals-access-groups";
 
-    private static final String FORCE_OLD_CARD_DETAILS_ATT = "_etype.attributes.forceOldCardDetails?bool";
+    private static final String UI_TYPE_FROM_ETYPE_ATT = "_etype.attributes.uiType?str";
+    private static final String UI_TYPE_FROM_SECTION_ATT = "attributes.uiType?str";
 
     private final EcosConfigService ecosConfigService;
     private final AuthenticationService authenticationService;
     private final AuthorityService authorityService;
     private final RecordsService recordsService;
 
-    private LoadingCache<RecordRef, Boolean> oldCardDetailsCache;
+    private LoadingCache<RecordRef, String> uiTypeByRecord;
     private LoadingCache<String, Boolean> isNewUIEnabledCache;
 
     @Autowired
@@ -57,10 +63,10 @@ public class NewUIUtils {
             .maximumSize(100)
             .build(CacheLoader.from(this::isNewUIEnabledForUserImpl));
 
-        oldCardDetailsCache = CacheBuilder.newBuilder()
+        uiTypeByRecord = CacheBuilder.newBuilder()
             .expireAfterWrite(1, TimeUnit.MINUTES)
             .maximumSize(100)
-            .build(CacheLoader.from(this::isOldCardDetailsRequiredImpl));
+            .build(CacheLoader.from(this::getUITypeByRecord));
     }
 
     public boolean isNewUIEnabled() {
@@ -69,6 +75,10 @@ public class NewUIUtils {
 
     public boolean isNewUIEnabledForUser(String username) {
         return isNewUIEnabledCache.getUnchecked(username);
+    }
+
+    public boolean isOldCardDetailsRequired(RecordRef recordRef) {
+        return getUITypeByRecord(recordRef).equals(UI_TYPE_SHARE);
     }
 
     public String getNewUIRedirectUrl() {
@@ -80,12 +90,12 @@ public class NewUIUtils {
         return newUIRedirectUrl;
     }
 
-    public boolean isOldCardDetailsRequired(RecordRef recordRef) {
+    public String getUITypeForRecord(RecordRef recordRef) {
         try {
-            return oldCardDetailsCache.getUnchecked(recordRef);
+            return uiTypeByRecord.getUnchecked(recordRef);
         } catch (Exception e) {
             log.error("Exception. RecordRef: " + recordRef, e);
-            return false;
+            return "";
         }
     }
 
@@ -95,12 +105,19 @@ public class NewUIUtils {
         return isNewUIRedirectEnabled || isNewJournalsGroupMember(username);
     }
 
-    private boolean isOldCardDetailsRequiredImpl(RecordRef recordRef) {
+    private String getUITypeByRecord(RecordRef recordRef) {
         if (!isNewUIEnabled()) {
-            return true;
+            return UI_TYPE_SHARE;
         }
-        JsonNode res = recordsService.getAttribute(recordRef, FORCE_OLD_CARD_DETAILS_ATT);
-        return BooleanNode.TRUE.equals(res);
+        String att;
+        if (recordRef.getSourceId().equals("site")) {
+            att = UI_TYPE_FROM_SECTION_ATT;
+            recordRef = RecordRef.create("emodel", "section", recordRef.getId());
+        } else {
+            att = UI_TYPE_FROM_ETYPE_ATT;
+        }
+        JsonNode res = recordsService.getAttribute(recordRef, att);
+        return res != null && res.isTextual() ? res.asText() : "";
     }
 
     private boolean isNewJournalsGroupMember(String username) {

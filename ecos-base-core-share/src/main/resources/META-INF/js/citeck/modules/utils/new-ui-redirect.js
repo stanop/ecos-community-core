@@ -3,11 +3,22 @@ define([
     'js/citeck/modules/utils/citeck'
 ], function () {
 
+    var siteDashboardPattern = /^\/share\/page\/site\/([^\/]*)\/dashboard\/?$/;
+
     var pageTemplatesToTest = [
+        siteDashboardPattern,
         /^\/share\/page\/user\/[^\/]*\/dashboard\/?$/,
         /^\/share\/page\/?$/,
         /^\/share\/?$/
     ];
+
+    var extractRecordRef = function (url) {
+
+        if (siteDashboardPattern.test(url)) {
+            return "site@" + url.match(siteDashboardPattern)[1];
+        }
+        return null;
+    };
 
     try {
         let forceOld = Citeck.utils.getURLParameterByName("forceOld") === 'true';
@@ -32,17 +43,23 @@ define([
         }
         Citeck.newUIRedirectCheckingPerformed = true;
 
+        var recordRefParam = extractRecordRef(window.location.pathname) || "";
+        if (recordRefParam) {
+            recordRefParam = "?recordRef=" + recordRefParam;
+        }
+
         Alfresco.util.Ajax.jsonGet({
-            url: Alfresco.constants.PROXY_URI + 'citeck/ecos/new-ui-info-get',
+            url: Alfresco.constants.PROXY_URI + 'citeck/ecos/new-ui-info-get' + recordRefParam,
             successCallback: {
                 fn: function(response) {
-                    if (response && response.json
-                            && response.json.newUIEnabled
-                            && response.json.newUIRedirectUrl) {
+                    if (!response || !response.json || !response.json.newUIRedirectUrl) {
+                        console.log("Strange response:", response);
+                        return;
+                    }
+                    if (response.json.recordUIType === "react"
+                            || (response.json.recordUIType !== "share" && response.json.newUIEnabled)) {
 
                         window.location.href = response.json.newUIRedirectUrl;
-                    } else {
-                        console.log("Strange response:", response);
                     }
                 }
             },
