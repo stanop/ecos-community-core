@@ -1,0 +1,6 @@
+{
+    "id": "idocs-cat-doctype-passport",
+    "name": "Паспорт",
+    "parent": "model/type$base",
+    "inheritActions": true
+}
