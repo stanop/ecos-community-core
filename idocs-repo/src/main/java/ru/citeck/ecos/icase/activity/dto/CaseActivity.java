@@ -1,9 +1,9 @@
 package ru.citeck.ecos.icase.activity.dto;
 
 import lombok.Data;
+import org.alfresco.service.namespace.QName;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Data
 public class CaseActivity {
@@ -37,4 +37,6 @@ public class CaseActivity {
             return content;
         }
     }
+
+
 }

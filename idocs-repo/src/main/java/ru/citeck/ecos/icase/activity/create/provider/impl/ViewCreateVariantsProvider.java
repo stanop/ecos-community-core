@@ -24,10 +24,6 @@ import java.util.*;
 
 public class ViewCreateVariantsProvider implements CreateVariantsProvider {
 
-    private static final String ACTIVITI_TASK_TITLE_PREFIX = "A: ";
-    private static final String FLOWABLE_TASK_TITLE_PREFIX = "F: ";
-    private static final String FLOWABLE_ENGINE_PREFIX = "flowable";
-
     private DictionaryService dictionaryService;
     private NamespaceService namespaceService;
     private NodeViewService nodeViewService;
