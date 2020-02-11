@@ -27,6 +27,7 @@ import ecos.com.google.common.cache.LoadingCache;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -45,6 +46,7 @@ import ru.citeck.ecos.journals.records.JournalRecordsDAO;
 import ru.citeck.ecos.journals.xml.Journal;
 import ru.citeck.ecos.journals.xml.Journals;
 import ru.citeck.ecos.journals.xml.Journals.Imports.Import;
+import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.processor.TemplateExpressionEvaluator;
 import ru.citeck.ecos.records2.RecordRef;
@@ -72,6 +74,8 @@ class JournalServiceImpl implements JournalService {
     private JournalRecordsDAO recordsDAO;
     private NamespaceService namespaceService;
     private NodeUtils nodeUtils;
+    private NewUIUtils newUIUtils;
+    private DictUtils dictUtils;
 
     private LazyNodeRef journalsRoot;
     private Map<String, JournalType> journalTypes = new ConcurrentHashMap<>();
@@ -82,6 +86,7 @@ class JournalServiceImpl implements JournalService {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     private LoadingCache<String, Optional<JournalType>> journalTypeByJournalIdOrRef;
+    private LoadingCache<String, String> uiTypeByJournal;
 
     public JournalServiceImpl() {
         criterionInvariantsProviders = Collections.synchronizedList(new ArrayList<>());
@@ -89,6 +94,10 @@ class JournalServiceImpl implements JournalService {
         journalTypeByJournalIdOrRef = CacheBuilder.newBuilder()
                 .expireAfterWrite(60, TimeUnit.SECONDS)
                 .build(CacheLoader.from(this::getJournalTypeByIdOrNodeRefImpl));
+
+        uiTypeByJournal = CacheBuilder.newBuilder()
+                .expireAfterWrite(60, TimeUnit.SECONDS)
+                .build(CacheLoader.from(this::getUITypeImpl));
     }
 
     @Override
@@ -353,6 +362,61 @@ class JournalServiceImpl implements JournalService {
         }
     }
 
+    @Override
+    public String getUIType(String journalId) {
+        return uiTypeByJournal.getUnchecked(journalId);
+    }
+
+    public String getUITypeImpl(String journalId) {
+
+        if (StringUtils.isBlank(journalId)) {
+            return "";
+        }
+
+        if (NodeRef.isNodeRef(journalId)) {
+            NodeRef journalRef = new NodeRef(journalId);
+            NodeRef ecosType = (NodeRef) nodeService.getProperty(journalRef, ClassificationModel.PROP_RELATES_TO_TYPE);
+            if (ecosType != null) {
+                RecordRef typeRef = RecordRef.create("emodel", "type", ecosType.getId());
+                return newUIUtils.getUITypeForRecord(typeRef);
+            }
+        }
+
+        Optional<JournalType> optJournal = getJournalTypeByIdOrNodeRefImpl(journalId);
+        if (!optJournal.isPresent()) {
+            return "";
+        }
+
+        JournalType journal = optJournal.get();
+
+        String typeRefOption = journal.getOptions().get("typeRef");
+        if (StringUtils.isNotBlank(typeRefOption)) {
+            return newUIUtils.getUITypeForRecord(RecordRef.valueOf(typeRefOption));
+        } else {
+
+            String type = journal.getOptions().get("type");
+
+            if (StringUtils.isNotBlank(type)) {
+                PropertyDefinition propDef = dictUtils.getPropDef(type, ClassificationModel.PROP_DOCUMENT_TYPE);
+                if (propDef != null) {
+                    String value = propDef.getDefaultValue();
+                    if (StringUtils.isNotBlank(value) && NodeRef.isNodeRef(value)) {
+                        NodeRef typeNodeRef = new NodeRef(value);
+                        RecordRef typeRef = RecordRef.create("emodel", "type", typeNodeRef.getId());
+                        return newUIUtils.getUITypeForRecord(typeRef);
+                    }
+                }
+            }
+        }
+
+        return "";
+    }
+
+    @Autowired
+    public void setNewUIUtils(NewUIUtils newUIUtils) {
+        this.newUIUtils = newUIUtils;
+    }
+
     public void setJournalsRoot(LazyNodeRef journalsRoot) {
         this.journalsRoot = journalsRoot;
     }
@@ -385,5 +449,10 @@ class JournalServiceImpl implements JournalService {
     @Autowired
     public void setNodeUtils(NodeUtils nodeUtils) {
         this.nodeUtils = nodeUtils;
+    }
+
+    @Autowired
+    public void setDictUtils(DictUtils dictUtils) {
+        this.dictUtils = dictUtils;
     }
 }
