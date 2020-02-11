@@ -1,0 +1,6 @@
+{
+    "id": "category-document-type/cat-personal-documents",
+    "name": "Личное дело",
+    "parent": "model/type$category-document-type",
+    "inheritActions": true
+}

@@ -1,0 +1,6 @@
+{
+    "id": "category-document-type",
+    "name": "Документ",
+    "parent": "model/type$base",
+    "inheritActions": true
+}
