@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
-import ru.citeck.ecos.icase.activity.CaseActivityService;
+import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.*;
 import ru.citeck.ecos.role.CaseRoleService;
 import ru.citeck.ecos.utils.RepoUtils;
@@ -88,8 +88,9 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
     @Override
     public void beforeCaseActivityStarted(NodeRef taskRef) {
 
-        String workflowDefinitionName = (String) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_DEFINITION_NAME);
-        
+        String workflowDefinitionName = (String) nodeService.getProperty(taskRef,
+            ICaseTaskModel.PROP_WORKFLOW_DEFINITION_NAME);
+
         Map<QName, Serializable> workflowProperties = getWorkflowProperties(taskRef, workflowDefinitionName);
 
         ActionPerformance performance = new ActionPerformance(this, "createPackage");
@@ -103,13 +104,15 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
         workflowProperties.put(WorkflowModel.ASSOC_PACKAGE, wfPackage);
 
         performance.restart("getDocument");
-        NodeRef parent = caseActivityService.getDocument(taskRef);
+        String parentId = caseActivityService.getDocumentId(taskRef.toString());
+        NodeRef parentNodeRef = new NodeRef(parentId);
         performance.stop();
 
         performance.restart("workflowPackage addChild");
-        this.nodeService.addChild(wfPackage, parent, WorkflowModel.ASSOC_PACKAGE_CONTAINS,
-                QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI,
-                        QName.createValidLocalName((String) this.nodeService.getProperty(parent, ContentModel.PROP_NAME))));
+
+        QName childQName = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI,
+            QName.createValidLocalName((String) this.nodeService.getProperty(parentNodeRef, ContentModel.PROP_NAME)));
+        this.nodeService.addChild(wfPackage, parentNodeRef, WorkflowModel.ASSOC_PACKAGE_CONTAINS, childQName);
         performance.stop();
 
         WorkflowDefinition wfDefinition = workflowService.getDefinitionByName(workflowDefinitionName);

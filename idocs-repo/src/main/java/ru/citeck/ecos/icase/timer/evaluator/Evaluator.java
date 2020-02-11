@@ -4,7 +4,7 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import ru.citeck.ecos.action.ActionConditionUtils;
-import ru.citeck.ecos.icase.activity.CaseActivityService;
+import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.icase.timer.CaseTimerService;
 import ru.citeck.ecos.model.CaseTimerModel;
 import ru.citeck.ecos.model.CaseTimerModel.ExpressionType;
@@ -49,7 +49,8 @@ public abstract class Evaluator {
             model.put(variable.getKey(), variable.getValue());
         }
         if (!variables.containsKey(MODEL_DOCUMENT)) {
-            model.put(MODEL_DOCUMENT, caseActivityService.getDocument(timerRef));
+
+            model.put(MODEL_DOCUMENT, caseActivityService.getDocumentId(timerRef.toString()));
         }
 
         model.put(MODEL_TIMER, timerRef);

@@ -9,7 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
-import ru.citeck.ecos.icase.activity.CaseActivityService;
+import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.model.StagesModel;
 import ru.citeck.ecos.utils.RepoUtils;
@@ -47,14 +47,16 @@ public class CaseStageBehavior implements CaseActivityPolicies.BeforeCaseActivit
         }
         String documentStatus = (String) nodeService.getProperty(stageRef, StagesModel.PROP_DOCUMENT_STATUS);
         if (documentStatus != null && !documentStatus.isEmpty()) {
-            NodeRef document = caseActivityService.getDocument(stageRef);
-            nodeService.setProperty(document, IdocsModel.PROP_DOCUMENT_STATUS, documentStatus);
+            String documentId = caseActivityService.getDocumentId(stageRef.toString());
+            NodeRef documentNodeRef = new NodeRef(documentId);
+            nodeService.setProperty(documentNodeRef, IdocsModel.PROP_DOCUMENT_STATUS, documentStatus);
         }
         List<NodeRef> nodeRefs = RepoUtils.getTargetAssoc(stageRef, StagesModel.ASSOC_CASE_STATUS, nodeService);
         if (nodeRefs != null && !nodeRefs.isEmpty()) {
             NodeRef caseStatusRef = nodeRefs.get(0);
-            NodeRef document = caseActivityService.getDocument(stageRef);
-            caseStatusService.setStatus(document, caseStatusRef);
+            String documentId = caseActivityService.getDocumentId(stageRef.toString());
+            NodeRef documentNodeRef = new NodeRef(documentId);
+            caseStatusService.setStatus(documentNodeRef, caseStatusRef);
         }
     }
 

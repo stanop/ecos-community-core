@@ -10,7 +10,8 @@ import org.springframework.extensions.surf.util.ISO8601DateFormat;
 import ru.citeck.ecos.cmmn.CMMNUtils;
 import ru.citeck.ecos.cmmn.model.*;
 import ru.citeck.ecos.cmmn.service.CaseExportService;
-import ru.citeck.ecos.icase.activity.CaseActivityService;
+import ru.citeck.ecos.icase.activity.dto.CaseActivity;
+import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.*;
 import ru.citeck.ecos.utils.RepoUtils;
 
@@ -56,7 +57,8 @@ public class CasePlanModelExport {
         ACTIVITY_EVENT_TYPES_MAPPING.put(ICaseEventModel.CONSTR_STAGE_CHILDREN_STOPPED, PlanItemTransition.COMPLETE);
         ACTIVITY_EVENT_TYPES_MAPPING.put(ICaseEventModel.CONSTR_ACTIVITY_STOPPED, PlanItemTransition.COMPLETE);
         ACTIVITY_EVENT_TYPES_MAPPING.put(ICaseEventModel.CONSTR_CASE_CREATED, PlanItemTransition.CREATE);
-        ACTIVITY_EVENT_TYPES_MAPPING.put(ICaseEventModel.CONSTR_CASE_PROPERTIES_CHANGED, PlanItemTransition.RESUME);//TODO: IT'S MUST BE CASE FILE TRANSITION 'update'
+        //TODO: IT'S MUST BE CASE FILE TRANSITION 'update'
+        ACTIVITY_EVENT_TYPES_MAPPING.put(ICaseEventModel.CONSTR_CASE_PROPERTIES_CHANGED, PlanItemTransition.RESUME);
     }
 
     public CasePlanModelExport(NodeService nodeService,
@@ -86,22 +88,24 @@ public class CasePlanModelExport {
         nodeRefsToPlanItemsMap.put(utils.convertNodeRefToId(caseNodeRef), casePlanModel.getId());
         exportCompletnessLevels(casePlanModel, caseNodeRef);
         if (caseRootRef != null) {
-            exportActivityNode(casePlanModel,
-                    caseActivityService.getActivities(caseRootRef, ICaseTemplateModel.ASSOC_INTERNAL_ELEMENTS, RegexQNamePattern.MATCH_ALL));
+            List<CaseActivity> activities = caseActivityService.getActivities(caseRootRef.toString(),
+                ICaseTemplateModel.ASSOC_INTERNAL_ELEMENTS, RegexQNamePattern.MATCH_ALL);
+            exportActivityNode(casePlanModel, activities);
         }
         fixSentriesIds(casePlanModel);
     }
 
-    private void exportActivityNode(Stage parentStage, List<NodeRef> activitiesRef) {
+    private void exportActivityNode(Stage parentStage, List<CaseActivity> activitiesRef) {
         if (logger.isDebugEnabled()) {
             logger.debug("Exporting parent activities");
         }
-        for (NodeRef activityRef : activitiesRef) {
+        for (CaseActivity activity : activitiesRef) {
+            NodeRef activityRef = new NodeRef(activity.getId());
             if (isStage(activityRef)) {
                 Stage stage = toStage(activityRef);
                 TPlanItem planItem = getPlanItem(stage);
                 parentStage.getPlanItem().add(planItem);
-                exportActivityNode(stage, caseActivityService.getActivities(activityRef));
+                exportActivityNode(stage, caseActivityService.getActivities(activityRef.toString()));
                 parentStage.getPlanItemDefinition().add(caseExportService.getObjectFactory().createStage(stage));
                 parentStage.getSentry().addAll(exportSentries(activityRef, planItem, parentStage));
                 processCompletnessLevels(activityRef, stage);
@@ -142,9 +146,11 @@ public class CasePlanModelExport {
     }
 
     private void exportCompletnessLevels(Stage casePlanModel, NodeRef caseNodeRef) {
-        NodeRef caseCompletnessLevelConfig = caseExportService.getElementTypeByConfig(caseNodeRef, RequirementModel.TYPE_COMPLETENESS_LEVEL);
+        NodeRef caseCompletnessLevelConfig = caseExportService.getElementTypeByConfig(caseNodeRef,
+            RequirementModel.TYPE_COMPLETENESS_LEVEL);
         if (caseCompletnessLevelConfig != null) {
-            List<NodeRef> nodeRefs = RepoUtils.getTargetAssoc(caseCompletnessLevelConfig, ICaseTemplateModel.ASSOC_EXTERNAL_ELEMENTS, nodeService);
+            List<NodeRef> nodeRefs = RepoUtils.getTargetAssoc(caseCompletnessLevelConfig,
+                ICaseTemplateModel.ASSOC_EXTERNAL_ELEMENTS, nodeService);
             if (nodeRefs != null && !nodeRefs.isEmpty()) {
                 StringBuilder refs = new StringBuilder();
                 for (NodeRef nodeRef : nodeRefs) {
@@ -249,7 +255,8 @@ public class CasePlanModelExport {
         if (eventType.equals(USER_ACTION_TYPE)) {
             TUserEventListener userEventListener = new TUserEventListener();
             userEventListener.setId(utils.getNextDocumentId());
-            List<NodeRef> authorizedRolesRef = RepoUtils.getTargetNodeRefs(eventRef, EventModel.ASSOC_AUTHORIZED_ROLES, nodeService);
+            List<NodeRef> authorizedRolesRef = RepoUtils.getTargetNodeRefs(eventRef,
+                EventModel.ASSOC_AUTHORIZED_ROLES, nodeService);
             for (NodeRef authorizedRoleRef : authorizedRolesRef) {
                 for (Role role : caseRoles.getRole()) {
                     if (role.getId().equals(utils.convertNodeRefToId(authorizedRoleRef))) {
@@ -260,7 +267,8 @@ public class CasePlanModelExport {
             TPlanItem userEventPlanItem = getPlanItem(userEventListener);
             nodeRefsToPlanItemsMap.put(userEventPlanItem.getId(), userEventPlanItem.getId());
             parentStage.getPlanItem().add(userEventPlanItem);
-            parentStage.getPlanItemDefinition().add(caseExportService.getObjectFactory().createUserEventListener(userEventListener));
+            parentStage.getPlanItemDefinition().add(caseExportService.getObjectFactory()
+                .createUserEventListener(userEventListener));
             return userEventPlanItem.getId();
         } else {
             NodeRef sourceRef = RepoUtils.getFirstTargetAssoc(eventRef, EventModel.ASSOC_EVENT_SOURCE, nodeService);
@@ -280,7 +288,8 @@ public class CasePlanModelExport {
         planItemOnPart.setSourceRef(getEventSourceId(parentStage, eventRef));
 
         if (nodeService.getProperty(eventRef, ContentModel.PROP_TITLE) != null) {
-            planItemOnPart.getOtherAttributes().put(CMMNUtils.QNAME_TITLE, (String) nodeService.getProperty(eventRef, ContentModel.PROP_TITLE));
+            planItemOnPart.getOtherAttributes().put(CMMNUtils.QNAME_TITLE,
+                (String) nodeService.getProperty(eventRef, ContentModel.PROP_TITLE));
         }
 
         org.alfresco.service.namespace.QName parentAssocType = nodeService.getPrimaryParent(eventRef).getTypeQName();
@@ -345,8 +354,10 @@ public class CasePlanModelExport {
     }
 
     private void processCompletnessLevels(NodeRef activityRef, TPlanItemDefinition planItem) {
-        List<NodeRef> startCompletnessLevelRefs = RepoUtils.getTargetNodeRefs(activityRef, StagesModel.ASSOC_START_COMPLETENESS_LEVELS_RESTRICTION, nodeService);
-        List<NodeRef> stopCompletnessLevelRefs = RepoUtils.getTargetNodeRefs(activityRef, StagesModel.ASSOC_STOP_COMPLETENESS_LEVELS_RESTRICTION, nodeService);
+        List<NodeRef> startCompletnessLevelRefs = RepoUtils.getTargetNodeRefs(activityRef,
+            StagesModel.ASSOC_START_COMPLETENESS_LEVELS_RESTRICTION, nodeService);
+        List<NodeRef> stopCompletnessLevelRefs = RepoUtils.getTargetNodeRefs(activityRef,
+            StagesModel.ASSOC_STOP_COMPLETENESS_LEVELS_RESTRICTION, nodeService);
         StringBuilder sb = new StringBuilder();
         for (NodeRef ref : startCompletnessLevelRefs) {
             if (sb.length() != 0) {
@@ -467,7 +478,8 @@ public class CasePlanModelExport {
         }
     }
 
-    private void saveNodeAttribute(TCmmnElement element, QName attrQName, NodeRef nodeRef, org.alfresco.service.namespace.QName qName) {
+    private void saveNodeAttribute(TCmmnElement element, QName attrQName, NodeRef nodeRef,
+                                   org.alfresco.service.namespace.QName qName) {
         if (nodeService.getProperty(nodeRef, qName) != null) {
             element.getOtherAttributes().put(attrQName, nodeService.getProperty(nodeRef, qName).toString());
         }

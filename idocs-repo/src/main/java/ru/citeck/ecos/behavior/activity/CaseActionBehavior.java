@@ -10,8 +10,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.action.ActionDAO;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
+import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
-import ru.citeck.ecos.icase.activity.CaseActivityService;
+import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.ActionModel;
 
 /**
@@ -41,9 +42,13 @@ public class CaseActionBehavior implements CaseActivityPolicies.BeforeCaseActivi
         if (!nodeService.exists(actionRef)) return;
 
         Action action = actionDAO.readAction(actionRef);
-        actionService.executeAction(action, caseActivityService.getDocument(actionRef));
 
-        caseActivityService.stopActivity(actionRef);
+        String documentId = caseActivityService.getDocumentId(actionRef.toString());
+        NodeRef documentNodeRef = new NodeRef(documentId);
+        actionService.executeAction(action, documentNodeRef);
+
+        CaseActivity activity = caseActivityService.getActivity(actionRef.toString());
+        caseActivityService.stopActivity(activity);
     }
 
     public void setPolicyComponent(PolicyComponent policyComponent) {

@@ -13,7 +13,8 @@ import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
-import ru.citeck.ecos.icase.activity.CaseActivityService;
+import ru.citeck.ecos.icase.activity.dto.CaseActivity;
+import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.CasePerformModel;
 import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
@@ -144,7 +145,8 @@ public class UpdateCasePerformAssignees implements CaseRolePolicies.OnRoleAssign
 
     private String getActiveWorkflowID(NodeRef taskRef) {
         QName type = nodeService.getType(taskRef);
-        if (CasePerformModel.TYPE_PERFORM_CASE_TASK.equals(type) && caseActivityService.isActive(taskRef)) {
+        CaseActivity activity = caseActivityService.getActivity(taskRef.toString());
+        if (CasePerformModel.TYPE_PERFORM_CASE_TASK.equals(type) && activity.isActive()) {
             return (String) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID);
         }
         return null;

@@ -6,18 +6,22 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import ru.citeck.ecos.cases.RemoteRestoreCaseModelService;
-import ru.citeck.ecos.icase.activity.create.ActivityCreateVariant;
+import ru.citeck.ecos.icase.activity.create.dto.ActivityCreateVariant;
+import ru.citeck.ecos.icase.activity.create.provider.CreateVariantsProvider;
+import ru.citeck.ecos.icase.activity.create.provider.impl.MenuCreateVariantsProvider;
+import ru.citeck.ecos.icase.activity.dto.CaseActivity;
+import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-/**
- * @author Pavel Simonov
- */
 public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
 
     private CaseActivityService caseActivityService;
+    private CreateVariantsProvider createVariantsProvider;
     private NamespaceService namespaceService;
     private RemoteRestoreCaseModelService remoteRestoreCaseModelService;
 
@@ -33,38 +37,61 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
         }
         /* Call common activity */
         NodeRef ref = JavaScriptImplUtils.getNodeRef(stageRef);
-        caseActivityService.startActivity(ref);
+        if (ref != null) {
+            CaseActivity activity = caseActivityService.getActivity(ref.toString());
+            if (activity != null) {
+                caseActivityService.startActivity(activity);
+            }
+        }
     }
 
     public void stopActivity(Object stageRef) {
         NodeRef ref = JavaScriptImplUtils.getNodeRef(stageRef);
-        caseActivityService.stopActivity(ref);
+        if (ref != null) {
+            CaseActivity activity = caseActivityService.getActivity(ref.toString());
+            if (activity != null) {
+                caseActivityService.stopActivity(activity);
+            }
+        }
     }
 
     public ScriptNode[] getStartedActivities(Object nodeRef) {
         NodeRef nRef = JavaScriptImplUtils.getNodeRef(nodeRef);
-        List<NodeRef> activities = caseActivityService.getStartedActivities(nRef);
-        return JavaScriptImplUtils.wrapNodes(activities, this);
+        List<CaseActivity> activities = caseActivityService.getStartedActivities(nRef.toString());
+        Set<NodeRef> startedActivitiesNodeRefs = activities.stream()
+            .map(a -> new NodeRef(a.getId()))
+            .collect(Collectors.toSet());
+        return JavaScriptImplUtils.wrapNodes(startedActivitiesNodeRefs, this);
     }
 
     public ScriptNode[] getActivities(Object nodeRef) {
         NodeRef nRef = JavaScriptImplUtils.getNodeRef(nodeRef);
-        List<NodeRef> activities = caseActivityService.getActivities(nRef);
-        return JavaScriptImplUtils.wrapNodes(activities, this);
+        List<CaseActivity> activities = caseActivityService.getActivities(nRef.toString());
+        Set<NodeRef> activitiesNodeRefs = activities.stream()
+            .map(a -> new NodeRef(a.getId()))
+            .collect(Collectors.toSet());
+        return JavaScriptImplUtils.wrapNodes(activitiesNodeRefs, this);
     }
 
     public ScriptNode[] getActivities(Object nodeRef, String type) {
         NodeRef nRef = JavaScriptImplUtils.getNodeRef(nodeRef);
         QName typeQName = QName.createQName(type, namespaceService);
-        List<NodeRef> activities = caseActivityService.getActivities(nRef, typeQName);
-        return JavaScriptImplUtils.wrapNodes(activities, this);
+        List<CaseActivity> activities = caseActivityService.getActivities(nRef.toString(), typeQName);
+        Set<NodeRef> activitiesNodeRefs = activities.stream()
+            .map(a -> new NodeRef(a.getId()))
+            .collect(Collectors.toSet());
+        return JavaScriptImplUtils.wrapNodes(activitiesNodeRefs, this);
     }
 
     public ScriptNode[] getActivitiesByAssoc(Object nodeRef, String assocType) {
         NodeRef nRef = JavaScriptImplUtils.getNodeRef(nodeRef);
         QName assocTypeQName = QName.createQName(assocType, namespaceService);
-        List<NodeRef> activities = caseActivityService.getActivities(nRef, assocTypeQName, RegexQNamePattern.MATCH_ALL);
-        return JavaScriptImplUtils.wrapNodes(activities, this);
+        List<CaseActivity> activities = caseActivityService.getActivities(nRef.toString(), assocTypeQName,
+            RegexQNamePattern.MATCH_ALL);
+        Set<NodeRef> activitiesNodeRefs = activities.stream()
+            .map(a -> new NodeRef(a.getId()))
+            .collect(Collectors.toSet());
+        return JavaScriptImplUtils.wrapNodes(activitiesNodeRefs, this);
     }
 
     public ScriptNode getActivityByTitle(Object nodeRef, String title) {
@@ -73,23 +100,26 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
 
     public ScriptNode getActivityByTitle(Object nodeRef, String title, boolean recurse) {
         NodeRef nRef = JavaScriptImplUtils.getNodeRef(nodeRef);
-        NodeRef activity = caseActivityService.getActivityByTitle(nRef, title, recurse);
-        return JavaScriptImplUtils.wrapNode(activity, this);
+        CaseActivity activity = caseActivityService.getActivityByTitle(nRef.toString(), title, recurse);
+        NodeRef activityNodeRef = new NodeRef(activity.getId());
+        return JavaScriptImplUtils.wrapNode(activityNodeRef, this);
     }
 
     public ScriptNode getDocument(Object nodeRef) {
         NodeRef ref = JavaScriptImplUtils.getNodeRef(nodeRef);
-        NodeRef parent = caseActivityService.getDocument(ref);
-        return JavaScriptImplUtils.wrapNode(parent, this);
+        String parentId = caseActivityService.getDocumentId(ref.toString());
+        NodeRef parentNodeRef = new NodeRef(parentId);
+        return JavaScriptImplUtils.wrapNode(parentNodeRef, this);
     }
 
     public void reset(Object nodeRef) {
         NodeRef ref = JavaScriptImplUtils.getNodeRef(nodeRef);
-        caseActivityService.reset(ref);
+        caseActivityService.reset(ref.toString());
     }
 
     public void setParent(Object activityRef, Object newParent) {
-        caseActivityService.setParent(JavaScriptImplUtils.getNodeRef(activityRef), JavaScriptImplUtils.getNodeRef(newParent));
+        caseActivityService.setParent(JavaScriptImplUtils.getNodeRef(activityRef).toString(),
+            JavaScriptImplUtils.getNodeRef(newParent).toString());
     }
 
     public void setIndex(Object activityRef, Object newIndex) {
@@ -103,25 +133,38 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
         } else {
             throw new IllegalArgumentException("Can not convert from " + newIndex.getClass() + " to Integer");
         }
-        caseActivityService.setIndex(JavaScriptImplUtils.getNodeRef(activityRef), index);
+
+        String activityId = JavaScriptImplUtils.getNodeRef(activityRef).toString();
+        CaseActivity activity = caseActivityService.getActivity(activityId);
+
+        caseActivityService.setParentInIndex(activity, index);
     }
 
-    public boolean hasActiveChildren(Object activity) {
-        return caseActivityService.hasActiveChildren(JavaScriptImplUtils.getNodeRef(activity));
+    public boolean hasActiveChildren(Object activityObj) {
+        String activityId = JavaScriptImplUtils.getNodeRef(activityObj).toString();
+        CaseActivity activity = caseActivityService.getActivity(activityId);
+        return caseActivityService.hasActiveChildren(activity);
     }
 
-    public boolean isActive(Object activity) {
-        return caseActivityService.isActive(JavaScriptImplUtils.getNodeRef(activity));
+    public boolean isActive(Object activityObj) {
+        String activityId = JavaScriptImplUtils.getNodeRef(activityObj).toString();
+        CaseActivity activity = caseActivityService.getActivity(activityId);
+        return activity.isActive();
     }
 
     public void restartChildrenActivity(Object parentActivityRef, Object childActivityRef) {
+
         NodeRef parentRef = JavaScriptImplUtils.getNodeRef(parentActivityRef);
+        CaseActivity parentActivity = caseActivityService.getActivity(parentRef.toString());
+
         NodeRef childRef = JavaScriptImplUtils.getNodeRef(childActivityRef);
-        caseActivityService.restartChildrenActivity(parentRef, childRef);
+        CaseActivity childActivity = caseActivityService.getActivity(childRef.toString());
+
+        caseActivityService.restartChildActivity(parentActivity, childActivity);
     }
 
     public List<ActivityCreateVariant> getCreateVariants() {
-        return caseActivityService.getCreateVariants();
+        return createVariantsProvider.getCreateVariants();
     }
 
     public void setCaseActivityService(CaseActivityService caseActivityService) {
@@ -134,5 +177,9 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
 
     public void setRemoteRestoreCaseModelService(RemoteRestoreCaseModelService remoteRestoreCaseModelService) {
         this.remoteRestoreCaseModelService = remoteRestoreCaseModelService;
+    }
+
+    public void setCreateVariantsProvider(MenuCreateVariantsProvider createVariantsProvider) {
+        this.createVariantsProvider = createVariantsProvider;
     }
 }

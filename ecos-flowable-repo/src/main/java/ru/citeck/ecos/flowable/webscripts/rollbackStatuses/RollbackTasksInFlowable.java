@@ -1,6 +1,5 @@
 package ru.citeck.ecos.flowable.webscripts.rollbackStatuses;
 
-import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.workflow.WorkflowInstance;
@@ -21,7 +20,8 @@ import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import ru.citeck.ecos.flowable.services.FlowableTaskService;
 import ru.citeck.ecos.flowable.services.RollbackFlowableTasksService;
-import ru.citeck.ecos.icase.activity.CaseActivityService;
+import ru.citeck.ecos.icase.activity.dto.CaseActivity;
+import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.InvariantsModel;
 
 import java.util.*;
@@ -152,14 +152,14 @@ public class RollbackTasksInFlowable extends DeclarativeWebScript {
     }
 
     private boolean rollbackNotFlowableCaseToDraft(NodeRef node, boolean setDraft) {
-        caseActivityService.reset(node);
+        caseActivityService.reset(node.toString());
         if (setDraft) {
             nodeService.setProperty(node, InvariantsModel.PROP_IS_DRAFT, true);
         }
-        List<NodeRef> stages = caseActivityService.getActivities(node);
-        for (NodeRef stage : stages) {
-            if (Objects.equals(nodeService.getProperty(stage, ContentModel.PROP_TITLE), titleOfStartProcessStage)) {
-                caseActivityService.startActivity(stage);
+        List<CaseActivity> activities = caseActivityService.getActivities(node.toString());
+        for (CaseActivity activity : activities) {
+            if (Objects.equals(activity.getTitle(), titleOfStartProcessStage)) {
+                caseActivityService.startActivity(activity);
                 return true;
             }
         }

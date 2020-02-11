@@ -3,29 +3,18 @@
 <beans>
 
     <bean id="caseActivityService" name="CaseActivityService"
-          class="ru.citeck.ecos.icase.activity.CaseActivityServiceImpl"
+          class="ru.citeck.ecos.icase.activity.service.CaseActivityServiceImpl"
           init-method="init" depends-on="idocs.dictionaryBootstrap">
 
         <property name="dictionaryService" ref="DictionaryService" />
         <property name="policyComponent" ref="policyComponent" />
         <property name="nodeService" ref="nodeService" />
-        <property name="namespaceService" ref="namespaceService" />
-        <property name="messageService" ref="messageService" />
-        <property name="createMenuTypes">
-            <list>
-                <value>{http://www.citeck.ru/model/icaseTask/1.0}humanTask</value>
-                <value>{http://www.citeck.ru/model/icaseTask/1.0}processTask</value>
-                <value>{http://www.citeck.ru/model/stages/1.0}stage</value>
-                <value>{http://www.citeck.ru/model/action/1.0}action</value>
-                <value>{http://www.citeck.ru/model/case/timer/1.0}timer</value>
-                <value>{http://www.citeck.ru/model/activity/1.0}activity</value>
-            </list>
-        </property>
     </bean>
 
     <bean id="caseActivityServiceJS" name="CaseActivityServiceJS" class="ru.citeck.ecos.icase.activity.CaseActivityServiceJS"
           parent="baseJavaScriptExtension">
         <property name="caseActivityService" ref="caseActivityService"/>
+        <property name="createVariantsProvider" ref="ru.citeck.ecos.icase.activity.create.menu.MenuCreateVariantsProvider"/>
         <property name="extensionName" value="caseActivityService"/>
         <property name="namespaceService" ref="namespaceService"/>
         <property name="serviceRegistry" ref="ServiceRegistry"/>
@@ -154,11 +143,25 @@
     </bean>
 
     <bean id="ru.citeck.ecos.icase.activity.create.ViewCreateVariantsProvider"
-          class="ru.citeck.ecos.icase.activity.create.ViewCreateVariantsProvider">
+          class="ru.citeck.ecos.icase.activity.create.provider.impl.ViewCreateVariantsProvider">
         <property name="ignoredTypes">
             <set>
                 <value>{http://www.citeck.ru/model/icaseTask/1.0}defaultTask</value>
             </set>
+        </property>
+    </bean>
+
+    <bean id="ru.citeck.ecos.icase.activity.create.menu.MenuCreateVariantsProvider"
+          class="ru.citeck.ecos.icase.activity.create.provider.impl.MenuCreateVariantsProvider">
+        <property name="createMenuTypes">
+            <list>
+                <value>{http://www.citeck.ru/model/icaseTask/1.0}humanTask</value>
+                <value>{http://www.citeck.ru/model/icaseTask/1.0}processTask</value>
+                <value>{http://www.citeck.ru/model/stages/1.0}stage</value>
+                <value>{http://www.citeck.ru/model/action/1.0}action</value>
+                <value>{http://www.citeck.ru/model/case/timer/1.0}timer</value>
+                <value>{http://www.citeck.ru/model/activity/1.0}activity</value>
+            </list>
         </property>
     </bean>
 

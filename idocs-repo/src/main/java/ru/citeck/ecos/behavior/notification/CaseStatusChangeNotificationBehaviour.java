@@ -8,14 +8,12 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.behavior.OrderedBehaviour;
 import ru.citeck.ecos.icase.CaseStatusPolicies;
+import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.model.ICaseModel;
 
 import java.util.List;
 import java.util.Objects;
 
-/**
- * @author Roman Makarskiy
- */
 public class CaseStatusChangeNotificationBehaviour extends AbstractICaseDocumentNotificationBehaviour
         implements CaseStatusPolicies.OnCaseStatusChangedPolicy {
 
@@ -50,9 +48,12 @@ public class CaseStatusChangeNotificationBehaviour extends AbstractICaseDocument
         }
 
         if (excludeStageName != null && !excludeStageName.isEmpty()) {
-            List<NodeRef> startedActivities = caseActivityService.getStartedActivities(caseRef);
-            for (NodeRef activity: startedActivities) {
-                if (excludeStageName.equals(nodeService.getProperty(activity, ContentModel.PROP_TITLE))) return;
+            List<CaseActivity> startedActivities = caseActivityService.getStartedActivities(caseRef.toString());
+            for (CaseActivity activity : startedActivities) {
+                NodeRef activityNodeRef = new NodeRef(activity.getId());
+                if (excludeStageName.equals(nodeService.getProperty(activityNodeRef, ContentModel.PROP_TITLE))) {
+                    return;
+                }
             }
         }
 
