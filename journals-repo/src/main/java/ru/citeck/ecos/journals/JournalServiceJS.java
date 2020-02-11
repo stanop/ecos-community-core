@@ -67,6 +67,10 @@ public class JournalServiceJS extends AlfrescoScopableProcessorExtension {
         return invariants.toArray(new InvariantDefinition[invariants.size()]);
     }
 
+    public String getUIType(String journalId) {
+        return impl.getUIType(journalId);
+    }
+
     public Long getJournalRecordsCount(String journal) {
         return impl.getRecordsCount(journal);
     }

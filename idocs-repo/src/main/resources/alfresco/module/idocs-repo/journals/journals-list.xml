@@ -230,6 +230,7 @@
         <option name="type">ecos:case</option>
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="typeRef">emodel/type@cat-doc-type-general-case</option>
         <headers>
             <header key="tk:kind" default="true" >
                 <criterion>

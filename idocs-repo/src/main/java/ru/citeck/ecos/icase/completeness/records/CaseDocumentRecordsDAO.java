@@ -74,20 +74,8 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO
 
         FTSQuery ftsQuery = FTSQuery.createRaw()
             .parent(new NodeRef(recordRef.getId()))
-            .and()
-            .open();
-
-        for (RecordRef typeRef : typesRefs) {
-
-            String[] typeParts = typeRef.getId().split("/");
-            String tkType = "workspace://SpacesStore/" + typeParts[0];
-
-            ftsQuery.value(ClassificationModel.PROP_DOCUMENT_TYPE, tkType).or();
-        }
-
-        ftsQuery.close()
             .transactional()
-            .maxItems(5000);
+            .maxItems(1000);
 
         List<RecordRef> documentRefs = ftsQuery.query(searchService)
             .stream()
