@@ -2,9 +2,8 @@
 <webscript>
     <shortname>Journal UI type</shortname>
     <description>Journal UI type</description>
-    <url>/api/journals/journals-ui-type?journals={journals}</url>
+    <url>/api/journals/journals-ui-type</url>
     <format default="json"/>
     <authentication>user</authentication>
     <transaction readonly="true">required</transaction>
-    <lifecycle>public_api</lifecycle>
 </webscript>
