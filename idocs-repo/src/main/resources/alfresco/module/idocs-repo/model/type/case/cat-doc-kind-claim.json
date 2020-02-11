@@ -1,0 +1,6 @@
+{
+    "id": "cat-doc-type-general-case/cat-doc-kind-claim",
+    "name": "Требование",
+    "parent": "model/type$cat-doc-type-general-case",
+    "inheritActions": true
+}

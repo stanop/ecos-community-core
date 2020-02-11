@@ -1,0 +1,6 @@
+{
+    "id": "category-document-type/cat-document-marketing-materials",
+    "name": "Маркетинговые материалы",
+    "parent": "model/type$category-document-type",
+    "inheritActions": true
+}

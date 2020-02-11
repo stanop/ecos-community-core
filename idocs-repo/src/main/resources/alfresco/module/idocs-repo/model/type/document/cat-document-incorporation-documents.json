@@ -1,0 +1,6 @@
+{
+    "id": "category-document-type/cat-document-incorporation-documents",
+    "name": "Учредительные документы",
+    "parent": "model/type$category-document-type",
+    "inheritActions": true
+}

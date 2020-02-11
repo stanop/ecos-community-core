@@ -13,6 +13,7 @@ import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsMetaLocalDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsQueryWithMetaLocalDAO;
+import ru.citeck.ecos.utils.NewUIUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,10 +26,12 @@ public class SiteRecordsDAO extends LocalRecordsDAO
     public static final String ID = "site";
 
     private final SiteService siteService;
+    private final NewUIUtils newUIUtils;
 
     @Autowired
-    public SiteRecordsDAO(SiteService siteService) {
+    public SiteRecordsDAO(SiteService siteService, NewUIUtils newUIUtils) {
         this.siteService = siteService;
+        this.newUIUtils = newUIUtils;
         setId(ID);
     }
 
@@ -72,6 +75,8 @@ public class SiteRecordsDAO extends LocalRecordsDAO
                     return "site_" + id;
                 case RecordConstants.ATT_DASHBOARD_TYPE:
                     return "site-dashboard";
+                case "uiType":
+                    return newUIUtils.getUITypeForRecord(RecordRef.create(ID, id));
             }
 
             return null;
