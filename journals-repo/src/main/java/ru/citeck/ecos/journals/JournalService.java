@@ -88,4 +88,6 @@ public interface JournalService {
                                                  boolean debug);
 
     String getJournalGqlSchema(String journalId);
+
+    String getUIType(String journalId);
 }

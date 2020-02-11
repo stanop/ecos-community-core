@@ -86,15 +86,33 @@ public class DictUtils {
         return result;
     }
 
+    public PropertyDefinition getPropDef(String containerName, QName propertyName) {
+
+        if (StringUtils.isBlank(containerName) || propertyName == null) {
+            return null;
+        }
+
+        QName containerQName = QName.resolveToQName(namespaceService, containerName);
+
+        if (containerQName == null) {
+            return null;
+        }
+
+        return getPropDef(containerQName, propertyName);
+    }
+
     /**
      * Search property definition in specified container or associated default aspects
      *
      * @param containerName aspect or type name. If null then default property definition will be returned
      * @param propertyName property name. Must be not null
      * @return property definition or null if definition not found
-     * @throws NullPointerException if propertyName is null
      */
     public PropertyDefinition getPropDef(QName containerName, QName propertyName) {
+
+        if (propertyName == null) {
+            return null;
+        }
 
         PropertyDefinition propDef = dictionaryService.getProperty(propertyName);
 

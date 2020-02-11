@@ -113,6 +113,8 @@ public class NewUIUtils {
         if (recordRef.getSourceId().equals("site")) {
             att = UI_TYPE_FROM_SECTION_ATT;
             recordRef = RecordRef.create("emodel", "section", recordRef.getId());
+        } else if (recordRef.getSourceId().equals("type")) {
+            att = UI_TYPE_FROM_SECTION_ATT;
         } else {
             att = UI_TYPE_FROM_ETYPE_ATT;
         }
