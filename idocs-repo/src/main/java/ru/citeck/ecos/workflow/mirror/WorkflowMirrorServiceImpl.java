@@ -252,12 +252,14 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             if (originalOwner != null) {
                 originalOwnerNodeRef = authorityService.getAuthorityNodeRef(originalOwner);
             }
-            if (pooledActors != null && originalOwnerNodeRef != null) {
-                if (pooledActors.contains(originalOwnerNodeRef) && pooledActors.indexOf(originalOwnerNodeRef) != -1) {
-                    pooledActors.remove(pooledActors.indexOf(originalOwnerNodeRef));
+            if (pooledActors != null) {
+
+                pooledActors = new ArrayList<>(pooledActors);
+
+                if (originalOwnerNodeRef != null && pooledActors.contains(originalOwnerNodeRef)) {
+                    pooledActors.remove(originalOwnerNodeRef);
                     pooledActors.add(0, originalOwnerNodeRef);
                 }
-
                 results.addAll(pooledActors);
             }
         } else {
