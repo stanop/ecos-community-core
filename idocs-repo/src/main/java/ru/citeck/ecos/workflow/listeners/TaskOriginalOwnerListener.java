@@ -28,6 +28,8 @@ import ru.citeck.ecos.deputy.TaskDeputyListener;
 
 import java.util.ArrayList;
 
+import static ru.citeck.ecos.utils.WorkflowConstants.VAR_TASK_ORIGINAL_OWNER;
+
 /**
  * @author Anton Fateev <anton.fateev@citeck.ru>
  */
@@ -55,14 +57,15 @@ public class TaskOriginalOwnerListener implements TaskListener, ApplicationConte
 
     @Override
     public void notify(DelegateTask delegateTask) {
-        Object originalOwner = delegateTask.getVariableLocal("taskOriginalOwner");
+        Object originalOwner = delegateTask.getVariableLocal(VAR_TASK_ORIGINAL_OWNER);
         String assignee = delegateTask.getAssignee();
         if (originalOwner == null) {
-            delegateTask.setVariableLocal("taskOriginalOwner", assignee);
+            delegateTask.setVariableLocal(VAR_TASK_ORIGINAL_OWNER, assignee);
         }
 
         if (assignee != null) {
-            TaskDeputyListener delegateListener = applicationContext.getBean(delegateListenerName, TaskDeputyListener.class);
+            TaskDeputyListener delegateListener = applicationContext.getBean(delegateListenerName,
+                TaskDeputyListener.class);
             ArrayList<String> actorsList = delegateListener.getActorsList(assignee);
             if (actorsList.size() > 1) {
                 for (String actor : actorsList) {

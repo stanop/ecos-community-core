@@ -2,20 +2,24 @@ package ru.citeck.ecos.behavior.history;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
-import ru.citeck.ecos.behavior.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.ScriptService;
 import org.alfresco.service.namespace.QName;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.behavior.OrderedBehaviour;
 import ru.citeck.ecos.history.HistoryService;
 import ru.citeck.ecos.icase.CaseStatusPolicies;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.model.ICaseModel;
+import ru.citeck.ecos.workflow.listeners.TaskDataListenerUtils;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Pavel Simonov
@@ -33,6 +37,7 @@ public class CaseStatusHistoryBehaviour implements CaseStatusPolicies.OnCaseStat
     private HistoryService historyService;
     private ScriptService scriptService;
     private NodeService nodeService;
+    private TaskDataListenerUtils taskDataListenerUtils;
 
     private String messageScript;
 
@@ -42,8 +47,8 @@ public class CaseStatusHistoryBehaviour implements CaseStatusPolicies.OnCaseStat
 
     public void init() {
         policyComponent.bindClassBehaviour(
-                CaseStatusPolicies.OnCaseStatusChangedPolicy.QNAME, ICaseModel.TYPE_CASE_STATUS,
-                new OrderedBehaviour(this, "onCaseStatusChanged", NotificationFrequency.EVERY_EVENT, order)
+            CaseStatusPolicies.OnCaseStatusChangedPolicy.QNAME, ICaseModel.TYPE_CASE_STATUS,
+            new OrderedBehaviour(this, "onCaseStatusChanged", NotificationFrequency.EVERY_EVENT, order)
         );
     }
 
@@ -58,23 +63,22 @@ public class CaseStatusHistoryBehaviour implements CaseStatusPolicies.OnCaseStat
             eventProperties.put(HistoryModel.PROP_NAME, HISTORY_TYPE);
             eventProperties.put(HistoryModel.ASSOC_DOCUMENT, caseRef);
             eventProperties.put(HistoryModel.PROP_TASK_COMMENT, comment);
+
+            taskDataListenerUtils.fillDocumentData(caseRef, eventProperties);
+
             historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
         }
     }
 
     private String buildEventComment(NodeRef caseRef, NodeRef caseStatusBefore, NodeRef caseStatusAfter) {
 
-        final Map<String,Object> model = new HashMap<>(3);
+        final Map<String, Object> model = new HashMap<>(3);
         model.put(KEY_DOCUMENT, caseRef);
         model.put(KEY_STATUS_AFTER, caseStatusAfter);
         model.put(KEY_STATUS_BEFORE, caseStatusBefore);
 
-        return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<String>() {
-            @Override
-            public String doWork() throws Exception {
-            return String.valueOf(scriptService.executeScriptString(messageScript, model));
-            }
-        });
+        return AuthenticationUtil.runAsSystem(() -> String.valueOf(scriptService.executeScriptString(messageScript,
+            model)));
     }
 
     private boolean isInterestedTransition(NodeRef caseRef, NodeRef before, NodeRef after) {
@@ -119,6 +123,11 @@ public class CaseStatusHistoryBehaviour implements CaseStatusPolicies.OnCaseStat
         this.order = order;
     }
 
+    @Autowired
+    public void setTaskDataListenerUtils(TaskDataListenerUtils taskDataListenerUtils) {
+        this.taskDataListenerUtils = taskDataListenerUtils;
+    }
+
     interface StatusTransition {
         boolean isMatch(QName className, String fromStatus, String toStatus);
     }
@@ -130,8 +139,8 @@ public class CaseStatusHistoryBehaviour implements CaseStatusPolicies.OnCaseStat
 
         public boolean isMatch(QName className, String fromStatus, String toStatus) {
             return (this.className.equals(className))
-                   && (this.fromStatus.equals(ANY_STATUS) || this.fromStatus.equals(fromStatus))
-                   && (this.toStatus.equals(ANY_STATUS) || this.toStatus.equals(toStatus));
+                && (this.fromStatus.equals(ANY_STATUS) || this.fromStatus.equals(fromStatus))
+                && (this.toStatus.equals(ANY_STATUS) || this.toStatus.equals(toStatus));
         }
 
         public void setClassName(QName className) {
@@ -154,8 +163,8 @@ public class CaseStatusHistoryBehaviour implements CaseStatusPolicies.OnCaseStat
 
         public boolean isMatch(QName className, String fromStatus, String toStatus) {
             return (this.className.equals(className))
-                   && (this.fromStatus.equals(ANY_STATUS) || this.fromStatus.equals(fromStatus))
-                   && (this.toStatuses.contains(ANY_STATUS) || this.toStatuses.contains(toStatus));
+                && (this.fromStatus.equals(ANY_STATUS) || this.fromStatus.equals(fromStatus))
+                && (this.toStatuses.contains(ANY_STATUS) || this.toStatuses.contains(toStatus));
         }
 
         public void setClassName(QName className) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2020 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -36,10 +36,13 @@ import org.alfresco.service.cmr.workflow.WorkflowDefinition;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.RegexQNamePattern;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import ru.citeck.ecos.utils.ReflectionUtils;
 
 import java.util.*;
+
+import static ru.citeck.ecos.utils.WorkflowConstants.VAR_TASK_ORIGINAL_OWNER;
 
 public class ListenerUtils {
 
@@ -90,11 +93,11 @@ public class ListenerUtils {
 
         List<ChildAssociationRef> childAssocs;
         childAssocs = nodeService.getChildAssocs(wfPackage, WorkflowModel.ASSOC_PACKAGE_CONTAINS, RegexQNamePattern.MATCH_ALL);
-        if (childAssocs.size() > 0) {
+        if (!childAssocs.isEmpty()) {
             return childAssocs.get(0).getChildRef();
         }
         childAssocs = nodeService.getChildAssocs(wfPackage, ContentModel.ASSOC_CONTAINS, RegexQNamePattern.MATCH_ALL);
-        if (childAssocs.size() > 0) {
+        if (!childAssocs.isEmpty()) {
             return childAssocs.get(0).getChildRef();
         }
         return null;
@@ -129,6 +132,35 @@ public class ListenerUtils {
                 }
             }
         }
+        return pooledActors;
+    }
+
+    public static List<NodeRef> getActors(DelegateTask task, AuthorityService authorityService) {
+        String assigneeName = task.getOwner();
+        if (StringUtils.isNotBlank(assigneeName)) {
+            NodeRef assignee = authorityService.getAuthorityNodeRef(assigneeName);
+            return Collections.singletonList(assignee);
+        }
+
+        List<NodeRef> pooledActors = getPooledActors(task, authorityService);
+        if (CollectionUtils.isEmpty(pooledActors)) {
+            return Collections.emptyList();
+        }
+
+        String originalOwner = (String) task.getVariableLocal(VAR_TASK_ORIGINAL_OWNER);
+        if (StringUtils.isBlank(originalOwner)) {
+            return pooledActors;
+        }
+
+        NodeRef originalOwnerNodeRef = authorityService.getAuthorityNodeRef(originalOwner);
+
+        if (originalOwnerNodeRef != null) {
+            if (pooledActors.contains(originalOwnerNodeRef) && pooledActors.indexOf(originalOwnerNodeRef) != -1) {
+                pooledActors.remove(originalOwnerNodeRef);
+                pooledActors.add(0, originalOwnerNodeRef);
+            }
+        }
+
         return pooledActors;
     }
 

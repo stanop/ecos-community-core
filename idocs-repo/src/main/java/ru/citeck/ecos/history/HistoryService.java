@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2020 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -18,6 +18,9 @@
  */
 package ru.citeck.ecos.history;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.batch.BatchProcessWorkProvider;
 import org.alfresco.repo.batch.BatchProcessor;
@@ -33,12 +36,16 @@ import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.config.EcosConfigService;
-import ru.citeck.ecos.model.*;
+import ru.citeck.ecos.model.ActivityModel;
+import ru.citeck.ecos.model.HistoryModel;
+import ru.citeck.ecos.model.ICaseModel;
+import ru.citeck.ecos.model.IdocsModel;
+import ru.citeck.ecos.records.models.AuthorityDTO;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.utils.TransactionUtils;
 
@@ -47,19 +54,20 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Provides manipulations with history
  *
  * @author Anton Fateev <anton.fateev@citeck.ru>
  */
+@Slf4j
 public class HistoryService {
 
-    /**
-     * Constants
-     */
     public static final String KEY_PENDING_DELETE_NODES = "DbNodeServiceImpl.pendingDeleteNodes";
     public static final String SYSTEM_USER = "system";
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private static final String ENABLED_REMOTE_HISTORY_SERVICE = "ecos.citeck.history.service.enabled";
     private static final String ALFRESCO_NAMESPACE = "http://www.alfresco.org/model/content/1.0";
@@ -89,8 +97,11 @@ public class HistoryService {
     private static final String PROPERTY_NAME = "propertyName";
     private static final String EXPECTED_PERFORM_TIME = "expectedPerformTime";
     private static final String TASK_FORM_KEY = "taskFormKey";
+    private static final String DOC_TYPE = "docType";
+    private static final String DOC_STATUS_NAME = "docStatusName";
+    private static final String DOC_STATUS_TITLE = "docStatusTitle";
+    private static final String TASK_ACTORS = "taskActors";
 
-    private static Log logger = LogFactory.getLog(HistoryService.class);
     private static final String PROPERTY_PREFIX = "event";
     private static final String HISTORY_ROOT = "/" + "history:events";
 
@@ -111,57 +122,18 @@ public class HistoryService {
     @Qualifier("global-properties")
     private Properties properties;
 
-    /**
-     * Ecos configuration service (system journals - configuration)
-     */
-    @Autowired
-    @Qualifier("ecosConfigService")
+
     private EcosConfigService ecosConfigService;
-
     private NodeService nodeService;
-
     private AuthenticationService authenticationService;
-
     private PersonService personService;
-
     private SearchService searchService;
-
     private HistoryRemoteService historyRemoteService;
+    private TransactionService transactionService;
+    private RecordsService recordsService;
 
     private StoreRef storeRef;
-
     private NodeRef historyRoot;
-
-    private TransactionService transactionService;
-
-    public void setTransactionService(TransactionService transactionService) {
-        this.transactionService = transactionService;
-    }
-
-    public void setHistoryRemoteService(HistoryRemoteService historyRemoteService) {
-        this.historyRemoteService = historyRemoteService;
-    }
-
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
-
-    public void setAuthenticationService(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
-    }
-
-    public void setPersonService(PersonService personService) {
-        this.personService = personService;
-    }
-
-    public void setSearchService(SearchService searchService) {
-        this.searchService = searchService;
-        storeRef = StoreRef.STORE_REF_WORKSPACE_SPACESSTORE;
-    }
-
-    public void setHistoryRoot(NodeRef historyRoot) {
-        this.historyRoot = historyRoot;
-    }
 
     public NodeRef persistEvent(final QName type, final Map<QName, Serializable> properties) {
         Date creationDate = new Date();
@@ -175,7 +147,8 @@ public class HistoryService {
         return null;
     }
 
-    private NodeRef persistEventToAlfresco(final QName type, final Map<QName, Serializable> properties, Date creationDate) {
+    private NodeRef persistEventToAlfresco(final QName type, final Map<QName, Serializable> properties,
+                                           Date creationDate) {
         return AuthenticationUtil.runAsSystem(() -> {
 
             NodeRef initiator = getInitiator(properties);
@@ -185,16 +158,16 @@ public class HistoryService {
             properties.remove(HistoryModel.ASSOC_DOCUMENT);
 
             //sorting in history for assocs
-            Date now = creationDate;
             if ("assoc.added".equals(properties.get(HistoryModel.PROP_NAME))) {
-                now.setTime(now.getTime() + 1000);
+                creationDate.setTime(creationDate.getTime() + 1000);
             }
             if ("node.created".equals(properties.get(HistoryModel.PROP_NAME))
-                    || "node.updated".equals(properties.get(HistoryModel.PROP_NAME))) {
-                now.setTime(now.getTime() - 5000);
+                || "node.updated".equals(properties.get(HistoryModel.PROP_NAME))) {
+                creationDate.setTime(creationDate.getTime() - 5000);
             }
-            properties.put(HistoryModel.PROP_DATE, now);
-            QName assocName = QName.createQName(HistoryModel.HISTORY_NAMESPACE, "event." + properties.get(HistoryModel.PROP_NAME));
+            properties.put(HistoryModel.PROP_DATE, creationDate);
+            QName assocName = QName.createQName(HistoryModel.HISTORY_NAMESPACE, "event." +
+                properties.get(HistoryModel.PROP_NAME));
 
             QName assocType;
             NodeRef parentNode;
@@ -215,13 +188,15 @@ public class HistoryService {
             if (currentUsername != null) {
                 properties.put(HistoryModel.MODIFIER_PROPERTY, currentUsername);
             }
-            NodeRef historyEvent = nodeService.createNode(parentNode, assocType, assocName, type, properties).getChildRef();
+            NodeRef historyEvent = nodeService.createNode(parentNode, assocType, assocName, type, properties)
+                .getChildRef();
 
             if (initiator != null) {
                 if (!RepoUtils.isAssociated(historyEvent, initiator, HistoryModel.ASSOC_INITIATOR, nodeService)) {
                     nodeService.createAssociation(historyEvent, initiator, HistoryModel.ASSOC_INITIATOR);
                 } else {
-                    logger.warn("Association " + HistoryModel.ASSOC_INITIATOR.toString() + " already exists between " + historyEvent.toString() + " and " + initiator.toString());
+                    log.warn("Association " + HistoryModel.ASSOC_INITIATOR.toString() + " already exists between " +
+                        historyEvent.toString() + " and " + initiator.toString());
                 }
                 persistAdditionalProperties(historyEvent, initiator);
             }
@@ -231,7 +206,8 @@ public class HistoryService {
                 List<ChildAssociationRef> parents = nodeService.getParentAssocs(document);
                 for (ChildAssociationRef parent : parents) {
                     NodeRef parentCase = parent.getParentRef();
-                    if (nodeService.hasAspect(parentCase, ICaseModel.ASPECT_CASE) || nodeService.hasAspect(parentCase, ICaseModel.ASPECT_SUBCASE)) {
+                    if (nodeService.hasAspect(parentCase, ICaseModel.ASPECT_CASE) || nodeService.hasAspect(parentCase,
+                        ICaseModel.ASPECT_SUBCASE)) {
                         nodeService.createAssociation(historyEvent, parentCase, HistoryModel.ASSOC_CASE);
                     }
                 }
@@ -263,11 +239,11 @@ public class HistoryService {
         /* Event time */
         Date now = (Date) creationDate.clone();
         if ("assoc.added".equals(properties.get(HistoryModel.PROP_NAME))
-                || "task.assign".equals(properties.get(HistoryModel.PROP_NAME))) {
+            || "task.assign".equals(properties.get(HistoryModel.PROP_NAME))) {
             now.setTime(now.getTime() + 5000);
         }
         if ("node.created".equals(properties.get(HistoryModel.PROP_NAME))
-                || "node.updated".equals(properties.get(HistoryModel.PROP_NAME))) {
+            || "node.updated".equals(properties.get(HistoryModel.PROP_NAME))) {
             now.setTime(now.getTime() - 5000);
         }
         requestParams.put(CREATION_TIME, dateFormat.format(now));
@@ -275,11 +251,12 @@ public class HistoryService {
         NodeRef taskCaseRef = (NodeRef) properties.get(HistoryModel.PROP_CASE_TASK);
         if (taskCaseRef != null) {
             Integer expectedPerformTime = (Integer) nodeService.getProperty(taskCaseRef,
-                    ActivityModel.PROP_EXPECTED_PERFORM_TIME);
+                ActivityModel.PROP_EXPECTED_PERFORM_TIME);
             if (expectedPerformTime == null) {
                 expectedPerformTime = getDefaultSLA();
             }
-            requestParams.put(EXPECTED_PERFORM_TIME, expectedPerformTime != null ? expectedPerformTime.toString() : null);
+            requestParams.put(EXPECTED_PERFORM_TIME, expectedPerformTime != null ? expectedPerformTime.toString() :
+                null);
         }
         /* Event properties */
         requestParams.put(HISTORY_EVENT_ID, UUID.randomUUID().toString());
@@ -301,7 +278,43 @@ public class HistoryService {
         requestParams.put(DOCUMENT_VERSION, properties.get(HistoryModel.PROP_DOCUMENT_VERSION));
         QName propertyName = (QName) properties.get(HistoryModel.PROP_PROPERTY_NAME);
         requestParams.put(PROPERTY_NAME, propertyName != null ? propertyName.getLocalName() : null);
+
+        requestParams.put(DOC_TYPE, properties.get(HistoryModel.PROP_DOC_TYPE));
+        requestParams.put(DOC_STATUS_NAME, properties.get(HistoryModel.PROP_DOC_STATUS_NAME));
+        requestParams.put(DOC_STATUS_TITLE, properties.get(HistoryModel.PROP_DOC_STATUS_TITLE));
+
+        requestParams.put(TASK_ACTORS, getActorsListAsString(properties));
+
+
         historyRemoteService.sendHistoryEventToRemoteService(requestParams);
+    }
+
+    @SuppressWarnings("unchecked")
+    private String getActorsListAsString(final Map<QName, Serializable> properties) {
+        Serializable actorsSer = properties.get(HistoryModel.PROP_TASK_ACTORS);
+        List<NodeRef> actors = new ArrayList<>();
+
+        if (actorsSer instanceof List) {
+            actors = (List<NodeRef>) actorsSer;
+        }
+
+        List<AuthorityDTO> authorities = actors
+            .stream()
+            .map(NodeRef::toString)
+            .map(actor -> {
+                RecordRef rr = RecordRef.create("", actor);
+                return recordsService.getMeta(rr, AuthorityDTO.class);
+            })
+            .collect(Collectors.toList());
+
+        String strValue = "";
+        try {
+            strValue = OBJECT_MAPPER.writeValueAsString(authorities);
+        } catch (JsonProcessingException e) {
+            log.error("Failed write task actors as string", e);
+        }
+
+        return strValue;
     }
 
     private Integer getDefaultSLA() {
@@ -309,7 +322,7 @@ public class HistoryService {
         try {
             return Integer.valueOf(rawSla);
         } catch (NumberFormatException exception) {
-            logger.error("Can't transform '" + rawSla + "' to the number", exception);
+            log.error("Can't transform '" + rawSla + "' to the number", exception);
             return null;
         }
     }
@@ -343,8 +356,8 @@ public class HistoryService {
             return "Remote history service isn't enabled";
         }
         isHistoryTransferring = true;
-        logger.info("History transferring started from position - " + offset);
-        logger.info("History transferring. Max load size - " + maxItemsCount);
+        log.info("History transferring started from position - " + offset);
+        log.info("History transferring. Max load size - " + maxItemsCount);
         try {
             /* Load first documents */
             int documentsTransferred = 0;
@@ -355,7 +368,8 @@ public class HistoryService {
             /* Start processing */
             do {
                 if (isHistoryTransferringInterrupted) {
-                    logger.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
+                    log.info("History transferring - documents have been transferred - " + (documentsTransferred +
+                        offset));
                     return "History transferring was interrupted";
                 }
                 List<NodeRef> documents = resultSet.getNodeRefs();
@@ -363,7 +377,8 @@ public class HistoryService {
                 /* Process each document */
                 for (NodeRef documentRef : documents) {
                     if (isHistoryTransferringInterrupted) {
-                        logger.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
+                        log.info("History transferring - documents have been transferred - " + (documentsTransferred +
+                            offset));
                         return "History transferring was interrupted";
                     }
                     sendEventsByDocumentRef(documentRef);
@@ -371,17 +386,15 @@ public class HistoryService {
                 }
                 skipCount += documents.size();
                 resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
-                logger.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
-                if (stopCount != null && stopCount > 0) {
-                    if (stopCount < documentsTransferred) {
-                        break;
-                    }
+                log.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
+                if (stopCount != null && stopCount > 0 && stopCount < documentsTransferred) {
+                    break;
                 }
             } while (hasMore);
-            logger.info("History transferring - all documents have been transferred - " + (documentsTransferred + offset));
+            log.info("History transferring - all documents have been transferred - " + (documentsTransferred + offset));
             return "History transferring - documents have been transferred";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             throw e;
         } finally {
             isHistoryTransferring = false;
@@ -401,8 +414,8 @@ public class HistoryService {
             historyRemoteService.updateDocumentHistoryStatus(documentRef, true);
             trx.commit();
         } catch (Exception e) {
-            logger.error("Document " + documentRef.getId() + " hadn't been processed correctly");
-            logger.error(e.getMessage(), e);
+            log.error("Document " + documentRef.getId() + " hadn't been processed correctly");
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -435,7 +448,8 @@ public class HistoryService {
         AuthenticationUtil.runAsSystem(() -> {
             /* Check - is remote service enabled */
             if (!isEnabledRemoteHistoryService()) {
-                throw new RuntimeException("Remote history service is disabled. Old history event transferring is impossible");
+                throw new RuntimeException("Remote history service is disabled. Old history event transferring is " +
+                    "impossible");
             }
             /* Check - node existing */
             if (!nodeService.exists(documentRef)) {
@@ -507,8 +521,9 @@ public class HistoryService {
         SearchParameters parameters = new SearchParameters();
         parameters.addStore(storeRef);
         parameters.setLanguage(SearchService.LANGUAGE_LUCENE);
-        parameters.setQuery("PATH:\"" + HISTORY_ROOT + "/*\" AND @" + PROPERTY_PREFIX + "\\:date:[" + dateFormat.format(limitDate) + " TO NOW] " +
-                "AND @" + PROPERTY_PREFIX + "\\:initiator_added:\"" + initiator + "\"");
+        parameters.setQuery("PATH:\"" + HISTORY_ROOT + "/*\" AND @" + PROPERTY_PREFIX + "\\:date:[" +
+            dateFormat.format(limitDate) + " TO NOW] " +
+            "AND @" + PROPERTY_PREFIX + "\\:initiator_added:\"" + initiator + "\"");
         parameters.addSort("@event:date", true);
         ResultSet query = searchService.query(parameters);
         return query.getNodeRefs();
@@ -519,7 +534,8 @@ public class HistoryService {
         SearchParameters parameters = new SearchParameters();
         parameters.addStore(storeRef);
         parameters.setLanguage(SearchService.LANGUAGE_LUCENE);
-        parameters.setQuery("PATH:\"" + HISTORY_ROOT + "/*\" AND @" + PROPERTY_PREFIX + "\\:document_added:\"" + document + "\"");
+        parameters.setQuery("PATH:\"" + HISTORY_ROOT + "/*\" AND @" + PROPERTY_PREFIX + "\\:document_added:\"" +
+            document + "\"");
         parameters.addSort("@event:date", true);
         ResultSet query = searchService.query(parameters);
         return query.getNodeRefs();
@@ -529,7 +545,8 @@ public class HistoryService {
         SearchParameters parameters = new SearchParameters();
         parameters.addStore(storeRef);
         parameters.setLanguage(SearchService.LANGUAGE_LUCENE);
-        parameters.setQuery("@" + PROPERTY_PREFIX + "\\:document_added:\"" + document + "\" AND @" + PROPERTY_PREFIX + "\\:name:\"" + eventName + "\"");
+        parameters.setQuery("@" + PROPERTY_PREFIX + "\\:document_added:\"" + document + "\" AND @" + PROPERTY_PREFIX
+            + "\\:name:\"" + eventName + "\"");
         parameters.addSort("@event:date", true);
         ResultSet query = searchService.query(parameters);
         return query.getNodeRefs();
@@ -540,7 +557,8 @@ public class HistoryService {
         SearchParameters parameters = new SearchParameters();
         parameters.addStore(storeRef);
         parameters.setLanguage(SearchService.LANGUAGE_LUCENE);
-        parameters.setQuery("PATH:\"" + HISTORY_ROOT + "/*\" AND @" + PROPERTY_PREFIX + "\\:workflowInstanceId:\"" + instanceId + "\"");
+        parameters.setQuery("PATH:\"" + HISTORY_ROOT + "/*\" AND @" + PROPERTY_PREFIX + "\\:workflowInstanceId:\""
+            + instanceId + "\"");
         parameters.addSort("@event:date", true);
         ResultSet query = searchService.query(parameters);
         return query.getNodeRefs();
@@ -551,7 +569,8 @@ public class HistoryService {
         SearchParameters parameters = new SearchParameters();
         parameters.addStore(storeRef);
         parameters.setLanguage(SearchService.LANGUAGE_LUCENE);
-        parameters.setQuery("PATH:\"" + HISTORY_ROOT + "/*\" AND @" + PROPERTY_PREFIX + "\\:taskInstanceId:\"" + instanceId + "\"");
+        parameters.setQuery("PATH:\"" + HISTORY_ROOT + "/*\" AND @" + PROPERTY_PREFIX + "\\:taskInstanceId:\""
+            + instanceId + "\"");
         parameters.addSort("@event:date", false);
         ResultSet query = searchService.query(parameters);
         return query.getNodeRefs();
@@ -601,5 +620,45 @@ public class HistoryService {
             additionalProperties.put(historyProp, nodeService.getProperty(document, documentProp));
         }
         nodeService.addProperties(historyEvent, additionalProperties);
+    }
+
+    public void setTransactionService(TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
+
+    public void setHistoryRemoteService(HistoryRemoteService historyRemoteService) {
+        this.historyRemoteService = historyRemoteService;
+    }
+
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
+
+    public void setAuthenticationService(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
+
+    public void setPersonService(PersonService personService) {
+        this.personService = personService;
+    }
+
+    public void setSearchService(SearchService searchService) {
+        this.searchService = searchService;
+        storeRef = StoreRef.STORE_REF_WORKSPACE_SPACESSTORE;
+    }
+
+    public void setHistoryRoot(NodeRef historyRoot) {
+        this.historyRoot = historyRoot;
+    }
+
+    @Autowired
+    @Qualifier("ecosConfigService")
+    public void setEcosConfigService(EcosConfigService ecosConfigService) {
+        this.ecosConfigService = ecosConfigService;
+    }
+
+    @Autowired
+    public void setRecordsService(RecordsService recordsService) {
+        this.recordsService = recordsService;
     }
 }
