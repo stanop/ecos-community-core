@@ -31,6 +31,8 @@ import ru.citeck.ecos.model.CiteckWorkflowModel;
 import java.io.Serializable;
 import java.util.*;
 
+import static ru.citeck.ecos.utils.WorkflowConstants.VAR_TASK_ORIGINAL_OWNER;
+
 /**
  * Notification sender for tasks(ItemType = DelegateTask).
  * <p>
@@ -79,7 +81,7 @@ class NotAvailableTaskNotificationSender extends DelegateTaskNotificationSender 
         WorkflowQNameConverter qNameConverter = new WorkflowQNameConverter(services.getNamespaceService());
         String lastTaskOwnerVar = qNameConverter.mapQNameToName(CiteckWorkflowModel.PROP_LAST_TASK_OWNER);
         String owner = task.getAssignee();
-        String originalOwner = (String) task.getVariable("taskOriginalOwner");
+        String originalOwner = (String) task.getVariable(VAR_TASK_ORIGINAL_OWNER);
 
         String lastTaskOwner = (String) task.getVariable(lastTaskOwnerVar);
         boolean ownerIsOriginal = originalOwner != null && originalOwner.equals(owner);

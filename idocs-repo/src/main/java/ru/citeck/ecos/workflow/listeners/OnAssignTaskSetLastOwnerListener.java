@@ -27,52 +27,46 @@ import org.alfresco.repo.workflow.WorkflowQNameConverter;
 
 import ru.citeck.ecos.notification.NotificationSender;
 
+import static ru.citeck.ecos.utils.WorkflowConstants.VAR_TASK_ORIGINAL_OWNER;
+
 /**
  * This task listener set last task owner and send notification if task is reassigned.
- * 
+ *
  * @author Elena Zaripova
  */
-public class OnAssignTaskSetLastOwnerListener implements TaskListener 
-{
-	protected ServiceRegistry serviceRegistry;
-	protected WorkflowService workflowService;
-	protected NotificationSender<DelegateTask> sender;
-	protected boolean enabled;
+public class OnAssignTaskSetLastOwnerListener implements TaskListener {
+    protected ServiceRegistry serviceRegistry;
+    protected WorkflowService workflowService;
+    protected NotificationSender<DelegateTask> sender;
+    protected boolean enabled;
 
     @Override
-	public void notify(DelegateTask task) {
-		WorkflowQNameConverter qNameConverter = new WorkflowQNameConverter(serviceRegistry.getNamespaceService());
-		String lastTaskOwnerVar = qNameConverter.mapQNameToName(CiteckWorkflowModel.PROP_LAST_TASK_OWNER);
-		String owner = task.getAssignee();
-		String originalOwner = (String) task.getVariable("taskOriginalOwner");
+    public void notify(DelegateTask task) {
+        WorkflowQNameConverter qNameConverter = new WorkflowQNameConverter(serviceRegistry.getNamespaceService());
+        String lastTaskOwnerVar = qNameConverter.mapQNameToName(CiteckWorkflowModel.PROP_LAST_TASK_OWNER);
+        String owner = task.getAssignee();
+        String originalOwner = (String) task.getVariable(VAR_TASK_ORIGINAL_OWNER);
 
-		String lastTaskOwner = (String) task.getVariable(lastTaskOwnerVar);
-		if(enabled)
-		{
-			if((lastTaskOwner!=null && !lastTaskOwner.equals(owner)) || (lastTaskOwner==null && owner!=null && originalOwner!=null && !owner.equals(originalOwner)))
-			{
-				sender.sendNotification(task);
-			}
-		}
-		task.setVariableLocal(lastTaskOwnerVar, owner);
-	}
-	
-	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-		this.serviceRegistry = serviceRegistry;
-	}
-	/**
-	 * Set NotificationSender.
-	 * @param sender
-	 */
-	public void setSender(NotificationSender<DelegateTask> sender) {
-		this.sender = sender;
-	}
-	/**
-	* enabled
-	* @param true or false
-	*/
-	public void setEnabled(Boolean enabled) {
-    	this.enabled = enabled.booleanValue();
+        String lastTaskOwner = (String) task.getVariable(lastTaskOwnerVar);
+        if (enabled) {
+            if ((lastTaskOwner != null && !lastTaskOwner.equals(owner)) || (lastTaskOwner == null && owner != null
+                && originalOwner != null && !owner.equals(originalOwner))) {
+                sender.sendNotification(task);
+            }
+        }
+        task.setVariableLocal(lastTaskOwnerVar, owner);
+    }
+
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
+    }
+
+    public void setSender(NotificationSender<DelegateTask> sender) {
+        this.sender = sender;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled.booleanValue();
     }
 
 }
