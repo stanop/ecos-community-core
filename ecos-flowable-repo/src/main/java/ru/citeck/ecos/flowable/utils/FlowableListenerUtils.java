@@ -10,6 +10,8 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.RegexQNamePattern;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.flowable.common.engine.api.delegate.Expression;
 import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.identitylink.service.IdentityLinkType;
@@ -18,6 +20,8 @@ import org.flowable.variable.api.delegate.VariableScope;
 import ru.citeck.ecos.utils.ReflectionUtils;
 
 import java.util.*;
+
+import static ru.citeck.ecos.utils.WorkflowConstants.VAR_TASK_ORIGINAL_OWNER;
 
 /**
  * Flowable listener utils
@@ -62,7 +66,7 @@ public class FlowableListenerUtils {
             return null;
         }
         List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(wfPackage, WorkflowModel.ASSOC_PACKAGE_CONTAINS,
-                RegexQNamePattern.MATCH_ALL);
+            RegexQNamePattern.MATCH_ALL);
         if (!childAssocs.isEmpty()) {
             return childAssocs.get(0).getChildRef();
         }
@@ -114,6 +118,35 @@ public class FlowableListenerUtils {
                 }
             }
         }
+        return pooledActors;
+    }
+
+    public static List<NodeRef> getActors(DelegateTask task, AuthorityService authorityService) {
+        String assigneeName = task.getOwner();
+        if (StringUtils.isNotBlank(assigneeName)) {
+            NodeRef assignee = authorityService.getAuthorityNodeRef(assigneeName);
+            return Collections.singletonList(assignee);
+        }
+
+        List<NodeRef> pooledActors = getPooledActors(task, authorityService);
+        if (CollectionUtils.isEmpty(pooledActors)) {
+            return Collections.emptyList();
+        }
+
+        String originalOwner = (String) task.getVariableLocal(VAR_TASK_ORIGINAL_OWNER);
+        if (StringUtils.isBlank(originalOwner)) {
+            return pooledActors;
+        }
+
+        NodeRef originalOwnerNodeRef = authorityService.getAuthorityNodeRef(originalOwner);
+
+        if (originalOwnerNodeRef != null) {
+            if (pooledActors.contains(originalOwnerNodeRef) && pooledActors.indexOf(originalOwnerNodeRef) != -1) {
+                pooledActors.remove(originalOwnerNodeRef);
+                pooledActors.add(0, originalOwnerNodeRef);
+            }
+        }
+
         return pooledActors;
     }
 

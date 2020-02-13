@@ -28,6 +28,8 @@ import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.citeck.ecos.utils.WorkflowConstants.VAR_TASK_ORIGINAL_OWNER;
+
 /**
  * Workflow service utils
  */
@@ -47,13 +49,13 @@ public class WorkflowUtils {
 
     @Autowired
     public WorkflowUtils(
-            @Qualifier("WorkflowService") WorkflowService workflowService,
-            AuthorityUtils authorityUtils,
-            NodeService nodeService,
-            AuthorityService authorityService,
-            PersonService personService,
-            WorkflowAdminService workflowAdminService,
-            NamespaceService namespaceService
+        @Qualifier("WorkflowService") WorkflowService workflowService,
+        AuthorityUtils authorityUtils,
+        NodeService nodeService,
+        AuthorityService authorityService,
+        PersonService personService,
+        WorkflowAdminService workflowAdminService,
+        NamespaceService namespaceService
     ) {
         this.workflowService = workflowService;
         this.authorityUtils = authorityUtils;
@@ -116,8 +118,8 @@ public class WorkflowUtils {
             Set<NodeRef> authorities = authorityUtils.getUserAuthoritiesRefs();
 
             tasks = tasks.stream()
-                         .filter(t -> isTaskActor(t, userName, authorities))
-                         .collect(Collectors.toList());
+                .filter(t -> isTaskActor(t, userName, authorities))
+                .collect(Collectors.toList());
         }
         return tasks;
     }
@@ -148,8 +150,8 @@ public class WorkflowUtils {
             String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
             Set<NodeRef> authorities = authorityUtils.getUserAuthoritiesRefs();
             tasks = tasks.stream()
-                    .filter(t -> isTaskActor(t, currentUser, authorities))
-                    .collect(Collectors.toList());
+                .filter(t -> isTaskActor(t, currentUser, authorities))
+                .collect(Collectors.toList());
         }
 
         return tasks;
@@ -162,8 +164,8 @@ public class WorkflowUtils {
         if (StringUtils.isNotBlank(engine)) {
             String enginePrefix = engine + "$";
             workflows = workflows.stream()
-                    .filter(workflow -> workflow.getId().startsWith(enginePrefix))
-                    .collect(Collectors.toList());
+                .filter(workflow -> workflow.getId().startsWith(enginePrefix))
+                .collect(Collectors.toList());
         }
 
         List<WorkflowTask> tasks = new LinkedList<>();
@@ -193,9 +195,9 @@ public class WorkflowUtils {
         }
 
         String originalOwner = (String) task.getProperties().get(QName.createQName("",
-                "taskOriginalOwner"));
+            VAR_TASK_ORIGINAL_OWNER));
         NodeRef originalOwnerNodeRef = StringUtils.isNotBlank(originalOwner)
-                ? authorityService.getAuthorityNodeRef(originalOwner) : null;
+            ? authorityService.getAuthorityNodeRef(originalOwner) : null;
 
         if (originalOwnerNodeRef != null) {
             if (pooledActors.contains(originalOwnerNodeRef) && pooledActors.indexOf(originalOwnerNodeRef) != -1) {
@@ -298,8 +300,8 @@ public class WorkflowUtils {
             List<ChildAssociationRef> packageContent;
 
             packageContent = nodeService.getChildAssocs(packageRef,
-                    WorkflowModel.ASSOC_PACKAGE_CONTAINS,
-                    RegexQNamePattern.MATCH_ALL);
+                WorkflowModel.ASSOC_PACKAGE_CONTAINS,
+                RegexQNamePattern.MATCH_ALL);
 
             if (packageContent != null && !packageContent.isEmpty()) {
 
