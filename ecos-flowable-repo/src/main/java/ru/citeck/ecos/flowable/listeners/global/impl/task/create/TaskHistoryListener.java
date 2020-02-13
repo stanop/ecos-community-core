@@ -1,5 +1,6 @@
 package ru.citeck.ecos.flowable.listeners.global.impl.task.create;
 
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
@@ -14,11 +15,11 @@ import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringUtils;
 import org.flowable.engine.TaskService;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.flowable.variable.api.delegate.VariableScope;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.deputy.DeputyService;
 import ru.citeck.ecos.flowable.listeners.global.GlobalAssignmentTaskListener;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCompleteTaskListener;
@@ -30,19 +31,20 @@ import ru.citeck.ecos.history.HistoryEventType;
 import ru.citeck.ecos.history.HistoryService;
 import ru.citeck.ecos.model.*;
 import ru.citeck.ecos.role.CaseRoleService;
+import ru.citeck.ecos.workflow.listeners.TaskDataListenerUtils;
 
 import java.io.Serializable;
 import java.util.*;
 
 import static ru.citeck.ecos.flowable.constants.FlowableConstants.ENGINE_PREFIX;
+import static ru.citeck.ecos.utils.WorkflowConstants.VAR_TASK_ORIGINAL_OWNER;
 
 /**
  * Task history listener
  */
+@Slf4j
 public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssignmentTaskListener,
-        GlobalCompleteTaskListener {
-
-    private static final Log logger = LogFactory.getLog(TaskHistoryListener.class);
+    GlobalCompleteTaskListener {
 
     private static final String VAR_ADDITIONAL_EVENT_PROPERTIES = "event_additionalProperties";
 
@@ -69,6 +71,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
     private WorkflowQNameConverter qNameConverter;
     private FlowableCustomCommentService flowableCustomCommentService;
     private TaskService taskService;
+    private TaskDataListenerUtils taskDataListenerUtils;
 
     /**
      * Property names
@@ -99,9 +102,10 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
     public void notify(DelegateTask delegateTask) {
         String eventName = eventNames.get(delegateTask.getEventName());
         if (eventName == null) {
-            logger.warn("Unsupported flowable task event: " + delegateTask.getEventName());
+            log.warn("Unsupported flowable task event: " + delegateTask.getEventName());
             return;
         }
+
         NodeRef document = FlowableListenerUtils.getDocument(delegateTask, nodeService);
 
         /*
@@ -109,7 +113,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
          */
         Map<QName, Serializable> eventProperties = new HashMap<>();
         QName taskType = QName.createQName((String) delegateTask.getVariable(ActivitiConstants.PROP_TASK_FORM_KEY),
-                namespaceService);
+            namespaceService);
         QName outcomeProperty = (QName) delegateTask.getVariable(VAR_OUTCOME_PROPERTY_NAME);
         if (outcomeProperty == null) {
             outcomeProperty = WorkflowModel.PROP_OUTCOME;
@@ -127,22 +131,20 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
 
         ArrayList<NodeRef> taskAttachments = FlowableListenerUtils.getTaskAttachments(delegateTask);
         String assignee = delegateTask.getAssignee();
-        String originalOwner = (String) delegateTask.getVariableLocal("taskOriginalOwner");
 
-        /*
-         * Get assignee
-         */
-        if (assignee != null && !assignee.equals(originalOwner)) {
-            if (originalOwner != null && deputyService.isAssistantUserByUser(originalOwner, assignee)) {
-                eventProperties.put(QName.createQName("", "taskOriginalOwner"), authorityService.getAuthorityNodeRef(originalOwner));
-            }
+        NodeRef originalOwner = processOriginalOwner(delegateTask);
+        if (originalOwner != null) {
+            eventProperties.put(QName.createQName("", VAR_TASK_ORIGINAL_OWNER), originalOwner);
         }
-        ArrayList<NodeRef> pooledActors = FlowableListenerUtils.getPooledActors(delegateTask, authorityService);
-        Map<QName, Serializable> additionalProperties = getAdditionalProperties(delegateTask);
 
+        ArrayList<NodeRef> pooledActors = FlowableListenerUtils.getPooledActors(delegateTask, authorityService);
+        List<NodeRef> actors = FlowableListenerUtils.getActors(delegateTask, authorityService);
+
+        Map<QName, Serializable> additionalProperties = getAdditionalProperties(delegateTask);
         if (additionalProperties != null) {
             eventProperties.putAll(additionalProperties);
         }
+
         NodeRef bpmPackage = FlowableListenerUtils.getWorkflowPackage(delegateTask);
         List<AssociationRef> packageAssocs = nodeService.getSourceAssocs(bpmPackage, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
 
@@ -150,8 +152,8 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
         if (panelOfAuthorized != null && assignee != null && !panelOfAuthorized.isEmpty()) {
             List<NodeRef> listRoles = getListRoles(document);
             roleName = getAuthorizedName(panelOfAuthorized, listRoles, assignee) != null ?
-                    getAuthorizedName(panelOfAuthorized, listRoles, assignee) :
-                    getRoleName(packageAssocs, assignee, delegateTask.getId());
+                getAuthorizedName(panelOfAuthorized, listRoles, assignee) :
+                getRoleName(packageAssocs, assignee, delegateTask.getId());
         } else {
             roleName = getRoleName(packageAssocs, assignee, delegateTask.getId());
             if (!packageAssocs.isEmpty()) {
@@ -170,6 +172,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
         eventProperties.put(HistoryModel.PROP_LAST_TASK_COMMENT, lastTaskComment);
         eventProperties.put(HistoryModel.PROP_TASK_ATTACHMENTS, taskAttachments);
         eventProperties.put(HistoryModel.PROP_TASK_POOLED_ACTORS, pooledActors);
+        eventProperties.put(HistoryModel.PROP_TASK_ACTORS, new ArrayList<>(actors));
         eventProperties.put(HistoryModel.PROP_TASK_ROLE, roleName);
         eventProperties.put(HistoryModel.PROP_TASK_DUE_DATE, delegateTask.getDueDate());
 
@@ -181,7 +184,28 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
         eventProperties.put(HistoryModel.PROP_WORKFLOW_DESCRIPTION, (Serializable) delegateTask.getVariable(VAR_DESCRIPTION));
         eventProperties.put(HistoryModel.ASSOC_INITIATOR, assignee != null ? assignee : HistoryService.SYSTEM_USER);
         eventProperties.put(HistoryModel.ASSOC_DOCUMENT, document);
+
+        taskDataListenerUtils.fillDocumentData(document, eventProperties);
+
         historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
+    }
+
+    private NodeRef processOriginalOwner(DelegateTask delegateTask) {
+        String assignee = delegateTask.getAssignee();
+        String originalOwner = (String) delegateTask.getVariableLocal(VAR_TASK_ORIGINAL_OWNER);
+        if (assignee == null || originalOwner == null) {
+            return null;
+        }
+
+        if (StringUtils.equals(assignee, originalOwner)) {
+            return null;
+        }
+
+        if (deputyService.isAssistantUserByUser(originalOwner, assignee)) {
+            return authorityService.getAuthorityNodeRef(originalOwner);
+        }
+
+        return null;
     }
 
     /**
@@ -198,7 +222,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
         if (additionalPropertiesObj instanceof Map) {
             return convertProperties((Map) additionalPropertiesObj);
         }
-        logger.warn("Unknown type of additional event properties: " + additionalPropertiesObj.getClass());
+        log.warn("Unknown type of additional event properties: " + additionalPropertiesObj.getClass());
         return null;
     }
 
@@ -210,7 +234,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
      */
     private Map<QName, Serializable> convertProperties(Map additionalProperties) {
         Map<QName, Serializable> result = new HashMap<>(additionalProperties.size());
-        for (Map.Entry<?,?> entry : ((Map<?, ?>) additionalProperties).entrySet()) {
+        for (Map.Entry<?, ?> entry : ((Map<?, ?>) additionalProperties).entrySet()) {
             Object key = entry.getKey();
             QName name = null;
             if (key instanceof String) {
@@ -218,7 +242,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
             } else if (key instanceof QName) {
                 name = (QName) key;
             } else {
-                logger.warn("Unknown type of key: " + key.getClass());
+                log.warn("Unknown type of key: " + key.getClass());
                 continue;
             }
             result.put(name, (Serializable) entry.getValue());
@@ -237,7 +261,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
             return Collections.emptyList();
         }
         List<ChildAssociationRef> childsAssocRefs = nodeService.getChildAssocs(document, ICaseRoleModel.ASSOC_ROLES,
-                RegexQNamePattern.MATCH_ALL);
+            RegexQNamePattern.MATCH_ALL);
         List<NodeRef> roles = new ArrayList<>();
         for (ChildAssociationRef childAssociationRef : childsAssocRefs) {
             roles.add(childAssociationRef.getChildRef());
@@ -288,7 +312,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
                 if (properties.get(CasePerformModel.ASSOC_CASE_ROLE) != null) {
                     NodeRef role = (NodeRef) properties.get(CasePerformModel.ASSOC_CASE_ROLE);
                     if (role != null && nodeService.exists(role)
-                            && nodeService.getProperty(role, ContentModel.PROP_NAME) != null) {
+                        && nodeService.getProperty(role, ContentModel.PROP_NAME) != null) {
                         roleName = (String) nodeService.getProperty(role, ContentModel.PROP_NAME);
                     }
                 }
@@ -299,7 +323,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
             if (!packageAssocs.isEmpty()) {
                 NodeRef currentTask = packageAssocs.get(0).getSourceRef();
                 List<AssociationRef> performerRoles = nodeService.getTargetAssocs(currentTask,
-                        CasePerformModel.ASSOC_PERFORMERS_ROLES);
+                    CasePerformModel.ASSOC_PERFORMERS_ROLES);
                 if (performerRoles != null && !performerRoles.isEmpty()) {
                     NodeRef firstRole = performerRoles.get(0).getTargetRef();
                     roleName = (String) nodeService.getProperty(firstRole, ContentModel.PROP_NAME);
@@ -367,5 +391,10 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
 
     public void setTaskService(TaskService taskService) {
         this.taskService = taskService;
+    }
+
+    @Autowired
+    public void setTaskDataListenerUtils(TaskDataListenerUtils taskDataListenerUtils) {
+        this.taskDataListenerUtils = taskDataListenerUtils;
     }
 }
