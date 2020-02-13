@@ -41,7 +41,6 @@ import ru.citeck.ecos.history.TaskHistoryUtils;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
-import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.service.CiteckServices;
 
 import java.io.Serializable;
