@@ -8,9 +8,6 @@ import java.util.Set;
 @Data
 public class CaseActivity {
 
-    /*
-     * Alfresco NodeRef
-     */
     private String id;
     private int index;
     private String title;
@@ -37,6 +34,4 @@ public class CaseActivity {
             return content;
         }
     }
-
-
 }
