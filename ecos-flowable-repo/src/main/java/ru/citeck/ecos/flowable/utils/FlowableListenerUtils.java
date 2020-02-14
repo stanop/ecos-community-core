@@ -122,7 +122,7 @@ public class FlowableListenerUtils {
     }
 
     public static List<NodeRef> getActors(DelegateTask task, AuthorityService authorityService) {
-        String assigneeName = task.getOwner();
+        String assigneeName = task.getAssignee();
         if (StringUtils.isNotBlank(assigneeName)) {
             NodeRef assignee = authorityService.getAuthorityNodeRef(assigneeName);
             return Collections.singletonList(assignee);
