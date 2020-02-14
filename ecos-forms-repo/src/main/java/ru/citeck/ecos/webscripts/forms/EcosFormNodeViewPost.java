@@ -3,9 +3,15 @@ package ru.citeck.ecos.webscripts.forms;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.service.transaction.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.extensions.webscripts.*;
+import org.springframework.extensions.webscripts.AbstractWebScript;
+import org.springframework.extensions.webscripts.Format;
+import org.springframework.extensions.webscripts.WebScriptRequest;
+import org.springframework.extensions.webscripts.WebScriptResponse;
 import ru.citeck.ecos.forms.EcosFormService;
 import ru.citeck.ecos.forms.FormMode;
 import ru.citeck.ecos.model.InvariantsModel;
@@ -16,6 +22,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public class EcosFormNodeViewPost extends AbstractWebScript {
 
     /*========PARAMS========*/
@@ -31,6 +38,8 @@ public class EcosFormNodeViewPost extends AbstractWebScript {
     private EcosFormService ecosFormService;
     @Autowired
     private EcosNsPrefixResolver prefixResolver;
+    @Autowired
+    private TransactionService transactionService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -62,12 +71,26 @@ public class EcosFormNodeViewPost extends AbstractWebScript {
             attributes.put(InvariantsModel.PROP_IS_DRAFT, postContent.isDraft);
         }
 
-        Map<String, Object> resp = ecosFormService.saveNodeView(formType, formKey, formId,
-                                                                mode, getParams(req, postContent), attributes);
+        Map<String, Object> resp = saveNodeView(req, formType, formKey, formId, mode, postContent, attributes);
 
         Map<String, Object> result = new HashMap<>(1);
         result.put(RESULT_KEY, resp);
         objectMapper.writeValue(res.getWriter(), result);
+    }
+
+    private Map<String, Object> saveNodeView(WebScriptRequest req, String formType, String formKey, String formId,
+                                             FormMode mode, PostContent postContent, Map<QName, Object> attributes) {
+
+        RetryingTransactionHelper helper = transactionService.getRetryingTransactionHelper();
+        return helper.doInTransaction(() -> {
+            try {
+                return ecosFormService.saveNodeView(formType, formKey, formId, mode,
+                    getParams(req, postContent), attributes);
+            } catch (Exception e) {
+                log.debug("Exception while saving node view", e);
+                throw e;
+            }
+        }, false, true);
     }
 
     private Map<QName, Object> keysAsQName(Map<String, Object> attributes) {

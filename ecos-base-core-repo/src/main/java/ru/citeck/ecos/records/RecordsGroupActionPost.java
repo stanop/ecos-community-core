@@ -2,9 +2,11 @@ package ru.citeck.ecos.records;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +22,14 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
+@Slf4j
 public class RecordsGroupActionPost extends AbstractWebScript {
 
     private static final Log logger = LogFactory.getLog(RecordsGroupActionPost.class);
 
     private ObjectMapper objectMapper = new ObjectMapper();
     private RecordsServiceImpl recordsService;
+    private TransactionService transactionService;
 
     @PostConstruct
     public void init() {
@@ -46,7 +50,7 @@ public class RecordsGroupActionPost extends AbstractWebScript {
 
         try (Writer writer = res.getWriter()) {
             try {
-                response.results = recordsService.executeAction(actionData.nodes, actionData.config);
+                response.results = executeAction(actionData);
 
                 res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
                 objectMapper.writeValue(writer, response);
@@ -63,9 +67,26 @@ public class RecordsGroupActionPost extends AbstractWebScript {
         }
     }
 
+    private ActionResults<RecordRef> executeAction(ActionData actionData) {
+        RetryingTransactionHelper helper = transactionService.getRetryingTransactionHelper();
+        return helper.doInTransaction(() -> {
+            try {
+                return recordsService.executeAction(actionData.nodes, actionData.config);
+            } catch (Exception e) {
+                log.debug("Exception while records group action execution");
+                throw e;
+            }
+        }, false, true);
+    }
+
     @Autowired
     public void setRecordsService(RecordsServiceImpl recordsService) {
         this.recordsService = recordsService;
+    }
+
+    @Autowired
+    public void setTransactionService(TransactionService transactionService) {
+        this.transactionService = transactionService;
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -77,9 +98,9 @@ public class RecordsGroupActionPost extends AbstractWebScript {
         @Override
         public String toString() {
             return "ActionData{" +
-                    ", config=" + config +
-                    ", nodes=" + nodes +
-                    '}';
+                ", config=" + config +
+                ", nodes=" + nodes +
+                '}';
         }
     }
 
