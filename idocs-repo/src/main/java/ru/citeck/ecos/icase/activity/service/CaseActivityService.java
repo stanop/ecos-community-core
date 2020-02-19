@@ -26,6 +26,8 @@ public interface CaseActivityService {
 
     List<CaseActivity> getActivities(String documentId, QName assocType, QNamePattern type);
 
+    List<CaseActivity> getActivities(String documentId, QName assocType, QNamePattern type, boolean recurse);
+
     List<CaseActivity> getStartedActivities(String documentId);
 
     CaseActivity getActivityByTitle(String documentId, String title, boolean recurse);
