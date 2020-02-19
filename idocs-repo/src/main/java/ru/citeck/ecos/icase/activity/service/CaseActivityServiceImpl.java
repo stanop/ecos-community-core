@@ -205,6 +205,7 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         return getActivities(documentId, assocType, type, false);
     }
 
+    @Override
     public List<CaseActivity> getActivities(String documentId,
                                              QName assocType,
                                              QNamePattern type,
