@@ -205,7 +205,7 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         return getActivities(documentId, assocType, type, false);
     }
 
-    private List<CaseActivity> getActivities(String documentId,
+    public List<CaseActivity> getActivities(String documentId,
                                              QName assocType,
                                              QNamePattern type,
                                              boolean recurse) {
