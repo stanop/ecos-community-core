@@ -1,18 +1,18 @@
 package ru.citeck.ecos.workflow.tasks;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.util.ParameterCheck;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.stereotype.Service;
-import ru.citeck.ecos.utils.WorkflowUtils;
+import ru.citeck.ecos.locks.LockUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @Service
 public class EcosTaskService {
 
@@ -22,11 +22,7 @@ public class EcosTaskService {
 
     private Map<String, EngineTaskService> taskServices = new ConcurrentHashMap<>();
 
-    @Autowired
-    @Qualifier("WorkflowService")
-    private WorkflowService workflowService;
-    @Autowired
-    private WorkflowUtils workflowUtils;
+    private LockUtils lockUtils;
 
     public void endTask(String taskId, Map<String, Object> variables) {
         endTask(taskId, null, variables, null);
@@ -66,7 +62,13 @@ public class EcosTaskService {
                 throw new IllegalStateException(I18NUtil.getMessage(ASSIGNEE_NOT_MATCH_ERR_MSG_KEY));
             }
         }
-        taskService.endTask(task.getLocalId(), transition, variables, transientVariables);
+
+        Map<String, Object> finalVariables = new HashMap<>(variables);
+        Map<String, Object> finalTransientVariables = new HashMap<>(transientVariables);
+
+        lockUtils.doWithLock(taskId, () -> {
+            taskService.endTask(task.getLocalId(), transition, finalVariables, finalTransientVariables);
+        });
     }
 
     public Optional<TaskInfo> getTaskInfo(String taskId) {
@@ -104,5 +106,10 @@ public class EcosTaskService {
 
     public void register(String engine, EngineTaskService taskService) {
         taskServices.put(engine, taskService);
+    }
+
+    @Autowired
+    public void setLockUtils(LockUtils lockUtils) {
+        this.lockUtils = lockUtils;
     }
 }
