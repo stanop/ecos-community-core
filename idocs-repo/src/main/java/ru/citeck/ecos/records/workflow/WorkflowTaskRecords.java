@@ -18,6 +18,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.document.CounterpartyResolver;
 import ru.citeck.ecos.document.sum.DocSumService;
 import ru.citeck.ecos.predicate.model.ComposedPredicate;
 import ru.citeck.ecos.records.RecordConstants;
@@ -68,6 +69,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     private final WorkflowTaskRecordsUtils workflowTaskRecordsUtils;
     private final OwnerService ownerService;
     private final DocSumService docSumService;
+    private final CounterpartyResolver counterpartyResolver;
     private final WorkflowUtils workflowUtils;
     private final AuthorityUtils authorityUtils;
     private final NamespaceService namespaceService;
@@ -78,9 +80,11 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                                WorkflowTaskRecordsUtils workflowTaskRecordsUtils,
                                AuthorityService authorityService, OwnerService ownerService,
                                DocSumService docSumService,
+                               CounterpartyResolver counterpartyResolver,
                                WorkflowUtils workflowUtils, AuthorityUtils authorityUtils,
                                NamespaceService namespaceService,
                                DictionaryService dictionaryService) {
+        this.counterpartyResolver = counterpartyResolver;
         this.namespaceService = namespaceService;
         this.dictionaryService = dictionaryService;
         setId(ID);
@@ -344,6 +348,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         public List<String> docTypes;
         public String document;
         public List<String> priorities;
+        public List<String> counterparties;
 
         public void setAssignee(String assignee) {
             if (assignees == null) {
@@ -371,6 +376,13 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 priorities = new ArrayList<>();
             }
             priorities.add(priority);
+        }
+
+        public void setCounterparty(String counterparty) {
+            if (counterparties == null) {
+                counterparties = new ArrayList<>();
+            }
+            counterparties.add(counterparty);
         }
     }
 
@@ -504,6 +516,10 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             boolean hasOwner = attributes.get("cm_owner") != null;
             boolean hasClaimOwner = attributes.get("claimOwner") != null;
 
+            String documentRefId = getDocumentRef().getId();
+            NodeRef documentNodeRef = StringUtils.isNotBlank(documentRefId) && NodeRef.isNodeRef(documentRefId) ?
+                new NodeRef(documentRefId) : null;
+
             switch (name) {
                 case ATT_SENDER:
                     String userName = (String) attributes.get("cwf_sender");
@@ -568,10 +584,13 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 case ATT_ACTIVE:
                     return attributes.get("bpm_completionDate") == null;
                 case ATT_DOC_SUM:
-                    String ref = getDocumentRef().getId();
-                    if (NodeRef.isNodeRef(ref)) {
-                        NodeRef document = new NodeRef(ref);
-                        return docSumService.getSum(document);
+                    if (documentNodeRef != null) {
+                        return docSumService.getSum(documentNodeRef);
+                    }
+                    return null;
+                case ATT_COUNTERPARTY:
+                    if (documentNodeRef != null) {
+                        return counterpartyResolver.resolve(documentNodeRef);
                     }
                     return null;
             }

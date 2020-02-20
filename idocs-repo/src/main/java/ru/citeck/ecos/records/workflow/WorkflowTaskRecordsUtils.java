@@ -41,6 +41,9 @@ public class WorkflowTaskRecordsUtils {
 
     private final String DOC_TYPE_ATTR;
     private final String PRIORITY_ATTR;
+    private final String COUNTERPARTY_ATTR;
+    private final String DOCUMENT_ATTR;
+    private final String CASE_STATUS_ATTR;
 
     private final AuthorityUtils authorityUtils;
     private final NamespaceService namespaceService;
@@ -60,6 +63,9 @@ public class WorkflowTaskRecordsUtils {
 
         DOC_TYPE_ATTR = WorkflowMirrorModel.PROP_DOCUMENT_TYPE.toPrefixString(namespaceService);
         PRIORITY_ATTR = WorkflowModel.PROP_PRIORITY.toPrefixString(namespaceService);
+        COUNTERPARTY_ATTR = WorkflowMirrorModel.PROP_COUNTERPARTY.toPrefixString(namespaceService);
+        DOCUMENT_ATTR = WorkflowMirrorModel.PROP_DOCUMENT.toPrefixString(namespaceService);
+        CASE_STATUS_ATTR = WorkflowMirrorModel.PROP_CASE_STATUS.toPrefixString(namespaceService);
     }
 
     ComposedPredicate buildPredicateQuery(WorkflowTaskRecords.TasksQuery tasksQuery) {
@@ -73,6 +79,7 @@ public class WorkflowTaskRecordsUtils {
         appendDocTypesPredicate(tasksQuery.docTypes, predicate);
         appendDocumentParamPredicate(tasksQuery.document, predicate);
         appendPrioritiesPredicate(tasksQuery.priorities, predicate);
+        appendCounterpartiesPredicate(tasksQuery.counterparties, predicate);
 
         if (predicate.getPredicates().isEmpty()) {
             return null;
@@ -123,17 +130,18 @@ public class WorkflowTaskRecordsUtils {
     }
 
     private void appendCaseStatusPredicate(String caseStatus, AndPredicate predicate) {
-        if (StringUtils.isNotBlank(caseStatus)) {
-            if (!NodeRef.isNodeRef(caseStatus)) {
-                NodeRef ref = caseStatusService.getStatusByName(caseStatus.toLowerCase());
-                if (ref != null) {
-                    caseStatus = ref.toString();
-                }
-            }
-            Predicate caseStatusPredicate = ValuePredicate.equal(
-                WorkflowMirrorModel.PROP_CASE_STATUS.toPrefixString(namespaceService), caseStatus);
-            predicate.addPredicate(caseStatusPredicate);
+        if (StringUtils.isBlank(caseStatus)) {
+            return;
         }
+
+        if (!NodeRef.isNodeRef(caseStatus)) {
+            NodeRef ref = caseStatusService.getStatusByName(caseStatus.toLowerCase());
+            if (ref != null) {
+                caseStatus = ref.toString();
+            }
+        }
+
+        predicate.addPredicate(ValuePredicate.equal(CASE_STATUS_ATTR, caseStatus));
     }
 
     private void appendDocTypesPredicate(List<String> docTypes, AndPredicate predicate) {
@@ -168,16 +176,19 @@ public class WorkflowTaskRecordsUtils {
     }
 
     private void appendDocumentParamPredicate(String documentParam, AndPredicate predicate) {
-        if (StringUtils.isNotBlank(documentParam)) {
-            if (!NodeRef.isNodeRef(documentParam)) {
-                return;
-            }
-
-            String docAttr = WorkflowMirrorModel.PROP_DOCUMENT.toPrefixString(namespaceService);
-            Predicate documentPredicate = ValuePredicate.equal(docAttr, documentParam);
-
-            predicate.addPredicate(documentPredicate);
+        if (isInvalidNodeRef(documentParam, "document")) {
+            return;
         }
+        predicate.addPredicate(ValuePredicate.equal(DOCUMENT_ATTR, documentParam));
+    }
+
+    private boolean isInvalidNodeRef(String nodeRef, String attName) {
+        if (StringUtils.isNotBlank(nodeRef) && NodeRef.isNodeRef(nodeRef)) {
+            return false;
+        }
+
+        log.warn("Param {} mus be nodeRef, but is '{}'", attName, nodeRef);
+        return true;
     }
 
     private void appendPrioritiesPredicate(List<String> priorities, AndPredicate predicate) {
@@ -189,6 +200,30 @@ public class WorkflowTaskRecordsUtils {
     private Predicate getPrioritiesPredicate(List<String> priorities) {
         OrPredicate orPredicate = new OrPredicate();
         priorities.forEach(priority -> orPredicate.addPredicate(ValuePredicate.equal(PRIORITY_ATTR, priority)));
+        return orPredicate;
+    }
+
+    private void appendCounterpartiesPredicate(List<String> counterparties, AndPredicate predicate) {
+        if (CollectionUtils.isNotEmpty(counterparties)) {
+            predicate.addPredicate(getCounterpartiesPredicate(counterparties));
+        }
+    }
+
+    private Predicate getCounterpartiesPredicate(List<String> counterparties) {
+        OrPredicate orPredicate = new OrPredicate();
+
+        for (String counterparty : counterparties) {
+            if (isInvalidNodeRef(counterparty, "counterparty")) {
+                continue;
+            }
+
+            ValuePredicate valuePredicate = new ValuePredicate();
+            valuePredicate.setType(ValuePredicate.Type.CONTAINS);
+            valuePredicate.setAttribute(COUNTERPARTY_ATTR);
+            valuePredicate.setValue(counterparty);
+            orPredicate.addPredicate(valuePredicate);
+        }
+
         return orPredicate;
     }
 
