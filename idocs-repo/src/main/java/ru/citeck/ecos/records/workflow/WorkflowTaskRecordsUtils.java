@@ -176,7 +176,7 @@ public class WorkflowTaskRecordsUtils {
     }
 
     private void appendDocumentParamPredicate(String documentParam, AndPredicate predicate) {
-        if (isInvalidNodeRef(documentParam, "document")) {
+        if (documentParam == null || isInvalidNodeRef(documentParam, "document")) {
             return;
         }
         predicate.addPredicate(ValuePredicate.equal(DOCUMENT_ATTR, documentParam));
