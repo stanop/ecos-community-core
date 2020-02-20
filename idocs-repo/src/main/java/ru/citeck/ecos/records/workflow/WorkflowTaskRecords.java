@@ -340,7 +340,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         @Getter @Setter public List<String> actors;
         @Getter @Setter public Boolean active;
         @Getter @Setter public String docStatus;
-        @Getter @Setter public String docType;
+        @Getter @Setter public List<String> docTypes;
         @Getter @Setter public String document;
 
         public void setAssignee(String assignee) {
@@ -355,6 +355,13 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 actors = new ArrayList<>();
             }
             actors.add(actor);
+        }
+
+        public void setDocType(String docType) {
+            if (docTypes == null) {
+                docTypes = new ArrayList<>();
+            }
+            docTypes.add(docType);
         }
     }
 
