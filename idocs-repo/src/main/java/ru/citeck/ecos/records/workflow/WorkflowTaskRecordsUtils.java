@@ -40,6 +40,7 @@ public class WorkflowTaskRecordsUtils {
     private static final char[] DOC_TYPES_MUST_CONTAINS_CHARS = new char[]{':', '{'};
 
     private final String DOC_TYPE_ATTR;
+    private final String PRIORITY_ATTR;
 
     private final AuthorityUtils authorityUtils;
     private final NamespaceService namespaceService;
@@ -58,6 +59,7 @@ public class WorkflowTaskRecordsUtils {
         this.caseStatusService = caseStatusService;
 
         DOC_TYPE_ATTR = WorkflowMirrorModel.PROP_DOCUMENT_TYPE.toPrefixString(namespaceService);
+        PRIORITY_ATTR = WorkflowModel.PROP_PRIORITY.toPrefixString(namespaceService);
     }
 
     ComposedPredicate buildPredicateQuery(WorkflowTaskRecords.TasksQuery tasksQuery) {
@@ -65,26 +67,48 @@ public class WorkflowTaskRecordsUtils {
         AndPredicate predicate = new AndPredicate();
         predicate.addPredicate(ValuePredicate.equal("TYPE", WorkflowModel.TYPE_TASK.toString()));
 
-        List<String> actors = tasksQuery.getActors();
-        appendActorsPredicate(actors, predicate);
-
-        Boolean active = tasksQuery.active;
-        appendActivePredicate(active, predicate);
-
-        String caseStatus = tasksQuery.getDocStatus();
-        appendCaseStatusPredicate(caseStatus, predicate);
-
-        List<String> docTypes = tasksQuery.docTypes;
-        appendDocTypesPredicate(docTypes, predicate);
-
-        String documentParam = tasksQuery.document;
-        appendDocumentParamPredicate(documentParam, predicate);
+        appendActorsPredicate(tasksQuery.actors, predicate);
+        appendActivePredicate(tasksQuery.active, predicate);
+        appendCaseStatusPredicate(tasksQuery.docStatus, predicate);
+        appendDocTypesPredicate(tasksQuery.docTypes, predicate);
+        appendDocumentParamPredicate(tasksQuery.document, predicate);
+        appendPrioritiesPredicate(tasksQuery.priorities, predicate);
 
         if (predicate.getPredicates().isEmpty()) {
             return null;
         }
 
         return predicate;
+    }
+
+    private void appendActorsPredicate(List<String> actors, AndPredicate predicate) {
+        if (CollectionUtils.isNotEmpty(actors)) {
+            predicate.addPredicate(getActorsPredicate(actors));
+        }
+    }
+
+    private OrPredicate getActorsPredicate(List<String> actors) {
+        Set<String> actorRefs = actors.stream().flatMap(actor -> {
+            if (CURRENT_USER.equals(actor)) {
+                actor = AuthenticationUtil.getRunAsUser();
+            } else if (NodeRef.isNodeRef(actor)) {
+                actor = authorityUtils.getAuthorityName(new NodeRef(actor));
+            }
+            return Stream.concat(authorityUtils.getContainingAuthoritiesRefs(actor).stream(),
+                Stream.of(authorityUtils.getNodeRef(actor)))
+                .map(NodeRef::toString);
+        }).collect(Collectors.toSet());
+
+        OrPredicate orPred = new OrPredicate();
+        actorRefs.forEach(a -> {
+            ValuePredicate valuePredicate = new ValuePredicate();
+            valuePredicate.setType(ValuePredicate.Type.CONTAINS);
+            valuePredicate.setAttribute("wfm:actors");
+            valuePredicate.setValue(a);
+            orPred.addPredicate(valuePredicate);
+        });
+
+        return orPred;
     }
 
     private void appendActivePredicate(Boolean active, AndPredicate predicate) {
@@ -95,12 +119,6 @@ public class WorkflowTaskRecordsUtils {
             } else {
                 predicate.addPredicate(new NotPredicate(completionEmpty));
             }
-        }
-    }
-
-    private void appendActorsPredicate(List<String> actors, AndPredicate predicate) {
-        if (CollectionUtils.isNotEmpty(actors)) {
-            predicate.addPredicate(getActorsPredicate(actors));
         }
     }
 
@@ -131,9 +149,7 @@ public class WorkflowTaskRecordsUtils {
             .collect(Collectors.toSet());
 
         OrPredicate orPredicate = new OrPredicate();
-
         types.forEach(type -> orPredicate.addPredicate(ValuePredicate.equal(DOC_TYPE_ATTR, type)));
-
         return orPredicate;
     }
 
@@ -164,28 +180,16 @@ public class WorkflowTaskRecordsUtils {
         }
     }
 
-    private OrPredicate getActorsPredicate(List<String> actors) {
-        Set<String> actorRefs = actors.stream().flatMap(actor -> {
-            if (CURRENT_USER.equals(actor)) {
-                actor = AuthenticationUtil.getRunAsUser();
-            } else if (NodeRef.isNodeRef(actor)) {
-                actor = authorityUtils.getAuthorityName(new NodeRef(actor));
-            }
-            return Stream.concat(authorityUtils.getContainingAuthoritiesRefs(actor).stream(),
-                Stream.of(authorityUtils.getNodeRef(actor)))
-                .map(NodeRef::toString);
-        }).collect(Collectors.toSet());
+    private void appendPrioritiesPredicate(List<String> priorities, AndPredicate predicate) {
+        if (CollectionUtils.isNotEmpty(priorities)) {
+            predicate.addPredicate(getPrioritiesPredicate(priorities));
+        }
+    }
 
-        OrPredicate orPred = new OrPredicate();
-        actorRefs.forEach(a -> {
-            ValuePredicate valuePredicate = new ValuePredicate();
-            valuePredicate.setType(ValuePredicate.Type.CONTAINS);
-            valuePredicate.setAttribute("wfm:actors");
-            valuePredicate.setValue(a);
-            orPred.addPredicate(valuePredicate);
-        });
-
-        return orPred;
+    private Predicate getPrioritiesPredicate(List<String> priorities) {
+        OrPredicate orPredicate = new OrPredicate();
+        priorities.forEach(priority -> orPredicate.addPredicate(ValuePredicate.equal(PRIORITY_ATTR, priority)));
+        return orPredicate;
     }
 
     RecordsQueryResult<WorkflowTaskRecords.TaskIdQuery> queryTasks(ComposedPredicate predicate, RecordsQuery query) {

@@ -3,8 +3,7 @@ package ru.citeck.ecos.records.workflow;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
@@ -55,9 +54,9 @@ import static ru.citeck.ecos.records.workflow.WorkflowTaskRecordsConstants.*;
 
 @Component
 public class WorkflowTaskRecords extends LocalRecordsDAO
-        implements RecordsMetaLocalDAO<MetaValue>,
-        MutableRecordsDAO,
-        RecordsQueryLocalDAO {
+    implements RecordsMetaLocalDAO<MetaValue>,
+    MutableRecordsDAO,
+    RecordsQueryLocalDAO {
 
     private static final String DOCUMENT_FIELD_PREFIX = "_ECM_";
     private static final String OUTCOME_PREFIX = "outcome_";
@@ -100,11 +99,11 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         RecordsMutResult result = new RecordsMutResult();
 
         result.setRecords(mutation.getRecords()
-                .stream()
-                .map(meta -> new RecordMeta(meta, RecordRef.valueOf(meta.getId().getId())))
-                .map(this::mutate)
-                .map(meta -> new RecordMeta(meta, RecordRef.create(getId(), meta.getId())))
-                .collect(Collectors.toList()));
+            .stream()
+            .map(meta -> new RecordMeta(meta, RecordRef.valueOf(meta.getId().getId())))
+            .map(this::mutate)
+            .map(meta -> new RecordMeta(meta, RecordRef.create(getId(), meta.getId())))
+            .collect(Collectors.toList()));
 
         return result;
     }
@@ -296,8 +295,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         if (tasks != null) {
 
             List<RecordRef> taskRefs = tasks.stream()
-                    .map(t -> RecordRef.valueOf(t.getId()))
-                    .collect(Collectors.toList());
+                .map(t -> RecordRef.valueOf(t.getId()))
+                .collect(Collectors.toList());
 
             RecordsQueryResult<RecordRef> result = new RecordsQueryResult<>();
             result.setRecords(taskRefs);
@@ -322,9 +321,10 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         }).collect(Collectors.toList());
     }
 
+    @Data
     public static class TaskIdQuery {
         @MetaAtt("cm:name")
-        @Getter @Setter public String taskId;
+        public String taskId;
 
         @Override
         public String toString() {
@@ -332,16 +332,18 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         }
     }
 
+    @Data
     public static class TasksQuery {
 
-        @Getter @Setter public String workflowId;
-        @Getter @Setter public String engine;
-        @Getter @Setter public List<String> assignees;
-        @Getter @Setter public List<String> actors;
-        @Getter @Setter public Boolean active;
-        @Getter @Setter public String docStatus;
-        @Getter @Setter public List<String> docTypes;
-        @Getter @Setter public String document;
+        public String workflowId;
+        public String engine;
+        public List<String> assignees;
+        public List<String> actors;
+        public Boolean active;
+        public String docStatus;
+        public List<String> docTypes;
+        public String document;
+        public List<String> priorities;
 
         public void setAssignee(String assignee) {
             if (assignees == null) {
@@ -363,9 +365,16 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             }
             docTypes.add(docType);
         }
+
+        public void setPriority(String priority) {
+            if (priorities == null) {
+                priorities = new ArrayList<>();
+            }
+            priorities.add(priority);
+        }
     }
 
-    public class EmptyTask implements MetaValue {
+    public static class EmptyTask implements MetaValue {
 
         private final String id;
 
@@ -521,23 +530,23 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     return recordsService.getMeta(candidateRecordRef, AuthorityDTO.class);
                 case ATT_ACTORS:
                     return taskInfo.getActors()
-                            .stream()
-                            .map(actor -> {
-                                RecordRef rr = RecordRef.create("", actor);
-                                AuthorityDTO dto = recordsService.getMeta(rr, AuthorityDTO.class);
-                                if (StringUtils.isNotBlank(dto.getAuthorityName())) {
-                                    Set<String> containedUsers = authorityService.getContainedAuthorities(
-                                            AuthorityType.USER, dto.getAuthorityName(), false);
-                                    List<UserDTO> users = containedUsers.stream()
-                                            .map(s -> recordsService.getMeta(RecordRef.create("",
-                                                    authorityService.getAuthorityNodeRef(s).toString()),
-                                                    UserDTO.class))
-                                            .collect(Collectors.toList());
-                                    dto.setContainedUsers(users);
-                                }
-                                return dto;
-                            })
-                            .collect(Collectors.toList());
+                        .stream()
+                        .map(actor -> {
+                            RecordRef rr = RecordRef.create("", actor);
+                            AuthorityDTO dto = recordsService.getMeta(rr, AuthorityDTO.class);
+                            if (StringUtils.isNotBlank(dto.getAuthorityName())) {
+                                Set<String> containedUsers = authorityService.getContainedAuthorities(
+                                    AuthorityType.USER, dto.getAuthorityName(), false);
+                                List<UserDTO> users = containedUsers.stream()
+                                    .map(s -> recordsService.getMeta(RecordRef.create("",
+                                        authorityService.getAuthorityNodeRef(s).toString()),
+                                        UserDTO.class))
+                                    .collect(Collectors.toList());
+                                dto.setContainedUsers(users);
+                            }
+                            return dto;
+                        })
+                        .collect(Collectors.toList());
                 case ATT_DUE_DATE:
                     return attributes.get("bpm_dueDate");
                 case ATT_STARTED:
