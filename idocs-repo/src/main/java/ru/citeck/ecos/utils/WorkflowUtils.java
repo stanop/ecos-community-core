@@ -36,6 +36,7 @@ import static ru.citeck.ecos.utils.WorkflowConstants.VAR_TASK_ORIGINAL_OWNER;
 @Component
 public class WorkflowUtils {
 
+    private static final String TASK_START_PREFIX = "start";
     private static final String ID_SEPARATOR_REGEX = "\\$";
     private static final Locale[] locales = {new Locale("ru"), new Locale("en")};
 
@@ -157,6 +158,9 @@ public class WorkflowUtils {
         return tasks;
     }
 
+    /**
+     * @return list of document task. Filtered from prefix {@link WorkflowUtils#TASK_START_PREFIX}
+     */
     public List<WorkflowTask> getDocumentTasks(NodeRef nodeRef, boolean active, String engine) {
 
         List<WorkflowInstance> workflows = workflowService.getWorkflowsForContent(nodeRef, active);
@@ -174,7 +178,9 @@ public class WorkflowUtils {
             tasks.addAll(AuthenticationUtil.runAsSystem(() -> getWorkflowTasks(workflow, active)));
         }
 
-        return tasks;
+        return tasks.stream()
+            .filter(workflowTask -> !StringUtils.contains(workflowTask.getId(), TASK_START_PREFIX))
+            .collect(Collectors.toList());
     }
 
     public List<NodeRef> getTaskActors(String taskId) {
@@ -227,6 +233,9 @@ public class WorkflowUtils {
         return matches;
     }
 
+    /**
+     * @return List of tasks, may contains tasks with prefix {@link WorkflowUtils#TASK_START_PREFIX}
+     */
     private List<WorkflowTask> getWorkflowTasks(WorkflowInstance workflow, boolean active) {
         WorkflowTaskQuery query = new WorkflowTaskQuery();
         if (!active) {
