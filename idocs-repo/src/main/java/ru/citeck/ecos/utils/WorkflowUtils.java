@@ -229,9 +229,9 @@ public class WorkflowUtils {
 
     private List<WorkflowTask> getWorkflowTasks(WorkflowInstance workflow, boolean active) {
         WorkflowTaskQuery query = new WorkflowTaskQuery();
-        if (active) {
-            query.setActive(true);
-            query.setTaskState(WorkflowTaskState.IN_PROGRESS);
+        if (!active) {
+            query.setActive(null);
+            query.setTaskState(WorkflowTaskState.COMPLETED);
         }
         query.setOrderBy(new WorkflowTaskQuery.OrderBy[]{WorkflowTaskQuery.OrderBy.TaskDue_Asc});
         query.setProcessId(workflow.getId());
