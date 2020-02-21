@@ -17,6 +17,7 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.document.CounterpartyResolver;
 import ru.citeck.ecos.document.sum.DocSumService;
@@ -74,6 +75,9 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     private final AuthorityUtils authorityUtils;
     private final NamespaceService namespaceService;
     private final DictionaryService dictionaryService;
+
+    @Value("${records.configuration.app.name}")
+    private String appName;
 
     @Autowired
     public WorkflowTaskRecords(EcosTaskService ecosTaskService,
@@ -516,7 +520,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             boolean hasOwner = attributes.get("cm_owner") != null;
             boolean hasClaimOwner = attributes.get("claimOwner") != null;
 
-            String documentRefId = getDocumentRef().getId();
+            RecordRef document = getDocumentRef();
+            String documentRefId = document.getId();
             NodeRef documentNodeRef = StringUtils.isNotBlank(documentRefId) && NodeRef.isNodeRef(documentRefId) ?
                 new NodeRef(documentRefId) : null;
 
@@ -590,9 +595,13 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     return null;
                 case ATT_COUNTERPARTY:
                     if (documentNodeRef != null) {
-                        return counterpartyResolver.resolve(documentNodeRef);
+                        NodeRef counterparty = counterpartyResolver.resolve(documentNodeRef);
+                        return counterparty != null ? RecordRef.create(appName, "",
+                            counterparty.toString()) : null;
                     }
                     return null;
+                case ATT_DOCUMENT:
+                    return documentRef;
             }
 
             return attributes.get(name);

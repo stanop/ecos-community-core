@@ -9,6 +9,7 @@ class WorkflowTaskRecordsConstants {
 
     static final String ATT_DOC_SUM = "docSum";
     static final String ATT_DOC_STATUS = "docStatus";
+    static final String ATT_DOCUMENT = "document";
     static final String ATT_DOC_DISP_NAME = "docDisplayName";
     static final String ATT_DOC_STATUS_TITLE = "docStatusTitle";
     static final String ATT_DOC_TYPE = "docType";

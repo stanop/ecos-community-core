@@ -15,6 +15,7 @@ import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.model.WorkflowMirrorModel;
 import ru.citeck.ecos.predicate.PredicateService;
 import ru.citeck.ecos.predicate.model.*;
+import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.request.query.QueryConsistency;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
@@ -176,10 +177,18 @@ public class WorkflowTaskRecordsUtils {
     }
 
     private void appendDocumentParamPredicate(String documentParam, AndPredicate predicate) {
-        if (documentParam == null || isInvalidNodeRef(documentParam, "document")) {
+        if (StringUtils.isBlank(documentParam)) {
             return;
         }
-        predicate.addPredicate(ValuePredicate.equal(DOCUMENT_ATTR, documentParam));
+
+        RecordRef recordRef = RecordRef.valueOf(documentParam);
+        String id = recordRef.getId();
+
+        if (isInvalidNodeRef(id, "document")) {
+            return;
+        }
+
+        predicate.addPredicate(ValuePredicate.equal(DOCUMENT_ATTR, id));
     }
 
     private boolean isInvalidNodeRef(String nodeRef, String attName) {
@@ -213,14 +222,17 @@ public class WorkflowTaskRecordsUtils {
         OrPredicate orPredicate = new OrPredicate();
 
         for (String counterparty : counterparties) {
-            if (isInvalidNodeRef(counterparty, "counterparty")) {
+            RecordRef recordRef = RecordRef.valueOf(counterparty);
+            String id = recordRef.getId();
+
+            if (isInvalidNodeRef(id, "counterparty")) {
                 continue;
             }
 
             ValuePredicate valuePredicate = new ValuePredicate();
             valuePredicate.setType(ValuePredicate.Type.CONTAINS);
             valuePredicate.setAttribute(COUNTERPARTY_ATTR);
-            valuePredicate.setValue(counterparty);
+            valuePredicate.setValue(id);
             orPredicate.addPredicate(valuePredicate);
         }
 
