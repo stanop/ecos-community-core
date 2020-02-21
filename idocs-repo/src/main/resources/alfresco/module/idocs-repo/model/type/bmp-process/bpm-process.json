@@ -1,6 +1,6 @@
 {
     "id": "cat-doc-type-ecos-bpm-process",
     "name": "BPM Процесс",
-    "parent": "model/type$base",
+    "parent": "model/type$user-base",
     "inheritActions": true
 }
