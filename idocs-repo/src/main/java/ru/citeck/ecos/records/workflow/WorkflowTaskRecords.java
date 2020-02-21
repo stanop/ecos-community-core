@@ -262,6 +262,10 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             return null;
         }
 
+        if (query.priorities != null || query.counterparties != null || query.docTypes != null) {
+            return null;
+        }
+
         int idx = document.lastIndexOf('@');
         if (idx > -1 && idx < document.length() - 1) {
             document = document.substring(idx + 1);
