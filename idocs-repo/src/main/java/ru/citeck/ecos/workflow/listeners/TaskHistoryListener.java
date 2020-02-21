@@ -218,9 +218,8 @@ public class TaskHistoryListener extends AbstractTaskListener {
     @SuppressWarnings("rawtypes")
     private Map<QName, Serializable> convertProperties(Map additionalProperties) {
         Map<QName, Serializable> result = new HashMap<>(additionalProperties.size());
-        for (Map.Entry<?, ?> entry : ((Map<?, ?>) additionalProperties).entrySet()) {
-            Object key = entry.getKey();
-            QName name = null;
+        for (Object key : additionalProperties.keySet()) {
+            QName name;
             if (key instanceof String) {
                 name = qNameConverter.mapNameToQName((String) key);
             } else if (key instanceof QName) {
