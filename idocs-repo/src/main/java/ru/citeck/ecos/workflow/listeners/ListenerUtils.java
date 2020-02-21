@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2020 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -136,7 +136,7 @@ public class ListenerUtils {
     }
 
     public static List<NodeRef> getActors(DelegateTask task, AuthorityService authorityService) {
-        String assigneeName = task.getOwner();
+        String assigneeName = task.getAssignee();
         if (StringUtils.isNotBlank(assigneeName)) {
             NodeRef assignee = authorityService.getAuthorityNodeRef(assigneeName);
             return Collections.singletonList(assignee);
