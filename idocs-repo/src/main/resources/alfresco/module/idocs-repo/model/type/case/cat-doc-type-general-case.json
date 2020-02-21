@@ -1,6 +1,6 @@
 {
     "id": "cat-doc-type-general-case",
     "name": "Стандартный кейс",
-    "parent": "model/type$base",
+    "parent": "model/type$user-base",
     "inheritActions": true
 }
