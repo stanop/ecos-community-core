@@ -228,7 +228,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
                 log.warn("Unknown type of key: " + key.getClass());
                 continue;
             }
-            result.put(name, (Serializable) entry.getValue());
+            result.put(name, (Serializable) additionalProperties.get(key));
         }
         return result;
     }
