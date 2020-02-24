@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import ru.citeck.ecos.commons.data.DataValue;
+import ru.citeck.ecos.commons.data.ObjectData;
 
 import java.util.Iterator;
 
@@ -58,12 +60,19 @@ public class SearchCriteriaParser {
             return parse((JSONObject) something);
         }
         if (something instanceof ObjectNode) {
+
             something = something.toString();
-        }
-        if (something instanceof TextNode) {
+
+        } else if (something instanceof ObjectData || something instanceof DataValue) {
+
+            something = something.toString();
+
+        } else if (something instanceof TextNode) {
+
             something = ((TextNode) something).asText();
         }
         if (something instanceof String) {
+
             JSONObject jsonObject;
             try {
                 jsonObject = new JSONObject(something.toString());
