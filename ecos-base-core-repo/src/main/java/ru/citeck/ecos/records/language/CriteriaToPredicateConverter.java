@@ -1,12 +1,12 @@
 package ru.citeck.ecos.records.language;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.predicate.PredicateService;
-import ru.citeck.ecos.predicate.model.*;
-import ru.citeck.ecos.querylang.QueryLangConverter;
-import ru.citeck.ecos.querylang.QueryLangService;
+import ru.citeck.ecos.commons.data.ObjectData;
+import ru.citeck.ecos.records2.predicate.PredicateService;
+import ru.citeck.ecos.records2.predicate.model.*;
+import ru.citeck.ecos.records2.querylang.QueryLangConverter;
+import ru.citeck.ecos.records2.querylang.QueryLangService;
 import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.search.FTSQueryBuilder;
 import ru.citeck.ecos.search.SearchCriteria;
@@ -18,23 +18,20 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Component
-public class CriteriaToPredicateConverter implements QueryLangConverter {
+public class CriteriaToPredicateConverter implements QueryLangConverter<ObjectData, Predicate> {
 
     private Pattern FIX_VALUE_PATTERN = Pattern.compile("([=@])?([^\"]+):\"?(.*?)\"?$");
 
     private FTSQueryBuilder ftsQueryBuilder;
     private SearchCriteriaParser criteriaParser;
-    private PredicateService predicateService;
 
     @Autowired
     public CriteriaToPredicateConverter(QueryLangService queryLangService,
                                         FTSQueryBuilder ftsQueryBuilder,
-                                        SearchCriteriaParser criteriaParser,
-                                        PredicateService predicateService) {
+                                        SearchCriteriaParser criteriaParser) {
 
         this.criteriaParser = criteriaParser;
         this.ftsQueryBuilder = ftsQueryBuilder;
-        this.predicateService = predicateService;
 
         queryLangService.register(this,
                 CriteriaAlfNodesSearch.LANGUAGE,
@@ -130,8 +127,8 @@ public class CriteriaToPredicateConverter implements QueryLangConverter {
     }
 
     @Override
-    public JsonNode convert(JsonNode query) {
+    public Predicate convert(ObjectData query) {
         SearchCriteria criteria = criteriaParser.parse(query);
-        return predicateService.writeJson(convertCriteriaTerm(ftsQueryBuilder.getTermGroup(criteria)));
+        return convertCriteriaTerm(ftsQueryBuilder.getTermGroup(criteria));
     }
 }

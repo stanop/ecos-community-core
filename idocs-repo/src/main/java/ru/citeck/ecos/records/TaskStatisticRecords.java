@@ -19,13 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.config.EcosConfigService;
 import ru.citeck.ecos.graphql.AlfGqlContext;
-import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.history.HistoryEventType;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.records.meta.MetaMapValue;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeAttValue;
+import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records2.meta.RecordsMetaService;
@@ -77,7 +77,6 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
     private AuthorityUtils authorityUtils;
     private FTSQueryBuilder queryBuilder;
     private SearchUtils searchUtils;
-    private GraphQLService graphQLService;
     private RecordsMetaService recordsMetaService;
     private EcosConfigService ecosConfigService;
 
@@ -88,14 +87,12 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
                                 FTSQueryBuilder queryBuilder,
                                 SearchUtils searchUtils,
                                 RecordsMetaService recordsMetaService,
-                                EcosConfigService ecosConfigService,
-                                GraphQLService graphQLService) {
+                                EcosConfigService ecosConfigService) {
         setId(ID);
         this.personService = serviceRegistry.getPersonService();
         this.searchService = serviceRegistry.getSearchService();
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.nodeService = serviceRegistry.getNodeService();
-        this.graphQLService = graphQLService;
         this.authorityUtils = authorityUtils;
         this.criteriaParser = criteriaParser;
         this.queryBuilder = queryBuilder;
@@ -134,7 +131,7 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
 
     private RecordsQueryResult<MetaValue> getRecordsImpl(RecordsQuery query) {
 
-        AlfGqlContext context = graphQLService.getGqlContext();
+        AlfGqlContext context = QueryContext.getCurrent();
 
         Boolean showUnassignedInStatisticConfig = strToBool((String) ecosConfigService.getParamValue(
                 SHOW_UNASSIGNED_IN_STATISTIC_CONFIG_KEY), false);

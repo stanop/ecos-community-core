@@ -3,6 +3,7 @@ package ru.citeck.ecos.records.workflow;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import graphql.language.ObjectValue;
 import lombok.Getter;
 import lombok.Setter;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
@@ -19,8 +20,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.document.sum.DocSumService;
-import ru.citeck.ecos.predicate.model.ComposedPredicate;
+import ru.citeck.ecos.records2.predicate.model.ComposedPredicate;
 import ru.citeck.ecos.records.RecordConstants;
 import ru.citeck.ecos.records.models.AuthorityDTO;
 import ru.citeck.ecos.records.models.UserDTO;
@@ -158,7 +160,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     taskProps.put(n, null);
                 } else if (v.isArray()) {
                     Set<NodeRef> nodeRefs = new HashSet<>();
-                    for (JsonNode jsonNode : v) {
+                    for (DataValue jsonNode : v) {
                         String stringNode = jsonNode.asText();
                         if (NodeRef.isNodeRef(stringNode)) {
                             nodeRefs.add(new NodeRef(stringNode));
@@ -188,12 +190,12 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     }
 
     private boolean isChangeOwnerAction(RecordMeta meta) {
-        JsonNode changeOwner = meta.getAttribute(ATT_CHANGE_OWNER);
-        return changeOwner != null && !changeOwner.isMissingNode() && !changeOwner.isNull();
+        DataValue changeOwner = meta.getAttribute(ATT_CHANGE_OWNER);
+        return changeOwner != null && !changeOwner.isNull();
     }
 
     private void processChangeOwnerAction(RecordMeta meta, String taskId) {
-        JsonNode changeOwner = meta.getAttribute(ATT_CHANGE_OWNER);
+        DataValue changeOwner = meta.getAttribute(ATT_CHANGE_OWNER);
         String paramAction = changeOwner.get(ATT_ACTION).asText();
 
         OwnerAction action = OwnerAction.valueOf(paramAction.toUpperCase());
@@ -425,11 +427,11 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             }
         }
 
-        private JsonNode simplify(JsonNode node) {
+        private DataValue simplify(DataValue node) {
             if (node == null) {
                 return null;
             }
-            if (node instanceof ObjectNode) {
+            if (node.isObject()) {
                 if (node.size() > 0) {
                     String name = node.fieldNames().next();
                     if (name.startsWith("att")) {
@@ -462,8 +464,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             }
 
             if (documentInfo.has(name)) {
-                JsonNode node = documentInfo.get(name);
-                if (node instanceof ArrayNode) {
+                DataValue node = documentInfo.get(name);
+                if (node.isArray()) {
                     List<InnerMetaValue> result = new ArrayList<>();
                     node.forEach(jsonNode -> result.add(new InnerMetaValue(jsonNode)));
                     return result;

@@ -4,7 +4,7 @@ import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import ru.citeck.ecos.model.IdocsModel;
-import ru.citeck.ecos.records2.utils.StringUtils;
+import ru.citeck.ecos.commons.utils.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;

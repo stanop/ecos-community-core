@@ -14,7 +14,7 @@ import ru.citeck.ecos.behavior.base.PolicyMethod;
 import ru.citeck.ecos.config.EcosConfigService;
 import ru.citeck.ecos.model.EcosModel;
 import ru.citeck.ecos.model.IdocsModel;
-import ru.citeck.ecos.records2.utils.StringUtils;
+import ru.citeck.ecos.commons.utils.StringUtils;
 import ru.citeck.ecos.utils.NodeUtils;
 
 import java.io.Serializable;

@@ -31,11 +31,6 @@
             <artifactId>ecos-forms-repo</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>ecos-graphql-repo</artifactId>
-        </dependency>
-
     </dependencies>
 
     <build>

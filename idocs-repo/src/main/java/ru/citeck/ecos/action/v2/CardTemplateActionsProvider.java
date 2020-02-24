@@ -1,7 +1,5 @@
 package ru.citeck.ecos.action.v2;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import ecos.com.google.common.cache.CacheBuilder;
 import ecos.com.google.common.cache.CacheLoader;
@@ -19,6 +17,7 @@ import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.apps.app.module.type.ui.action.ActionModule;
+import ru.citeck.ecos.commons.data.ObjectData;
 import ru.citeck.ecos.model.CDLModel;
 import ru.citeck.ecos.model.DmsModel;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
@@ -140,7 +139,7 @@ public class CardTemplateActionsProvider implements NodeActionsV2Provider {
 
         String url = String.format(URL, nodeRef.toString(), templateType, format);
 
-        ObjectNode config = JsonNodeFactory.instance.objectNode();
+        ObjectData config = new ObjectData();
         config.set("url", TextNode.valueOf(url));
         config.set("filename", TextNode.valueOf("template." + format));
 

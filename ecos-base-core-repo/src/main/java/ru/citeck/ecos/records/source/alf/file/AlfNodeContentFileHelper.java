@@ -1,6 +1,5 @@
 package ru.citeck.ecos.records.source.alf.file;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.log4j.Log4j;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
@@ -14,6 +13,7 @@ import org.alfresco.util.GUID;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
@@ -51,29 +51,29 @@ public class AlfNodeContentFileHelper {
         this.dictionaryService = dictionaryService;
     }
 
-    public void processPropFileContent(NodeRef nodeRef, QName prop, JsonNode jsonNode) {
+    public void processPropFileContent(NodeRef nodeRef, QName prop, DataValue jsonNode) {
         ContentWriter writer = contentService.getWriter(nodeRef, prop, true);
 
         if (jsonNode.isTextual()) {
             writer.putContent(jsonNode.asText());
         } else if (jsonNode.isObject()) {
-            JsonNode mimetypeProp = jsonNode.path(MODEL_MIME_TYPE);
+            DataValue mimetypeProp = jsonNode.get(MODEL_MIME_TYPE);
             String mimetype = mimetypeProp.isTextual() ? mimetypeProp.asText() : MimetypeMap.MIMETYPE_BINARY;
             if (MimetypeMap.MIMETYPE_BINARY.equals(mimetype)) {
-                JsonNode filename = jsonNode.path(MODEL_FILE_NAME);
+                DataValue filename = jsonNode.get(MODEL_FILE_NAME);
                 if (filename.isTextual()) {
                     mimetype = mimetypeService.guessMimetype(filename.asText());
                 }
             }
             writer.setMimetype(mimetype);
 
-            JsonNode encoding = jsonNode.path(MODEL_ENCODING);
+            DataValue encoding = jsonNode.get(MODEL_ENCODING);
             if (encoding.isTextual()) {
                 writer.setEncoding(encoding.asText());
             } else {
                 writer.setEncoding(StandardCharsets.UTF_8.name());
             }
-            JsonNode content = jsonNode.path(MODEL_CONTENT);
+            DataValue content = jsonNode.get(MODEL_CONTENT);
             if (content.isTextual()) {
                 writer.putContent(content.asText());
             }
@@ -91,19 +91,19 @@ public class AlfNodeContentFileHelper {
         }
     }
 
-    public boolean isFileFromEformFormat(JsonNode jsonNode) {
+    public boolean isFileFromEformFormat(DataValue jsonNode) {
         if (!jsonNode.isArray()) {
             return false;
         }
 
-        for (JsonNode node : jsonNode) {
-            JsonNode data = node.get(MODEL_DATA);
-            if (data == null) {
+        for (DataValue node : jsonNode) {
+            DataValue data = node.get(MODEL_DATA);
+            if (data.isNull()) {
                 return false;
             }
 
-            JsonNode nodeRefObj = data.get(MODEL_NODE_REF);
-            if (nodeRefObj == null) {
+            DataValue nodeRefObj = data.get(MODEL_NODE_REF);
+            if (nodeRefObj.isNull()) {
                 return false;
             }
 
@@ -112,15 +112,14 @@ public class AlfNodeContentFileHelper {
                 return false;
             }
         }
-
         return true;
     }
 
-    public void processChildAssocFilesContent(QName assoc, JsonNode jsonNodes, NodeRef nodeRef) {
+    public void processChildAssocFilesContent(QName assoc, DataValue jsonNodes, NodeRef nodeRef) {
         processAssocFilesContent(assoc, jsonNodes, nodeRef, true);
     }
 
-    public void processAssocFilesContent(QName assoc, JsonNode jsonNodes, NodeRef nodeRef, Boolean isChild) {
+    public void processAssocFilesContent(QName assoc, DataValue jsonNodes, NodeRef nodeRef, Boolean isChild) {
         AssociationDefinition assocDef = dictionaryService.getAssociation(assoc);
         QName assocName = assocDef.getName();
         QName targetName = assocDef.getTargetClass().getName();
@@ -130,7 +129,7 @@ public class AlfNodeContentFileHelper {
                 : RepoUtils.getTargetAssoc(nodeRef, assocName, nodeService);
         Set<NodeRef> inboundMutatedRefs = new HashSet<>();
 
-        for (JsonNode jsonNode : jsonNodes) {
+        for (DataValue jsonNode : jsonNodes) {
             String tempRefStr = jsonNode.get(MODEL_DATA).get(MODEL_NODE_REF).asText();
             NodeRef fileRef = new NodeRef(tempRefStr);
             inboundMutatedRefs.add(fileRef);
@@ -174,7 +173,7 @@ public class AlfNodeContentFileHelper {
         }
     }
 
-    private void saveFileToContentPropFromEform(JsonNode tempJsonNode, QName propName, NodeRef node) {
+    private void saveFileToContentPropFromEform(DataValue tempJsonNode, QName propName, NodeRef node) {
         String tempRefStr = tempJsonNode.get(MODEL_DATA).get(MODEL_NODE_REF).asText();
         if (StringUtils.isBlank(tempRefStr) || !NodeRef.isNodeRef(tempRefStr)) {
             throw new AlfrescoRuntimeException("NodeRef of content file incorrect");
@@ -198,9 +197,9 @@ public class AlfNodeContentFileHelper {
         nodeService.deleteNode(tempFile);
     }
 
-    private void processTypeKind(JsonNode jsonNode, NodeRef nodeRef) {
-        JsonNode fileTypeNode = jsonNode.get(MODEL_FILE_TYPE);
-        if (fileTypeNode == null) {
+    private void processTypeKind(DataValue jsonNode, NodeRef nodeRef) {
+        DataValue fileTypeNode = jsonNode.get(MODEL_FILE_TYPE);
+        if (fileTypeNode.isNull()) {
             return;
         }
 

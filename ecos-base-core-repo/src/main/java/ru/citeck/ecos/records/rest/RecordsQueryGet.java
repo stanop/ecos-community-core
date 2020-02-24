@@ -7,7 +7,7 @@ import org.springframework.extensions.webscripts.WebScriptResponse;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.request.rest.QueryBody;
 import ru.citeck.ecos.records2.request.rest.RestHandler;
-import ru.citeck.ecos.records2.utils.MandatoryParam;
+import ru.citeck.ecos.commons.utils.MandatoryParam;
 
 import java.io.IOException;
 

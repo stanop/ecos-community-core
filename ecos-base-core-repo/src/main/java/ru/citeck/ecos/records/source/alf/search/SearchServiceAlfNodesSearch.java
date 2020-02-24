@@ -13,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
 import ru.citeck.ecos.records.source.alf.search.AlfNodesSearch.AfterIdType;
 import ru.citeck.ecos.records2.RecordRef;
@@ -53,7 +54,7 @@ public class SearchServiceAlfNodesSearch {
 
     private RecordsQueryResult<RecordRef> queryRecordsImpl(RecordsQuery recordsQuery, Long afterDbId, Date afterCreated) {
 
-        String query = recordsQuery.getQuery().asText();
+        String query = recordsQuery.getQuery(DataValue.class).asText();
 
         SearchParameters searchParameters = new SearchParameters();
         searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);

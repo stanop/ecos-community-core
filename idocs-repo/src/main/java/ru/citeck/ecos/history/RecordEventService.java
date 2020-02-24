@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.events.EventConnection;
 import ru.citeck.ecos.events.data.dto.pasrse.EventDtoFactory;
 import ru.citeck.ecos.events.data.dto.record.Attribute;
@@ -116,9 +117,8 @@ public class RecordEventService {
 
                 List<Map<String, String>> values = new ArrayList<>();
 
-                if (attrJsonNode instanceof ArrayNode) {
-                    ArrayNode node = (ArrayNode) attrJsonNode;
-                    node.forEach(n -> values.add(fromJsonNode(n)));
+                if (attrJsonNode.isArray()) {
+                    attrJsonNode.forEach(n -> values.add(fromJsonNode(n)));
                 } else {
                     values.add(fromJsonNode(attrJsonNode));
                 }
@@ -132,7 +132,7 @@ public class RecordEventService {
         return changes;
     }
 
-    private Map<String, String> fromJsonNode(JsonNode node) {
+    private Map<String, String> fromJsonNode(DataValue node) {
         Map<String, String> resMap = new HashMap<>();
 
         Map<String, String> map = OBJECT_MAPPER.convertValue(node, new TypeReference<Map<String, Object>>() {

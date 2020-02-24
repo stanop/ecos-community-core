@@ -1,6 +1,5 @@
 package ru.citeck.ecos.records.version;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.version.VersionModel;
 import org.alfresco.service.cmr.coci.CheckOutCheckInService;
@@ -17,6 +16,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.request.delete.RecordsDelResult;
@@ -109,7 +109,7 @@ public class VersionRecords extends CrudRecordsDAO<VersionDTO> {
                     throw new IllegalStateException(String.format("Record <%s> is not versionable", id));
                 }
 
-                JsonNode revert = meta.getAttribute(ATT_REVERT);
+                DataValue revert = meta.getAttribute(ATT_REVERT);
 
                 String versionLabel = revert.has(ATT_VERSION) ? revert.get(ATT_VERSION).asText() : "";
                 if (StringUtils.isBlank(versionLabel)) {
@@ -131,13 +131,12 @@ public class VersionRecords extends CrudRecordsDAO<VersionDTO> {
             }
         }
 
-
         return result;
     }
 
     private boolean isRevertAction(RecordMeta meta) {
-        JsonNode revert = meta.getAttribute(ATT_REVERT);
-        return revert != null && !revert.isMissingNode() && !revert.isNull();
+        DataValue revert = meta.getAttribute(ATT_REVERT);
+        return revert != null && !revert.isNull();
     }
 
     private NodeRef getBaseDocumentFromVersion(NodeRef versionRef) {

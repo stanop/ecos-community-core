@@ -1,11 +1,12 @@
-package ru.citeck.ecos.ssg.records;
+package ru.citeck.ecos.records;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.service.transaction.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.group.*;
 import ru.citeck.ecos.action.group.impl.TxnGroupAction;
+import ru.citeck.ecos.commons.data.ObjectData;
+import ru.citeck.ecos.commons.json.Json;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
@@ -54,7 +55,7 @@ public class MutateRecordsGroupAction implements GroupActionFactory<RecordRef> {
 
         Action(GroupActionConfig config) {
             super(transactionService, config);
-            meta.setAttributes((ObjectNode) config.getParams().get(PARAM_ATTRIBUTES));
+            meta.setAttributes(Json.getMapper().convert(config.getParams().get(PARAM_ATTRIBUTES), ObjectData.class));
         }
 
         @Override

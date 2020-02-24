@@ -1,7 +1,5 @@
 package ru.citeck.ecos.records.rest;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
@@ -10,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 import org.springframework.extensions.webscripts.servlet.FormData;
+import ru.citeck.ecos.commons.data.ObjectData;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
@@ -54,7 +53,7 @@ public class RecordsMutatePost extends AbstractWebScript {
         } else if (contentType.contains(WebScriptRequestImpl.MULTIPART_FORM_DATA)) {
 
             RecordMeta recordMeta = new RecordMeta();
-            ObjectNode attributes = JsonNodeFactory.instance.objectNode();
+            ObjectData attributes = new ObjectData();
 
             FormData data = (FormData) req.parseContent();
 
@@ -73,13 +72,14 @@ public class RecordsMutatePost extends AbstractWebScript {
                 } else {
 
                     if (field.getIsFile()) {
-                        ObjectNode fileData = attributes.with(fieldName);
-                        fileData.put(FILE_FIELD_MIMETYPE, field.getMimetype());
-                        fileData.put(FILE_FIELD_FILENAME, field.getFilename());
-                        fileData.put(FILE_FIELD_CONTENT, field.getContent().getContent());
-                        fileData.put(FILE_FIELD_CONTENT_TYPE, CONTENT_TYPE_TEXT);
+                        ObjectData fileData = new ObjectData();
+                        fileData.set(FILE_FIELD_MIMETYPE, field.getMimetype());
+                        fileData.set(FILE_FIELD_FILENAME, field.getFilename());
+                        fileData.set(FILE_FIELD_CONTENT, field.getContent().getContent());
+                        fileData.set(FILE_FIELD_CONTENT_TYPE, CONTENT_TYPE_TEXT);
+                        attributes.set(fieldName, fileData);
                     } else {
-                        attributes.put(fieldName, field.getValue());
+                        attributes.set(fieldName, field.getValue());
                     }
                 }
             }

@@ -6,7 +6,7 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.barcode.BarcodeAttributeRegistry;
 import ru.citeck.ecos.records2.RecordRef;
-import ru.citeck.ecos.records2.utils.StringUtils;
+import ru.citeck.ecos.commons.utils.StringUtils;
 import ru.citeck.ecos.webscripts.handler.WebScriptRequestHandler;
 
 import java.util.HashMap;

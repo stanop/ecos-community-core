@@ -19,6 +19,9 @@ import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
+import ru.citeck.ecos.commons.data.DataValue;
+import ru.citeck.ecos.commons.data.ObjectData;
+import ru.citeck.ecos.commons.json.Json;
 import ru.citeck.ecos.model.InvariantsModel;
 import ru.citeck.ecos.records.source.alf.file.AlfNodeContentFileHelper;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
@@ -85,34 +88,6 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         setId(ID);
     }
 
-    private Serializable convertValue(JsonNode node) {
-
-        if (node == null || node.isNull()) {
-            return null;
-        }
-
-        if (node.isArray()) {
-
-            ArrayList<Serializable> values = new ArrayList<>();
-
-            for (JsonNode subNode : node) {
-                values.add(convertValue(subNode));
-            }
-
-            return values;
-
-        } else if (node.isNumber()) {
-
-            return node.isIntegralNumber() ? node.asLong() : node.asDouble();
-
-        } else if (node.isBoolean()) {
-
-            return node.asBoolean();
-        }
-
-        return node.asText();
-    }
-
     @Override
     public RecordsMutResult mutate(RecordsMutation mutation) {
 
@@ -129,10 +104,10 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     private RecordMeta processSingleRecord(RecordMeta record) {
         RecordMeta resultRecord;
         Map<QName, Serializable> props = new HashMap<>();
-        Map<QName, JsonNode> contentProps = new HashMap<>();
+        Map<QName, DataValue> contentProps = new HashMap<>();
         Map<QName, Set<NodeRef>> assocs = new HashMap<>();
-        Map<QName, JsonNode> childAssocEformFiles = new HashMap<>();
-        Map<QName, JsonNode> attachmentAssocEformFiles = new HashMap<>();
+        Map<QName, DataValue> childAssocEformFiles = new HashMap<>();
+        Map<QName, DataValue> attachmentAssocEformFiles = new HashMap<>();
         Map<String, String> attsToIgnore = new HashMap<>();
 
         NodeRef nodeRef = null;
@@ -140,13 +115,13 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             nodeRef = new NodeRef(record.getId().getId());
         }
 
-        ObjectNode attributes = record.getAttributes();
+        ObjectData attributes = record.getAttributes();
 
         // if we get "att_add_someAtt" and "someAtt", then ignore "att_add_*"
-        attributes.fieldNames().forEachRemaining(name -> {
+        attributes.forEach((name, value) -> {
             if (name.startsWith(ADD_CMD_PREFIX) || name.startsWith(REMOVE_CMD_PREFIX)) {
                 String actualName = extractActualAttName(name);
-                if (attributes.get(actualName) != null) {
+                if (value.isNotNull()) {
                     attsToIgnore.put(name, actualName);
                 }
             }
@@ -159,8 +134,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         while (names.hasNext()) {
 
             String name = names.next();
-            JsonNode fieldValue = attributes.path(name);
-            JsonNode fieldRawValue = attributes.get(name);
+            DataValue fieldValue = attributes.get(name);
+            DataValue fieldRawValue = attributes.get(name);
 
             if (attsToIgnore.containsKey(name)) {
                 log.warn("Found att " + attsToIgnore.get(name) + ", att " + name + " will be ignored");
@@ -216,16 +191,19 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 if (DataTypeDefinition.CONTENT.equals(typeName)) {
                     contentProps.put(fieldName, fieldValue);
                 } else {
-                    if (!fieldValue.isMissingNode()) {
+                    if (!fieldValue.isNull()) {
 
-                        Serializable converted = convertValue(fieldValue);
+                        Object converted = fieldValue.asJavaObj();
 
                         if (!DataTypeDefinition.TEXT.equals(typeName)
                             && converted instanceof String
                             && ((String) converted).isEmpty()) {
                             converted = null;
                         }
-                        props.put(fieldName, converted);
+                        if (!(converted instanceof Serializable)) {
+                            converted = null;
+                        }
+                        props.put(fieldName, (Serializable) converted);
                     }
                 }
             } else {
@@ -249,7 +227,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                             refsStream = Arrays.stream(fieldValue.asText().split(","));
                         } else if (fieldValue.isArray()) {
                             refsStream = StreamSupport.stream(fieldValue.spliterator(), false)
-                                .map(JsonNode::asText);
+                                .map(DataValue::asText);
                         }
                         if (refsStream != null) {
                             Set<NodeRef> targetRefs = refsStream
@@ -316,10 +294,10 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         return resultRecord;
     }
 
-    private void handleETypeAttribute(ObjectNode attributes, Map<QName, Serializable> props) {
+    private void handleETypeAttribute(ObjectData attributes, Map<QName, Serializable> props) {
 
-        JsonNode attributeFieldValue = attributes.path(ETYPE_ATTRIBUTE_NAME);
-        if (!attributeFieldValue.isNull() && !attributeFieldValue.isMissingNode()) {
+        DataValue attributeFieldValue = attributes.get(ETYPE_ATTRIBUTE_NAME);
+        if (!attributeFieldValue.isNull()) {
 
             String attrValue = attributeFieldValue.asText();
             if (!StringUtils.isBlank(attrValue)) {
@@ -343,10 +321,10 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         }
     }
 
-    private void handleContentAttribute(ObjectNode attributes) {
+    private void handleContentAttribute(ObjectData attributes) {
 
-        JsonNode attributeFieldValue = attributes.path(CONTENT_ATTRIBUTE_NAME);
-        if (!attributeFieldValue.isNull() && !attributeFieldValue.isMissingNode()) {
+        DataValue attributeFieldValue = attributes.get(CONTENT_ATTRIBUTE_NAME);
+        if (!attributeFieldValue.isNull()) {
             attributes.remove(CONTENT_ATTRIBUTE_NAME);
             attributes.set(CM_CONTENT_ATTRIBUTE_NAME, attributeFieldValue);
         }

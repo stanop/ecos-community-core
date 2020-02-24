@@ -1,15 +1,14 @@
 package ru.citeck.ecos.records.source;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.MutableAuthenticationService;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
 import ru.citeck.ecos.records2.QueryContext;
@@ -45,8 +44,6 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
     private static final String PROP_IS_ADMIN = "isAdmin";
     private static final String PROP_AUTHORITIES = "authorities";
 
-    private static final Log logger = LogFactory.getLog(PeopleRecordsDAO.class);
-
     private AuthorityUtils authorityUtils;
     private AuthorityService authorityService;
     private AlfNodesRecordsDAO alfNodesRecordsDAO;
@@ -80,9 +77,9 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
             return new RecordsQueryResult<>(records, UserValue::new);
         }
 
-        JsonNode queryNode = query.getQuery();
+        DataValue queryNode = query.getQuery(DataValue.class);
 
-        if (queryNode.isNull() || queryNode.isMissingNode()) {
+        if (queryNode.isNull()) {
 
             NodeRef ref = authorityService.getAuthorityNodeRef(authenticationService.getCurrentUserName());
             if (ref != null) {

@@ -1,6 +1,5 @@
 package ru.citeck.ecos.journals.webscripts;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -30,12 +29,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.apps.app.module.ModuleRef;
+import ru.citeck.ecos.commons.data.DataValue;
+import ru.citeck.ecos.commons.json.Json;
 import ru.citeck.ecos.journals.*;
 import ru.citeck.ecos.model.JournalsModel;
-import ru.citeck.ecos.predicate.PredicateService;
-import ru.citeck.ecos.predicate.model.Predicate;
-import ru.citeck.ecos.predicate.model.ValuePredicate;
-import ru.citeck.ecos.querylang.QueryLangService;
+import ru.citeck.ecos.records2.predicate.PredicateService;
+import ru.citeck.ecos.records2.predicate.model.Predicate;
+import ru.citeck.ecos.records2.predicate.model.ValuePredicate;
+import ru.citeck.ecos.records2.querylang.QueryLangService;
 import ru.citeck.ecos.records.source.alf.AlfDictionaryRecords;
 import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.records2.RecordMeta;
@@ -278,7 +279,7 @@ public class JournalConfigGet extends AbstractWebScript {
 
         if (meta.getPredicate() == null && StringUtils.isNotBlank(type)) {
             Predicate predicate = ValuePredicate.equal("TYPE", type);
-            meta.setPredicate(predicateService.writeJson(predicate));
+            meta.setPredicate(Json.getMapper().convert(predicate, JsonNode.class));
         }
 
         Map<String, String> options = journal.getOptions();
@@ -337,11 +338,11 @@ public class JournalConfigGet extends AbstractWebScript {
 
             JsonNode criteriaJson = objectMapper.valueToTree(criteria);
             try {
-                JsonNode convertedQuery = queryLangService.convertLang(criteriaJson,
+                Object convertedQuery = queryLangService.convertLang(criteriaJson,
                         CriteriaAlfNodesSearch.LANGUAGE,
                         PredicateService.LANGUAGE_PREDICATE)
                         .orElseThrow(RuntimeException::new);
-                meta.setPredicate(convertedQuery);
+                meta.setPredicate(Json.getMapper().convert(convertedQuery, JsonNode.class));
             } catch (Exception e) {
                 logger.error("Language conversion error. criteria: " + criteriaJson, e);
             }
@@ -456,11 +457,11 @@ public class JournalConfigGet extends AbstractWebScript {
 
             AttInfo info = null;
 
-            JsonNode attInfoNode = attInfoMeta.get(attribute);
-            if (attInfoNode instanceof ObjectNode) {
+            DataValue attInfoNode = attInfoMeta.get(attribute);
+            if (attInfoNode.isObject()) {
                 try {
-                    info = objectMapper.treeToValue(attInfoNode, AttInfo.class);
-                } catch (JsonProcessingException e) {
+                    info = Json.getMapper().convert(attInfoNode, AttInfo.class);
+                } catch (Exception e) {
                     logger.warn("Error", e);
                 }
             }

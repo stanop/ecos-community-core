@@ -18,9 +18,9 @@
  */
 package ru.citeck.ecos.journals;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.commons.data.ObjectData;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.journals.invariants.CriterionInvariantsProvider;
@@ -73,7 +73,7 @@ public interface JournalService {
                                              JGqlPageInfoInput pageInfo,
                                              boolean debug);
 
-    default RecordsResult<ObjectNode> getRecordsWithData(String journalId,
+    default RecordsResult<ObjectData> getRecordsWithData(String journalId,
                                                          String query,
                                                          String language,
                                                          JGqlPageInfoInput pageInfo) {
@@ -81,7 +81,7 @@ public interface JournalService {
         return getRecordsWithData(journalId, query, language, pageInfo, false);
     }
 
-    RecordsResult<ObjectNode> getRecordsWithData(String journalId,
+    RecordsResult<ObjectData> getRecordsWithData(String journalId,
                                                  String query,
                                                  String language,
                                                  JGqlPageInfoInput pageInfo,

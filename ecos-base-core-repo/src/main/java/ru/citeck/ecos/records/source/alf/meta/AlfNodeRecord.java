@@ -1,6 +1,5 @@
 package ru.citeck.ecos.records.source.alf.meta;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.MLPropertyInterceptor;
@@ -16,6 +15,7 @@ import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.action.node.NodeActionsService;
 import ru.citeck.ecos.apps.app.module.type.ui.action.ActionModule;
 import ru.citeck.ecos.attr.prov.VirtualScriptAttributes;
+import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.document.sum.DocSumService;
 import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.graphql.node.Attribute;
@@ -260,7 +260,7 @@ public class AlfNodeRecord implements MetaValue {
                 if (recordsService == null) {
                     return null;
                 }
-                JsonNode previewInfo = recordsService.getAttribute(recordRef, path + ".previewInfo?json");
+                DataValue previewInfo = recordsService.getAttribute(recordRef, path + ".previewInfo?json");
                 return MetaUtils.toMetaValues(previewInfo, context, field);
 
             case ATTR_PENDING_UPDATE:
@@ -344,8 +344,8 @@ public class AlfNodeRecord implements MetaValue {
             return null;
         }
 
-        JsonNode caseStatusNode = recordsService.getAttribute(recordRef, CASE_STATUS_NAME_SCHEMA);
-        if (caseStatusNode == null || caseStatusNode.isNull() || caseStatusNode.isMissingNode()) {
+        DataValue caseStatusNode = recordsService.getAttribute(recordRef, CASE_STATUS_NAME_SCHEMA);
+        if (caseStatusNode == null || caseStatusNode.isNull()) {
             return null;
         }
 
@@ -399,7 +399,7 @@ public class AlfNodeRecord implements MetaValue {
             return "null";
         }
         RecordRef ref = RecordRef.create("", nodeRef.toString());
-        JsonNode value = context.getRecordsService().getAttribute(ref, ".disp");
+        DataValue value = context.getRecordsService().getAttribute(ref, ".disp");
         return value != null ? value.asText() : nodeRef.getId();
     }
 

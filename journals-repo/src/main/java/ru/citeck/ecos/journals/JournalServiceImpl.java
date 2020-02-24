@@ -38,6 +38,7 @@ import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.commons.data.ObjectData;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.invariants.Feature;
 import ru.citeck.ecos.invariants.InvariantDefinition;
@@ -51,7 +52,7 @@ import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.processor.TemplateExpressionEvaluator;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records2.utils.MandatoryParam;
+import ru.citeck.ecos.commons.utils.MandatoryParam;
 import ru.citeck.ecos.search.SearchCriteria;
 import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
 import ru.citeck.ecos.utils.*;
@@ -302,7 +303,7 @@ class JournalServiceImpl implements JournalService {
     }
 
     @Override
-    public RecordsQueryResult<ObjectNode> getRecordsWithData(String journalId,
+    public RecordsQueryResult<ObjectData> getRecordsWithData(String journalId,
                                                              String query,
                                                              String language,
                                                              JGqlPageInfoInput pageInfo,
@@ -314,8 +315,8 @@ class JournalServiceImpl implements JournalService {
         return new RecordsQueryResult<>(
                 recordsDAO.getRecordsWithData(journalType, query, language, pageInfo, debug),
                 meta -> {
-                    ObjectNode attributes = meta.getAttributes();
-                    attributes.put("id", meta.getId().toString());
+                    ObjectData attributes = meta.getAttributes();
+                    attributes.set("id", meta.getId().toString());
                     return attributes;
                 }
         );

@@ -20,6 +20,7 @@ import ru.citeck.ecos.action.node.NodeActionsProvider;
 import ru.citeck.ecos.action.node.NodeActionsService;
 import ru.citeck.ecos.action.v2.NodeActionsV2Provider;
 import ru.citeck.ecos.apps.app.module.type.ui.action.ActionModule;
+import ru.citeck.ecos.commons.data.ObjectData;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -92,9 +93,7 @@ public class NodeActionsServiceImpl implements NodeActionsService {
                     .filter(x -> !EXCLUDE_FROM_CONFIG.contains(x.getKey()))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-            ObjectNode configNode = OBJECT_MAPPER.convertValue(config, ObjectNode.class);
-
-            action.setConfig(configNode);
+            action.setConfig(new ObjectData(config));
             result.add(action);
         }
 

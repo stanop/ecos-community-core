@@ -1,8 +1,8 @@
 package ru.citeck.ecos.records.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.extensions.webscripts.*;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.commons.json.Json;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,10 +14,8 @@ import java.util.function.Function;
 @Component
 public class RecordsRestUtils {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-
     <T> T readBody(WebScriptRequest req, Class<T> type) throws IOException {
-        return objectMapper.readValue(req.getContent().getContent(), type);
+        return Json.getMapper().read(req.getContent().getContent(), type);
     }
 
     <T> void writeRespRecords(WebScriptResponse res,
@@ -38,7 +36,7 @@ public class RecordsRestUtils {
 
     void writeResp(WebScriptResponse res, Object result) throws IOException {
         res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
-        objectMapper.writeValue(res.getOutputStream(), result);
+        Json.getMapper().write(res.getOutputStream(), result);
         res.setStatus(Status.STATUS_OK);
     }
 }

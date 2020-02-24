@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.config.EcosConfigService;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
@@ -118,7 +119,7 @@ public class NewUIUtils {
         } else {
             att = UI_TYPE_FROM_ETYPE_ATT;
         }
-        JsonNode res = recordsService.getAttribute(recordRef, att);
+        DataValue res = recordsService.getAttribute(recordRef, att);
         return res != null && res.isTextual() ? res.asText() : "";
     }
 

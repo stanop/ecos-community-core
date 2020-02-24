@@ -31,11 +31,6 @@
             <artifactId>idocs-repo</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>ru.citeck.ecos.community</groupId>
-            <artifactId>ecos-graphql-repo</artifactId>
-        </dependency>
-
     </dependencies>
 
     <build>

@@ -3,11 +3,12 @@ package ru.citeck.ecos.graphql.journal.datasource;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.graphql.AlfGqlContext;
-import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.JGqlSortBy;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
+import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.meta.RecordsMetaService;
@@ -31,7 +32,6 @@ public class JournalDatasourceRecordsDAO extends AbstractRecordsDAO implements R
 
     private ServiceRegistry serviceRegistry;
     private JournalDataSource dataSource;
-    private GraphQLService graphQLService;
     private RecordsMetaService recordsMetaService;
 
     @PostConstruct
@@ -66,9 +66,9 @@ public class JournalDatasourceRecordsDAO extends AbstractRecordsDAO implements R
 
         RecordsQueryResult<RecordMeta> result = new RecordsQueryResult<>();
 
-        AlfGqlContext gqlContext = graphQLService.getGqlContext();
+        AlfGqlContext gqlContext = QueryContext.getCurrent();
         JGqlRecordsConnection records = dataSource.getRecords(gqlContext,
-                                                              query.getQuery().asText(),
+                                                              query.getQuery(DataValue.class).asText(),
                                                               query.getLanguage(),
                                                               pageInfo);
 
@@ -82,11 +82,6 @@ public class JournalDatasourceRecordsDAO extends AbstractRecordsDAO implements R
     @Autowired
     public void setRecordsMetaService(RecordsMetaService recordsMetaService) {
         this.recordsMetaService = recordsMetaService;
-    }
-
-    @Autowired
-    public void setGraphQLService(GraphQLService graphQLService) {
-        this.graphQLService = graphQLService;
     }
 
     @Autowired

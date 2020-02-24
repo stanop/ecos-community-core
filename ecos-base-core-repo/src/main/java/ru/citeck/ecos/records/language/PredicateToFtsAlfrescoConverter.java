@@ -1,7 +1,5 @@
 package ru.citeck.ecos.records.language;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
@@ -13,10 +11,10 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.predicate.PredicateService;
-import ru.citeck.ecos.predicate.model.*;
-import ru.citeck.ecos.querylang.QueryLangConverter;
-import ru.citeck.ecos.querylang.QueryLangService;
+import ru.citeck.ecos.records2.predicate.PredicateService;
+import ru.citeck.ecos.records2.predicate.model.*;
+import ru.citeck.ecos.records2.querylang.QueryLangConverter;
+import ru.citeck.ecos.records2.querylang.QueryLangService;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.search.AssociationIndexPropertyRegistry;
 import ru.citeck.ecos.search.ftsquery.BinOperator;
@@ -37,12 +35,12 @@ import java.util.stream.Collectors;
 
 import static ru.citeck.ecos.model.ClassificationModel.PROP_DOCUMENT_KIND;
 import static ru.citeck.ecos.model.ClassificationModel.PROP_DOCUMENT_TYPE;
-import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.CONTAINS;
-import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.EQ;
+import static ru.citeck.ecos.records2.predicate.model.ValuePredicate.Type.CONTAINS;
+import static ru.citeck.ecos.records2.predicate.model.ValuePredicate.Type.EQ;
 
 @Component
 @Slf4j
-public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
+public class PredicateToFtsAlfrescoConverter implements QueryLangConverter<Predicate, String> {
 
     private static final String COMMA_DELIMITER = ",";
     private static final String SLASH_DELIMITER = "/";
@@ -55,7 +53,6 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
     private final DictUtils dictUtils;
     private final SearchService searchService;
-    private final PredicateService predicateService;
     private final NamespaceService namespaceService;
     private final AssociationIndexPropertyRegistry associationIndexPropertyRegistry;
 
@@ -63,13 +60,11 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
     public PredicateToFtsAlfrescoConverter(DictUtils dictUtils,
                                            SearchService searchService,
                                            QueryLangService queryLangService,
-                                           PredicateService predicateService,
                                            ServiceRegistry serviceRegistry,
                                            AssociationIndexPropertyRegistry associationIndexPropertyRegistry) {
 
         this.dictUtils = dictUtils;
         this.searchService = searchService;
-        this.predicateService = predicateService;
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.associationIndexPropertyRegistry = associationIndexPropertyRegistry;
 
@@ -487,13 +482,11 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
     }
 
     @Override
-    public JsonNode convert(JsonNode predicateQuery) {
-
-        Predicate predicate = predicateService.readJson(predicateQuery);
+    public String convert(Predicate predicate) {
 
         FTSQuery query = FTSQuery.createRaw();
         processPredicate(predicate, query);
 
-        return TextNode.valueOf(query.getQuery());
+        return query.getQuery();
     }
 }

@@ -1,11 +1,11 @@
 package ru.citeck.ecos.barcode;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.netflix.servo.util.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.spring.registry.MappingRegistry;
@@ -37,7 +37,7 @@ public class BarcodeAttributeRegistry {
 
     public String getAttribute(RecordRef recordRef) {
 
-        JsonNode ecosTypeJson = recordsService.getAttribute(recordRef, "_etype?id");
+        DataValue ecosTypeJson = recordsService.getAttribute(recordRef, "_etype?id");
         String ecosType = ecosTypeJson.isTextual() ? ecosTypeJson.asText() : "";
 
         if (StringUtils.isBlank(ecosType)) {

@@ -7,9 +7,9 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.model.IdocsModel;
-import ru.citeck.ecos.predicate.PredicateService;
-import ru.citeck.ecos.predicate.model.AndPredicate;
-import ru.citeck.ecos.predicate.model.Predicates;
+import ru.citeck.ecos.records2.predicate.PredicateService;
+import ru.citeck.ecos.records2.predicate.model.AndPredicate;
+import ru.citeck.ecos.records2.predicate.model.Predicates;
 import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
@@ -94,7 +94,7 @@ public class CurrencyRateRecordsDAO extends LocalRecordsDAO implements
 
             RecordsQuery query = new RecordsQuery();
             query.setLanguage(PredicateService.LANGUAGE_PREDICATE);
-            query.setQuery(predicateService.writeJson(predicate));
+            query.setQuery(predicate);
 
             Optional<RecordRef> recordRef = recordsService.queryRecord(query);
             if (recordRef.isPresent()) {

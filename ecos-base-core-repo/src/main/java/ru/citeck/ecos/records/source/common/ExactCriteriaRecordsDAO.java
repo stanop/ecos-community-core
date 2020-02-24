@@ -7,9 +7,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.citeck.ecos.predicate.PredicateService;
-import ru.citeck.ecos.predicate.PredicateUtils;
-import ru.citeck.ecos.predicate.model.Predicate;
+import ru.citeck.ecos.commons.data.DataValue;
+import ru.citeck.ecos.commons.data.ObjectData;
+import ru.citeck.ecos.commons.json.Json;
+import ru.citeck.ecos.records2.predicate.PredicateService;
+import ru.citeck.ecos.records2.predicate.PredicateUtils;
+import ru.citeck.ecos.records2.predicate.model.Predicate;
 import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.records2.*;
 import ru.citeck.ecos.records2.predicate.RecordElement;
@@ -62,7 +65,7 @@ public class ExactCriteriaRecordsDAO extends FilteredRecordsDAO implements Servi
     protected Function<List<RecordRef>, List<RecordRef>> getFilter(RecordsQuery query) {
         if (PredicateService.LANGUAGE_PREDICATE.equals(query.getLanguage())) {
 
-            Predicate predicate = predicateService.readJson(query.getQuery());
+            Predicate predicate = query.getQuery(Predicate.class);
             Optional<Predicate> predicateOpt = PredicateUtils.filterValuePredicates(predicate, p ->
                     filteredFields.contains(p.getValue().toString()) && (p.getAttribute().equals("ISUNSET") || p.getAttribute().equals("ISNULL"))
             );
@@ -160,12 +163,12 @@ public class ExactCriteriaRecordsDAO extends FilteredRecordsDAO implements Servi
         String fieldValue;
         PredicateFilter predicateFilter;
 
-        boolean apply(ObjectNode nodeData) {
-            JsonNode attNode = nodeData.get(fieldKey);
-            if (attNode instanceof ObjectNode) {
+        boolean apply(ObjectData nodeData) {
+            DataValue attNode = nodeData.get(fieldKey);
+            if (attNode.isObject()) {
                 attNode = attNode.get("val");
             }
-            ArrayNode arrayNode = attNode instanceof ArrayNode ? (ArrayNode) attNode : null;
+            ArrayNode arrayNode = attNode.isArray() ? Json.getMapper().convert(attNode, ArrayNode.class) : null;
             return predicateFilter.filter.apply(fieldValue, arrayNode);
         }
     }

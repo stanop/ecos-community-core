@@ -6,6 +6,7 @@ import org.alfresco.service.cmr.security.AccessStatus;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.apps.app.module.type.ui.action.ActionModule;
+import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
 
@@ -100,7 +101,7 @@ public class DefaultActionsProvider implements NodeActionsV2Provider {
     }
 
     private boolean hasContent(NodeRef nodeRef) {
-        JsonNode result = recordsService.getAttribute(RecordRef.create("", nodeRef.toString()),
+        DataValue result = recordsService.getAttribute(RecordRef.create("", nodeRef.toString()),
                 HAS_CONTENT_PATTERN);
         return result.asBoolean();
     }
