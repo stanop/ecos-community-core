@@ -16,12 +16,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.group.*;
 import ru.citeck.ecos.action.group.impl.TxnGroupAction;
+import ru.citeck.ecos.locks.LockUtils;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.utils.AuthorityUtils;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.citeck.ecos.flowable.constants.FlowableConstants.START_TASK_PREFIX;
 
 /**
  * @author Pavel Simonov
@@ -43,6 +46,7 @@ public class CompleteDocumentTaskAction implements GroupActionFactory<RecordRef>
     private AuthorityUtils authorityUtils;
     private WorkflowService workflowService;
     private TransactionService transactionService;
+    private LockUtils lockUtils;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -52,12 +56,14 @@ public class CompleteDocumentTaskAction implements GroupActionFactory<RecordRef>
                                       @Qualifier("WorkflowService")
                                               WorkflowService workflowService,
                                       AuthorityUtils authorityUtils,
-                                      TaskService taskService) {
+                                      TaskService taskService,
+                                      LockUtils lockUtils) {
 
         this.taskService = taskService;
         this.authorityUtils = authorityUtils;
         this.workflowService = workflowService;
         this.transactionService = transactionService;
+        this.lockUtils = lockUtils;
         groupActionService.register(this);
     }
 
@@ -185,13 +191,20 @@ public class CompleteDocumentTaskAction implements GroupActionFactory<RecordRef>
 
                     String localId = taskToComplete.getId().replace("flowable$", "");
 
-                    taskService.complete(localId, params);
+                    String lockId = String.format("%s-%s", "ECOSTask", localId);
+                    lockUtils.doWithLock(lockId, () -> {
+                        taskService.complete(localId, params);
+                    });
 
                 } else {
 
-                    workflowService.endTask(taskToComplete.getId(), transition);
+                    String lockId = String.format("%s-%s", "ECOSTask", taskToComplete.getId());
+                    WorkflowTask finalTaskToComplete = taskToComplete;
+                    String finalTransition = transition;
+                    lockUtils.doWithLock(lockId, () -> {
+                        workflowService.endTask(finalTaskToComplete.getId(), finalTransition);
+                    });
                 }
-
             } catch (RuntimeException e) {
                 throw unwrapJavascriptException(e);
             }
