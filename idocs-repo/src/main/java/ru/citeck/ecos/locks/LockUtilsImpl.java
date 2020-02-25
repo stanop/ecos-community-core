@@ -60,8 +60,10 @@ public class LockUtilsImpl implements LockUtils {
     }
 
     private void releaseLock(String lockToken, QName lockQName) {
-        if ((StringUtils.isEmpty(lockToken) || lockQName == null) && log.isDebugEnabled()) {
-            log.error(LOCK_INFO_IS_EMPTY);
+        if (StringUtils.isEmpty(lockToken) || lockQName == null) {
+            if (log.isDebugEnabled()) {
+                log.error(LOCK_INFO_IS_EMPTY);
+            }
             return;
         }
 

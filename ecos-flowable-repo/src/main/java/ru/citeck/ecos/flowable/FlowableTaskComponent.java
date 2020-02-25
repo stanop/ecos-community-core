@@ -25,6 +25,7 @@ import ru.citeck.ecos.flowable.services.*;
 import ru.citeck.ecos.flowable.utils.FlowableUtils;
 import ru.citeck.ecos.flowable.utils.FlowableWorkflowPropertyHandlerRegistry;
 import ru.citeck.ecos.locks.LockUtils;
+import ru.citeck.ecos.workflow.tasks.EcosTaskService;
 
 import java.io.Serializable;
 import java.util.*;
@@ -36,6 +37,7 @@ import static ru.citeck.ecos.flowable.constants.FlowableConstants.*;
  */
 @Slf4j
 public class FlowableTaskComponent implements TaskComponent, InitializingBean {
+    private static final String FLOWABLE_PREFIX = "flowable$";
 
     private BPMEngineRegistry bpmEngineRegistry;
     private WorkflowAdminService workflowAdminService;
@@ -50,6 +52,7 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
     private FlowablePropertyConverter flowablePropertyConverter;
     private FlowableWorkflowPropertyHandlerRegistry workflowPropertyHandlerRegistry;
     private RuntimeService runtimeService;
+    private EcosTaskService ecosTaskService;
 
     /**
      * After properties set
@@ -79,13 +82,13 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
             ProcessInstance processInstance = flowableProcessInstanceService.getProcessInstanceById(processInstanceId);
             if (processInstance != null) {
                 ProcessDefinition processDefinition = flowableProcessDefinitionService.getProcessDefinitionById(
-                        processInstance.getProcessDefinitionId());
+                    processInstance.getProcessDefinitionId());
                 return flowableTransformService.transformStartTask(processDefinition, processInstance);
             } else {
                 HistoricProcessInstance historicProcessInstance = flowableHistoryService.getProcessInstanceById
-                        (processInstanceId);
+                    (processInstanceId);
                 ProcessDefinition processDefinition = flowableProcessDefinitionService.getProcessDefinitionById(
-                        historicProcessInstance.getProcessDefinitionId());
+                    historicProcessInstance.getProcessDefinitionId());
                 return flowableTransformService.transformStartTask(processDefinition, historicProcessInstance);
             }
         } else {
@@ -184,10 +187,10 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
         if (taskInstance != null) {
             WorkflowTask task = flowableTransformService.transformTask(taskInstance);
             Map<QName, Serializable> newProperties = flowablePropertyConverter.getNewTaskProperties(taskInstance,
-                    properties, add, remove);
+                properties, add, remove);
             Map<String, Object> transformedProperties = workflowPropertyHandlerRegistry.handleVariablesToSet(
-                    newProperties, task.getDefinition().getMetadata(),
-                    null, Void.class);
+                newProperties, task.getDefinition().getMetadata(),
+                null, Void.class);
             taskService.setVariablesLocal(getLocalValue(taskId), transformedProperties);
             flowablePropertyConverter.setTaskOwner(taskInstance, properties);
             return getTaskById(taskId);
@@ -230,15 +233,12 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
      */
     @Override
     public WorkflowTask endTask(String taskId, String transitionId) {
-        String lockId = String.format("%s-%s", "ECOSTask", taskId);
-        return lockUtils.doWithLock(lockId, () -> {
-            String localId = getLocalValue(taskId);
-            if (localId.startsWith(START_TASK_PREFIX)) {
-                return endStartTask(localId);
-            } else {
-                return endNormalTask(localId, transitionId);
-            }
-        });
+        String localId = getLocalValue(taskId);
+        if (localId.startsWith(START_TASK_PREFIX)) {
+            return lockUtils.doWithLock(taskId, () -> endStartTask(localId));
+        } else {
+            return endNormalTask(localId, transitionId);
+        }
     }
 
     /**
@@ -252,7 +252,7 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
         runtimeService.setVariable(processInstanceId, PROP_START_TASK_END_DATE, new Date());
         ProcessInstance processInstance = flowableProcessInstanceService.getProcessInstanceById(processInstanceId);
         ProcessDefinition processDefinition = flowableProcessDefinitionService.getProcessDefinitionById(
-                processInstance.getProcessDefinitionId());
+            processInstance.getProcessDefinitionId());
         return flowableTransformService.transformStartTask(processDefinition, processInstance);
     }
 
@@ -267,7 +267,8 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
         if (task != null) {
             WorkflowTask endedTask = flowableTransformService.transformTask(task);
             setOutcome(task, transition);
-            taskService.complete(task.getId());
+
+            ecosTaskService.endTask(FLOWABLE_PREFIX + task.getId(), transition);
             return endedTask;
         } else {
             return null;
@@ -298,14 +299,14 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
         ProcessInstance processInstance = flowableProcessInstanceService.getProcessInstanceById(getLocalValue(workflowInstanceId));
         if (processInstance != null) {
             return flowableTransformService.transformStartTask(
-                    flowableProcessDefinitionService.getProcessDefinitionById(processInstance.getProcessDefinitionId()),
-                    processInstance);
+                flowableProcessDefinitionService.getProcessDefinitionById(processInstance.getProcessDefinitionId()),
+                processInstance);
         } else {
             HistoricProcessInstance historicProcessInstance = flowableHistoryService.getProcessInstanceById(
-                    getLocalValue(workflowInstanceId));
+                getLocalValue(workflowInstanceId));
             return flowableTransformService.transformStartTask(
-                    flowableProcessDefinitionService.getProcessDefinitionById(
-                            historicProcessInstance.getProcessDefinitionId()), historicProcessInstance);
+                flowableProcessDefinitionService.getProcessDefinitionById(
+                    historicProcessInstance.getProcessDefinitionId()), historicProcessInstance);
         }
     }
 
@@ -386,5 +387,10 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
     @Autowired
     public void setRuntimeService(RuntimeService runtimeService) {
         this.runtimeService = runtimeService;
+    }
+
+    @Autowired
+    public void setEcosTaskService(EcosTaskService ecosTaskService) {
+        this.ecosTaskService = ecosTaskService;
     }
 }

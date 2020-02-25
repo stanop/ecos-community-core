@@ -7,7 +7,7 @@ import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.action.group.impl.GroupActionExecutor;
 import ru.citeck.ecos.action.group.ActionStatus;
-import ru.citeck.ecos.locks.LockUtils;
+import ru.citeck.ecos.workflow.tasks.EcosTaskService;
 
 import java.util.List;
 import java.util.Map;
@@ -24,7 +24,7 @@ public class CompleteTaskByMirrorExecutor extends GroupActionExecutor {
 
     public static final String[] MANDATORY_PARAMS = {TASK_TYPE_KEY, TRANSITION_ID};
 
-    private LockUtils lockUtils;
+    private EcosTaskService ecosTaskService;
 
     @Override
     public String getActionId() {
@@ -36,10 +36,7 @@ public class CompleteTaskByMirrorExecutor extends GroupActionExecutor {
         String taskId = String.valueOf(nodeService.getProperty(mirrorRef, WorkflowModel.PROP_TASK_ID));
         String globalTaskId = ActivitiConstants.ENGINE_ID + "$" + taskId;
 
-        String lockId = String.format("%s-%s", "ECOSTask", taskId);
-        lockUtils.doWithLock(lockId, () -> {
-            workflowService.endTask(globalTaskId, params.get(TRANSITION_ID));
-        });
+        ecosTaskService.endTask(globalTaskId, params.get(TRANSITION_ID));
     }
 
     @Override
@@ -68,8 +65,8 @@ public class CompleteTaskByMirrorExecutor extends GroupActionExecutor {
     }
 
     @Autowired
-    public void setLockUtils(LockUtils lockUtils) {
-        this.lockUtils = lockUtils;
+    public void setEcosTaskService(EcosTaskService ecosTaskService) {
+        this.ecosTaskService = ecosTaskService;
     }
 }
 
