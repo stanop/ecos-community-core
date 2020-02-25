@@ -1,5 +1,6 @@
 package ru.citeck.ecos.flowable;
 
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.workflow.BPMEngineRegistry;
 import org.alfresco.repo.workflow.TaskComponent;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -23,6 +24,7 @@ import ru.citeck.ecos.flowable.converters.FlowablePropertyConverter;
 import ru.citeck.ecos.flowable.services.*;
 import ru.citeck.ecos.flowable.utils.FlowableUtils;
 import ru.citeck.ecos.flowable.utils.FlowableWorkflowPropertyHandlerRegistry;
+import ru.citeck.ecos.locks.LockUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -32,37 +34,21 @@ import static ru.citeck.ecos.flowable.constants.FlowableConstants.*;
 /**
  * Flowable task component
  */
+@Slf4j
 public class FlowableTaskComponent implements TaskComponent, InitializingBean {
 
     private BPMEngineRegistry bpmEngineRegistry;
     private WorkflowAdminService workflowAdminService;
 
-    @Autowired
+    private LockUtils lockUtils;
     private TaskService taskService;
-
-    @Autowired
     private FlowableTaskService flowableTaskService;
-
-    @Autowired
     private FlowableHistoryService flowableHistoryService;
-
-    @Autowired
     private FlowableProcessInstanceService flowableProcessInstanceService;
-
-    @Autowired
     private FlowableTransformService flowableTransformService;
-
-    @Autowired
     private FlowableProcessDefinitionService flowableProcessDefinitionService;
-
-    @Autowired
     private FlowablePropertyConverter flowablePropertyConverter;
-
-    @Autowired
-    @Qualifier("flowableWorkflowPropertyHandlerRegistry")
     private FlowableWorkflowPropertyHandlerRegistry workflowPropertyHandlerRegistry;
-
-    @Autowired
     private RuntimeService runtimeService;
 
     /**
@@ -127,7 +113,7 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
      */
     @Override
     public List<WorkflowTask> getAssignedTasks(String authority, WorkflowTaskState state, boolean lazyInitialization) {
-        return Collections.EMPTY_LIST;
+        return new ArrayList<>();
     }
 
     /**
@@ -139,7 +125,7 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
      */
     @Override
     public List<WorkflowTask> getPooledTasks(List<String> authorities, boolean lazyInitialization) {
-        return Collections.EMPTY_LIST;
+        return new ArrayList<>();
     }
 
     /**
@@ -244,12 +230,15 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
      */
     @Override
     public WorkflowTask endTask(String taskId, String transitionId) {
-        String localId = getLocalValue(taskId);
-        if (localId.startsWith(START_TASK_PREFIX)) {
-            return endStartTask(localId);
-        } else {
-            return endNormalTask(localId, transitionId);
-        }
+        String lockId = String.format("%s-%s", "ECOSTask", taskId);
+        return lockUtils.doWithLock(lockId, () -> {
+            String localId = getLocalValue(taskId);
+            if (localId.startsWith(START_TASK_PREFIX)) {
+                return endStartTask(localId);
+            } else {
+                return endNormalTask(localId, transitionId);
+            }
+        });
     }
 
     /**
@@ -329,7 +318,7 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
      */
     @Override
     public List<WorkflowTask> getStartTasks(List<String> workflowInstanceIds, boolean sameSession) {
-        return Collections.EMPTY_LIST;
+        return new ArrayList<>();
     }
 
 
@@ -346,5 +335,56 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
 
     public void setWorkflowAdminService(WorkflowAdminService workflowAdminService) {
         this.workflowAdminService = workflowAdminService;
+    }
+
+    @Autowired
+    public void setLockUtils(LockUtils lockUtils) {
+        this.lockUtils = lockUtils;
+    }
+
+    @Autowired
+    public void setTaskService(TaskService taskService) {
+        this.taskService = taskService;
+    }
+
+    @Autowired
+    public void setFlowableTaskService(FlowableTaskService flowableTaskService) {
+        this.flowableTaskService = flowableTaskService;
+    }
+
+    @Autowired
+    public void setFlowableHistoryService(FlowableHistoryService flowableHistoryService) {
+        this.flowableHistoryService = flowableHistoryService;
+    }
+
+    @Autowired
+    public void setFlowableProcessInstanceService(FlowableProcessInstanceService flowableProcessInstanceService) {
+        this.flowableProcessInstanceService = flowableProcessInstanceService;
+    }
+
+    @Autowired
+    public void setFlowableTransformService(FlowableTransformService flowableTransformService) {
+        this.flowableTransformService = flowableTransformService;
+    }
+
+    @Autowired
+    public void setFlowableProcessDefinitionService(FlowableProcessDefinitionService flowableProcessDefinitionService) {
+        this.flowableProcessDefinitionService = flowableProcessDefinitionService;
+    }
+
+    @Autowired
+    public void setFlowablePropertyConverter(FlowablePropertyConverter flowablePropertyConverter) {
+        this.flowablePropertyConverter = flowablePropertyConverter;
+    }
+
+    @Autowired
+    @Qualifier("flowableWorkflowPropertyHandlerRegistry")
+    public void setWorkflowPropertyHandlerRegistry(FlowableWorkflowPropertyHandlerRegistry workflowPropertyHandlerRegistry) {
+        this.workflowPropertyHandlerRegistry = workflowPropertyHandlerRegistry;
+    }
+
+    @Autowired
+    public void setRuntimeService(RuntimeService runtimeService) {
+        this.runtimeService = runtimeService;
     }
 }

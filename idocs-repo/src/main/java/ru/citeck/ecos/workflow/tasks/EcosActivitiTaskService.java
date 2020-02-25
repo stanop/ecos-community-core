@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.locks.LockUtils;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.utils.WorkflowUtils;
@@ -53,6 +54,7 @@ public class EcosActivitiTaskService implements EngineTaskService {
     private WorkflowService workflowService;
     @Autowired
     private ActivitiPropertyConverter propertyConverter;
+    private LockUtils lockUtils;
 
     @Autowired
     public EcosActivitiTaskService(EcosTaskService ecosTaskService) {
@@ -137,8 +139,11 @@ public class EcosActivitiTaskService implements EngineTaskService {
         taskVariables.put(lastCommentProp, comment);
 
         //TODO: transient variables should be saved in execution
-        taskVariables.putAll(transientVariables);
-        taskService.complete(taskId, taskVariables, true);
+        String lockId = String.format("%s-%s", "ECOSTask", taskId);
+        lockUtils.doWithLock(lockId, () -> {
+            taskVariables.putAll(transientVariables);
+            taskService.complete(taskId, taskVariables, true);
+        });
     }
 
     private String getCandidate(String taskId) {
@@ -211,6 +216,11 @@ public class EcosActivitiTaskService implements EngineTaskService {
     private boolean taskExists(String taskId) {
         Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
         return task != null;
+    }
+
+    @Autowired
+    public void setLockUtils(LockUtils lockUtils) {
+        this.lockUtils = lockUtils;
     }
 
     private class ActivitiTaskInfo implements TaskInfo {
