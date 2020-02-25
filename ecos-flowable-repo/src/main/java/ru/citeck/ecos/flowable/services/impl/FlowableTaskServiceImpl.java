@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.services.FlowableHistoryService;
 import ru.citeck.ecos.flowable.services.FlowableTaskService;
-import ru.citeck.ecos.locks.LockUtils;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.utils.RepoUtils;
@@ -59,7 +58,6 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
     private NodeService nodeService;
     @Autowired
     private NamespaceService namespaceService;
-    private LockUtils lockUtils;
 
     @PostConstruct
     public void init() {
@@ -227,11 +225,8 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
         String lastCommentProp = workflowUtils.mapQNameToName(CiteckWorkflowModel.PROP_LASTCOMMENT);
         taskVariables.put(lastCommentProp, comment);
 
-        String lockId = String.format("%s-%s", "ECOSTask", taskId);
-        lockUtils.doWithLock(lockId, () -> {
-            taskService.setVariables(taskId, taskVariables);
-            taskService.complete(taskId, taskVariables, executionVariables);
-        });
+        taskService.setVariables(taskId, taskVariables);
+        taskService.complete(taskId, taskVariables, executionVariables);
     }
 
     public RecordRef getDocument(String taskId) {
@@ -245,11 +240,6 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
     private boolean taskExists(String taskId) {
         Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
         return task != null;
-    }
-
-    @Autowired
-    public void setLockUtils(LockUtils lockUtils) {
-        this.lockUtils = lockUtils;
     }
 
     @Override
@@ -295,9 +285,9 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
         @Override
         public List<String> getActors() {
             return workflowUtils.getTaskActors(FlowableConstants.ENGINE_PREFIX + getId())
-                    .stream()
-                    .map(NodeRef::toString)
-                    .collect(Collectors.toList());
+                .stream()
+                .map(NodeRef::toString)
+                .collect(Collectors.toList());
         }
 
         @Override
