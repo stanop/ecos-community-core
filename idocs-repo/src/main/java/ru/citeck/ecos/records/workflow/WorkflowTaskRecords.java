@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.document.CounterpartyResolver;
 import ru.citeck.ecos.document.sum.DocSumService;
+import ru.citeck.ecos.node.EcosTypeService;
 import ru.citeck.ecos.predicate.model.ComposedPredicate;
 import ru.citeck.ecos.records.RecordConstants;
 import ru.citeck.ecos.records.models.AuthorityDTO;
@@ -75,6 +76,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     private final AuthorityUtils authorityUtils;
     private final NamespaceService namespaceService;
     private final DictionaryService dictionaryService;
+    private final EcosTypeService ecosTypeService;
 
     @Value("${records.configuration.app.name}")
     private String appName;
@@ -87,11 +89,11 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                                CounterpartyResolver counterpartyResolver,
                                WorkflowUtils workflowUtils, AuthorityUtils authorityUtils,
                                NamespaceService namespaceService,
-                               DictionaryService dictionaryService) {
+                               DictionaryService dictionaryService, EcosTypeService ecosTypeService) {
+        setId(ID);
         this.counterpartyResolver = counterpartyResolver;
         this.namespaceService = namespaceService;
         this.dictionaryService = dictionaryService;
-        setId(ID);
         this.ecosTaskService = ecosTaskService;
         this.workflowTaskRecordsUtils = workflowTaskRecordsUtils;
         this.authorityService = authorityService;
@@ -99,6 +101,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         this.docSumService = docSumService;
         this.workflowUtils = workflowUtils;
         this.authorityUtils = authorityUtils;
+        this.ecosTypeService = ecosTypeService;
     }
 
     @Override
@@ -262,7 +265,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             return null;
         }
 
-        if (query.priorities != null || query.counterparties != null || query.docTypes != null) {
+        if (query.priorities != null || query.counterparties != null || query.docTypes != null
+            || query.docEcosTypes != null) {
             return null;
         }
 
@@ -357,6 +361,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         public String document;
         public List<String> priorities;
         public List<String> counterparties;
+        public List<String> docEcosTypes;
 
         public void setAssignee(String assignee) {
             if (assignees == null) {
@@ -391,6 +396,13 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 counterparties = new ArrayList<>();
             }
             counterparties.add(counterparty);
+        }
+
+        public void setDocEcosType(String docEcosType) {
+            if (docEcosTypes == null) {
+                docEcosTypes = new ArrayList<>();
+            }
+            docEcosTypes.add(docEcosType);
         }
     }
 
@@ -606,6 +618,11 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     return null;
                 case ATT_DOCUMENT:
                     return documentRef;
+                case ATT_DOC_ECOS_TYPE:
+                    if (documentNodeRef != null) {
+                        return ecosTypeService.getEcosType(documentNodeRef);
+                    }
+                    return null;
             }
 
             return attributes.get(name);

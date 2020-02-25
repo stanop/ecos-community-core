@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2018 Citeck LLC.
+ * Copyright (C) 2008-2020 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -49,9 +49,11 @@ import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.model.BpmModel;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.WorkflowMirrorModel;
+import ru.citeck.ecos.node.EcosTypeService;
 import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
 import ru.citeck.ecos.orgstruct.OrgStructService;
+import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.utils.NodeUtils;
 import ru.citeck.ecos.utils.TransactionUtils;
 import ru.citeck.ecos.utils.WorkflowUtils;
@@ -81,6 +83,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     private CaseStatusService caseStatusService;
     private WorkflowUtils workflowUtils;
     private CounterpartyResolver counterpartyResolver;
+    private EcosTypeService ecosTypeService;
 
     private NodeUtils nodeUtils;
 
@@ -283,6 +286,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_TYPE_TITLE, getMlDocumentTypeTitle(document));
             nodeInfo.setProperty(WorkflowMirrorModel.PROP_COUNTERPARTY, counterpartyResolver.resolve(document));
             nodeInfo.setProperty(WorkflowMirrorModel.PROP_CASE_STATUS, caseStatusService.getStatusRef(document));
+            nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_ECOS_TYPE, getEcosType(document));
 
             NodeRef documentKind = getDocumentKind(document);
             if (documentKind != null && nodeService.exists(documentKind)) {
@@ -292,6 +296,11 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             }
             nodeInfo.createSourceAssociation(document, WorkflowMirrorModel.ASSOC_MIRROR_TASK);
         }
+    }
+
+    private String getEcosType(NodeRef document) {
+        RecordRef ecosTypeRef = ecosTypeService.getEcosType(document);
+        return ecosTypeRef != null ? ecosTypeRef.toString() : null;
     }
 
     @SuppressWarnings({"unchecked", "deprecation"})
@@ -517,5 +526,10 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     @Autowired
     public void setCounterpartyResolver(CounterpartyResolver counterpartyResolver) {
         this.counterpartyResolver = counterpartyResolver;
+    }
+
+    @Autowired
+    public void setEcosTypeService(EcosTypeService ecosTypeService) {
+        this.ecosTypeService = ecosTypeService;
     }
 }

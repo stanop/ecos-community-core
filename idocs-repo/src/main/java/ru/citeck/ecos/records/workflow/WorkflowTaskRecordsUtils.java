@@ -45,6 +45,7 @@ public class WorkflowTaskRecordsUtils {
     private final String COUNTERPARTY_ATTR;
     private final String DOCUMENT_ATTR;
     private final String CASE_STATUS_ATTR;
+    private final String DOC_ECOS_TYPE_ATTR;
 
     private final AuthorityUtils authorityUtils;
     private final NamespaceService namespaceService;
@@ -67,6 +68,7 @@ public class WorkflowTaskRecordsUtils {
         COUNTERPARTY_ATTR = WorkflowMirrorModel.PROP_COUNTERPARTY.toPrefixString(namespaceService);
         DOCUMENT_ATTR = WorkflowMirrorModel.PROP_DOCUMENT.toPrefixString(namespaceService);
         CASE_STATUS_ATTR = WorkflowMirrorModel.PROP_CASE_STATUS.toPrefixString(namespaceService);
+        DOC_ECOS_TYPE_ATTR = WorkflowMirrorModel.PROP_DOCUMENT_ECOS_TYPE.toPrefixString(namespaceService);
     }
 
     ComposedPredicate buildPredicateQuery(WorkflowTaskRecords.TasksQuery tasksQuery) {
@@ -81,6 +83,7 @@ public class WorkflowTaskRecordsUtils {
         appendDocumentParamPredicate(tasksQuery.document, predicate);
         appendPrioritiesPredicate(tasksQuery.priorities, predicate);
         appendCounterpartiesPredicate(tasksQuery.counterparties, predicate);
+        appendDocEcosTypesPredicate(tasksQuery.docEcosTypes, predicate);
 
         if (predicate.getPredicates().isEmpty()) {
             return null;
@@ -236,6 +239,18 @@ public class WorkflowTaskRecordsUtils {
             orPredicate.addPredicate(valuePredicate);
         }
 
+        return orPredicate;
+    }
+
+    private void appendDocEcosTypesPredicate(List<String> docEcosTypes, AndPredicate predicate) {
+        if (CollectionUtils.isNotEmpty(docEcosTypes)) {
+            predicate.addPredicate(getDocEcosTypesPredicate(docEcosTypes));
+        }
+    }
+
+    private Predicate getDocEcosTypesPredicate(List<String> docEcosTypes) {
+        OrPredicate orPredicate = new OrPredicate();
+        docEcosTypes.forEach(ecosType -> orPredicate.addPredicate(ValuePredicate.equal(DOC_ECOS_TYPE_ATTR, ecosType)));
         return orPredicate;
     }
 
