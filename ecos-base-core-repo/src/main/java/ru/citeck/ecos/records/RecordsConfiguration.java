@@ -63,9 +63,11 @@ public class RecordsConfiguration extends RecordsServiceFactory {
 
     @Override
     protected RecordsProperties createProperties() {
-        RecordsProperties properties = super.createProperties();
+        //TODO: fix bugs before
+        /*RecordsProperties properties = super.createProperties();
         properties.setAppName(appName);
-        return properties;
+        return properties;*/
+        return super.createProperties();
     }
 
     @Bean
