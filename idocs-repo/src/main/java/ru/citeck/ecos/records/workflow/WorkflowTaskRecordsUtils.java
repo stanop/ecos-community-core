@@ -1,12 +1,13 @@
 package ru.citeck.ecos.records.workflow;
 
 import lombok.Getter;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.model.WorkflowMirrorModel;
 import ru.citeck.ecos.predicate.PredicateService;
 import ru.citeck.ecos.predicate.model.*;
+import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.request.query.QueryConsistency;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
@@ -22,16 +24,27 @@ import ru.citeck.ecos.utils.AuthorityUtils;
 import ru.citeck.ecos.workflow.tasks.EcosTaskService;
 import ru.citeck.ecos.workflow.tasks.TaskInfo;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ru.citeck.ecos.records.workflow.WorkflowTaskRecordsConstants.*;
+import static ru.citeck.ecos.records.workflow.WorkflowTaskRecordsConstants.CURRENT_USER;
 
-@Log4j
+@Slf4j
 @Component
 public class WorkflowTaskRecordsUtils {
+
+    private static final char[] DOC_TYPES_MUST_CONTAINS_CHARS = new char[]{':', '{'};
+
+    private final String DOC_TYPE_ATTR;
+    private final String PRIORITY_ATTR;
+    private final String COUNTERPARTY_ATTR;
+    private final String DOCUMENT_ATTR;
+    private final String CASE_STATUS_ATTR;
 
     private final AuthorityUtils authorityUtils;
     private final NamespaceService namespaceService;
@@ -48,6 +61,12 @@ public class WorkflowTaskRecordsUtils {
         this.recordsService = recordsService;
         this.ecosTaskService = ecosTaskService;
         this.caseStatusService = caseStatusService;
+
+        DOC_TYPE_ATTR = WorkflowMirrorModel.PROP_DOCUMENT_TYPE.toPrefixString(namespaceService);
+        PRIORITY_ATTR = WorkflowModel.PROP_PRIORITY.toPrefixString(namespaceService);
+        COUNTERPARTY_ATTR = WorkflowMirrorModel.PROP_COUNTERPARTY.toPrefixString(namespaceService);
+        DOCUMENT_ATTR = WorkflowMirrorModel.PROP_DOCUMENT.toPrefixString(namespaceService);
+        CASE_STATUS_ATTR = WorkflowMirrorModel.PROP_CASE_STATUS.toPrefixString(namespaceService);
     }
 
     ComposedPredicate buildPredicateQuery(WorkflowTaskRecords.TasksQuery tasksQuery) {
@@ -55,26 +74,49 @@ public class WorkflowTaskRecordsUtils {
         AndPredicate predicate = new AndPredicate();
         predicate.addPredicate(ValuePredicate.equal("TYPE", WorkflowModel.TYPE_TASK.toString()));
 
-        List<String> actors = tasksQuery.getActors();
-        appendActorsPredicate(actors, predicate);
-
-        Boolean active = tasksQuery.active;
-        appendActivePredicate(active, predicate);
-
-        String caseStatus = tasksQuery.getDocStatus();
-        appendCaseStatusPredicate(caseStatus, predicate);
-
-        String docType = tasksQuery.docType;
-        appendDocTypePredicate(docType, predicate);
-
-        String documentParam = tasksQuery.document;
-        appendDocumentParamPredicate(documentParam, predicate);
+        appendActorsPredicate(tasksQuery.actors, predicate);
+        appendActivePredicate(tasksQuery.active, predicate);
+        appendCaseStatusPredicate(tasksQuery.docStatus, predicate);
+        appendDocTypesPredicate(tasksQuery.docTypes, predicate);
+        appendDocumentParamPredicate(tasksQuery.document, predicate);
+        appendPrioritiesPredicate(tasksQuery.priorities, predicate);
+        appendCounterpartiesPredicate(tasksQuery.counterparties, predicate);
 
         if (predicate.getPredicates().isEmpty()) {
             return null;
         }
 
         return predicate;
+    }
+
+    private void appendActorsPredicate(List<String> actors, AndPredicate predicate) {
+        if (CollectionUtils.isNotEmpty(actors)) {
+            predicate.addPredicate(getActorsPredicate(actors));
+        }
+    }
+
+    private OrPredicate getActorsPredicate(List<String> actors) {
+        Set<String> actorRefs = actors.stream().flatMap(actor -> {
+            if (CURRENT_USER.equals(actor)) {
+                actor = AuthenticationUtil.getRunAsUser();
+            } else if (NodeRef.isNodeRef(actor)) {
+                actor = authorityUtils.getAuthorityName(new NodeRef(actor));
+            }
+            return Stream.concat(authorityUtils.getContainingAuthoritiesRefs(actor).stream(),
+                Stream.of(authorityUtils.getNodeRef(actor)))
+                .map(NodeRef::toString);
+        }).collect(Collectors.toSet());
+
+        OrPredicate orPred = new OrPredicate();
+        actorRefs.forEach(a -> {
+            ValuePredicate valuePredicate = new ValuePredicate();
+            valuePredicate.setType(ValuePredicate.Type.CONTAINS);
+            valuePredicate.setAttribute("wfm:actors");
+            valuePredicate.setValue(a);
+            orPred.addPredicate(valuePredicate);
+        });
+
+        return orPred;
     }
 
     private void appendActivePredicate(Boolean active, AndPredicate predicate) {
@@ -88,78 +130,113 @@ public class WorkflowTaskRecordsUtils {
         }
     }
 
-    private void appendActorsPredicate(List<String> actors, AndPredicate predicate) {
-        if (actors != null) {
-            predicate.addPredicate(getActorsPredicate(actors));
-        }
-    }
-
     private void appendCaseStatusPredicate(String caseStatus, AndPredicate predicate) {
-        if (StringUtils.isNotBlank(caseStatus)) {
-            if (!NodeRef.isNodeRef(caseStatus)) {
-                NodeRef ref = caseStatusService.getStatusByName(caseStatus.toLowerCase());
-                if (ref != null) {
-                    caseStatus = ref.toString();
-                }
+        if (StringUtils.isBlank(caseStatus)) {
+            return;
+        }
+
+        if (!NodeRef.isNodeRef(caseStatus)) {
+            NodeRef ref = caseStatusService.getStatusByName(caseStatus.toLowerCase());
+            if (ref != null) {
+                caseStatus = ref.toString();
             }
-            Predicate caseStatusPredicate = ValuePredicate.equal(
-                    WorkflowMirrorModel.PROP_CASE_STATUS.toPrefixString(namespaceService), caseStatus);
-            predicate.addPredicate(caseStatusPredicate);
+        }
+
+        predicate.addPredicate(ValuePredicate.equal(CASE_STATUS_ATTR, caseStatus));
+    }
+
+    private void appendDocTypesPredicate(List<String> docTypes, AndPredicate predicate) {
+        if (CollectionUtils.isNotEmpty(docTypes)) {
+            predicate.addPredicate(getDocTypesPredicate(docTypes));
         }
     }
 
-    private void appendDocTypePredicate(String docType, AndPredicate predicate) {
-        if (StringUtils.isNotBlank(docType)) {
-            if (docType.contains(":") || docType.contains("{")) {
-                Predicate typePredicate;
-                QName docTypeQName = QName.resolveToQName(namespaceService, docType);
-                String docTypeAtt = WorkflowMirrorModel.PROP_DOCUMENT_TYPE.toPrefixString(namespaceService);
-                if (docTypeQName != null) {
-                    typePredicate = ValuePredicate.equal(docTypeAtt, docTypeQName.toString());
-                } else {
-                    log.warn("Document type qname " + docType + " is not found");
-                    typePredicate = ValuePredicate.equal(docTypeAtt, docType);
-                }
-                predicate.addPredicate(typePredicate);
-            }
+    private OrPredicate getDocTypesPredicate(List<String> docTypes) {
+        Set<String> types = docTypes.stream()
+            .filter(this::isCorrectDocTypeFormat)
+            .map(this::resolveDocType)
+            .collect(Collectors.toSet());
+
+        OrPredicate orPredicate = new OrPredicate();
+        types.forEach(type -> orPredicate.addPredicate(ValuePredicate.equal(DOC_TYPE_ATTR, type)));
+        return orPredicate;
+    }
+
+    private boolean isCorrectDocTypeFormat(String docType) {
+        return StringUtils.containsAny(docType, DOC_TYPES_MUST_CONTAINS_CHARS);
+    }
+
+    private String resolveDocType(String rawDocType) {
+        QName docType = QName.resolveToQName(namespaceService, rawDocType);
+        if (docType != null) {
+            return docType.toString();
         }
+
+        log.warn("Document type qname '{}' is not found", rawDocType);
+        return rawDocType;
     }
 
     private void appendDocumentParamPredicate(String documentParam, AndPredicate predicate) {
-        if (StringUtils.isNotBlank(documentParam)) {
-            if (!NodeRef.isNodeRef(documentParam)) {
-                return;
-            }
+        if (StringUtils.isBlank(documentParam)) {
+            return;
+        }
 
-            String docAttr = WorkflowMirrorModel.PROP_DOCUMENT.toPrefixString(namespaceService);
-            Predicate documentPredicate = ValuePredicate.equal(docAttr, documentParam);
+        RecordRef recordRef = RecordRef.valueOf(documentParam);
+        String id = recordRef.getId();
 
-            predicate.addPredicate(documentPredicate);
+        if (isInvalidNodeRef(id, "document")) {
+            return;
+        }
+
+        predicate.addPredicate(ValuePredicate.equal(DOCUMENT_ATTR, id));
+    }
+
+    private boolean isInvalidNodeRef(String nodeRef, String attName) {
+        if (StringUtils.isNotBlank(nodeRef) && NodeRef.isNodeRef(nodeRef)) {
+            return false;
+        }
+
+        log.warn("Param {} mus be nodeRef, but is '{}'", attName, nodeRef);
+        return true;
+    }
+
+    private void appendPrioritiesPredicate(List<String> priorities, AndPredicate predicate) {
+        if (CollectionUtils.isNotEmpty(priorities)) {
+            predicate.addPredicate(getPrioritiesPredicate(priorities));
         }
     }
 
-    private OrPredicate getActorsPredicate(List<String> actors) {
-        Set<String> actorRefs = actors.stream().flatMap(actor -> {
-            if (CURRENT_USER.equals(actor)) {
-                actor = AuthenticationUtil.getRunAsUser();
-            } else if (NodeRef.isNodeRef(actor)) {
-                actor = authorityUtils.getAuthorityName(new NodeRef(actor));
-            }
-            return Stream.concat(authorityUtils.getContainingAuthoritiesRefs(actor).stream(),
-                    Stream.of(authorityUtils.getNodeRef(actor)))
-                    .map(NodeRef::toString);
-        }).collect(Collectors.toSet());
+    private Predicate getPrioritiesPredicate(List<String> priorities) {
+        OrPredicate orPredicate = new OrPredicate();
+        priorities.forEach(priority -> orPredicate.addPredicate(ValuePredicate.equal(PRIORITY_ATTR, priority)));
+        return orPredicate;
+    }
 
-        OrPredicate orPred = new OrPredicate();
-        actorRefs.forEach(a -> {
+    private void appendCounterpartiesPredicate(List<String> counterparties, AndPredicate predicate) {
+        if (CollectionUtils.isNotEmpty(counterparties)) {
+            predicate.addPredicate(getCounterpartiesPredicate(counterparties));
+        }
+    }
+
+    private Predicate getCounterpartiesPredicate(List<String> counterparties) {
+        OrPredicate orPredicate = new OrPredicate();
+
+        for (String counterparty : counterparties) {
+            RecordRef recordRef = RecordRef.valueOf(counterparty);
+            String id = recordRef.getId();
+
+            if (isInvalidNodeRef(id, "counterparty")) {
+                continue;
+            }
+
             ValuePredicate valuePredicate = new ValuePredicate();
             valuePredicate.setType(ValuePredicate.Type.CONTAINS);
-            valuePredicate.setAttribute("wfm:actors");
-            valuePredicate.setValue(a);
-            orPred.addPredicate(valuePredicate);
-        });
+            valuePredicate.setAttribute(COUNTERPARTY_ATTR);
+            valuePredicate.setValue(id);
+            orPredicate.addPredicate(valuePredicate);
+        }
 
-        return orPred;
+        return orPredicate;
     }
 
     RecordsQueryResult<WorkflowTaskRecords.TaskIdQuery> queryTasks(ComposedPredicate predicate, RecordsQuery query) {
@@ -182,7 +259,7 @@ public class WorkflowTaskRecordsUtils {
         taskRecordsQuery.setConsistency(QueryConsistency.EVENTUAL);
 
         RecordsQueryResult<WorkflowTaskRecords.TaskIdQuery> result = recordsService.queryRecords(taskRecordsQuery,
-                WorkflowTaskRecords.TaskIdQuery.class);
+            WorkflowTaskRecords.TaskIdQuery.class);
 
         if (filterByActiveTaskRequired) {
             filterActiveTask(result, query);
@@ -210,12 +287,12 @@ public class WorkflowTaskRecordsUtils {
         taskQueryResult.setTotalCount(totalCount);
 
         log.debug(String.format("finish filtering:" +
-                        "\nresult:%s" +
-                        "\nmaxItems:%s" +
-                        "\ntaskQueryResultTotalCount:%s" +
-                        "\nrecordsCount:%s" +
-                        "\nfilteredCount:%s", filteredRecords, maxItems, taskQueryResultTotalCount, recordsCount,
-                filteredCount));
+                "\nresult:%s" +
+                "\nmaxItems:%s" +
+                "\ntaskQueryResultTotalCount:%s" +
+                "\nrecordsCount:%s" +
+                "\nfilteredCount:%s", filteredRecords, maxItems, taskQueryResultTotalCount, recordsCount,
+            filteredCount));
     }
 
     private boolean taskIsActive(String taskId) {
@@ -264,20 +341,20 @@ public class WorkflowTaskRecordsUtils {
 
         FilterByActiveTask(RecordsQueryResult<WorkflowTaskRecords.TaskIdQuery> data, int maxItems) {
             filteredData = data.getRecords()
-                    .stream()
-                    .filter(taskIdQuery -> {
-                        if (maxItems > -1 && maxItems <= recordsCount.getAndIncrement()) {
-                            return false;
-                        }
+                .stream()
+                .filter(taskIdQuery -> {
+                    if (maxItems > -1 && maxItems <= recordsCount.getAndIncrement()) {
+                        return false;
+                    }
 
-                        if (taskIsActive(taskIdQuery.getTaskId())) {
-                            return true;
-                        } else {
-                            filteredCount.incrementAndGet();
-                            return false;
-                        }
-                    })
-                    .collect(Collectors.toList());
+                    if (taskIsActive(taskIdQuery.getTaskId())) {
+                        return true;
+                    } else {
+                        filteredCount.incrementAndGet();
+                        return false;
+                    }
+                })
+                .collect(Collectors.toList());
         }
     }
 

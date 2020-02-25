@@ -10,13 +10,11 @@
 	<bean id="workflowMirrorInterceptor" class="ru.citeck.ecos.workflow.mirror.MirrorInterceptor" init-method="init">
 		<property name="workflowMirrorServiceName" value="workflowMirrorService" />
 	</bean>
-	
+
 	<bean class="ru.citeck.ecos.spring.AddToList">
 		<property name="list" ref="WorkflowService.Interceptors" />
 		<property name="value" value="workflowMirrorInterceptor" />
 	</bean>
-
-	<bean id="documentToCounterparty.mappingRegistry" class="ru.citeck.ecos.spring.registry.MappingRegistry"/>
 
 	<bean id="idocs.workflowMirror.documentToCounterparty.mapping" class="ru.citeck.ecos.spring.registry.MappingRegistrar">
 		<constructor-arg ref="documentToCounterparty.mappingRegistry"/>
@@ -35,7 +33,7 @@
             <map></map>
         </property>
     </bean>
-	
+
 	<bean id="workflowMirrorService" class="ru.citeck.ecos.workflow.mirror.WorkflowMirrorServiceImpl" parent="baseJavaScriptExtension">
 		<property name="nodeService" ref="nodeService" />
 		<property name="actionService" ref="actionService" />
@@ -51,9 +49,7 @@
 		<property name="dictionaryService" ref="dictionaryService" />
 		<property name="messageLookup" ref="messageService" />
 		<property name="mlAwareNodeService" ref="mlAwareNodeService" />
-		<property name="namespaceService" ref="namespaceService"/>
 		<property name="caseStatusService" ref="caseStatusService"/>
-		<property name="documentToCounterparty" ref="documentToCounterparty.mappingRegistry"/>
 	</bean>
 
 	<bean id="workflowMirrorBehaviour" class="ru.citeck.ecos.workflow.mirror.MirrorBehaviour" init-method="init">
