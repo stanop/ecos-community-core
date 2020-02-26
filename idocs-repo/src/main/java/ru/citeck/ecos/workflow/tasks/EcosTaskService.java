@@ -16,6 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class EcosTaskService {
 
+    private static final String TASKS_PREFIX = "task-%s";
+
     public static final String FIELD_COMMENT = "comment";
 
     private static final String ASSIGNEE_NOT_MATCH_ERR_MSG_KEY = "ecos.task.complete.assignee.validation.error";
@@ -66,7 +68,7 @@ public class EcosTaskService {
         Map<String, Object> finalVariables = new HashMap<>(variables);
         Map<String, Object> finalTransientVariables = new HashMap<>(transientVariables);
 
-        lockUtils.doWithLock(taskId, () -> {
+        lockUtils.doWithLock(String.format(TASKS_PREFIX, taskId), () -> {
             taskService.endTask(task.getLocalId(), transition, finalVariables, finalTransientVariables);
         });
     }

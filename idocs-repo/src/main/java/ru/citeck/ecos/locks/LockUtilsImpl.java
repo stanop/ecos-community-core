@@ -16,9 +16,9 @@ import java.util.concurrent.TimeUnit;
 public class LockUtilsImpl implements LockUtils {
 
     private static final String QNAME_TEMPLATE = "ECOSJob-%s";
-    private static final String JOB_ABORTED_TEMPLATE = "Job %s aborted.";
-    private static final String LOCK_INFO_IS_EMPTY = "lockToken or lockQName is empty";
-    private static final String LOCK_RELEASE_ERROR = "Error while release lock for job %s";
+    private static final String JOB_ABORTED_TEMPLATE = "Job %s aborted. LockToken: %s";
+    private static final String LOCK_INFO_IS_EMPTY = "One or more params is empty.\n\tLockToken: %s\n\tLockQName: %s";
+    private static final String LOCK_RELEASE_ERROR = "Error while release lock for job %s. LockToken: %s";
 
     private JobLockService jobLockService;
 
@@ -39,7 +39,7 @@ public class LockUtilsImpl implements LockUtils {
 
     @Override
     public <T> T doWithLock(String lockId, long timeToLive, TimeUnit unit, Callable<T> job) {
-        long millisecondToLive = convertTimeToMilliseconds(timeToLive, unit);
+        long millisecondToLive = unit.toMillis(timeToLive);
         QName lockQName = QName.createQName(String.format(QNAME_TEMPLATE, lockId));
 
         String lockToken = null;
@@ -47,30 +47,23 @@ public class LockUtilsImpl implements LockUtils {
             lockToken = getAndRefreshLock(lockQName, millisecondToLive);
             return job.call();
         } catch (Exception e) {
-            log.error(String.format(JOB_ABORTED_TEMPLATE, lockQName.getLocalName()));
+            log.error(String.format(JOB_ABORTED_TEMPLATE, lockQName.getLocalName(), lockToken), e.getMessage(), e);
         } finally {
             releaseLock(lockToken, lockQName);
         }
         return null;
     }
 
-    private long convertTimeToMilliseconds(long timeToLive, TimeUnit unit) {
-        TimeUnit tu = TimeUnit.MILLISECONDS;
-        return tu.convert(timeToLive, unit);
-    }
-
     private void releaseLock(String lockToken, QName lockQName) {
         if (StringUtils.isEmpty(lockToken) || lockQName == null) {
-            if (log.isDebugEnabled()) {
-                log.error(LOCK_INFO_IS_EMPTY);
-            }
+            log.error(String.format(LOCK_INFO_IS_EMPTY, lockToken, lockQName));
             return;
         }
 
         try {
             jobLockService.releaseLockVerify(lockToken, lockQName);
         } catch (Exception e) {
-            log.error(String.format(LOCK_RELEASE_ERROR, lockQName.getLocalName()));
+            log.error(String.format(LOCK_RELEASE_ERROR, lockQName.getLocalName(), lockToken), e.getMessage(), e);
         }
     }
 
