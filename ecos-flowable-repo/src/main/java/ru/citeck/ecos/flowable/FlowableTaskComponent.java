@@ -116,7 +116,7 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
      */
     @Override
     public List<WorkflowTask> getAssignedTasks(String authority, WorkflowTaskState state, boolean lazyInitialization) {
-        return new ArrayList<>();
+        return Collections.EMPTY_LIST;
     }
 
     /**
@@ -128,7 +128,7 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
      */
     @Override
     public List<WorkflowTask> getPooledTasks(List<String> authorities, boolean lazyInitialization) {
-        return new ArrayList<>();
+        return Collections.EMPTY_LIST;
     }
 
     /**
@@ -235,7 +235,7 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
     public WorkflowTask endTask(String taskId, String transitionId) {
         String localId = getLocalValue(taskId);
         if (localId.startsWith(START_TASK_PREFIX)) {
-            return lockUtils.doWithLock(taskId, () -> endStartTask(localId));
+            return lockUtils.doWithLock(FLOWABLE_PREFIX + taskId, () -> endStartTask(localId));
         } else {
             return endNormalTask(localId, transitionId);
         }
@@ -319,7 +319,7 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
      */
     @Override
     public List<WorkflowTask> getStartTasks(List<String> workflowInstanceIds, boolean sameSession) {
-        return new ArrayList<>();
+        return Collections.EMPTY_LIST;
     }
 
 

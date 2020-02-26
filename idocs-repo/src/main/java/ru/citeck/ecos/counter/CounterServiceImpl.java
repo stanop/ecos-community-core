@@ -31,6 +31,8 @@ import ru.citeck.ecos.model.CounterModel;
 
 public class CounterServiceImpl implements CounterService {
 
+    private static final String COUNTERS_PREFIX = "counter-%s";
+
     private NodeService nodeService;
     private NodeRef counterRoot;
     private TransactionService transactionService;
@@ -39,7 +41,7 @@ public class CounterServiceImpl implements CounterService {
     @Override
     public void setCounterLast(final String counterName, final long value) {
         lockUtils.doWithLock(
-            counterName,
+            String.format(COUNTERS_PREFIX, counterName),
             () -> transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
                 NodeRef counter = getCounter(counterName, true);
                 setCounter(counter, value);
@@ -59,7 +61,7 @@ public class CounterServiceImpl implements CounterService {
     @Override
     public Long getCounterNext(final String counterName, final boolean increment) {
         return lockUtils.doWithLock(
-            counterName,
+            String.format(COUNTERS_PREFIX, counterName),
             () -> transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
                 NodeRef counter = getCounter(counterName, increment);
                 if (counter == null) {
