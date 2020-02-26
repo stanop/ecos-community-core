@@ -1,13 +1,20 @@
 package ru.citeck.ecos.records;
 
+import com.netflix.appinfo.InstanceInfo;
 import org.alfresco.service.ServiceRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import ru.citeck.ecos.eureka.EcosEurekaClient;
 import ru.citeck.ecos.eureka.EurekaContextConfig;
 import ru.citeck.ecos.graphql.AlfGqlContext;
+import ru.citeck.ecos.records2.RecordsProperties;
 import ru.citeck.ecos.records2.predicate.PredicateService;
 import ru.citeck.ecos.records2.querylang.QueryLangService;
 import ru.citeck.ecos.records2.QueryContext;
@@ -19,7 +26,7 @@ import ru.citeck.ecos.records2.meta.RecordsMetaService;
 import ru.citeck.ecos.records2.request.rest.RestHandler;
 import ru.citeck.ecos.records2.resolver.RecordsResolver;
 import ru.citeck.ecos.records2.resolver.RemoteRecordsResolver;
-import ru.citeck.ecos.records2.source.dao.remote.RecordsRestConnection;
+import ru.citeck.ecos.records2.rest.*;
 
 import java.util.function.Supplier;
 
@@ -28,6 +35,10 @@ public class RecordsConfiguration extends RecordsServiceFactory {
 
     @Autowired
     private ServiceRegistry serviceRegistry;
+    @Autowired
+    private EcosEurekaClient ecosEurekaClient;
+    @Autowired
+    private RecordsProperties properties;
 
     @Autowired
     @Qualifier(EurekaContextConfig.REST_TEMPLATE_ID)
@@ -36,7 +47,12 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     @Bean
     @Override
     protected RecordsService createRecordsService() {
-        return new RecordsServiceImpl(this);
+        return super.createRecordsService();
+    }
+
+    @Override
+    protected Class<? extends RecordsService> getRecordsServiceType() {
+        return RecordsServiceImpl.class;
     }
 
     @Bean
@@ -47,13 +63,51 @@ public class RecordsConfiguration extends RecordsServiceFactory {
 
     @Override
     protected RemoteRecordsResolver createRemoteRecordsResolver() {
+        RemoteRecordsRestApi restApi = new RemoteRecordsRestApi(this::jsonPost, remoteAppInfoProvider(), properties);
+        return new RemoteRecordsResolver(this, restApi);
+    }
 
-        return new RemoteRecordsResolver(new RecordsRestConnection() {
-            @Override
-            public <T> T jsonPost(String url, Object body, Class<T> respType) {
-                return eurekaRestTemplate.postForObject("http:/" + url, body, respType);
+    private RestResponseEntity jsonPost(String url, RestRequestEntity request) {
+
+        org.springframework.http.HttpHeaders headers = new HttpHeaders();
+        request.getHeaders().forEach(headers::put);
+        HttpEntity<byte[]> httpEntity = new HttpEntity<>(request.getBody(), headers);
+
+        ResponseEntity<byte[]> result = eurekaRestTemplate.exchange(url, HttpMethod.POST, httpEntity, byte[].class);
+
+        RestResponseEntity resultEntity = new RestResponseEntity();
+        resultEntity.setBody(result.getBody());
+        resultEntity.setStatus(result.getStatusCode().value());
+        result.getHeaders().forEach((k, v) -> resultEntity.getHeaders().put(k, v));
+
+        return resultEntity;
+    }
+
+    private RemoteAppInfoProvider remoteAppInfoProvider() {
+
+        return appName -> {
+
+            InstanceInfo instanceInfo = ecosEurekaClient.getInstanceInfo(appName);
+            if (instanceInfo == null) {
+                return null;
             }
-        });
+
+            RemoteAppInfo info = new RemoteAppInfo();
+            info.setIp(instanceInfo.getIPAddr());
+            info.setHost(instanceInfo.getHostName());
+            info.setPort(instanceInfo.getPort());
+
+            info.setRecordsBaseUrl(instanceInfo.getMetadata().get(RestConstants.RECS_BASE_URL_META_KEY));
+            info.setRecordsUserBaseUrl(instanceInfo.getMetadata().get(RestConstants.RECS_USER_BASE_URL_META_KEY));
+
+            return info;
+        };
+    }
+
+    @Bean
+    @Override
+    protected RecordsProperties createProperties() {
+        return super.createProperties();
     }
 
     @Bean
