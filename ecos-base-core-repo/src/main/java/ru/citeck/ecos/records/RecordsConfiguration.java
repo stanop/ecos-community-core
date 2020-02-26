@@ -4,6 +4,7 @@ import com.netflix.appinfo.InstanceInfo;
 import org.alfresco.service.ServiceRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpEntity;
@@ -18,6 +19,7 @@ import ru.citeck.ecos.records2.RecordsProperties;
 import ru.citeck.ecos.records2.predicate.PredicateService;
 import ru.citeck.ecos.records2.querylang.QueryLangService;
 import ru.citeck.ecos.records2.QueryContext;
+import ru.citeck.ecos.records2.RecordsProperties;
 import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.RecordsServiceFactory;
 import ru.citeck.ecos.records2.graphql.RecordsMetaGql;
@@ -32,6 +34,9 @@ import java.util.function.Supplier;
 
 @Configuration
 public class RecordsConfiguration extends RecordsServiceFactory {
+
+    @Value("${records.configuration.app.name}")
+    private String appName;
 
     @Autowired
     private ServiceRegistry serviceRegistry;
@@ -107,6 +112,15 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     @Bean
     @Override
     protected RecordsProperties createProperties() {
+        return super.createProperties();
+    }
+
+    @Override
+    protected RecordsProperties createProperties() {
+        //TODO: fix bugs before
+        /*RecordsProperties properties = super.createProperties();
+        properties.setAppName(appName);
+        return properties;*/
         return super.createProperties();
     }
 

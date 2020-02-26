@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2018 Citeck LLC.
+ * Copyright (C) 2008-2020 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -25,7 +25,6 @@ import org.alfresco.repo.processor.BaseProcessorExtension;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.action.Action;
 import org.alfresco.service.cmr.action.ActionService;
-import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.TypeDefinition;
 import org.alfresco.service.cmr.i18n.MessageLookup;
@@ -40,28 +39,27 @@ import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.cmr.workflow.WorkflowTaskQuery;
 import org.alfresco.service.cmr.workflow.WorkflowTaskState;
-import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.document.CounterpartyResolver;
 import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.model.BpmModel;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.WorkflowMirrorModel;
+import ru.citeck.ecos.node.EcosTypeService;
 import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
 import ru.citeck.ecos.orgstruct.OrgStructService;
-import ru.citeck.ecos.spring.registry.MappingRegistry;
+import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.utils.NodeUtils;
-import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.utils.TransactionUtils;
 import ru.citeck.ecos.utils.WorkflowUtils;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements WorkflowMirrorService {
 
@@ -82,10 +80,10 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     private DictionaryService dictionaryService;
     private MessageLookup messageLookup;
     private NodeService mlAwareNodeService;
-    private NamespaceService namespaceService;
     private CaseStatusService caseStatusService;
-    private MappingRegistry<String, String> documentToCounterparty;
     private WorkflowUtils workflowUtils;
+    private CounterpartyResolver counterpartyResolver;
+    private EcosTypeService ecosTypeService;
 
     private NodeUtils nodeUtils;
 
@@ -181,7 +179,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
     private void mirrorTaskBeforeCommit(RawTaskInfo rawTaskInfo) {
         TransactionUtils.processAfterBehaviours(KEY_TASKS_TO_MIRROR, rawTaskInfo, info ->
-                mirrorTaskImpl(getTask(info.getTaskId()), getTaskMirror(info.getTaskId()), info.isFullPersist())
+            mirrorTaskImpl(getTask(info.getTaskId()), getTaskMirror(info.getTaskId()), info.isFullPersist())
         );
     }
 
@@ -212,7 +210,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
             // override flowable priorty property to match activiti constrait
             if (nodeInfo.getProperty(BpmModel.PROPERTY_PRIORITY) != null
-                    && (Integer) nodeInfo.getProperty(BpmModel.PROPERTY_PRIORITY) > 3) {
+                && (Integer) nodeInfo.getProperty(BpmModel.PROPERTY_PRIORITY) > 3) {
                 nodeInfo.setProperty(BpmModel.PROPERTY_PRIORITY, 2);
             }
 
@@ -286,17 +284,23 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT, document);
             nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_TYPE, nodeService.getType(document));
             nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_TYPE_TITLE, getMlDocumentTypeTitle(document));
-            nodeInfo.setProperty(WorkflowMirrorModel.PROP_COUNTERPARTY, getCounterparty(document));
+            nodeInfo.setProperty(WorkflowMirrorModel.PROP_COUNTERPARTY, counterpartyResolver.resolve(document));
             nodeInfo.setProperty(WorkflowMirrorModel.PROP_CASE_STATUS, caseStatusService.getStatusRef(document));
+            nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_ECOS_TYPE, getEcosType(document));
 
             NodeRef documentKind = getDocumentKind(document);
             if (documentKind != null && nodeService.exists(documentKind)) {
                 nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_KIND, documentKind);
                 nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_KIND_TITLE,
-                        mlAwareNodeService.getProperty(documentKind, ContentModel.PROP_TITLE));
+                    mlAwareNodeService.getProperty(documentKind, ContentModel.PROP_TITLE));
             }
             nodeInfo.createSourceAssociation(document, WorkflowMirrorModel.ASSOC_MIRROR_TASK);
         }
+    }
+
+    private String getEcosType(NodeRef document) {
+        RecordRef ecosTypeRef = ecosTypeService.getEcosType(document);
+        return ecosTypeRef != null ? ecosTypeRef.toString() : null;
     }
 
     @SuppressWarnings({"unchecked", "deprecation"})
@@ -407,34 +411,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
         return null;
     }
 
-    private NodeRef getCounterparty(NodeRef document) {
-        QName documentType = nodeService.getType(document);
-
-        Map<QName, QName> mapping = documentToCounterparty.getMapping().entrySet().stream().collect(Collectors.toMap(
-                entry -> QName.resolveToQName(namespaceService, entry.getKey()),
-                entry -> QName.resolveToQName(namespaceService, entry.getValue())
-        ));
-
-        if (mapping.containsKey(documentType)) {
-            return RepoUtils.getFirstTargetAssoc(document, mapping.get(documentType), nodeService);
-        }
-
-        ClassDefinition classDefinition = dictionaryService.getClass(documentType);
-        while (classDefinition != null) {
-            classDefinition = classDefinition.getParentClassDefinition();
-            if (classDefinition != null) {
-                QName currentName = classDefinition.getName();
-                if (mapping.containsKey(currentName)) {
-                    QName assocType = mapping.get(currentName);
-                    return RepoUtils.getFirstTargetAssoc(document, assocType, nodeService);
-                }
-            }
-        }
-
-        return null;
-    }
-
-    class RawTaskInfo {
+    static class RawTaskInfo {
 
         private String taskId;
         private boolean fullPersist;
@@ -471,8 +448,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             }
 
             RawTaskInfo that = (RawTaskInfo) o;
-            return fullPersist == that.fullPersist &&
-                    Objects.equals(taskId, that.taskId);
+            return fullPersist == that.fullPersist && Objects.equals(taskId, that.taskId);
         }
 
         @Override
@@ -543,15 +519,17 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
         this.mlAwareNodeService = mlAwareNodeService;
     }
 
-    public void setDocumentToCounterparty(MappingRegistry<String, String> documentToCounterparty) {
-        this.documentToCounterparty = documentToCounterparty;
-    }
-
-    public void setNamespaceService(NamespaceService namespaceService) {
-        this.namespaceService = namespaceService;
-    }
-
     public void setCaseStatusService(CaseStatusService caseStatusService) {
         this.caseStatusService = caseStatusService;
+    }
+
+    @Autowired
+    public void setCounterpartyResolver(CounterpartyResolver counterpartyResolver) {
+        this.counterpartyResolver = counterpartyResolver;
+    }
+
+    @Autowired
+    public void setEcosTypeService(EcosTypeService ecosTypeService) {
+        this.ecosTypeService = ecosTypeService;
     }
 }

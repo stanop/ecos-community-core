@@ -3,7 +3,7 @@ package ru.citeck.ecos.records.workflow;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import graphql.language.ObjectValue;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
@@ -19,10 +19,13 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.commons.data.DataValue;
+import ru.citeck.ecos.document.CounterpartyResolver;
 import ru.citeck.ecos.document.sum.DocSumService;
 import ru.citeck.ecos.records2.predicate.model.ComposedPredicate;
+import ru.citeck.ecos.node.EcosTypeService;
 import ru.citeck.ecos.records.RecordConstants;
 import ru.citeck.ecos.records.models.AuthorityDTO;
 import ru.citeck.ecos.records.models.UserDTO;
@@ -57,9 +60,9 @@ import static ru.citeck.ecos.records.workflow.WorkflowTaskRecordsConstants.*;
 
 @Component
 public class WorkflowTaskRecords extends LocalRecordsDAO
-        implements RecordsMetaLocalDAO<MetaValue>,
-        MutableRecordsDAO,
-        RecordsQueryLocalDAO {
+    implements RecordsMetaLocalDAO<MetaValue>,
+    MutableRecordsDAO,
+    RecordsQueryLocalDAO {
 
     private static final String DOCUMENT_FIELD_PREFIX = "_ECM_";
     private static final String OUTCOME_PREFIX = "outcome_";
@@ -71,22 +74,29 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     private final WorkflowTaskRecordsUtils workflowTaskRecordsUtils;
     private final OwnerService ownerService;
     private final DocSumService docSumService;
+    private final CounterpartyResolver counterpartyResolver;
     private final WorkflowUtils workflowUtils;
     private final AuthorityUtils authorityUtils;
     private final NamespaceService namespaceService;
     private final DictionaryService dictionaryService;
+    private final EcosTypeService ecosTypeService;
+
+    @Value("${records.configuration.app.name}")
+    private String appName;
 
     @Autowired
     public WorkflowTaskRecords(EcosTaskService ecosTaskService,
                                WorkflowTaskRecordsUtils workflowTaskRecordsUtils,
                                AuthorityService authorityService, OwnerService ownerService,
                                DocSumService docSumService,
+                               CounterpartyResolver counterpartyResolver,
                                WorkflowUtils workflowUtils, AuthorityUtils authorityUtils,
                                NamespaceService namespaceService,
-                               DictionaryService dictionaryService) {
+                               DictionaryService dictionaryService, EcosTypeService ecosTypeService) {
+        setId(ID);
+        this.counterpartyResolver = counterpartyResolver;
         this.namespaceService = namespaceService;
         this.dictionaryService = dictionaryService;
-        setId(ID);
         this.ecosTaskService = ecosTaskService;
         this.workflowTaskRecordsUtils = workflowTaskRecordsUtils;
         this.authorityService = authorityService;
@@ -94,6 +104,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         this.docSumService = docSumService;
         this.workflowUtils = workflowUtils;
         this.authorityUtils = authorityUtils;
+        this.ecosTypeService = ecosTypeService;
     }
 
     @Override
@@ -102,11 +113,11 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         RecordsMutResult result = new RecordsMutResult();
 
         result.setRecords(mutation.getRecords()
-                .stream()
-                .map(meta -> new RecordMeta(meta, RecordRef.valueOf(meta.getId().getId())))
-                .map(this::mutate)
-                .map(meta -> new RecordMeta(meta, RecordRef.create(getId(), meta.getId())))
-                .collect(Collectors.toList()));
+            .stream()
+            .map(meta -> new RecordMeta(meta, RecordRef.valueOf(meta.getId().getId())))
+            .map(this::mutate)
+            .map(meta -> new RecordMeta(meta, RecordRef.create(getId(), meta.getId())))
+            .collect(Collectors.toList()));
 
         return result;
     }
@@ -257,6 +268,11 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             return null;
         }
 
+        if (query.priorities != null || query.counterparties != null || query.docTypes != null
+            || query.docEcosTypes != null) {
+            return null;
+        }
+
         int idx = document.lastIndexOf('@');
         if (idx > -1 && idx < document.length() - 1) {
             document = document.substring(idx + 1);
@@ -298,8 +314,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         if (tasks != null) {
 
             List<RecordRef> taskRefs = tasks.stream()
-                    .map(t -> RecordRef.valueOf(t.getId()))
-                    .collect(Collectors.toList());
+                .map(t -> RecordRef.valueOf(t.getId()))
+                .collect(Collectors.toList());
 
             RecordsQueryResult<RecordRef> result = new RecordsQueryResult<>();
             result.setRecords(taskRefs);
@@ -324,9 +340,10 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         }).collect(Collectors.toList());
     }
 
+    @Data
     public static class TaskIdQuery {
         @MetaAtt("cm:name")
-        @Getter @Setter public String taskId;
+        public String taskId;
 
         @Override
         public String toString() {
@@ -334,16 +351,20 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         }
     }
 
+    @Data
     public static class TasksQuery {
 
-        @Getter @Setter public String workflowId;
-        @Getter @Setter public String engine;
-        @Getter @Setter public List<String> assignees;
-        @Getter @Setter public List<String> actors;
-        @Getter @Setter public Boolean active;
-        @Getter @Setter public String docStatus;
-        @Getter @Setter public String docType;
-        @Getter @Setter public String document;
+        public String workflowId;
+        public String engine;
+        public List<String> assignees;
+        public List<String> actors;
+        public Boolean active;
+        public String docStatus;
+        public List<String> docTypes;
+        public String document;
+        public List<String> priorities;
+        public List<String> counterparties;
+        public List<String> docEcosTypes;
 
         public void setAssignee(String assignee) {
             if (assignees == null) {
@@ -358,9 +379,37 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             }
             actors.add(actor);
         }
+
+        public void setDocType(String docType) {
+            if (docTypes == null) {
+                docTypes = new ArrayList<>();
+            }
+            docTypes.add(docType);
+        }
+
+        public void setPriority(String priority) {
+            if (priorities == null) {
+                priorities = new ArrayList<>();
+            }
+            priorities.add(priority);
+        }
+
+        public void setCounterparty(String counterparty) {
+            if (counterparties == null) {
+                counterparties = new ArrayList<>();
+            }
+            counterparties.add(counterparty);
+        }
+
+        public void setDocEcosType(String docEcosType) {
+            if (docEcosTypes == null) {
+                docEcosTypes = new ArrayList<>();
+            }
+            docEcosTypes.add(docEcosType);
+        }
     }
 
-    public class EmptyTask implements MetaValue {
+    public static class EmptyTask implements MetaValue {
 
         private final String id;
 
@@ -490,6 +539,11 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             boolean hasOwner = attributes.get("cm_owner") != null;
             boolean hasClaimOwner = attributes.get("claimOwner") != null;
 
+            RecordRef document = getDocumentRef();
+            String documentRefId = document.getId();
+            NodeRef documentNodeRef = StringUtils.isNotBlank(documentRefId) && NodeRef.isNodeRef(documentRefId) ?
+                new NodeRef(documentRefId) : null;
+
             switch (name) {
                 case ATT_SENDER:
                     String userName = (String) attributes.get("cwf_sender");
@@ -516,23 +570,23 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     return recordsService.getMeta(candidateRecordRef, AuthorityDTO.class);
                 case ATT_ACTORS:
                     return taskInfo.getActors()
-                            .stream()
-                            .map(actor -> {
-                                RecordRef rr = RecordRef.create("", actor);
-                                AuthorityDTO dto = recordsService.getMeta(rr, AuthorityDTO.class);
-                                if (StringUtils.isNotBlank(dto.getAuthorityName())) {
-                                    Set<String> containedUsers = authorityService.getContainedAuthorities(
-                                            AuthorityType.USER, dto.getAuthorityName(), false);
-                                    List<UserDTO> users = containedUsers.stream()
-                                            .map(s -> recordsService.getMeta(RecordRef.create("",
-                                                    authorityService.getAuthorityNodeRef(s).toString()),
-                                                    UserDTO.class))
-                                            .collect(Collectors.toList());
-                                    dto.setContainedUsers(users);
-                                }
-                                return dto;
-                            })
-                            .collect(Collectors.toList());
+                        .stream()
+                        .map(actor -> {
+                            RecordRef rr = RecordRef.create("", actor);
+                            AuthorityDTO dto = recordsService.getMeta(rr, AuthorityDTO.class);
+                            if (StringUtils.isNotBlank(dto.getAuthorityName())) {
+                                Set<String> containedUsers = authorityService.getContainedAuthorities(
+                                    AuthorityType.USER, dto.getAuthorityName(), false);
+                                List<UserDTO> users = containedUsers.stream()
+                                    .map(s -> recordsService.getMeta(RecordRef.create("",
+                                        authorityService.getAuthorityNodeRef(s).toString()),
+                                        UserDTO.class))
+                                    .collect(Collectors.toList());
+                                dto.setContainedUsers(users);
+                            }
+                            return dto;
+                        })
+                        .collect(Collectors.toList());
                 case ATT_DUE_DATE:
                     return attributes.get("bpm_dueDate");
                 case ATT_STARTED:
@@ -554,10 +608,22 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 case ATT_ACTIVE:
                     return attributes.get("bpm_completionDate") == null;
                 case ATT_DOC_SUM:
-                    String ref = getDocumentRef().getId();
-                    if (NodeRef.isNodeRef(ref)) {
-                        NodeRef document = new NodeRef(ref);
-                        return docSumService.getSum(document);
+                    if (documentNodeRef != null) {
+                        return docSumService.getSum(documentNodeRef);
+                    }
+                    return null;
+                case ATT_COUNTERPARTY:
+                    if (documentNodeRef != null) {
+                        NodeRef counterparty = counterpartyResolver.resolve(documentNodeRef);
+                        return counterparty != null ? RecordRef.create(appName, "",
+                            counterparty.toString()) : null;
+                    }
+                    return null;
+                case ATT_DOCUMENT:
+                    return documentRef;
+                case ATT_DOC_ECOS_TYPE:
+                    if (documentNodeRef != null) {
+                        return ecosTypeService.getEcosType(documentNodeRef);
                     }
                     return null;
             }

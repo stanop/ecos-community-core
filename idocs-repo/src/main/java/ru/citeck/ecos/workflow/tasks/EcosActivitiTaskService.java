@@ -19,6 +19,7 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.records2.RecordRef;
@@ -38,6 +39,9 @@ public class EcosActivitiTaskService implements EngineTaskService {
     private static final String VAR_PACKAGE = "bpm_package";
     private static final String DEFAULT_OUTCOME_FIELD = "bpm_outcome";
     private static final String OUTCOME_FIELD = "outcome";
+
+    @Value("${records.configuration.app.name}")
+    private String appName;
 
     @Autowired
     private TaskService taskService;
@@ -172,7 +176,7 @@ public class EcosActivitiTaskService implements EngineTaskService {
         }
         NodeRef documentRef = workflowUtils.getTaskDocumentFromPackage(bpmPackage);
 
-        return documentRef != null ? RecordRef.valueOf(documentRef.toString()) : RecordRef.EMPTY;
+        return documentRef != null ? RecordRef.create(appName, "", documentRef.toString()) : RecordRef.EMPTY;
     }
 
     @Override
@@ -250,9 +254,9 @@ public class EcosActivitiTaskService implements EngineTaskService {
         @Override
         public List<String> getActors() {
             return workflowUtils.getTaskActors(ENGINE_PREFIX + getId())
-                    .stream()
-                    .map(NodeRef::toString)
-                    .collect(Collectors.toList());
+                .stream()
+                .map(NodeRef::toString)
+                .collect(Collectors.toList());
         }
 
         @Override

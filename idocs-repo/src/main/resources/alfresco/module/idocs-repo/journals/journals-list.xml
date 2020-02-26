@@ -625,9 +625,9 @@
         </actions>
         <headers>
             <header key="module_id" default="true" />
-            <header key="key" default="true" />
-            <header key="user" default="true" />
-            <header key="type" default="true" />
+            <header key="typeRef" default="true" />
+            <header key="authority" default="true" />
+            <header key="priority" default="true" />
             <header key="publishStatus" default="true" />
             <header key="publishMsg" default="true" />
         </headers>

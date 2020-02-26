@@ -58,8 +58,10 @@ import static ru.citeck.ecos.model.ClassificationModel.PROP_DOCUMENT_TYPE;
 @Component
 @Slf4j
 public class AlfNodesRecordsDAO extends LocalRecordsDAO
-    implements RecordsQueryDAO, RecordsMetaLocalDAO<MetaValue>, RecordsQueryWithMetaLocalDAO<Object>,
-    MutableRecordsDAO, RecordsActionExecutor {
+                             implements RecordsQueryDAO,
+                                        RecordsMetaLocalDAO<MetaValue>,
+                                        RecordsQueryWithMetaLocalDAO<Object>,
+                                        MutableRecordsDAO, RecordsActionExecutor {
 
     public static final String ID = "";
     private static final String ADD_CMD_PREFIX = "att_add_";

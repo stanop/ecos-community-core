@@ -13,6 +13,7 @@ import org.flowable.identitylink.api.IdentityLinkType;
 import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.services.FlowableHistoryService;
 import ru.citeck.ecos.flowable.services.FlowableTaskService;
@@ -41,6 +42,9 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
     private static final String OUTCOME_FIELD = "outcome";
 
     private TaskService taskService;
+
+    @Value("${records.configuration.app.name}")
+    private String appName;
 
     @Autowired
     private EcosTaskService ecosTaskService;
@@ -233,7 +237,7 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
         Object bpmPackage = getVariable(taskId, VAR_PACKAGE);
         NodeRef documentRef = workflowUtils.getTaskDocumentFromPackage(bpmPackage);
 
-        return documentRef != null ? RecordRef.valueOf(documentRef.toString()) : RecordRef.EMPTY;
+        return documentRef != null ? RecordRef.create(appName, "", documentRef.toString()) : RecordRef.EMPTY;
     }
 
     private boolean taskExists(String taskId) {
