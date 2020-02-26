@@ -19,7 +19,6 @@ import ru.citeck.ecos.records2.RecordsProperties;
 import ru.citeck.ecos.records2.predicate.PredicateService;
 import ru.citeck.ecos.records2.querylang.QueryLangService;
 import ru.citeck.ecos.records2.QueryContext;
-import ru.citeck.ecos.records2.RecordsProperties;
 import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.RecordsServiceFactory;
 import ru.citeck.ecos.records2.graphql.RecordsMetaGql;
@@ -110,11 +109,6 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     }
 
     @Bean
-    @Override
-    protected RecordsProperties createProperties() {
-        return super.createProperties();
-    }
-
     @Override
     protected RecordsProperties createProperties() {
         //TODO: fix bugs before
