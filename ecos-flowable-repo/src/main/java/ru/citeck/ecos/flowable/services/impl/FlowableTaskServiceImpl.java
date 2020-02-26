@@ -43,9 +43,6 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
     private TaskService taskService;
 
-    @Value("${records.configuration.app.name}")
-    private String appName;
-
     @Autowired
     private EcosTaskService ecosTaskService;
     @Autowired
@@ -237,7 +234,7 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
         Object bpmPackage = getVariable(taskId, VAR_PACKAGE);
         NodeRef documentRef = workflowUtils.getTaskDocumentFromPackage(bpmPackage);
 
-        return documentRef != null ? RecordRef.create(appName, "", documentRef.toString()) : RecordRef.EMPTY;
+        return documentRef != null ? RecordRef.valueOf(documentRef.toString()) : RecordRef.EMPTY;
     }
 
     private boolean taskExists(String taskId) {

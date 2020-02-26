@@ -40,9 +40,6 @@ public class EcosActivitiTaskService implements EngineTaskService {
     private static final String DEFAULT_OUTCOME_FIELD = "bpm_outcome";
     private static final String OUTCOME_FIELD = "outcome";
 
-    @Value("${records.configuration.app.name}")
-    private String appName;
-
     @Autowired
     private TaskService taskService;
     @Autowired
@@ -176,7 +173,7 @@ public class EcosActivitiTaskService implements EngineTaskService {
         }
         NodeRef documentRef = workflowUtils.getTaskDocumentFromPackage(bpmPackage);
 
-        return documentRef != null ? RecordRef.create(appName, "", documentRef.toString()) : RecordRef.EMPTY;
+        return documentRef != null ? RecordRef.valueOf(documentRef.toString()) : RecordRef.EMPTY;
     }
 
     @Override

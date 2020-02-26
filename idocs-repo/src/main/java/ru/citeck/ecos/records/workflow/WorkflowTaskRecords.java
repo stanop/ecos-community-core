@@ -612,8 +612,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 case ATT_COUNTERPARTY:
                     if (documentNodeRef != null) {
                         NodeRef counterparty = counterpartyResolver.resolve(documentNodeRef);
-                        return counterparty != null ? RecordRef.create(appName, "",
-                            counterparty.toString()) : null;
+                        return counterparty != null ? RecordRef.valueOf(counterparty.toString()) : null;
                     }
                     return null;
                 case ATT_DOCUMENT:
