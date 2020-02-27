@@ -78,9 +78,6 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     private final DictionaryService dictionaryService;
     private final EcosTypeService ecosTypeService;
 
-    @Value("${records.configuration.app.name}")
-    private String appName;
-
     @Autowired
     public WorkflowTaskRecords(EcosTaskService ecosTaskService,
                                WorkflowTaskRecordsUtils workflowTaskRecordsUtils,
