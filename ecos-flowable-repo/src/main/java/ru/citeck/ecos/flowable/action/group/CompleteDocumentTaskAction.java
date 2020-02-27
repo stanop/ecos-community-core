@@ -9,7 +9,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.workflow.*;
 import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.lang.StringUtils;
-import org.flowable.engine.TaskService;
 import org.mozilla.javascript.JavaScriptException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,10 +17,13 @@ import ru.citeck.ecos.action.group.*;
 import ru.citeck.ecos.action.group.impl.TxnGroupAction;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.utils.AuthorityUtils;
+import ru.citeck.ecos.workflow.tasks.EcosTaskService;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.citeck.ecos.flowable.constants.FlowableConstants.START_TASK_PREFIX;
 
 /**
  * @author Pavel Simonov
@@ -39,10 +41,10 @@ public class CompleteDocumentTaskAction implements GroupActionFactory<RecordRef>
 
     private static final String[] MANDATORY_PARAMS = { TASKS };
 
-    private TaskService taskService;
     private AuthorityUtils authorityUtils;
     private WorkflowService workflowService;
     private TransactionService transactionService;
+    private EcosTaskService ecosTaskService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -52,12 +54,12 @@ public class CompleteDocumentTaskAction implements GroupActionFactory<RecordRef>
                                       @Qualifier("WorkflowService")
                                               WorkflowService workflowService,
                                       AuthorityUtils authorityUtils,
-                                      TaskService taskService) {
+                                      EcosTaskService ecosTaskService) {
 
-        this.taskService = taskService;
         this.authorityUtils = authorityUtils;
         this.workflowService = workflowService;
         this.transactionService = transactionService;
+        this.ecosTaskService = ecosTaskService;
         groupActionService.register(this);
     }
 
@@ -173,25 +175,17 @@ public class CompleteDocumentTaskAction implements GroupActionFactory<RecordRef>
                 }
             }
 
+            Map<String, Object> params = new HashMap<>();
+
+            if (taskToComplete.getId().startsWith("flowable$")) {
+                String outcomeField = "form_" + taskToComplete.getName() + "_outcome";
+
+                params.put(outcomeField, transition);
+                params.put("outcome", transition);
+            }
+
             try {
-
-                if (taskToComplete.getId().startsWith("flowable$")) {
-
-                    String outcomeField = "form_" + taskToComplete.getName() + "_outcome";
-
-                    Map<String, Object> params = new HashMap<>();
-                    params.put(outcomeField, transition);
-                    params.put("outcome", transition);
-
-                    String localId = taskToComplete.getId().replace("flowable$", "");
-
-                    taskService.complete(localId, params);
-
-                } else {
-
-                    workflowService.endTask(taskToComplete.getId(), transition);
-                }
-
+                ecosTaskService.endTask(taskToComplete.getId(), transition, params);
             } catch (RuntimeException e) {
                 throw unwrapJavascriptException(e);
             }
