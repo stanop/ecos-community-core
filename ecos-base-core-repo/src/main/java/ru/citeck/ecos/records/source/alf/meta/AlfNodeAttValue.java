@@ -215,6 +215,7 @@ public class AlfNodeAttValue implements MetaValue {
         }
 
         String url = "alfresco/api/node/workspace/SpacesStore/" + scopeRef.getId() + "/content";
+        String originalUrl = url;
         String previewMimetype = mimetype;
         String previewExtension;
 
@@ -243,7 +244,7 @@ public class AlfNodeAttValue implements MetaValue {
             url += "?c=force";
         }
 
-        return new ContentInfo(url, previewExtension, previewMimetype);
+        return new ContentInfo(url, originalUrl, previewExtension, previewMimetype);
     }
 
     private String getThumbnailType(ContentData data) {
@@ -297,11 +298,13 @@ public class AlfNodeAttValue implements MetaValue {
     public static class ContentInfo {
 
         @Getter private final String url;
+        @Getter private final String originalUrl;
         @Getter private final String ext;
         @Getter private final String mimetype;
 
-        ContentInfo(String url, String ext, String mimetype) {
+        ContentInfo(String url, String originalUrl, String ext, String mimetype) {
             this.url = url;
+            this.originalUrl = originalUrl;
             this.ext = ext;
             this.mimetype = mimetype;
         }
