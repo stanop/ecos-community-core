@@ -1,7 +1,5 @@
 package ru.citeck.ecos.records.source.alf;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
@@ -21,7 +19,6 @@ import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.commons.data.ObjectData;
-import ru.citeck.ecos.commons.json.Json;
 import ru.citeck.ecos.model.InvariantsModel;
 import ru.citeck.ecos.records.source.alf.file.AlfNodeContentFileHelper;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
@@ -58,10 +55,10 @@ import static ru.citeck.ecos.model.ClassificationModel.PROP_DOCUMENT_TYPE;
 @Component
 @Slf4j
 public class AlfNodesRecordsDAO extends LocalRecordsDAO
-                             implements RecordsQueryDAO,
-                                        RecordsMetaLocalDAO<MetaValue>,
-                                        RecordsQueryWithMetaLocalDAO<Object>,
-                                        MutableRecordsDAO, RecordsActionExecutor {
+    implements RecordsQueryDAO,
+    RecordsMetaLocalDAO<MetaValue>,
+    RecordsQueryWithMetaLocalDAO<Object>,
+    MutableRecordsDAO, RecordsActionExecutor {
 
     public static final String ID = "";
     private static final String ADD_CMD_PREFIX = "att_add_";
