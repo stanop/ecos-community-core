@@ -81,9 +81,6 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     private final DictionaryService dictionaryService;
     private final EcosTypeService ecosTypeService;
 
-    @Value("${records.configuration.app.name}")
-    private String appName;
-
     @Autowired
     public WorkflowTaskRecords(EcosTaskService ecosTaskService,
                                WorkflowTaskRecordsUtils workflowTaskRecordsUtils,
@@ -615,8 +612,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 case ATT_COUNTERPARTY:
                     if (documentNodeRef != null) {
                         NodeRef counterparty = counterpartyResolver.resolve(documentNodeRef);
-                        return counterparty != null ? RecordRef.create(appName, "",
-                            counterparty.toString()) : null;
+                        return counterparty != null ? RecordRef.valueOf(counterparty.toString()) : null;
                     }
                     return null;
                 case ATT_DOCUMENT:
