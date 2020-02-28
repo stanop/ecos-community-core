@@ -3,20 +3,13 @@
 <beans>
 
     <bean id="caseActivityService" name="CaseActivityService"
-          class="ru.citeck.ecos.icase.activity.service.CaseActivityServiceImpl"
-          init-method="init" depends-on="idocs.dictionaryBootstrap">
-
-        <property name="dictionaryService" ref="DictionaryService" />
-        <property name="policyComponent" ref="policyComponent" />
-        <property name="nodeService" ref="nodeService" />
-    </bean>
+          class="ru.citeck.ecos.icase.activity.service.CaseActivityServiceImpl"/>
 
     <bean id="caseActivityServiceJS" name="CaseActivityServiceJS" class="ru.citeck.ecos.icase.activity.CaseActivityServiceJS"
           parent="baseJavaScriptExtension">
         <property name="caseActivityService" ref="caseActivityService"/>
         <property name="createVariantsProvider" ref="ru.citeck.ecos.icase.activity.create.menu.MenuCreateVariantsProvider"/>
         <property name="extensionName" value="caseActivityService"/>
-        <property name="namespaceService" ref="namespaceService"/>
         <property name="serviceRegistry" ref="ServiceRegistry"/>
         <property name="remoteRestoreCaseModelService" ref="remoteRestoreCaseModelService"/>
     </bean>

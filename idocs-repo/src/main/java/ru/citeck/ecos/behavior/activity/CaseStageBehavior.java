@@ -4,8 +4,6 @@ import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
@@ -20,8 +18,6 @@ import java.util.List;
  * @author Pavel Simonov
  */
 public class CaseStageBehavior implements CaseActivityPolicies.BeforeCaseActivityStartedPolicy {
-
-    private static final Log log = LogFactory.getLog(CaseStageBehavior.class);
 
     private CaseActivityService caseActivityService;
     private CaseStatusService caseStatusService;

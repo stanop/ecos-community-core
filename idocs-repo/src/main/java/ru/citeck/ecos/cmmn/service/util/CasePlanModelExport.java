@@ -4,7 +4,6 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.log4j.Logger;
 import org.springframework.extensions.surf.util.ISO8601DateFormat;
 import ru.citeck.ecos.cmmn.CMMNUtils;
@@ -13,6 +12,7 @@ import ru.citeck.ecos.cmmn.service.CaseExportService;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.*;
+import ru.citeck.ecos.utils.AlfActivityUtils;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import javax.xml.bind.JAXBElement;
@@ -37,6 +37,7 @@ public class CasePlanModelExport {
     private final DictionaryService dictionaryService;
     private final CaseExportService caseExportService;
     private final CaseActivityService caseActivityService;
+    private final AlfActivityUtils alfActivityUtils;
 
     private final CMMNUtils utils;
 
@@ -65,13 +66,15 @@ public class CasePlanModelExport {
                                CaseActivityService caseActivityService,
                                CaseExportService caseExportService,
                                DictionaryService dictionaryService,
-                               CMMNUtils utils) {
+                               CMMNUtils utils,
+                               AlfActivityUtils alfActivityUtils) {
 
         this.nodeService = nodeService;
         this.dictionaryService = dictionaryService;
         this.caseExportService = caseExportService;
         this.caseActivityService = caseActivityService;
         this.utils = utils;
+        this.alfActivityUtils = alfActivityUtils;
     }
 
     public Stage getCasePlanModel(NodeRef caseNodeRef, CaseRoles caseRoles) {
@@ -88,8 +91,8 @@ public class CasePlanModelExport {
         nodeRefsToPlanItemsMap.put(utils.convertNodeRefToId(caseNodeRef), casePlanModel.getId());
         exportCompletnessLevels(casePlanModel, caseNodeRef);
         if (caseRootRef != null) {
-            List<CaseActivity> activities = caseActivityService.getActivities(caseRootRef.toString(),
-                ICaseTemplateModel.ASSOC_INTERNAL_ELEMENTS, RegexQNamePattern.MATCH_ALL);
+            List<CaseActivity> activities = alfActivityUtils.getActivities(
+                caseRootRef, ICaseTemplateModel.ASSOC_INTERNAL_ELEMENTS, false);
             exportActivityNode(casePlanModel, activities);
         }
         fixSentriesIds(casePlanModel);
@@ -325,7 +328,7 @@ public class CasePlanModelExport {
         org.alfresco.service.namespace.QName sourceType = nodeService.getType(source);
 
         if (eventType.equals(ICaseEventModel.CONSTR_ACTIVITY_STOPPED)
-                     && sourceType.equals(CaseTimerModel.TYPE_TIMER)) {
+            && sourceType.equals(CaseTimerModel.TYPE_TIMER)) {
             return PlanItemTransition.OCCUR;
         } else {
             return ACTIVITY_EVENT_TYPES_MAPPING.get(eventType);
@@ -460,7 +463,7 @@ public class CasePlanModelExport {
         for (Map.Entry<org.alfresco.service.namespace.QName, Serializable> entry : properties.entrySet()) {
             org.alfresco.service.namespace.QName key = entry.getKey();
             if (!key.getNamespaceURI().equals("http://www.alfresco.org/model/system/1.0") &&
-                    !key.getNamespaceURI().equals("http://www.alfresco.org/model/content/1.0")) {
+                !key.getNamespaceURI().equals("http://www.alfresco.org/model/content/1.0")) {
                 QName qName = utils.convertToXMLQName(key);
                 if (!qName.getLocalPart().contains("_added")) {
                     Serializable value = entry.getValue();

@@ -6,12 +6,10 @@ import org.alfresco.service.cmr.action.Action;
 import org.alfresco.service.cmr.action.ActionService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.action.ActionDAO;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
-import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
+import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.ActionModel;
 
@@ -19,8 +17,6 @@ import ru.citeck.ecos.model.ActionModel;
  * @author Pavel Simonov
  */
 public class CaseActionBehavior implements CaseActivityPolicies.BeforeCaseActivityStartedPolicy {
-
-    private static final Log log = LogFactory.getLog(CaseActionBehavior.class);
 
     private CaseActivityService caseActivityService;
     private PolicyComponent policyComponent;

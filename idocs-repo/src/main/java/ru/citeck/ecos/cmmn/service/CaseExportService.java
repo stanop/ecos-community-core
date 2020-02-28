@@ -21,6 +21,7 @@ import ru.citeck.ecos.content.dao.xml.XmlContentDAO;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.model.ICaseTemplateModel;
+import ru.citeck.ecos.utils.AlfActivityUtils;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -54,6 +55,8 @@ public class CaseExportService {
     @Autowired
     @Qualifier("caseTemplateContentDAO")
     private XmlContentDAO<Definitions> configDAO;
+    @Autowired
+    private AlfActivityUtils alfActivityUtils;
 
     public void init() {
         objectFactory = new ObjectFactory();
@@ -81,9 +84,9 @@ public class CaseExportService {
             caseItem.setName(sourcePropertyMap.get(ContentModel.PROP_NAME).toString());
 
             caseItem.setCaseRoles(new CaseRolesExport(nodeService, dictionaryService, utils).getRoles(caseNodeRef));
-            caseItem.setCasePlanModel(
-                    new CasePlanModelExport(nodeService, caseActivityService, this, dictionaryService, utils)
-                            .getCasePlanModel(caseNodeRef, caseItem.getCaseRoles()));
+            CasePlanModelExport casePlanModelExport = new CasePlanModelExport(nodeService, caseActivityService,
+                this, dictionaryService, utils, alfActivityUtils);
+            caseItem.setCasePlanModel(casePlanModelExport.getCasePlanModel(caseNodeRef, caseItem.getCaseRoles()));
 
             Definitions definitions = new Definitions();
             definitions.getCase().add(caseItem);
