@@ -1,11 +1,14 @@
 package ru.citeck.ecos.icase.activity.dto;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@EqualsAndHashCode(exclude = {"parent", "children"})
 public class CaseActivity {
 
     private String id;
@@ -28,6 +31,15 @@ public class CaseActivity {
 
         State(String content) {
             this.content = content;
+        }
+
+        public static State getByContent(String content) {
+            for (State state : State.values()) {
+                if (StringUtils.equalsIgnoreCase(state.content, content)) {
+                    return state;
+                }
+            }
+            throw new IllegalArgumentException("State with content " + content + " not found in enum");
         }
 
         public String getContent() {

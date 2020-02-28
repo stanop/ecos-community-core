@@ -2,9 +2,6 @@ package ru.citeck.ecos.icase.activity;
 
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.namespace.NamespaceService;
-import org.alfresco.service.namespace.QName;
-import org.alfresco.service.namespace.RegexQNamePattern;
 import ru.citeck.ecos.cases.RemoteRestoreCaseModelService;
 import ru.citeck.ecos.icase.activity.create.dto.ActivityCreateVariant;
 import ru.citeck.ecos.icase.activity.create.provider.CreateVariantsProvider;
@@ -22,7 +19,6 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
 
     private CaseActivityService caseActivityService;
     private CreateVariantsProvider createVariantsProvider;
-    private NamespaceService namespaceService;
     private RemoteRestoreCaseModelService remoteRestoreCaseModelService;
 
     public void startActivity(Object stageRef) {
@@ -67,27 +63,6 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
     public ScriptNode[] getActivities(Object nodeRef) {
         NodeRef nRef = JavaScriptImplUtils.getNodeRef(nodeRef);
         List<CaseActivity> activities = caseActivityService.getActivities(nRef.toString());
-        Set<NodeRef> activitiesNodeRefs = activities.stream()
-            .map(a -> new NodeRef(a.getId()))
-            .collect(Collectors.toSet());
-        return JavaScriptImplUtils.wrapNodes(activitiesNodeRefs, this);
-    }
-
-    public ScriptNode[] getActivities(Object nodeRef, String type) {
-        NodeRef nRef = JavaScriptImplUtils.getNodeRef(nodeRef);
-        QName typeQName = QName.createQName(type, namespaceService);
-        List<CaseActivity> activities = caseActivityService.getActivities(nRef.toString(), typeQName);
-        Set<NodeRef> activitiesNodeRefs = activities.stream()
-            .map(a -> new NodeRef(a.getId()))
-            .collect(Collectors.toSet());
-        return JavaScriptImplUtils.wrapNodes(activitiesNodeRefs, this);
-    }
-
-    public ScriptNode[] getActivitiesByAssoc(Object nodeRef, String assocType) {
-        NodeRef nRef = JavaScriptImplUtils.getNodeRef(nodeRef);
-        QName assocTypeQName = QName.createQName(assocType, namespaceService);
-        List<CaseActivity> activities = caseActivityService.getActivities(nRef.toString(), assocTypeQName,
-            RegexQNamePattern.MATCH_ALL);
         Set<NodeRef> activitiesNodeRefs = activities.stream()
             .map(a -> new NodeRef(a.getId()))
             .collect(Collectors.toSet());
@@ -169,10 +144,6 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
 
     public void setCaseActivityService(CaseActivityService caseActivityService) {
         this.caseActivityService = caseActivityService;
-    }
-
-    public void setNamespaceService(NamespaceService namespaceService) {
-        this.namespaceService = namespaceService;
     }
 
     public void setRemoteRestoreCaseModelService(RemoteRestoreCaseModelService remoteRestoreCaseModelService) {
