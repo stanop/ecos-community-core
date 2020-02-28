@@ -285,9 +285,9 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
         @Override
         public List<String> getActors() {
             return workflowUtils.getTaskActors(FlowableConstants.ENGINE_PREFIX + getId())
-                    .stream()
-                    .map(NodeRef::toString)
-                    .collect(Collectors.toList());
+                .stream()
+                .map(NodeRef::toString)
+                .collect(Collectors.toList());
         }
 
         @Override
