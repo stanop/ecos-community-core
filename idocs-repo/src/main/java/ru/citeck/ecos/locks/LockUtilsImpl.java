@@ -47,11 +47,14 @@ public class LockUtilsImpl implements LockUtils {
             lockToken = getAndRefreshLock(lockQName, millisecondToLive);
             return job.call();
         } catch (Exception e) {
-            log.error(String.format(JOB_ABORTED_TEMPLATE, lockQName.getLocalName(), lockToken), e.getMessage(), e);
+            if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
+            } else {
+                throw new RuntimeException(e);
+            }
         } finally {
             releaseLock(lockToken, lockQName);
         }
-        return null;
     }
 
     private void releaseLock(String lockToken, QName lockQName) {
