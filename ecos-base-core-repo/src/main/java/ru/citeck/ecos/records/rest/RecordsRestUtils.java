@@ -1,9 +1,11 @@
 package ru.citeck.ecos.records.rest;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.extensions.webscripts.*;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
@@ -15,6 +17,11 @@ import java.util.function.Function;
 public class RecordsRestUtils {
 
     private ObjectMapper objectMapper = new ObjectMapper();
+
+    @PostConstruct
+    public void init() {
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+    }
 
     <T> T readBody(WebScriptRequest req, Class<T> type) throws IOException {
         return objectMapper.readValue(req.getContent().getContent(), type);

@@ -329,7 +329,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
                     roleName = (String) nodeService.getProperty(firstRole, ContentModel.PROP_NAME);
                 }
             }
-            if (roleName.isEmpty()) {
+            if (StringUtils.isBlank(roleName)) {
                 roleName = assignee;
             }
         }

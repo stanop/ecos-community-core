@@ -131,6 +131,15 @@
                 </association>
             </associations>
         </aspect>
+
+        <aspect name="wfm:hasDocumentEcosType">
+            <properties>
+                <property name="wfm:documentEcosType">
+                    <title>Ecos Type</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
 	</aspects>
 
 </model>

@@ -3741,7 +3741,7 @@
                           "type": "recordsQuery",
                           "recordsQuery": {
                             "attributes": {
-                              "key": "cm:name"
+                              "key": "cm:title"
                             },
                             "query": "var value = {\n  query: 'PARENT: \"workspace://SpacesStore/contracts-cat-doctype-contract\"',\n  language: 'fts-alfresco'\n}",
                             "isSingle": false

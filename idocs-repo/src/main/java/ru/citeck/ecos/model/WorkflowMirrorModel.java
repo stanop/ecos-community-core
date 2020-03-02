@@ -41,6 +41,7 @@ public interface WorkflowMirrorModel {
     public static final QName PROP_WORKFLOW_INITIATOR = QName.createQName(NAMESPACE, "workflowInitiator");
     public static final QName PROP_COUNTERPARTY = QName.createQName(NAMESPACE, "counterparty");
     public static final QName PROP_CASE_STATUS = QName.createQName(NAMESPACE, "caseStatus");
+    public static final QName PROP_DOCUMENT_ECOS_TYPE = QName.createQName(NAMESPACE, "documentEcosType");
 
     public static final QName ASSOC_ASSIGNEE_MIRROR = QName.createQName(NAMESPACE, "assigneeMirror");
 }

@@ -13,6 +13,7 @@ import org.flowable.identitylink.api.IdentityLinkType;
 import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.services.FlowableHistoryService;
 import ru.citeck.ecos.flowable.services.FlowableTaskService;
@@ -284,9 +285,9 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
         @Override
         public List<String> getActors() {
             return workflowUtils.getTaskActors(FlowableConstants.ENGINE_PREFIX + getId())
-                    .stream()
-                    .map(NodeRef::toString)
-                    .collect(Collectors.toList());
+                .stream()
+                .map(NodeRef::toString)
+                .collect(Collectors.toList());
         }
 
         @Override
