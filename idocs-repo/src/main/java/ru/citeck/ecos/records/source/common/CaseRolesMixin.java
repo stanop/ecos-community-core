@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
@@ -79,10 +80,19 @@ public class CaseRolesMixin implements AttributesMixin<Class<RecordRef>, RecordR
 
         @Override
         public boolean has(String name) {
+            if (StringUtils.isBlank(name)) {
+                return false;
+            }
+
             if (name.equals(CURRENT_USER_EXPRESSION)) {
                 name = AuthenticationUtil.getRunAsUser();
             }
+
             NodeRef authorityRef = authorityUtils.getNodeRef(name);
+            if (authorityRef == null) {
+                return false;
+            }
+            
             return caseRoleService.isRoleMember(document, roleId, authorityRef);
         }
     }
