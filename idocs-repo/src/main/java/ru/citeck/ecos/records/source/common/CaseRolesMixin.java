@@ -73,17 +73,17 @@ public class CaseRolesMixin implements AttributesMixin<Class<RecordRef>, RecordR
     @RequiredArgsConstructor
     public class CaseRole implements MetaValue {
 
+        private static final String CURRENT_USER_EXPRESSION = "$CURRENT";
         private final NodeRef document;
         private final String roleId;
 
         @Override
         public boolean has(String name) {
-            if (name.equals("$CURRENT")) {
-                String currentUser = AuthenticationUtil.getRunAsUser();
-                NodeRef authorityRef = authorityUtils.getNodeRef(currentUser);
-                return caseRoleService.isRoleMember(document, roleId, authorityRef);
+            if (name.equals(CURRENT_USER_EXPRESSION)) {
+                name = AuthenticationUtil.getRunAsUser();
             }
-            return false;
+            NodeRef authorityRef = authorityUtils.getNodeRef(name);
+            return caseRoleService.isRoleMember(document, roleId, authorityRef);
         }
     }
 }
