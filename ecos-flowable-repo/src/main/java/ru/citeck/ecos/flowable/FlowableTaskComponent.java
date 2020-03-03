@@ -37,7 +37,7 @@ import static ru.citeck.ecos.flowable.constants.FlowableConstants.*;
 @Slf4j
 public class FlowableTaskComponent implements TaskComponent, InitializingBean {
 
-    private static final String JOB_ID_PREFIX = "task-flowable$%s";
+    private static final String TASK_COMPLETE_LOCK_KEY_PREFIX = "task-flowable$%s";
 
     private BPMEngineRegistry bpmEngineRegistry;
     private WorkflowAdminService workflowAdminService;
@@ -232,7 +232,7 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
      */
     @Override
     public WorkflowTask endTask(String taskId, String transitionId) {
-        String lockId = String.format(JOB_ID_PREFIX, taskId);
+        String lockId = String.format(TASK_COMPLETE_LOCK_KEY_PREFIX, taskId);
         return lockUtils.doWithLock(lockId, () -> {
             String localId = getLocalValue(taskId);
             if (localId.startsWith(START_TASK_PREFIX)) {
