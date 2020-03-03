@@ -106,9 +106,6 @@ public class NewUIUtils {
     }
 
     private String getUITypeByRecord(RecordRef recordRef) {
-        if (!isNewUIEnabled()) {
-            return UI_TYPE_SHARE;
-        }
         String att;
         if (recordRef.getSourceId().equals("site")) {
             att = UI_TYPE_FROM_SECTION_ATT;
