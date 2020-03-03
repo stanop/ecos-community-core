@@ -1,6 +1,5 @@
 package ru.citeck.ecos.eureka;
 
-import com.netflix.appinfo.InstanceInfo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,11 +18,11 @@ public class EurekaRequestInterceptor implements ClientHttpRequestInterceptor {
 
     private static final Log logger = LogFactory.getLog(EurekaRequestInterceptor.class);
 
-    private EcosEurekaClient client;
+    private EcosServiceDiscovery serviceDiscovery;
     private boolean forceLocalHost;
 
-    public EurekaRequestInterceptor(EcosEurekaClient client, boolean forceLocalhost) {
-        this.client = client;
+    public EurekaRequestInterceptor(EcosServiceDiscovery serviceDiscovery, boolean forceLocalhost) {
+        this.serviceDiscovery = serviceDiscovery;
         this.forceLocalHost = forceLocalhost;
     }
 
@@ -58,9 +57,9 @@ public class EurekaRequestInterceptor implements ClientHttpRequestInterceptor {
                 return uri;
             }
 
-            InstanceInfo info = null;
+            EcosServiceInstanceInfo info = null;
             try {
-                info = client.getInstanceInfo(host);
+                info = serviceDiscovery.getInstanceInfo(host);
             } catch (Exception e) {
                 logger.warn("Host can't be resolved: " + host, e);
             }
@@ -68,7 +67,7 @@ public class EurekaRequestInterceptor implements ClientHttpRequestInterceptor {
                 return uri;
             }
 
-            String resolvedHost = (forceLocalHost ? "localhost" : info.getHostName()) + ":" + info.getPort();
+            String resolvedHost = (forceLocalHost ? "localhost" : info.getHost()) + ":" + info.getPort();
             String newUriStr = uri.toString().replace("://" + host, "://" + resolvedHost);
 
             try {
