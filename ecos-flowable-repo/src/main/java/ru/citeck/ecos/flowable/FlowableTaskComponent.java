@@ -25,7 +25,6 @@ import ru.citeck.ecos.flowable.services.*;
 import ru.citeck.ecos.flowable.utils.FlowableUtils;
 import ru.citeck.ecos.flowable.utils.FlowableWorkflowPropertyHandlerRegistry;
 import ru.citeck.ecos.locks.LockUtils;
-import ru.citeck.ecos.workflow.tasks.EcosTaskService;
 
 import java.io.Serializable;
 import java.util.*;
@@ -37,7 +36,8 @@ import static ru.citeck.ecos.flowable.constants.FlowableConstants.*;
  */
 @Slf4j
 public class FlowableTaskComponent implements TaskComponent, InitializingBean {
-    private static final String FLOWABLE_PREFIX = "flowable$";
+
+    private static final String JOB_ID_PREFIX = "task-flowable$%s";
 
     private BPMEngineRegistry bpmEngineRegistry;
     private WorkflowAdminService workflowAdminService;
@@ -52,7 +52,6 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
     private FlowablePropertyConverter flowablePropertyConverter;
     private FlowableWorkflowPropertyHandlerRegistry workflowPropertyHandlerRegistry;
     private RuntimeService runtimeService;
-    private EcosTaskService ecosTaskService;
 
     /**
      * After properties set
@@ -233,12 +232,15 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
      */
     @Override
     public WorkflowTask endTask(String taskId, String transitionId) {
-        String localId = getLocalValue(taskId);
-        if (localId.startsWith(START_TASK_PREFIX)) {
-            return lockUtils.doWithLock(FLOWABLE_PREFIX + taskId, () -> endStartTask(localId));
-        } else {
-            return endNormalTask(localId, transitionId);
-        }
+        String lockId = String.format(JOB_ID_PREFIX, taskId);
+        return lockUtils.doWithLock(lockId, () -> {
+            String localId = getLocalValue(taskId);
+            if (localId.startsWith(START_TASK_PREFIX)) {
+                return endStartTask(localId);
+            } else {
+                return endNormalTask(localId, transitionId);
+            }
+        });
     }
 
     /**
@@ -267,8 +269,9 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
         if (task != null) {
             WorkflowTask endedTask = flowableTransformService.transformTask(task);
             setOutcome(task, transition);
-
-            ecosTaskService.endTask(FLOWABLE_PREFIX + task.getId(), transition);
+            /// Case: If process consist old ftl form and custom outcome properties is transitions expression, then process will crash
+            /// TODO: migrate to EcosTaskService after work with expressions with old ftl forms will fix
+            taskService.complete(task.getId());
             return endedTask;
         } else {
             return null;
@@ -387,10 +390,5 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
     @Autowired
     public void setRuntimeService(RuntimeService runtimeService) {
         this.runtimeService = runtimeService;
-    }
-
-    @Autowired
-    public void setEcosTaskService(EcosTaskService ecosTaskService) {
-        this.ecosTaskService = ecosTaskService;
     }
 }
