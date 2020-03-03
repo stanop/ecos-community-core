@@ -1,6 +1,8 @@
 package ru.citeck.ecos.records.source.alf.file;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import lombok.extern.log4j.Log4j;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
@@ -54,9 +56,16 @@ public class AlfNodeContentFileHelper {
     public void processPropFileContent(NodeRef nodeRef, QName prop, JsonNode jsonNode) {
         ContentWriter writer = contentService.getWriter(nodeRef, prop, true);
 
+        if (jsonNode.isObject() && jsonNode.at("/data/nodeRef").isTextual()) {
+            ArrayNode arrayNode = JsonNodeFactory.instance.arrayNode();
+            arrayNode.add(jsonNode);
+            jsonNode = arrayNode;
+        }
+
         if (jsonNode.isTextual()) {
             writer.putContent(jsonNode.asText());
         } else if (jsonNode.isObject()) {
+
             JsonNode mimetypeProp = jsonNode.path(MODEL_MIME_TYPE);
             String mimetype = mimetypeProp.isTextual() ? mimetypeProp.asText() : MimetypeMap.MIMETYPE_BINARY;
             if (MimetypeMap.MIMETYPE_BINARY.equals(mimetype)) {
