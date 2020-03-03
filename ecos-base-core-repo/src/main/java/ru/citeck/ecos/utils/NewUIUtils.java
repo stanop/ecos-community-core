@@ -121,6 +121,9 @@ public class NewUIUtils {
             resStr = isNewUIEnabled() ? UI_TYPE_REACT : UI_TYPE_SHARE;
         } else {
             resStr = res.asText();
+            if (!UI_TYPE_SHARE.equals(resStr) && !UI_TYPE_REACT.equals(resStr)) {
+                resStr = isNewUIEnabled() ? UI_TYPE_REACT : UI_TYPE_SHARE;
+            }
         }
         return resStr;
     }
