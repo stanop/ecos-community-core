@@ -116,7 +116,13 @@ public class NewUIUtils {
             att = UI_TYPE_FROM_ETYPE_ATT;
         }
         JsonNode res = recordsService.getAttribute(recordRef, att);
-        return res != null && res.isTextual() ? res.asText() : "";
+        String resStr;
+        if (res == null || !res.isTextual() || StringUtils.isBlank(res.asText())) {
+            resStr = isNewUIEnabled() ? UI_TYPE_REACT : UI_TYPE_SHARE;
+        } else {
+            resStr = res.asText();
+        }
+        return resStr;
     }
 
     private boolean isNewJournalsGroupMember(String username) {
