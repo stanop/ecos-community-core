@@ -3,6 +3,7 @@ package ru.citeck.ecos.records.source.alf.meta;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import lombok.Getter;
 import org.alfresco.error.AlfrescoRuntimeException;
+import org.alfresco.model.ContentModel;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.thumbnail.ThumbnailDefinition;
@@ -214,19 +215,21 @@ public class AlfNodeAttValue implements MetaValue {
             return null;
         }
 
+        MimetypeService mimetypeService = context.getServiceRegistry().getMimetypeService();
+        NodeService nodeService = context.getServiceRegistry().getNodeService();
+
         String url = "alfresco/api/node/workspace/SpacesStore/" + scopeRef.getId() + "/content";
         String originalUrl = url;
+        String originalName = String.valueOf(nodeService.getProperty(scopeRef, ContentModel.PROP_NAME));
         String previewMimetype = mimetype;
         String previewExtension;
-
-        MimetypeService mimetypeService = context.getServiceRegistry().getMimetypeService();
 
         switch (mimetype) {
             case MimetypeMap.MIMETYPE_PDF:
             case MimetypeMap.MIMETYPE_IMAGE_PNG:
             case MimetypeMap.MIMETYPE_IMAGE_JPEG:
             case MimetypeMap.MIMETYPE_IMAGE_GIF:
-                previewExtension = context.getServiceRegistry().getMimetypeService().getExtension(mimetype);
+                previewExtension = mimetypeService.getExtension(mimetype);
                 break;
             default:
                 String thumbnailType = getThumbnailType(data);
@@ -244,7 +247,7 @@ public class AlfNodeAttValue implements MetaValue {
             url += "?c=force";
         }
 
-        return new ContentInfo(url, originalUrl, previewExtension, previewMimetype);
+        return new ContentInfo(url, originalUrl, originalName, previewExtension, previewMimetype);
     }
 
     private String getThumbnailType(ContentData data) {
@@ -299,12 +302,14 @@ public class AlfNodeAttValue implements MetaValue {
 
         @Getter private final String url;
         @Getter private final String originalUrl;
+        @Getter private final String originalName;
         @Getter private final String ext;
         @Getter private final String mimetype;
 
-        ContentInfo(String url, String originalUrl, String ext, String mimetype) {
+        ContentInfo(String url, String originalUrl, String originalName, String ext, String mimetype) {
             this.url = url;
             this.originalUrl = originalUrl;
+            this.originalName = originalName;
             this.ext = ext;
             this.mimetype = mimetype;
         }
