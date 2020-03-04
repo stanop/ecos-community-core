@@ -14,15 +14,13 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.commons.data.DataValue;
+import ru.citeck.ecos.commons.json.Json;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static ru.citeck.ecos.records.source.alf.file.FileRepresentation.*;
 
@@ -54,10 +52,13 @@ public class AlfNodeContentFileHelper {
     public void processPropFileContent(NodeRef nodeRef, QName prop, DataValue jsonNode) {
         ContentWriter writer = contentService.getWriter(nodeRef, prop, true);
 
-        if (jsonNode.isObject() && jsonNode.at("/data/nodeRef").isTextual()) {
-            ArrayNode arrayNode = JsonNodeFactory.instance.arrayNode();
-            arrayNode.add(jsonNode);
-            jsonNode = arrayNode;
+        if (jsonNode.isObject() && jsonNode.get("/data/nodeRef").isTextual()) {
+            DataValue asList = Json.getMapper().convert(Collections.singletonList(jsonNode), DataValue.class);
+            if (asList == null) {
+                log.error("Json node is null after conversion. Node: " + jsonNode);
+                return;
+            }
+            jsonNode = asList;
         }
 
         if (jsonNode.isTextual()) {
