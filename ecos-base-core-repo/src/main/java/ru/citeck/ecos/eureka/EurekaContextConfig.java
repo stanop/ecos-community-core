@@ -33,7 +33,7 @@ public class EurekaContextConfig {
     }
 
     @Bean(name = REST_TEMPLATE_ID)
-    public RestTemplate createRestTemplate(EcosEurekaClient client) {
+    public RestTemplate createRestTemplate(EcosServiceDiscovery serviceDiscovery) {
 
         RestTemplate template = new RestTemplate();
         List<ClientHttpRequestInterceptor> interceptors = template.getInterceptors();
@@ -43,7 +43,7 @@ public class EurekaContextConfig {
             interceptors = new ArrayList<>(interceptors);
         }
 
-        interceptors.add(new EurekaRequestInterceptor(client, isDevEnv()));
+        interceptors.add(new EurekaRequestInterceptor(serviceDiscovery, isDevEnv()));
         template.setInterceptors(interceptors);
 
         return template;

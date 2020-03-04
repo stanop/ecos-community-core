@@ -107,9 +107,6 @@ public class NewUIUtils {
     }
 
     private String getUITypeByRecord(RecordRef recordRef) {
-        if (!isNewUIEnabled()) {
-            return UI_TYPE_SHARE;
-        }
         String att;
         if (recordRef.getSourceId().equals("site")) {
             att = UI_TYPE_FROM_SECTION_ATT;
@@ -120,7 +117,16 @@ public class NewUIUtils {
             att = UI_TYPE_FROM_ETYPE_ATT;
         }
         DataValue res = recordsService.getAttribute(recordRef, att);
-        return res != null && res.isTextual() ? res.asText() : "";
+        String resStr;
+        if (res == null || !res.isTextual() || StringUtils.isBlank(res.asText())) {
+            resStr = isNewUIEnabled() ? UI_TYPE_REACT : UI_TYPE_SHARE;
+        } else {
+            resStr = res.asText();
+            if (!UI_TYPE_SHARE.equals(resStr) && !UI_TYPE_REACT.equals(resStr)) {
+                resStr = isNewUIEnabled() ? UI_TYPE_REACT : UI_TYPE_SHARE;
+            }
+        }
+        return resStr;
     }
 
     private boolean isNewJournalsGroupMember(String username) {

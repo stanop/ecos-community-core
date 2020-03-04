@@ -54,6 +54,12 @@ public class AlfNodeContentFileHelper {
     public void processPropFileContent(NodeRef nodeRef, QName prop, DataValue jsonNode) {
         ContentWriter writer = contentService.getWriter(nodeRef, prop, true);
 
+        if (jsonNode.isObject() && jsonNode.at("/data/nodeRef").isTextual()) {
+            ArrayNode arrayNode = JsonNodeFactory.instance.arrayNode();
+            arrayNode.add(jsonNode);
+            jsonNode = arrayNode;
+        }
+
         if (jsonNode.isTextual()) {
             writer.putContent(jsonNode.asText());
         } else if (jsonNode.isObject()) {
