@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.icase.completeness.CaseCompletenessService;
-import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
@@ -27,12 +26,12 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class CaseDocumentRecordsDAO extends LocalRecordsDAO
-    implements LocalRecordsQueryWithMetaDAO {
+public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalRecordsQueryWithMetaDAO {
 
     public final static String ID = "documents";
     private static final String DOCUMENT_TYPES_QUERY_LANGUAGE = "document-types";
     private static final String TYPES_DOCUMENTS_QUERY_LANGUAGE = "types-documents";
+    private static final String DOCUMENTS_QUERY_LANGUAGE = "documents";
 
     private final CaseCompletenessService caseCompletenessService;
     private final SearchService searchService;
@@ -54,6 +53,8 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO
                 return getDocumentTypes(recordsQuery);
             case TYPES_DOCUMENTS_QUERY_LANGUAGE:
                 return getTypesDocuments(recordsQuery);
+            case DOCUMENTS_QUERY_LANGUAGE:
+                return getAllTypesDocuments(recordsQuery);
             default:
                 log.error("Language doesn't supported: " + recordsQuery.getLanguage());
         }
@@ -109,6 +110,61 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO
                     .stream()
                     .map(DocInfo::getRef)
                     .collect(Collectors.toList())));
+        }
+
+        RecordsQueryResult<TypeDocumentsRecord> typeDocumentsRecords = new RecordsQueryResult<>();
+        typeDocumentsRecords.setRecords(typeDocumentsList);
+
+        return typeDocumentsRecords;
+    }
+
+    private RecordsQueryResult<TypeDocumentsRecord> getAllTypesDocuments(RecordsQuery recordsQuery) {
+
+        TypesDocumentsQuery query = recordsQuery.getQuery(TypesDocumentsQuery.class);
+
+        RecordRef recordRef = query.getRecordRef();
+
+        if (recordRef == null || !NodeRef.isNodeRef(recordRef.getId())) {
+            return new RecordsQueryResult<>();
+        }
+
+        FTSQuery ftsQuery = FTSQuery.createRaw()
+            .parent(new NodeRef(recordRef.getId()))
+            .transactional()
+            .maxItems(1000);
+
+        List<RecordRef> documentRefs = ftsQuery.query(searchService)
+            .stream()
+            .map(ref -> RecordRef.valueOf(ref.toString()))
+            .collect(Collectors.toList());
+
+        RecordsResult<DocumentTypeMeta> meta = recordsService.getMeta(documentRefs, DocumentTypeMeta.class);
+
+        Map<RecordRef, List<DocInfo>> docsByType = new HashMap<>();
+
+        for (int i = 0; i < meta.getRecords().size(); i++) {
+
+            DocumentTypeMeta docMeta = meta.getRecords().get(i);
+
+            if (docMeta.type != null) {
+
+                long order = docMeta.getCreated() != null ? docMeta.getCreated().getTime() : 0L;
+
+                DocInfo docInfo = new DocInfo(documentRefs.get(i), order);
+                docsByType.computeIfAbsent(docMeta.getType(), t -> new ArrayList<>()).add(docInfo);
+            }
+        }
+
+        docsByType.forEach((t, docs) -> docs.sort(Comparator.comparingLong(DocInfo::getOrder).reversed()));
+
+        List<TypeDocumentsRecord> typeDocumentsList = new ArrayList<>();
+
+        for (Map.Entry<RecordRef, List<DocInfo>> entry : docsByType.entrySet()){
+            TypeDocumentsRecord typeDocumentsRecord = new TypeDocumentsRecord(entry.getKey(),
+                entry.getValue().stream()
+                    .map(DocInfo::getRef)
+                    .collect(Collectors.toList()));
+            typeDocumentsList.add(typeDocumentsRecord);
         }
 
         RecordsQueryResult<TypeDocumentsRecord> typeDocumentsRecords = new RecordsQueryResult<>();
