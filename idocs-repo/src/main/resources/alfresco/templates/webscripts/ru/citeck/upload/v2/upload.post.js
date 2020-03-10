@@ -41,7 +41,7 @@ function main()
       var updateNodeRef = null,
          majorVersion = false,
          description = "";
-      
+
       // Prevents Flash- and IE8-sourced "null" values being set for those parameters where they are invalid.
       // Note: DON'T use a "!==" comparison for "null" here.
       var fnFieldValue = function(p_field)
@@ -67,7 +67,7 @@ function main()
             case "filename":
                filename = fnFieldValue(field);
                break;
-            
+
             case "filedata":
                if (field.isFile)
                {
@@ -141,7 +141,7 @@ function main()
          exitUpload(404, " No disk space available");
          return;
       }
-	  
+
       // Ensure mandatory file attributes have been located. Need either destination, or site + container or updateNodeRef
       if ((filename === null || content === null) || (destination === null && (siteId === null || containerId === null) && updateNodeRef === null))
       {
@@ -191,7 +191,7 @@ function main()
             exitUpload(404, "Component container (" + containerId + ") not found.");
             return;
          }
-         
+
          destNode = container;
       }
       else if (destination !== null)
@@ -222,7 +222,7 @@ function main()
             exitUpload(404, "Node specified by updateNodeRef (" + updateNodeRef + ") not found.");
             return;
          }
-         
+
          var workingcopy = updateNode.hasAspect("cm:workingcopy");
          if (!workingcopy && updateNode.isLocked)
          {
@@ -250,12 +250,12 @@ function main()
          // Update the working copy content
          updateNode.properties.content.write(content, false, true);
          // check it in again, with supplied version history note
-         
+
          // Extract the metadata
          // (The overwrite policy controls which if any parts of
          //  the document's properties are updated from this)
          extractMetadata(updateNode);
-         
+
          updateNode = updateNode.checkin(description, majorVersion);
          if (aspects.length != 0)
          {
@@ -269,6 +269,7 @@ function main()
          }
 
          // Record the file details ready for generating the response
+         updateNode.name = formdata.fields[1].value;
          model.document = updateNode;
       }
       else
@@ -371,7 +372,7 @@ function main()
          // Also perform the encoding guess step in the write() method to save an additional Writer operation.
          newFile.properties.content.write(content, false, true);
          newFile.save();
-         
+
 
          // NOTE: Removal of first request for thumbnails to improve upload performance
          //       Thumbnails are still requested by Share on first render of the doclist image.
@@ -409,7 +410,7 @@ function main()
       // NOTE: Do not clean formdata temp files to allow for retries. It's possible for a temp file
       //       to remain if max retry attempts are made, but this is rare, so leave to usual temp
       //       file cleanup.
-      
+
       // capture exception, annotate it accordingly and re-throw
       if (e.message && e.message.indexOf("AccessDeniedException") != -1)
       {
@@ -426,7 +427,7 @@ function main()
       else
       {
          e.code = 500;
-         e.message = "Unexpected error occurred during upload of new content.";      
+         e.message = "Unexpected error occurred during upload of new content.";
       }
       throw e;
    }
