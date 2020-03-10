@@ -222,6 +222,7 @@ public class AlfNodeAttValue implements MetaValue {
         String originalUrl = url;
         String originalName = String.valueOf(nodeService.getProperty(scopeRef, ContentModel.PROP_NAME));
         String previewMimetype = mimetype;
+        String originalExtension = mimetypeService.getExtension(mimetype);
         String previewExtension;
 
         switch (mimetype) {
@@ -247,7 +248,7 @@ public class AlfNodeAttValue implements MetaValue {
             url += "?c=force";
         }
 
-        return new ContentInfo(url, originalUrl, originalName, previewExtension, previewMimetype);
+        return new ContentInfo(url, originalUrl, originalName, originalExtension, previewExtension, previewMimetype);
     }
 
     private String getThumbnailType(ContentData data) {
@@ -303,13 +304,16 @@ public class AlfNodeAttValue implements MetaValue {
         @Getter private final String url;
         @Getter private final String originalUrl;
         @Getter private final String originalName;
+        @Getter private final String originalExt;
         @Getter private final String ext;
         @Getter private final String mimetype;
 
-        ContentInfo(String url, String originalUrl, String originalName, String ext, String mimetype) {
+        ContentInfo(String url, String originalUrl, String originalName,
+                    String originalExt, String ext, String mimetype) {
             this.url = url;
             this.originalUrl = originalUrl;
             this.originalName = originalName;
+            this.originalExt = originalExt;
             this.ext = ext;
             this.mimetype = mimetype;
         }
