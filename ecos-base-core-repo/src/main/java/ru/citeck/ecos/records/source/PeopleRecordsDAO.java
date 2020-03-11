@@ -171,6 +171,8 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
                     return "profile-details";
                 case RecordConstants.ATT_ECOS_TYPE:
                     return ETYPE;
+                case "nodeRef":
+                    return alfNode != null ? alfNode.getId() : null;
             }
 
             return alfNode.getAttribute(name, field);
