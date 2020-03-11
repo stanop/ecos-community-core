@@ -54,7 +54,7 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
             case TYPES_DOCUMENTS_QUERY_LANGUAGE:
                 return getTypesDocuments(recordsQuery);
             case DOCUMENTS_QUERY_LANGUAGE:
-                return getAllTypesDocuments(recordsQuery);
+                return getDocumentsOfAllTypes(recordsQuery);
             default:
                 log.error("Language doesn't supported: " + recordsQuery.getLanguage());
         }
@@ -118,7 +118,7 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
         return typeDocumentsRecords;
     }
 
-    private RecordsQueryResult<TypeDocumentsRecord> getAllTypesDocuments(RecordsQuery recordsQuery) {
+    private RecordsQueryResult<TypeDocumentsRecord> getDocumentsOfAllTypes(RecordsQuery recordsQuery) {
 
         TypesDocumentsQuery query = recordsQuery.getQuery(TypesDocumentsQuery.class);
 
