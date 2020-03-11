@@ -4,8 +4,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.MutableAuthenticationService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.commons.data.DataValue;
@@ -34,6 +32,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
                                          RecordsMetaLocalDAO<PeopleRecordsDAO.UserValue> {
 
     public static final String ID = "people";
+    private static final RecordRef ETYPE = RecordRef.valueOf("emodel/type@person");
 
     private static final String PROP_USER_NAME = "userName";
     private static final String PROP_CM_USER_NAME = "cm:" + PROP_USER_NAME;
@@ -170,6 +169,8 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
                     return getUserAuthorities();
                 case RecordConstants.ATT_DASHBOARD_TYPE:
                     return "profile-details";
+                case RecordConstants.ATT_ECOS_TYPE:
+                    return ETYPE;
             }
 
             return alfNode.getAttribute(name, field);
