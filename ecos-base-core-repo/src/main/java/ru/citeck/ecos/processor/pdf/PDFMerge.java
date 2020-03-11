@@ -18,6 +18,7 @@
  */
 package ru.citeck.ecos.processor.pdf;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -102,8 +103,9 @@ public class PDFMerge extends AbstractDataBundleMerge {
     private DataBundle getResultPdf(List<DataBundle> pdfInputs, List<PdfReader> pdfReaders) {
         ContentWriter contentWriter = contentService.getTempWriter();
 
-        try (OutputStream outputStream = contentWriter.getContentOutputStream();) {
-            PdfCopyFields resultPdf = new PdfCopyFields(outputStream);
+        PdfCopyFields resultPdf = null;
+        try (OutputStream outputStream = contentWriter.getContentOutputStream()) {
+            resultPdf = new PdfCopyFields(outputStream);
             for (PdfReader reader : pdfReaders) {
                 resultPdf.addDocument(reader);
             }
@@ -115,6 +117,32 @@ public class PDFMerge extends AbstractDataBundleMerge {
         } catch (IOException | DocumentException e) {
             log.error(GETTING_RESULT_PDF_ERROR, e);
             return null;
+        } finally {
+            closeResource(resultPdf);
+            closeResources(pdfReaders);
+            closeResources(pdfInputs);
+        }
+    }
+
+    private void closeResources(List<?> objects) {
+        for (Object object : objects) {
+            closeResource(object);
+        }
+    }
+
+    private void closeResource(Object object) {
+        if (object == null) {
+            return;
+        }
+
+        try {
+            if (object instanceof PdfCopyFields) {
+                ((PdfCopyFields) object).close();
+            } else {
+                ((Closeable) object).close();
+            }
+        } catch (Exception e) {
+            /// ignore
         }
     }
 
