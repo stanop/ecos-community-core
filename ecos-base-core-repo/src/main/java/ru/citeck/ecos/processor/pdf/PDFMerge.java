@@ -18,11 +18,13 @@
  */
 package ru.citeck.ecos.processor.pdf;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.service.cmr.repository.ContentReader;
 import org.alfresco.service.cmr.repository.ContentService;
@@ -32,6 +34,7 @@ import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfCopyFields;
 
+import org.apache.commons.collections.CollectionUtils;
 import ru.citeck.ecos.processor.AbstractDataBundleMerge;
 import ru.citeck.ecos.processor.DataBundle;
 import ru.citeck.ecos.processor.DataBundleMerge;
@@ -39,14 +42,18 @@ import ru.citeck.ecos.processor.ProcessorConstants;
 
 /**
  * PDF Merge is Data Bundle Merge, that merges different data bundles with PDF content into one Data Bundle with PDF content.
- * 
+ * <p>
  * To merge model external Data Bundle Merge is used (specified as modelMerge).
- * 
- * @author Sergey Tiunov
  *
+ * @author Sergey Tiunov
  */
-public class PDFMerge extends AbstractDataBundleMerge
-{
+@Slf4j
+public class PDFMerge extends AbstractDataBundleMerge {
+
+    private static final String MIMETYPE_IS_NOT_EQUALS_PDF = "MimeType is not equals pdf. Model: %s";
+    private static final String INPUT_BUNDLE_DID_NOT_PROCESS = "Input bundle didn't process. Model: %s";
+    private static final String GETTING_RESULT_PDF_ERROR = "Getting result PDF complete with errors";
+
     private ContentService contentService;
     private DataBundleMerge modelMerge;
 
@@ -57,65 +64,85 @@ public class PDFMerge extends AbstractDataBundleMerge
 
     @Override
     public DataBundle merge(List<DataBundle> inputs) {
-
-        // check for null or empty list
-        if (inputs == null || inputs.isEmpty()) {
+        if (CollectionUtils.isEmpty(inputs)) {
             return null;
+        }
+
+        if (inputs.size() == 1) {
+            return inputs.get(0);
         }
 
         // leave only PDFs
         List<DataBundle> pdfInputs = new ArrayList<>(inputs.size());
         List<PdfReader> pdfReaders = new ArrayList<>(inputs.size());
+
+        fillInputsAndReaders(inputs, pdfInputs, pdfReaders);
+        return getResultPdf(pdfInputs, pdfReaders);
+    }
+
+    private void fillInputsAndReaders(List<DataBundle> inputs, List<DataBundle> pdfInputs, List<PdfReader> pdfReaders) {
         for (DataBundle input : inputs) {
             Object mimetype = input.getModel().get(ProcessorConstants.KEY_MIMETYPE);
             if (mimetype == null || !mimetype.equals(MimetypeMap.MIMETYPE_PDF)) {
+                log.debug(String.format(MIMETYPE_IS_NOT_EQUALS_PDF, input.getModel().toString()));
                 continue;
             }
+
             try {
                 PdfReader reader = new PdfReader(input.getInputStream());
                 pdfReaders.add(reader);
             } catch (IOException e) {
+                log.debug(String.format(INPUT_BUNDLE_DID_NOT_PROCESS, input.getModel().toString()), e);
                 continue;
             }
 
             pdfInputs.add(input);
         }
+    }
 
-        if (pdfInputs.size() == 1) {
-            return pdfInputs.get(0);
-        }
-
-        // merge model:
-        DataBundle modelBundle = modelMerge.merge(pdfInputs);
-
-        // merge content:
-
+    private DataBundle getResultPdf(List<DataBundle> pdfInputs, List<PdfReader> pdfReaders) {
         ContentWriter contentWriter = contentService.getTempWriter();
-        OutputStream outputStream = contentWriter.getContentOutputStream();
 
         PdfCopyFields resultPdf = null;
-        try {
+        try (OutputStream outputStream = contentWriter.getContentOutputStream()) {
             resultPdf = new PdfCopyFields(outputStream);
             for (PdfReader reader : pdfReaders) {
                 resultPdf.addDocument(reader);
             }
             resultPdf.close();
-            
-            ContentReader contentReader = contentWriter.getReader();
-            return helper.getDataBundle(contentReader, modelBundle.getModel());
 
+            ContentReader contentReader = contentWriter.getReader();
+            DataBundle modelBundle = modelMerge.merge(pdfInputs);
+            return helper.getDataBundle(contentReader, modelBundle.getModel());
         } catch (IOException | DocumentException e) {
+            log.error(GETTING_RESULT_PDF_ERROR, e);
             return null;
         } finally {
-            if (resultPdf != null) {
-                resultPdf.close();
-            } else if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                    return null;
-                }
+            closeResource(resultPdf);
+            closeResources(pdfReaders);
+            closeResources(pdfInputs);
+        }
+    }
+
+    private void closeResources(List<?> objects) {
+        for (Object object : objects) {
+            closeResource(object);
+        }
+    }
+
+    private void closeResource(Object object) {
+        if (object == null) {
+            return;
+        }
+
+        try {
+            if (object instanceof PdfCopyFields) {
+                ((PdfCopyFields) object).close();
+            } else {
+                ((Closeable) object).close();
             }
+        } catch (Exception e) {
+            /// ignore
         }
     }
 
