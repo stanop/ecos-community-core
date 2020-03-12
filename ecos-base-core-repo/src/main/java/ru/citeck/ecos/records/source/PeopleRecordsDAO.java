@@ -1,9 +1,11 @@
 package ru.citeck.ecos.records.source;
 
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.MutableAuthenticationService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.commons.data.DataValue;
@@ -14,8 +16,13 @@ import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.records2.request.delete.RecordsDelResult;
+import ru.citeck.ecos.records2.request.delete.RecordsDeletion;
+import ru.citeck.ecos.records2.request.mutation.RecordsMutResult;
+import ru.citeck.ecos.records2.request.mutation.RecordsMutation;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records2.source.dao.MutableRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsMetaLocalDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsQueryWithMetaLocalDAO;
@@ -26,10 +33,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.alfresco.model.ContentModel.PROP_USERNAME;
+import static ru.citeck.ecos.model.EcosModel.*;
+
 @Component
 public class PeopleRecordsDAO extends LocalRecordsDAO
-                              implements RecordsQueryWithMetaLocalDAO<PeopleRecordsDAO.UserValue>,
-                                         RecordsMetaLocalDAO<PeopleRecordsDAO.UserValue> {
+    implements RecordsQueryWithMetaLocalDAO<PeopleRecordsDAO.UserValue>,
+    RecordsMetaLocalDAO<PeopleRecordsDAO.UserValue>,
+    MutableRecordsDAO {
 
     public static final String ID = "people";
     private static final RecordRef ETYPE = RecordRef.valueOf("emodel/type@person");
@@ -42,6 +53,9 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
     private static final String PROP_IS_MUTABLE = "isMutable";
     private static final String PROP_IS_ADMIN = "isAdmin";
     private static final String PROP_AUTHORITIES = "authorities";
+    private static final String ECOS_OLD_PASS = "ecos:oldPass";
+    private static final String ECOS_PASS = "ecos:pass";
+    private static final String ECOS_PASS_VERIFY = "ecos:passVerify";
 
     private AuthorityUtils authorityUtils;
     private AuthorityService authorityService;
@@ -61,10 +75,55 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
     }
 
     @Override
+    public RecordsMutResult mutate(RecordsMutation mutation) {
+
+        mutation.getRecords().forEach(meta -> {
+            String username = meta.getId().getId();
+            String oldPass = meta.get(ECOS_OLD_PASS).asText();
+            String newPass = meta.getAttribute(ECOS_PASS).asText();
+            String verifyPass = meta.getAttribute(ECOS_PASS_VERIFY).asText();
+            this.updatePassword(username, oldPass, newPass, verifyPass);
+
+            //  search and set nodeRef for requested user
+            meta.setId(authorityService.getAuthorityNodeRef(username).toString());
+        });
+
+        return alfNodesRecordsDAO.mutate(mutation);
+    }
+
+    @Override
+    public RecordsDelResult delete(RecordsDeletion deletion) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Update Alfresco's user password value
+     */
+    private void updatePassword(String username, String oldPass, String newPass, String verifyPass) {
+
+        if (StringUtils.isEmpty(newPass) || StringUtils.isEmpty(verifyPass)) {
+            throw new RuntimeException("New password and verify password is required values");
+        }
+
+        String currentAuthUser = AuthenticationUtil.getFullyAuthenticatedUser();
+        boolean isAdmin = authorityService.isAdminAuthority(currentAuthUser);
+
+        if (StringUtils.isNotEmpty(oldPass) && currentAuthUser.equals(username)) {
+            authenticationService.updateAuthentication(username, oldPass.toCharArray(), newPass.toCharArray());
+        } else {
+            if (isAdmin) {
+                authenticationService.setAuthentication(username, newPass.toCharArray());
+            } else {
+                throw new RuntimeException("Modification of user credentials is not allowed for current user");
+            }
+        }
+    }
+
+    @Override
     public List<UserValue> getMetaValues(List<RecordRef> records) {
         return records.stream()
-                      .map(r -> new UserValue(r.toString()))
-                      .collect(Collectors.toList());
+            .map(r -> new UserValue(r.toString()))
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -110,7 +169,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
         }
 
         UserValue(RecordRef recordRef) {
-            this.alfNode =  new AlfNodeRecord(recordRef);
+            this.alfNode = new AlfNodeRecord(recordRef);
         }
 
         @Override
@@ -122,9 +181,9 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
                 try {
                     List<? extends MetaValue> attribute = alfNode.getAttribute(PROP_CM_USER_NAME, metaField);
                     userName = attribute.stream()
-                                        .findFirst()
-                                        .map(MetaValue::getString)
-                                        .orElse(null);
+                        .findFirst()
+                        .map(MetaValue::getString)
+                        .orElse(null);
                 } catch (Exception e) {
                     throw new RuntimeException("Error! " + alfNode.getId(), e);
                 }
