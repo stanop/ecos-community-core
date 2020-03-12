@@ -32,9 +32,9 @@
         },
     <#else>
         "nodeRef": "${document.nodeRef}",
-        "fileName": "${document.name}",    
+        "fileName": "${document.name}",
     </#if>
-   
+
    "status": {
       "code": 200,
       "name": "OK",
