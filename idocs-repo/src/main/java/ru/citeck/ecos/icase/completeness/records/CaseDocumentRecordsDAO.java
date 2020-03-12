@@ -1,5 +1,6 @@
 package ru.citeck.ecos.icase.completeness.records;
 
+import javafx.util.Pair;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +66,6 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
     private RecordsQueryResult<TypeDocumentsRecord> getTypesDocuments(RecordsQuery recordsQuery) {
 
         TypesDocumentsQuery query = recordsQuery.getQuery(TypesDocumentsQuery.class);
-
         RecordRef recordRef = query.getRecordRef();
         List<RecordRef> typesRefs = query.getTypes();
 
@@ -73,63 +73,46 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
             return new RecordsQueryResult<>();
         }
 
-        FTSQuery ftsQuery = FTSQuery.createRaw()
-            .parent(new NodeRef(recordRef.getId()))
-            .transactional()
-            .maxItems(1000);
+        Map<RecordRef, List<DocInfo>> docsByType = getAllDocsByType(recordRef);
 
-        List<RecordRef> documentRefs = ftsQuery.query(searchService)
-            .stream()
-            .map(ref -> RecordRef.valueOf(ref.toString()))
+        List<TypeDocumentsRecord> typeDocumentsList = typesRefs.stream()
+            .map(typeRef -> new TypeDocumentsRecord(typeRef, docsByType.getOrDefault(typeRef, Collections.emptyList())
+                .stream()
+                .map(DocInfo::getRef)
+                .collect(Collectors.toList())))
             .collect(Collectors.toList());
-
-        RecordsResult<DocumentTypeMeta> meta = recordsService.getMeta(documentRefs, DocumentTypeMeta.class);
-
-        Map<RecordRef, List<DocInfo>> docsByType = new HashMap<>();
-
-        for (int i = 0; i < meta.getRecords().size(); i++) {
-
-            DocumentTypeMeta docMeta = meta.getRecords().get(i);
-
-            if (docMeta.type != null) {
-
-                long order = docMeta.getCreated() != null ? docMeta.getCreated().getTime() : 0L;
-
-                DocInfo docInfo = new DocInfo(documentRefs.get(i), order);
-                docsByType.computeIfAbsent(docMeta.getType(), t -> new ArrayList<>()).add(docInfo);
-            }
-        }
-
-        docsByType.forEach((t, docs) -> docs.sort(Comparator.comparingLong(DocInfo::getOrder).reversed()));
-
-        List<TypeDocumentsRecord> typeDocumentsList = new ArrayList<>();
-
-        for (RecordRef typeRef : typesRefs) {
-            typeDocumentsList.add(new TypeDocumentsRecord(typeRef,
-                docsByType.getOrDefault(typeRef, Collections.emptyList())
-                    .stream()
-                    .map(DocInfo::getRef)
-                    .collect(Collectors.toList())));
-        }
 
         RecordsQueryResult<TypeDocumentsRecord> typeDocumentsRecords = new RecordsQueryResult<>();
         typeDocumentsRecords.setRecords(typeDocumentsList);
-
         return typeDocumentsRecords;
     }
 
     private RecordsQueryResult<TypeDocumentsRecord> getDocumentsOfAllTypes(RecordsQuery recordsQuery) {
 
         TypesDocumentsQuery query = recordsQuery.getQuery(TypesDocumentsQuery.class);
-
         RecordRef recordRef = query.getRecordRef();
 
         if (recordRef == null || !NodeRef.isNodeRef(recordRef.getId())) {
             return new RecordsQueryResult<>();
         }
 
+        Map<RecordRef, List<DocInfo>> docsByType = getAllDocsByType(recordRef);
+
+        List<TypeDocumentsRecord> documentsByTypes = docsByType.entrySet().stream()
+            .map(e -> new TypeDocumentsRecord(e.getKey(), e.getValue().stream()
+                .map(DocInfo::getRef)
+                .collect(Collectors.toList())))
+            .collect(Collectors.toList());
+
+        RecordsQueryResult<TypeDocumentsRecord> documentsByTypesRecords = new RecordsQueryResult<>();
+        documentsByTypesRecords.setRecords(documentsByTypes);
+        return documentsByTypesRecords;
+    }
+
+    private Map<RecordRef, List<DocInfo>> getAllDocsByType(RecordRef documentRef) {
+
         FTSQuery ftsQuery = FTSQuery.createRaw()
-            .parent(new NodeRef(recordRef.getId()))
+            .parent(new NodeRef(documentRef.getId()))
             .transactional()
             .maxItems(1000);
 
@@ -157,20 +140,7 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
 
         docsByType.forEach((t, docs) -> docs.sort(Comparator.comparingLong(DocInfo::getOrder).reversed()));
 
-        List<TypeDocumentsRecord> typeDocumentsList = new ArrayList<>();
-
-        for (Map.Entry<RecordRef, List<DocInfo>> entry : docsByType.entrySet()){
-            TypeDocumentsRecord typeDocumentsRecord = new TypeDocumentsRecord(entry.getKey(),
-                entry.getValue().stream()
-                    .map(DocInfo::getRef)
-                    .collect(Collectors.toList()));
-            typeDocumentsList.add(typeDocumentsRecord);
-        }
-
-        RecordsQueryResult<TypeDocumentsRecord> typeDocumentsRecords = new RecordsQueryResult<>();
-        typeDocumentsRecords.setRecords(typeDocumentsList);
-
-        return typeDocumentsRecords;
+        return docsByType;
     }
 
     private RecordsQueryResult<CaseDocumentRecord> getDocumentTypes(RecordsQuery recordsQuery) {
