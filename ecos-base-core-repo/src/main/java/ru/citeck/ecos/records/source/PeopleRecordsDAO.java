@@ -1,5 +1,6 @@
 package ru.citeck.ecos.records.source;
 
+import lombok.NonNull;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.SearchService;
@@ -9,10 +10,12 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.commons.data.DataValue;
+import ru.citeck.ecos.commons.data.ObjectData;
 import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
 import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.RecordConstants;
+import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
@@ -32,9 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static org.alfresco.model.ContentModel.PROP_USERNAME;
-import static ru.citeck.ecos.model.EcosModel.*;
 
 @Component
 public class PeopleRecordsDAO extends LocalRecordsDAO
@@ -75,34 +75,56 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
     }
 
     @Override
+    public RecordsDelResult delete(RecordsDeletion deletion) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public RecordsMutResult mutate(RecordsMutation mutation) {
 
-        mutation.getRecords().forEach(meta -> {
-            String username = meta.getId().getId();
-            String oldPass = meta.get(ECOS_OLD_PASS).asText();
-            String newPass = meta.getAttribute(ECOS_PASS).asText();
-            String verifyPass = meta.getAttribute(ECOS_PASS_VERIFY).asText();
-            this.updatePassword(username, oldPass, newPass, verifyPass);
+        List<RecordMeta> handledMeta = mutation.getRecords().stream()
+            .map(this::handleMeta)
+            .collect(Collectors.toList());
 
-            //  search and set nodeRef for requested user
-            meta.setId(authorityService.getAuthorityNodeRef(username).toString());
-        });
+        mutation.setRecords(handledMeta);
 
         return alfNodesRecordsDAO.mutate(mutation);
     }
 
-    @Override
-    public RecordsDelResult delete(RecordsDeletion deletion) {
-        throw new UnsupportedOperationException();
+    private RecordMeta handleMeta(RecordMeta meta) {
+        String username = meta.getId().getId();
+
+        if (username == null || !meta.hasAttribute(ECOS_OLD_PASS) || !meta.hasAttribute(ECOS_PASS)
+            || !meta.hasAttribute(ECOS_PASS_VERIFY)) {
+            throw new RuntimeException("Not enough attributes for update user password");
+        }
+
+        String oldPass = meta.getAttribute(ECOS_OLD_PASS).asText();
+        String newPass = meta.getAttribute(ECOS_PASS).asText();
+        String verifyPass = meta.getAttribute(ECOS_PASS_VERIFY).asText();
+
+        this.updatePassword(username, oldPass, newPass, verifyPass);
+
+        //  search and set nodeRef for requested user
+        meta.setId(authorityService.getAuthorityNodeRef(username).toString());
+
+        ObjectData attributes = meta.getAttributes();
+        attributes.remove(ECOS_OLD_PASS);
+        attributes.remove(ECOS_PASS);
+        attributes.remove(ECOS_PASS_VERIFY);
+        return meta;
     }
 
     /**
      * Update Alfresco's user password value
      */
-    private void updatePassword(String username, String oldPass, String newPass, String verifyPass) {
+    private void updatePassword(@NonNull String username,
+                                String oldPass,
+                                @NonNull String newPass,
+                                @NonNull String verifyPass) {
 
-        if (StringUtils.isEmpty(newPass) || StringUtils.isEmpty(verifyPass)) {
-            throw new RuntimeException("New password and verify password is required values");
+        if (!newPass.equals(verifyPass)) {
+            throw new RuntimeException("New password verification failed");
         }
 
         String currentAuthUser = AuthenticationUtil.getFullyAuthenticatedUser();
