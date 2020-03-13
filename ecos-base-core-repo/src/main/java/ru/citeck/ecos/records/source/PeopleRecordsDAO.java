@@ -94,8 +94,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
     private RecordMeta handleMeta(RecordMeta meta) {
         String username = meta.getId().getId();
 
-        if (username == null || !meta.hasAttribute(ECOS_OLD_PASS) || !meta.hasAttribute(ECOS_PASS)
-            || !meta.hasAttribute(ECOS_PASS_VERIFY)) {
+        if (username == null || !meta.hasAttribute(ECOS_PASS) || !meta.hasAttribute(ECOS_PASS_VERIFY)) {
             throw new RuntimeException("Not enough attributes for update user password");
         }
 
