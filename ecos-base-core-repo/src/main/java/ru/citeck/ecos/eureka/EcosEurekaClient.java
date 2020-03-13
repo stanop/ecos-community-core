@@ -11,13 +11,10 @@ import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.utils.InetUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -33,11 +30,9 @@ public class EcosEurekaClient {
     private InstanceInfo.InstanceStatus status = InstanceInfo.InstanceStatus.STARTING;
 
     @Autowired
-    @Qualifier("global-properties")
-    private Properties properties;
-
+    private EurekaInstanceConfig instanceConfig;
     @Autowired
-    private InetUtils inetUtils;
+    private EurekaAlfClientConfig clientConfig;
 
     @Getter(lazy = true) private final DiscoveryManager manager = initManager();
     @Getter(lazy = true) private final EurekaClient client = initClient();
@@ -78,10 +73,7 @@ public class EcosEurekaClient {
     private DiscoveryManager initManager() {
         DiscoveryManager manager = DiscoveryManager.getInstance();
 
-        EurekaInstanceConfig instanceConfig = new EurekaAlfInstanceConfig(properties, inetUtils);
-        EurekaAlfClientConfig clientConfig = new EurekaAlfClientConfig(properties);
-
-        if (!clientConfig.isEurekaEnabled()) {
+        if (clientConfig == null || !clientConfig.isEurekaEnabled()) {
             throw new EurekaDisabled();
         }
 

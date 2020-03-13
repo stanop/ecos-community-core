@@ -18,7 +18,7 @@
  */
 package ru.citeck.ecos.journals;
 
-import ru.citeck.ecos.apps.app.module.ModuleRef;
+import ru.citeck.ecos.apps.module.ModuleRef;
 
 import java.util.List;
 import java.util.Map;

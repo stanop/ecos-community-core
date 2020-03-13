@@ -7,14 +7,13 @@
     </imports>
 
     <journal id="ecos-forms">
-        <datasource>eapps/module</datasource>
-        <predicate>{"t": "eq", "att": "type", "val": "form"}</predicate>
+        <datasource>uiserv/eform</datasource>
         <create>
             <variant title="Create Form">
-                <recordRef>eapps/module@form$</recordRef>
+                <recordRef>uiserv/eform@</recordRef>
             </variant>
             <variant title="Upload Form">
-                <recordRef>eapps/module@form$</recordRef>
+                <recordRef>uiserv/eform@</recordRef>
                 <formKey>ecos-module-upload</formKey>
             </variant>
         </create>
@@ -33,8 +32,8 @@
                     onclick: {
                         fn: function () {
                             var record = Citeck.Records.get(oRecord.getData('nodeRef'));
-                            record.load({ module_id: 'module_id', json:'.json' }, true).then(data => {
-                                Citeck.utils.downloadText(JSON.stringify(data.json), data.module_id + '.json', 'text/json');
+                            record.load({ moduleId: 'moduleId', json:'.json' }, true).then(data => {
+                                Citeck.utils.downloadText(JSON.stringify(data.json), data.moduleId + '.json', 'text/json');
                             });
                         }
                     }
@@ -77,12 +76,10 @@
             <action ref="ui/action$edit" />
         </actions>
         <headers>
-            <header key="module_id" default="true" />
+            <header key="moduleId" default="true" />
             <header key="formKey" default="true" />
             <header key="title" default="true" />
             <header key="description" default="true" />
-            <header key="publishStatus" default="true" />
-            <header key="publishMsg" default="true" />
         </headers>
     </journal>
 

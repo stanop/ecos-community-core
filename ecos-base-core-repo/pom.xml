@@ -40,27 +40,27 @@
         </dependency>
 
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>ecos-records</artifactId>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
             <groupId>ru.citeck.ecos.eureka</groupId>
             <artifactId>ecos-eureka-client</artifactId>
             <version>1.9.12.1</version>
         </dependency>
 
         <dependency>
-            <groupId>ru.citeck.ecos.community</groupId>
+            <groupId>ru.citeck.ecos.commons</groupId>
+            <artifactId>ecos-commons</artifactId>
+            <version>${ecos.commons.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.citeck.ecos</groupId>
             <artifactId>ecos-apps-lib</artifactId>
             <version>${ecos.apps.lib.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>ru.citeck.ecos.commons</groupId>
-            <artifactId>ecos-commons</artifactId>
-            <version>${ecos.commons.version}</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ecos-records</artifactId>
+            <version>${ecos.records.version}</version>
         </dependency>
 
         <dependency>

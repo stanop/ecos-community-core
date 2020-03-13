@@ -21,7 +21,7 @@ package ru.citeck.ecos.journals;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.apache.commons.lang.StringUtils;
-import ru.citeck.ecos.apps.app.module.ModuleRef;
+import ru.citeck.ecos.apps.module.ModuleRef;
 import ru.citeck.ecos.journals.xml.Formatter;
 import ru.citeck.ecos.journals.xml.*;
 import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;

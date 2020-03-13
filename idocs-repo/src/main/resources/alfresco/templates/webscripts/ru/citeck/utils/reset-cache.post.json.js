@@ -1,7 +1,7 @@
 (function() {
 
     var autoDeployerBeans = {
-        'ecos-apps': 'ecosAppDeployer',
+        'ecos-apps': 'ecosAppsModulesProviderImpl',
         'journals': 'journals.autoDeployer',
         'views': 'nodeViews.autoDeployer',
         'invariants': 'invariants.autoDeployer.module',
@@ -14,7 +14,7 @@
 
     var customActions = {
         'ecos-apps': function (bean) {
-            bean.resendPackages();
+            bean.update();
         }
     };
 

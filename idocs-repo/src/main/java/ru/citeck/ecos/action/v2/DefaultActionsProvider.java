@@ -1,11 +1,10 @@
 package ru.citeck.ecos.action.v2;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AccessStatus;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.citeck.ecos.apps.app.module.type.ui.action.ActionModule;
+import ru.citeck.ecos.action.ActionModule;
 import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;

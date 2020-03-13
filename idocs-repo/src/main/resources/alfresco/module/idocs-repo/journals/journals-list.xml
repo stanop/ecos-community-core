@@ -395,14 +395,13 @@
     </journal>
 
     <journal id="ecos-types">
-        <datasource>eapps/module</datasource>
-        <predicate>{"t": "eq", "att": "type", "val": "model/type"}</predicate>
+        <datasource>emodel/type</datasource>
         <create>
             <variant title="Create Type">
-                <recordRef>eapps/module@model/type$</recordRef>
+                <recordRef>emodel/type@</recordRef>
             </variant>
             <variant title="Upload Type">
-                <recordRef>eapps/module@model/type$</recordRef>
+                <recordRef>emodel/type@</recordRef>
                 <formKey>ecos-module-upload</formKey>
             </variant>
         </create>
@@ -422,8 +421,8 @@
                     onclick: {
                         fn: function () {
                             var record = Citeck.Records.get(oRecord.getData('nodeRef'));
-                            record.load({ module_id: 'module_id', json:'.json' }, true).then(data => {
-                                Citeck.utils.downloadText(JSON.stringify(data.json), data.module_id + '.json', 'text/json');
+                            record.load({ moduleId: 'moduleId', json:'.json' }, true).then(data => {
+                                Citeck.utils.downloadText(JSON.stringify(data.json), data.moduleId + '.json', 'text/json');
                             });
                         }
                     }
@@ -466,25 +465,22 @@
             <action ref="ui/action$edit" />
         </actions>
         <headers>
-            <header key="module_id" default="true" />
+            <header key="moduleId" default="true" />
             <header key="name" default="true" />
             <header key="description" default="true" />
             <header key="parent" default="true" />
             <header key="associations" default="true" />
-            <header key="publishStatus" default="true" />
-            <header key="publishMsg" default="true" />
         </headers>
     </journal>
 
     <journal id="ecos-sections">
-        <datasource>eapps/module</datasource>
-        <predicate>{"t": "eq", "att": "type", "val": "model/section"}</predicate>
+        <datasource>emodel/section</datasource>
         <create>
             <variant title="Create Section">
-                <recordRef>eapps/module@model/section$</recordRef>
+                <recordRef>emodel/section@</recordRef>
             </variant>
             <variant title="Upload Section">
-                <recordRef>eapps/module@model/section$</recordRef>
+                <recordRef>emodel/section@</recordRef>
                 <formKey>ecos-module-upload</formKey>
             </variant>
         </create>
@@ -503,8 +499,8 @@
                     onclick: {
                         fn: function () {
                             var record = Citeck.Records.get(oRecord.getData('nodeRef'));
-                            record.load({ module_id: 'module_id', json:'.json' }, true).then(data => {
-                                Citeck.utils.downloadText(JSON.stringify(data.json), data.module_id + '.json', 'text/json');
+                            record.load({ moduleId: 'moduleId', json:'.json' }, true).then(data => {
+                                Citeck.utils.downloadText(JSON.stringify(data.json), data.moduleId + '.json', 'text/json');
                             });
                         }
                     }
@@ -547,21 +543,18 @@
             <action ref="ui/action$edit" />
         </actions>
         <headers>
-            <header key="module_id" default="true" />
+            <header key="moduleId" default="true" />
             <header key="name" default="true" />
             <header key="description" default="true" />
             <header key="types" default="true" />
-            <header key="publishStatus" default="true" />
-            <header key="publishMsg" default="true" />
         </headers>
     </journal>
 
     <journal id="ecos-dashboards">
-        <datasource>eapps/module</datasource>
-        <predicate>{"t": "eq", "att": "type", "val": "ui/dashboard"}</predicate>
+        <datasource>uiserv/dashboard</datasource>
         <create>
             <variant title="Upload Dashboard">
-                <recordRef>eapps/module@ui/dashboard$</recordRef>
+                <recordRef>uiserv/dashboard@</recordRef>
                 <formKey>ecos-module-upload</formKey>
             </variant>
         </create>
@@ -580,8 +573,8 @@
                     onclick: {
                         fn: function () {
                             var record = Citeck.Records.get(oRecord.getData('nodeRef'));
-                            record.load({ module_id: 'module_id', json:'.json' }, true).then(data => {
-                                Citeck.utils.downloadText(JSON.stringify(data.json), data.module_id + '.json', 'text/json');
+                            record.load({ moduleId: 'moduleId', json:'.json' }, true).then(data => {
+                                Citeck.utils.downloadText(JSON.stringify(data.json), data.moduleId + '.json', 'text/json');
                             });
                         }
                     }
@@ -624,12 +617,10 @@
             <!--<action ref="ui/action$edit" />-->
         </actions>
         <headers>
-            <header key="module_id" default="true" />
+            <header key="moduleId" default="true" />
             <header key="typeRef" default="true" />
             <header key="authority" default="true" />
             <header key="priority" default="true" />
-            <header key="publishStatus" default="true" />
-            <header key="publishMsg" default="true" />
         </headers>
     </journal>
 

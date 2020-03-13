@@ -10,9 +10,13 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.apps.app.module.type.workflow.WorkflowModule;
+import ru.citeck.ecos.apps.module.handler.EcosModuleHandler;
+import ru.citeck.ecos.apps.module.handler.ModuleMeta;
+import ru.citeck.ecos.apps.module.handler.ModuleWithMeta;
 import ru.citeck.ecos.model.EcosBpmModel;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.workflow.EcosBpmAppModelUtils;
@@ -21,10 +25,11 @@ import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 @Slf4j
 @Component
-public class WorkflowPublisher implements EcosModulePublisher<WorkflowModule> {
+public class WorkflowPublisher implements EcosModuleHandler<WorkflowModule> {
 
     private static final NodeRef ROOT = new NodeRef("workspace://SpacesStore/ecos-bpm-process-root");
     private static final NodeRef CATEGORY = new NodeRef("workspace://SpacesStore/cat-doc-kind-ecos-bpm-default");
@@ -42,7 +47,7 @@ public class WorkflowPublisher implements EcosModulePublisher<WorkflowModule> {
     }
 
     @Override
-    public void publish(WorkflowModule module) {
+    public void deployModule(@NotNull WorkflowModule module) {
 
         String[] engineAndId = module.getId().split("\\$");
         String processId = engineAndId[1];
@@ -92,13 +97,30 @@ public class WorkflowPublisher implements EcosModulePublisher<WorkflowModule> {
         bpmAppUtils.deployProcess(finalNode);
     }
 
+    @NotNull
+    @Override
+    public ModuleWithMeta<WorkflowModule> getModuleMeta(@NotNull WorkflowModule workflowModule) {
+        return new ModuleWithMeta<>(workflowModule, new ModuleMeta(workflowModule.getId()));
+    }
+
+    @Override
+    public void listenChanges(@NotNull Consumer<WorkflowModule> consumer) {
+    }
+
+    @Nullable
+    @Override
+    public ModuleWithMeta<WorkflowModule> prepareToDeploy(@NotNull WorkflowModule workflowModule) {
+        return getModuleMeta(workflowModule);
+    }
+
     @Autowired
     public void setBpmAppUtils(EcosBpmAppModelUtils bpmAppUtils) {
         this.bpmAppUtils = bpmAppUtils;
     }
 
+    @NotNull
     @Override
-    public Class<WorkflowModule> getModuleType() {
-        return WorkflowModule.class;
+    public String getModuleType() {
+        return "workflow";
     }
 }

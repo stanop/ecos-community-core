@@ -16,7 +16,7 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
-import ru.citeck.ecos.apps.app.module.type.ui.action.ActionModule;
+import ru.citeck.ecos.action.ActionModule;
 import ru.citeck.ecos.commons.data.ObjectData;
 import ru.citeck.ecos.model.CDLModel;
 import ru.citeck.ecos.model.DmsModel;

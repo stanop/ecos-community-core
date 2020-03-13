@@ -144,6 +144,11 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
             return userName;
         }
 
+        @Override
+        public String getDisplayName() {
+            return alfNode.getDisplayName();
+        }
+
         private UserAuthorities getUserAuthorities() {
             if (userAuthorities == null) {
                 userAuthorities = new UserAuthorities(userName);

@@ -174,9 +174,15 @@
         </dependency>
 
         <dependency>
-            <groupId>ru.citeck.ecos.community</groupId>
-            <artifactId>ecos-apps-lib-rabbit</artifactId>
-            <scope>compile</scope>
+            <groupId>ru.citeck.ecos</groupId>
+            <artifactId>ecos-commands-rabbit</artifactId>
+            <version>${ecos.commands.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.citeck.ecos</groupId>
+            <artifactId>ecos-meta-repo</artifactId>
+            <version>${ecos.meta-repo.version}</version>
         </dependency>
 
         <dependency>
