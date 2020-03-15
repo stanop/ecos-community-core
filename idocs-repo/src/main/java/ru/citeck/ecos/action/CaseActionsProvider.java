@@ -51,7 +51,12 @@ public class CaseActionsProvider extends NodeActionsProvider {
             if (StringUtils.isBlank(additionalDataType)) {
                 RequestAction requestAction = new RequestAction();
                 requestAction.setUrl(String.format(FIRE_EVENT_URL_TEMPLATE, event.toString()));
-                requestAction.setConfirmationMessage(getConfirmationMessage(event));
+                requestAction.setConfirmationMessage(getMessage(event, EventModel.PROP_CONFIRMATION_MESSAGE));
+                requestAction.setSuccessMessage(getMessage(event, EventModel.PROP_SUCCESS_MESSAGE));
+                String spanClass = (String) nodeService.getProperty(event, EventModel.PROP_SUCCESS_MESSAGE_SPAN_CLASS);
+                if (spanClass != null) {
+                    requestAction.setSuccessMessageSpanClass(spanClass);
+                }
                 definition = requestAction;
             } else {
                 CreateNodeAction createNodeAction = new CreateNodeAction();
@@ -67,11 +72,11 @@ public class CaseActionsProvider extends NodeActionsProvider {
         return actions;
     }
 
-    private String getConfirmationMessage(NodeRef eventRef) {
-        String confirmationMessage = (String) nodeService.getProperty(eventRef, EventModel.PROP_CONFIRMATION_MESSAGE);
-        if (StringUtils.isNotBlank(confirmationMessage)) {
-            String messageFromProperties = I18NUtil.getMessage(confirmationMessage);
-            return StringUtils.defaultIfBlank(messageFromProperties, confirmationMessage);
+    private String getMessage(NodeRef eventRef, QName property) {
+        String message = (String) nodeService.getProperty(eventRef, property);
+        if (StringUtils.isNotBlank(message)) {
+            String messageFromProperties = I18NUtil.getMessage(message);
+            return StringUtils.defaultIfBlank(messageFromProperties, message);
         }
         return "";
     }
