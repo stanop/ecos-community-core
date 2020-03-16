@@ -80,6 +80,8 @@
             <header key="formKey" default="true" />
             <header key="title" default="true" />
             <header key="description" default="true" />
+            <header key="_modified" default="true" />
+            <header key="_modifier" default="true" />
         </headers>
     </journal>
 

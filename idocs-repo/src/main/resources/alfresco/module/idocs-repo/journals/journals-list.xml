@@ -470,6 +470,8 @@
             <header key="description" default="true" />
             <header key="parent" default="true" />
             <header key="associations" default="true" />
+            <header key="_modified" default="true" />
+            <header key="_modifier" default="true" />
         </headers>
     </journal>
 
@@ -547,6 +549,8 @@
             <header key="name" default="true" />
             <header key="description" default="true" />
             <header key="types" default="true" />
+            <header key="_modified" default="true" />
+            <header key="_modifier" default="true" />
         </headers>
     </journal>
 
@@ -621,6 +625,8 @@
             <header key="typeRef" default="true" />
             <header key="authority" default="true" />
             <header key="priority" default="true" />
+            <header key="_modified" default="true" />
+            <header key="_modifier" default="true" />
         </headers>
     </journal>
 

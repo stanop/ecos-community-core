@@ -275,6 +275,8 @@
             <header key="type" default="true" />
             <header key="key" default="true" />
             <header key="icon" default="true" />
+            <header key="_modified" default="true" />
+            <header key="_modifier" default="true" />
         </headers>
     </journal>
 
