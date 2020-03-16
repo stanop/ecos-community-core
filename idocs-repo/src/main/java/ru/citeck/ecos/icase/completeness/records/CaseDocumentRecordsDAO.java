@@ -1,5 +1,6 @@
 package ru.citeck.ecos.icase.completeness.records;
 
+import javafx.util.Pair;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.icase.completeness.CaseCompletenessService;
-import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
@@ -27,12 +27,12 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class CaseDocumentRecordsDAO extends LocalRecordsDAO
-    implements LocalRecordsQueryWithMetaDAO {
+public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalRecordsQueryWithMetaDAO {
 
     public final static String ID = "documents";
     private static final String DOCUMENT_TYPES_QUERY_LANGUAGE = "document-types";
     private static final String TYPES_DOCUMENTS_QUERY_LANGUAGE = "types-documents";
+    private static final String DOCUMENTS_QUERY_LANGUAGE = "documents";
 
     private final CaseCompletenessService caseCompletenessService;
     private final SearchService searchService;
@@ -54,6 +54,8 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO
                 return getDocumentTypes(recordsQuery);
             case TYPES_DOCUMENTS_QUERY_LANGUAGE:
                 return getTypesDocuments(recordsQuery);
+            case DOCUMENTS_QUERY_LANGUAGE:
+                return getDocumentsOfAllTypes(recordsQuery);
             default:
                 log.error("Language doesn't supported: " + recordsQuery.getLanguage());
         }
@@ -64,7 +66,6 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO
     private RecordsQueryResult<TypeDocumentsRecord> getTypesDocuments(RecordsQuery recordsQuery) {
 
         TypesDocumentsQuery query = recordsQuery.getQuery(TypesDocumentsQuery.class);
-
         RecordRef recordRef = query.getRecordRef();
         List<RecordRef> typesRefs = query.getTypes();
 
@@ -72,8 +73,46 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO
             return new RecordsQueryResult<>();
         }
 
+        Map<RecordRef, List<DocInfo>> docsByType = getAllDocsByType(recordRef);
+
+        List<TypeDocumentsRecord> typeDocumentsList = typesRefs.stream()
+            .map(typeRef -> new TypeDocumentsRecord(typeRef, docsByType.getOrDefault(typeRef, Collections.emptyList())
+                .stream()
+                .map(DocInfo::getRef)
+                .collect(Collectors.toList())))
+            .collect(Collectors.toList());
+
+        RecordsQueryResult<TypeDocumentsRecord> typeDocumentsRecords = new RecordsQueryResult<>();
+        typeDocumentsRecords.setRecords(typeDocumentsList);
+        return typeDocumentsRecords;
+    }
+
+    private RecordsQueryResult<TypeDocumentsRecord> getDocumentsOfAllTypes(RecordsQuery recordsQuery) {
+
+        TypesDocumentsQuery query = recordsQuery.getQuery(TypesDocumentsQuery.class);
+        RecordRef recordRef = query.getRecordRef();
+
+        if (recordRef == null || !NodeRef.isNodeRef(recordRef.getId())) {
+            return new RecordsQueryResult<>();
+        }
+
+        Map<RecordRef, List<DocInfo>> docsByType = getAllDocsByType(recordRef);
+
+        List<TypeDocumentsRecord> documentsByTypes = docsByType.entrySet().stream()
+            .map(e -> new TypeDocumentsRecord(e.getKey(), e.getValue().stream()
+                .map(DocInfo::getRef)
+                .collect(Collectors.toList())))
+            .collect(Collectors.toList());
+
+        RecordsQueryResult<TypeDocumentsRecord> documentsByTypesRecords = new RecordsQueryResult<>();
+        documentsByTypesRecords.setRecords(documentsByTypes);
+        return documentsByTypesRecords;
+    }
+
+    private Map<RecordRef, List<DocInfo>> getAllDocsByType(RecordRef documentRef) {
+
         FTSQuery ftsQuery = FTSQuery.createRaw()
-            .parent(new NodeRef(recordRef.getId()))
+            .parent(new NodeRef(documentRef.getId()))
             .transactional()
             .maxItems(1000);
 
@@ -101,20 +140,7 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO
 
         docsByType.forEach((t, docs) -> docs.sort(Comparator.comparingLong(DocInfo::getOrder).reversed()));
 
-        List<TypeDocumentsRecord> typeDocumentsList = new ArrayList<>();
-
-        for (RecordRef typeRef : typesRefs) {
-            typeDocumentsList.add(new TypeDocumentsRecord(typeRef,
-                docsByType.getOrDefault(typeRef, Collections.emptyList())
-                    .stream()
-                    .map(DocInfo::getRef)
-                    .collect(Collectors.toList())));
-        }
-
-        RecordsQueryResult<TypeDocumentsRecord> typeDocumentsRecords = new RecordsQueryResult<>();
-        typeDocumentsRecords.setRecords(typeDocumentsList);
-
-        return typeDocumentsRecords;
+        return docsByType;
     }
 
     private RecordsQueryResult<CaseDocumentRecord> getDocumentTypes(RecordsQuery recordsQuery) {
