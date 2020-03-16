@@ -265,9 +265,9 @@
             ]
         </option>
         <actions>
-            <action ref="ui/action$ecos-module-download" />
-            <action ref="ui/action$delete" />
-            <action ref="ui/action$edit" />
+            <action ref="uiserv/action@ecos-module-download" />
+            <action ref="uiserv/action@delete" />
+            <action ref="uiserv/action@edit" />
         </actions>
         <headers>
             <header key="moduleId" default="true"/>

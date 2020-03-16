@@ -21,9 +21,9 @@ package ru.citeck.ecos.journals;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.apache.commons.lang.StringUtils;
-import ru.citeck.ecos.apps.module.ModuleRef;
 import ru.citeck.ecos.journals.xml.Formatter;
 import ru.citeck.ecos.journals.xml.*;
+import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
 import ru.citeck.ecos.utils.EcosU18NUtils;
 
@@ -33,7 +33,8 @@ import java.util.stream.Collectors;
 
 class JournalTypeImpl implements JournalType {
 
-    private static final String UI_ACTION_MODULE_TYPE = "ui/action";
+    private static final String UI_ACTION_SOURCE = "action";
+    private static final String UI_ACTION_APP_NAME = "uiserv";
 
     private final String id;
     private final String datasource;
@@ -43,7 +44,7 @@ class JournalTypeImpl implements JournalType {
 
     private final Map<String, String> options;
     private final List<String> attributes;
-    private final List<ModuleRef> actions;
+    private final List<RecordRef> actions;
     private final List<JournalGroupAction> groupActions;
 
     private final BitSet defaultAttributes;
@@ -263,7 +264,7 @@ class JournalTypeImpl implements JournalType {
     }
 
     @Override
-    public List<ModuleRef> getActions() {
+    public List<RecordRef> getActions() {
        return actions;
     }
 
@@ -307,19 +308,19 @@ class JournalTypeImpl implements JournalType {
         return optionMap;
     }
 
-    private static List<ModuleRef> getActions(Journal journal) {
+    private static List<RecordRef> getActions(Journal journal) {
         if (journal.getActions() == null) {
             return Arrays.asList(
-                ModuleRef.create(UI_ACTION_MODULE_TYPE, "content-download"),
-                ModuleRef.create(UI_ACTION_MODULE_TYPE, "edit"),
-                ModuleRef.create(UI_ACTION_MODULE_TYPE, "delete"),
-                ModuleRef.create(UI_ACTION_MODULE_TYPE, "view-dashboard"),
-                ModuleRef.create(UI_ACTION_MODULE_TYPE, "view-dashboard-in-background")
+                RecordRef.create(UI_ACTION_APP_NAME, UI_ACTION_SOURCE, "content-download"),
+                RecordRef.create(UI_ACTION_APP_NAME, UI_ACTION_SOURCE, "edit"),
+                RecordRef.create(UI_ACTION_APP_NAME, UI_ACTION_SOURCE, "delete"),
+                RecordRef.create(UI_ACTION_APP_NAME, UI_ACTION_SOURCE, "view-dashboard"),
+                RecordRef.create(UI_ACTION_APP_NAME, UI_ACTION_SOURCE, "view-dashboard-in-background")
             );
         }
         return journal.getActions().getAction()
                 .stream()
-                .map(action -> ModuleRef.valueOf(action.getRef()))
+                .map(action -> RecordRef.valueOf(action.getRef()))
                 .collect(Collectors.toList());
     }
 

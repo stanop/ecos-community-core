@@ -1,6 +1,6 @@
 {
     "id": "idocs-cat-doctype-passport/idocs-cat-dockind-passport-rus",
     "name": "Паспорт гражданина РФ",
-    "parent": "model/type$idocs-cat-doctype-passport",
+    "parent": "emodel/type@idocs-cat-doctype-passport",
     "inheritActions": true
 }

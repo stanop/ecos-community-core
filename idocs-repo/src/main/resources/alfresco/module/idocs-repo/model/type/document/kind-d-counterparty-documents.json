@@ -1,6 +1,6 @@
 {
     "id": "category-document-type/kind-d-counterparty-documents",
     "name": "Документы контрагента",
-    "parent": "model/type$category-document-type",
+    "parent": "emodel/type@category-document-type",
     "inheritActions": true
 }

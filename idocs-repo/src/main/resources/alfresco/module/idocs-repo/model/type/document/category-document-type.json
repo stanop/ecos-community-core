@@ -1,6 +1,6 @@
 {
     "id": "category-document-type",
     "name": "Документ",
-    "parent": "model/type$user-base",
+    "parent": "emodel/type@user-base",
     "inheritActions": true
 }

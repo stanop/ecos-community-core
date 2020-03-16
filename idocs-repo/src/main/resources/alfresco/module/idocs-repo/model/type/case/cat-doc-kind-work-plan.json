@@ -1,6 +1,6 @@
 {
     "id": "cat-doc-type-general-case/cat-doc-kind-work-plan",
     "name": "План работ",
-    "parent": "model/type$cat-doc-type-general-case",
+    "parent": "emodel/type@cat-doc-type-general-case",
     "inheritActions": true
 }
