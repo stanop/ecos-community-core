@@ -92,25 +92,24 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
     }
 
     private RecordMeta handleMeta(RecordMeta meta) {
-        String username = meta.getId().getId();
 
-        if (username == null || !meta.hasAttribute(ECOS_PASS) || !meta.hasAttribute(ECOS_PASS_VERIFY)) {
-            throw new RuntimeException("Not enough attributes for update user password");
+        if (meta.hasAttribute(ECOS_PASS)) {
+            String username = meta.getId().getId();
+            String oldPass = meta.getAttribute(ECOS_OLD_PASS).asText();
+            String newPass = meta.getAttribute(ECOS_PASS).asText();
+            String verifyPass = meta.getAttribute(ECOS_PASS_VERIFY).asText();
+
+            this.updatePassword(username, oldPass, newPass, verifyPass);
+
+            //  search and set nodeRef for requested user
+            meta.setId(authorityService.getAuthorityNodeRef(username).toString());
         }
-
-        String oldPass = meta.getAttribute(ECOS_OLD_PASS).asText();
-        String newPass = meta.getAttribute(ECOS_PASS).asText();
-        String verifyPass = meta.getAttribute(ECOS_PASS_VERIFY).asText();
-
-        this.updatePassword(username, oldPass, newPass, verifyPass);
-
-        //  search and set nodeRef for requested user
-        meta.setId(authorityService.getAuthorityNodeRef(username).toString());
 
         ObjectData attributes = meta.getAttributes();
         attributes.remove(ECOS_OLD_PASS);
         attributes.remove(ECOS_PASS);
         attributes.remove(ECOS_PASS_VERIFY);
+
         return meta;
     }
 
@@ -127,11 +126,10 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
         }
 
         String currentAuthUser = AuthenticationUtil.getFullyAuthenticatedUser();
-        boolean isAdmin = authorityService.isAdminAuthority(currentAuthUser);
-
         if (StringUtils.isNotEmpty(oldPass) && currentAuthUser.equals(username)) {
             authenticationService.updateAuthentication(username, oldPass.toCharArray(), newPass.toCharArray());
         } else {
+            boolean isAdmin = authorityService.isAdminAuthority(currentAuthUser);
             if (isAdmin) {
                 authenticationService.setAuthentication(username, newPass.toCharArray());
             } else {
