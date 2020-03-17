@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
-import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
+import ru.citeck.ecos.icase.activity.service.alfresco.CaseActivityPolicies;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.icase.timer.CaseTimerService;

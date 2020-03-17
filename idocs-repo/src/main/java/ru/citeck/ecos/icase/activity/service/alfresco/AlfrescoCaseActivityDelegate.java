@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
-import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.service.CaseActivityDelegate;

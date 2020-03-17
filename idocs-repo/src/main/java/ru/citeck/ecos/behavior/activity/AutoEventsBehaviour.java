@@ -16,7 +16,7 @@ import ru.citeck.ecos.behavior.base.AbstractBehaviour;
 import ru.citeck.ecos.behavior.base.PolicyMethod;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
-import ru.citeck.ecos.icase.activity.CaseActivityPolicies.OnChildrenIndexChangedPolicy;
+import ru.citeck.ecos.icase.activity.service.alfresco.CaseActivityPolicies.OnChildrenIndexChangedPolicy;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.EventModel;

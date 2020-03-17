@@ -16,7 +16,7 @@ import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.behavior.event.trigger.UserActionEventTrigger;
 import ru.citeck.ecos.event.EventPolicies;
-import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
+import ru.citeck.ecos.icase.activity.service.alfresco.CaseActivityPolicies;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.ActivityModel;

@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.config.EcosConfigService;
-import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
+import ru.citeck.ecos.icase.activity.service.alfresco.CaseActivityPolicies;
 import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.model.ICaseRoleModel;
