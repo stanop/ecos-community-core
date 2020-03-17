@@ -12,6 +12,7 @@ import org.codehaus.jackson.node.ObjectNode;
 import org.flowable.task.api.Task;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.Content;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.Cache;
@@ -20,9 +21,11 @@ import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import ru.citeck.ecos.flowable.services.FlowableTaskService;
 import ru.citeck.ecos.flowable.services.RollbackFlowableTasksService;
+import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.InvariantsModel;
+import ru.citeck.ecos.utils.AlfActivityUtils;
 
 import java.util.*;
 
@@ -34,6 +37,7 @@ public class RollbackTasksInFlowable extends DeclarativeWebScript {
     private NodeService nodeService;
     private RollbackFlowableTasksService rollbackFlowableTasksService;
     private CaseActivityService caseActivityService;
+    private AlfActivityUtils alfActivityUtils;
     private WorkflowService workflowService;
     private FlowableTaskService flowableTaskService;
 
@@ -152,14 +156,15 @@ public class RollbackTasksInFlowable extends DeclarativeWebScript {
     }
 
     private boolean rollbackNotFlowableCaseToDraft(NodeRef node, boolean setDraft) {
-        caseActivityService.reset(node.toString());
+        ActivityRef activityRef = alfActivityUtils.composeActivityRef(node);
+        caseActivityService.reset(activityRef);
         if (setDraft) {
             nodeService.setProperty(node, InvariantsModel.PROP_IS_DRAFT, true);
         }
-        List<CaseActivity> activities = caseActivityService.getActivities(node.toString());
+        List<CaseActivity> activities = caseActivityService.getActivities(activityRef);
         for (CaseActivity activity : activities) {
             if (Objects.equals(activity.getTitle(), titleOfStartProcessStage)) {
-                caseActivityService.startActivity(activity);
+                caseActivityService.startActivity(activity.getActivityRef());
                 return true;
             }
         }
@@ -176,6 +181,11 @@ public class RollbackTasksInFlowable extends DeclarativeWebScript {
 
     public void setCaseActivityService(CaseActivityService caseActivityService) {
         this.caseActivityService = caseActivityService;
+    }
+
+    @Autowired
+    public void setAlfActivityUtils(AlfActivityUtils alfActivityUtils) {
+        this.alfActivityUtils = alfActivityUtils;
     }
 
     public void setDestinationMap(Map<String, List<String>> destinationMap) {

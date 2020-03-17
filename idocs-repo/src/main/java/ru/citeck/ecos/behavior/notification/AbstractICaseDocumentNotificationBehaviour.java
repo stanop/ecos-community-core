@@ -4,9 +4,11 @@ import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.notification.ICaseDocumentNotificationSender;
+import ru.citeck.ecos.utils.AlfActivityUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -16,6 +18,7 @@ public abstract class AbstractICaseDocumentNotificationBehaviour {
     protected DictionaryService dictionaryService;
     protected CaseStatusService caseStatusService;
     protected CaseActivityService caseActivityService;
+    protected AlfActivityUtils alfActivityUtils;
     protected PolicyComponent policyComponent;
     public NodeService nodeService;
 
@@ -83,6 +86,11 @@ public abstract class AbstractICaseDocumentNotificationBehaviour {
 
     public void setCaseActivityService(CaseActivityService caseActivityService) {
         this.caseActivityService = caseActivityService;
+    }
+
+    @Autowired
+    public void setAlfActivityUtils(AlfActivityUtils alfActivityUtils) {
+        this.alfActivityUtils = alfActivityUtils;
     }
 
     public void setDictionaryService(DictionaryService dictionaryService) {

@@ -797,10 +797,6 @@
         <property name="nodeService" ref="nodeService" />
     </bean>
 
-    <bean class="ru.citeck.ecos.behavior.icase.UpdateCasePerformAssignees" init-method="init">
-        <property name="serviceRegistry" ref="ServiceRegistry" />
-    </bean>
-
     <bean class="ru.citeck.ecos.behavior.icase.ClearNodeActionsCache" />
 
     <bean class="ru.citeck.ecos.behavior.icase.UpdateCaseModifiedDate" />

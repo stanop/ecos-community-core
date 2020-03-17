@@ -6,98 +6,131 @@ import ru.citeck.ecos.cases.RemoteRestoreCaseModelService;
 import ru.citeck.ecos.icase.activity.create.dto.ActivityCreateVariant;
 import ru.citeck.ecos.icase.activity.create.provider.CreateVariantsProvider;
 import ru.citeck.ecos.icase.activity.create.provider.impl.MenuCreateVariantsProvider;
+import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
+import ru.citeck.ecos.utils.AlfActivityUtils;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
 
+    private AlfActivityUtils alfActivityUtils;
     private CaseActivityService caseActivityService;
     private CreateVariantsProvider createVariantsProvider;
     private RemoteRestoreCaseModelService remoteRestoreCaseModelService;
 
-    public void startActivity(Object stageRef) {
+    public void startActivity(Object ref) {
         /* Call restore activity */
-        if (stageRef instanceof String) {
-            String stageRefUUID = (String) stageRef;
-            if (((String) stageRef).startsWith(RemoteRestoreCaseModelService.RESTORE_CASE_MODEL_UUID)) {
+        if (ref instanceof String) {
+            String stageRefUUID = (String) ref;
+            if (((String) ref).startsWith(RemoteRestoreCaseModelService.RESTORE_CASE_MODEL_UUID)) {
                 NodeRef documentRef = new NodeRef(stageRefUUID.substring(RemoteRestoreCaseModelService.RESTORE_CASE_MODEL_UUID.length()));
                 remoteRestoreCaseModelService.restoreCaseModels(documentRef);
                 return;
             }
         }
         /* Call common activity */
-        NodeRef ref = JavaScriptImplUtils.getNodeRef(stageRef);
-        if (ref != null) {
-            CaseActivity activity = caseActivityService.getActivity(ref.toString());
-            if (activity != null) {
-                caseActivityService.startActivity(activity);
-            }
-        }
+        ActivityRef activityRef = getActivityRef(ref);
+        caseActivityService.startActivity(activityRef);
     }
 
-    public void stopActivity(Object stageRef) {
-        NodeRef ref = JavaScriptImplUtils.getNodeRef(stageRef);
-        if (ref != null) {
-            CaseActivity activity = caseActivityService.getActivity(ref.toString());
-            if (activity != null) {
-                caseActivityService.stopActivity(activity);
-            }
-        }
+    public void stopActivity(Object ref) {
+        ActivityRef activityRef = getActivityRef(ref);
+        caseActivityService.stopActivity(activityRef);
     }
 
-    public ScriptNode[] getStartedActivities(Object nodeRef) {
-        NodeRef nRef = JavaScriptImplUtils.getNodeRef(nodeRef);
-        List<CaseActivity> activities = caseActivityService.getStartedActivities(nRef.toString());
-        Set<NodeRef> startedActivitiesNodeRefs = activities.stream()
-            .map(a -> new NodeRef(a.getId()))
-            .collect(Collectors.toSet());
-        return JavaScriptImplUtils.wrapNodes(startedActivitiesNodeRefs, this);
+    public ScriptNode[] getStartedActivities(Object ref) {
+        ActivityRef activityRef = getActivityRef(ref);
+        List<CaseActivity> activities = caseActivityService.getStartedActivities(activityRef);
+        List<NodeRef> nodeRefs = activities.stream()
+            .map(activity -> alfActivityUtils.getActivityNodeRef(activity.getActivityRef()))
+            .collect(Collectors.toList());
+        return JavaScriptImplUtils.wrapNodes(nodeRefs, this);
     }
 
-    public ScriptNode[] getActivities(Object nodeRef) {
-        NodeRef nRef = JavaScriptImplUtils.getNodeRef(nodeRef);
-        List<CaseActivity> activities = caseActivityService.getActivities(nRef.toString());
-        Set<NodeRef> activitiesNodeRefs = activities.stream()
-            .map(a -> new NodeRef(a.getId()))
-            .collect(Collectors.toSet());
-        return JavaScriptImplUtils.wrapNodes(activitiesNodeRefs, this);
+    public ScriptNode[] getActivities(Object ref) {
+        ActivityRef activityRef = getActivityRef(ref);
+        List<CaseActivity> activities = caseActivityService.getActivities(activityRef);
+        List<NodeRef> activityNodeRefs = activities.stream()
+            .map(activity -> alfActivityUtils.getActivityNodeRef(activity.getActivityRef()))
+            .collect(Collectors.toList());
+        return JavaScriptImplUtils.wrapNodes(activityNodeRefs, this);
     }
 
-    public ScriptNode getActivityByTitle(Object nodeRef, String title) {
-        return getActivityByTitle(nodeRef, title, false);
+    public ScriptNode getActivityByTitle(Object ref, String title) {
+        return getActivityByTitle(ref, title, false);
     }
 
-    public ScriptNode getActivityByTitle(Object nodeRef, String title, boolean recurse) {
-        NodeRef nRef = JavaScriptImplUtils.getNodeRef(nodeRef);
-        CaseActivity activity = caseActivityService.getActivityByTitle(nRef.toString(), title, recurse);
-        NodeRef activityNodeRef = new NodeRef(activity.getId());
+    public ScriptNode getActivityByTitle(Object ref, String title, boolean recurse) {
+        ActivityRef activityRef = getActivityRef(ref);
+        CaseActivity caseActivity = caseActivityService.getActivityByTitle(activityRef, title, recurse);
+        NodeRef activityNodeRef = alfActivityUtils.getActivityNodeRef(caseActivity.getActivityRef());
         return JavaScriptImplUtils.wrapNode(activityNodeRef, this);
     }
 
-    public ScriptNode getDocument(Object nodeRef) {
-        NodeRef ref = JavaScriptImplUtils.getNodeRef(nodeRef);
-        String parentId = caseActivityService.getDocumentId(ref.toString());
-        NodeRef parentNodeRef = new NodeRef(parentId);
-        return JavaScriptImplUtils.wrapNode(parentNodeRef, this);
+    public void reset(Object ref) {
+        ActivityRef activityRef = getActivityRef(ref);
+        caseActivityService.reset(activityRef);
     }
 
-    public void reset(Object nodeRef) {
-        NodeRef ref = JavaScriptImplUtils.getNodeRef(nodeRef);
-        caseActivityService.reset(ref.toString());
+    public void setParent(Object childRef, Object parentRef) {
+        ActivityRef activityRef = getActivityRef(childRef);
+        ActivityRef parentActivityRef = getActivityRef(parentRef);
+        caseActivityService.setParent(activityRef, parentActivityRef);
     }
 
-    public void setParent(Object activityRef, Object newParent) {
-        caseActivityService.setParent(JavaScriptImplUtils.getNodeRef(activityRef).toString(),
-            JavaScriptImplUtils.getNodeRef(newParent).toString());
+    public void setIndex(Object ref, Object newIndexRaw) {
+        ActivityRef activityRef = getActivityRef(ref);
+        int newIndex = getInt(newIndexRaw);
+        caseActivityService.setParentInIndex(activityRef, newIndex);
     }
 
-    public void setIndex(Object activityRef, Object newIndex) {
+    public boolean hasActiveChildren(Object ref) {
+        ActivityRef activityRef = getActivityRef(ref);
+        return caseActivityService.hasActiveChildren(activityRef);
+    }
+
+    public boolean isActive(Object ref) {
+        ActivityRef activityRef = getActivityRef(ref);
+        CaseActivity activity = caseActivityService.getActivity(activityRef);
+        return activity.isActive();
+    }
+
+    public List<ActivityCreateVariant> getCreateVariants() {
+        return createVariantsProvider.getCreateVariants();
+    }
+
+    //TODO: algorithm for eproc activities is missed.
+    private ActivityRef getActivityRef(Object object) {
+        if (object == null) {
+            return null;
+        }
+        if (object instanceof ActivityRef) {
+            return (ActivityRef) object;
+        }
+        if (object instanceof CaseActivity) {
+            return ((CaseActivity) object).getActivityRef();
+        }
+        if (object instanceof NodeRef) {
+            return alfActivityUtils.composeActivityRef((NodeRef) object);
+        }
+        if (object instanceof ScriptNode) {
+            return alfActivityUtils.composeActivityRef(((ScriptNode) object).getNodeRef());
+        }
+        if (object instanceof String) {
+            if (NodeRef.isNodeRef((String) object)) {
+                return alfActivityUtils.composeActivityRef(new NodeRef((String) object));
+            }
+        }
+        throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to NodeRef. " +
+            "Source: " + object.toString());
+    }
+
+    private int getInt(Object newIndex) {
         int index;
         if (newIndex instanceof Integer) {
             index = (Integer) newIndex;
@@ -108,38 +141,11 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
         } else {
             throw new IllegalArgumentException("Can not convert from " + newIndex.getClass() + " to Integer");
         }
-
-        String activityId = JavaScriptImplUtils.getNodeRef(activityRef).toString();
-        CaseActivity activity = caseActivityService.getActivity(activityId);
-
-        caseActivityService.setParentInIndex(activity, index);
+        return index;
     }
 
-    public boolean hasActiveChildren(Object activityObj) {
-        String activityId = JavaScriptImplUtils.getNodeRef(activityObj).toString();
-        CaseActivity activity = caseActivityService.getActivity(activityId);
-        return caseActivityService.hasActiveChildren(activity);
-    }
-
-    public boolean isActive(Object activityObj) {
-        String activityId = JavaScriptImplUtils.getNodeRef(activityObj).toString();
-        CaseActivity activity = caseActivityService.getActivity(activityId);
-        return activity.isActive();
-    }
-
-    public void restartChildrenActivity(Object parentActivityRef, Object childActivityRef) {
-
-        NodeRef parentRef = JavaScriptImplUtils.getNodeRef(parentActivityRef);
-        CaseActivity parentActivity = caseActivityService.getActivity(parentRef.toString());
-
-        NodeRef childRef = JavaScriptImplUtils.getNodeRef(childActivityRef);
-        CaseActivity childActivity = caseActivityService.getActivity(childRef.toString());
-
-        caseActivityService.restartChildActivity(parentActivity, childActivity);
-    }
-
-    public List<ActivityCreateVariant> getCreateVariants() {
-        return createVariantsProvider.getCreateVariants();
+    public void setAlfActivityUtils(AlfActivityUtils alfActivityUtils) {
+        this.alfActivityUtils = alfActivityUtils;
     }
 
     public void setCaseActivityService(CaseActivityService caseActivityService) {

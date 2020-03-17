@@ -9,7 +9,6 @@
         <property name="nodeService" ref="nodeService"/>
         <property name="predicateService" ref="predicateService"/>
         <property name="caseElementService" ref="caseElementService"/>
-        <property name="dictionaryService" ref="dictionaryService"/>
     </bean>
 
     <bean id="caseCompletenessService_cache_interceptor" class="ru.citeck.ecos.cache.GlobalCacheInterceptor"/>
@@ -45,14 +44,6 @@
           parent="baseJavaScriptExtension">
         <property name="extensionName" value="completeLevelsChecker"/>
         <property name="completeLevelsChecker" ref="completeLevelsChecker"/>
-    </bean>
-
-    <bean id="idocs.CaseCompletenessStageBehavior" class="ru.citeck.ecos.behavior.CaseCompletenessStageBehavior"
-          init-method="init">
-        <property name="caseActivityService" ref="caseActivityService"/>
-        <property name="policyComponent" ref="policyComponent"/>
-        <property name="nodeService" ref="nodeService"/>
-        <property name="caseCompletenessService" ref="caseCompletenessService"/>
     </bean>
 
     <bean id="copyCompletenessLevelsIgnoreBehaviour" parent="CopyDocumentIgnoreFieldBehaviour">

@@ -4,21 +4,32 @@ import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.apache.commons.lang.mutable.MutableInt;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Component;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.event.EventService;
-import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
+import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.ICaseEventModel;
 import ru.citeck.ecos.model.StagesModel;
+import ru.citeck.ecos.records.RecordsUtils;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.service.CiteckServices;
+import ru.citeck.ecos.utils.AlfActivityUtils;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
+@Component
+@DependsOn("idocs.dictionaryBootstrap")
 public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActivityStartedPolicy,
                                                  CaseActivityPolicies.OnCaseActivityStoppedPolicy {
 
@@ -28,11 +39,23 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
     private static final int STAGE_COMPLETE_LIMIT = 40;
 
     private CaseActivityService caseActivityService;
+    private AlfActivityUtils alfActivityUtils;
     private DictionaryService dictionaryService;
     private PolicyComponent policyComponent;
     private EventService eventService;
     private NodeService nodeService;
 
+    @Autowired
+    public CaseActivityEventTrigger(ServiceRegistry serviceRegistry) {
+        this.caseActivityService = (CaseActivityService) serviceRegistry.getService(CiteckServices.CASE_ACTIVITY_SERVICE);
+        this.alfActivityUtils = (AlfActivityUtils) serviceRegistry.getService(CiteckServices.ALF_ACTIVITY_UTILS);
+        this.dictionaryService = serviceRegistry.getDictionaryService();
+        this.policyComponent = serviceRegistry.getPolicyComponent();
+        this.eventService = (EventService) serviceRegistry.getService(CiteckServices.EVENT_SERVICE);
+        this.nodeService = serviceRegistry.getNodeService();
+    }
+
+    @PostConstruct
     public void init() {
         policyComponent.bindClassBehaviour(CaseActivityPolicies.OnCaseActivityStartedPolicy.QNAME,
                 ActivityModel.TYPE_ACTIVITY,
@@ -44,8 +67,8 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
 
     @Override
     public void onCaseActivityStarted(NodeRef activityRef) {
-        String documentId = caseActivityService.getDocumentId(activityRef.toString());
-        NodeRef documentNodeRef = new NodeRef(documentId);
+        RecordRef documentId = alfActivityUtils.getDocumentId(activityRef);
+        NodeRef documentNodeRef = RecordsUtils.toNodeRef(documentId);
 
         TransactionData data = getTransactionData();
         boolean isDataOwner = false;
@@ -70,8 +93,8 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
 
     @Override
     public void onCaseActivityStopped(NodeRef activityRef) {
-        String documentId = caseActivityService.getDocumentId(activityRef.toString());
-        NodeRef documentNodeRef = new NodeRef(documentId);
+        RecordRef documentId = alfActivityUtils.getDocumentId(activityRef);
+        NodeRef documentNodeRef = RecordsUtils.toNodeRef(documentId);
 
         TransactionData data = getTransactionData();
         boolean isDataOwner = false;
@@ -104,8 +127,8 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
 
             NodeRef stage = stages.poll();
 
-            CaseActivity activity = caseActivityService.getActivity(stage.toString());
-            if (!caseActivityService.hasActiveChildren(activity)) {
+            ActivityRef stageRef = alfActivityUtils.composeActivityRef(stage);
+            if (!caseActivityService.hasActiveChildren(stageRef)) {
 
                 MutableInt completedCounter = completedStages.computeIfAbsent(stage, s -> new MutableInt(0));
                 completedCounter.increment();
@@ -137,25 +160,5 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
     private static class TransactionData {
         boolean hasOwner = false;
         Set<NodeRef> stagesToTryComplete = new HashSet<>();
-    }
-
-    public void setCaseActivityService(CaseActivityService caseActivityService) {
-        this.caseActivityService = caseActivityService;
-    }
-
-    public void setDictionaryService(DictionaryService dictionaryService) {
-        this.dictionaryService = dictionaryService;
-    }
-
-    public void setPolicyComponent(PolicyComponent policyComponent) {
-        this.policyComponent = policyComponent;
-    }
-
-    public void setEventService(EventService eventService) {
-        this.eventService = eventService;
-    }
-
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
     }
 }

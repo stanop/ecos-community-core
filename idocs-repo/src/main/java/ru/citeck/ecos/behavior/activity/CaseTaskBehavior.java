@@ -25,12 +25,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
-import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
-import ru.citeck.ecos.icase.activity.service.CaseActivityService;
-import ru.citeck.ecos.model.*;
-import ru.citeck.ecos.role.CaseRoleService;
-import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.config.EcosConfigService;
+import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
+import ru.citeck.ecos.model.ActivityModel;
+import ru.citeck.ecos.model.CiteckWorkflowModel;
+import ru.citeck.ecos.model.ICaseRoleModel;
+import ru.citeck.ecos.model.ICaseTaskModel;
+import ru.citeck.ecos.records.RecordsUtils;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.role.CaseRoleService;
+import ru.citeck.ecos.utils.AlfActivityUtils;
+import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.utils.performance.ActionPerformance;
 import ru.citeck.ecos.workflow.variable.type.NodeRefsList;
 import ru.citeck.ecos.workflow.variable.type.StringsList;
@@ -54,7 +59,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
     private Map<String, List<String>> workflowTransmittedVariables = new HashMap<>();
     private Map<String, CaseTaskAttributesConverter> attributesConverters = new HashMap<>();
 
-    private CaseActivityService caseActivityService;
+    private AlfActivityUtils alfActivityUtils;
     private DictionaryService dictionaryService;
     private NamespaceService namespaceService;
     private WorkflowService workflowService;
@@ -104,8 +109,8 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
         workflowProperties.put(WorkflowModel.ASSOC_PACKAGE, wfPackage);
 
         performance.restart("getDocument");
-        String parentId = caseActivityService.getDocumentId(taskRef.toString());
-        NodeRef parentNodeRef = new NodeRef(parentId);
+        RecordRef parentRef = alfActivityUtils.getDocumentId(taskRef);
+        NodeRef parentNodeRef = RecordsUtils.toNodeRef(parentRef);
         performance.stop();
 
         performance.restart("workflowPackage addChild");
@@ -396,8 +401,8 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
         this.namespaceService = namespaceService;
     }
 
-    public void setCaseActivityService(CaseActivityService caseActivityService) {
-        this.caseActivityService = caseActivityService;
+    public void setAlfActivityUtils(AlfActivityUtils alfActivityUtils) {
+        this.alfActivityUtils = alfActivityUtils;
     }
 
     public void setDictionaryService(DictionaryService dictionaryService) {

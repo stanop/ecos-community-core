@@ -11,10 +11,9 @@ import java.util.Set;
 @EqualsAndHashCode(exclude = {"parent", "children"})
 public class CaseActivity {
 
-    private String id;
+    private ActivityRef activityRef;
     private int index;
     private String title;
-    private String documentId;
     private boolean active;
     private boolean repeatable;
     private State state;
