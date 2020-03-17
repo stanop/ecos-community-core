@@ -861,7 +861,7 @@ YAHOO.Bubbling.fire("registerAction", {
 	 * for Node Actions Service
 	 * */
 	YAHOO.Bubbling.fire("registerAction", {
-        actionName: "onServerAction",
+	    actionName: "onServerAction",
         fn: function (asset, element) {
             var actionId = element.className;
             var props = asset.actionParams[actionId].actionProperties;
@@ -904,8 +904,8 @@ YAHOO.Bubbling.fire("registerAction", {
                             scope: this,
                             fn: function () {
                                 Alfresco.util.PopupManager.displayMessage({
-									text: this.msg(props.successMessage || "message.transitionSuccess"),
-									spanClass: props.successMessageSpanClass || ""
+                                    text: this.msg(props.successMessage || "message.transitionSuccess"),
+                                    spanClass: props.successMessageSpanClass || ""
                                 });
                                 _.delay(function () {
                                     window.location.reload();
