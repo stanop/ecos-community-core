@@ -93,17 +93,19 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
 
     private RecordMeta handleMeta(RecordMeta meta) {
 
+        String username = meta.getId().getId();
+
         if (meta.hasAttribute(ECOS_PASS)) {
-            String username = meta.getId().getId();
             String oldPass = meta.getAttribute(ECOS_OLD_PASS).asText();
             String newPass = meta.getAttribute(ECOS_PASS).asText();
             String verifyPass = meta.getAttribute(ECOS_PASS_VERIFY).asText();
 
             this.updatePassword(username, oldPass, newPass, verifyPass);
 
-            //  search and set nodeRef for requested user
-            meta.setId(authorityService.getAuthorityNodeRef(username).toString());
         }
+
+        //  search and set nodeRef for requested user
+        meta.setId(authorityService.getAuthorityNodeRef(username).toString());
 
         ObjectData attributes = meta.getAttributes();
         attributes.remove(ECOS_OLD_PASS);
