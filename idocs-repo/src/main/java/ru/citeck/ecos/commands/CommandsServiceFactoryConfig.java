@@ -1,12 +1,12 @@
 package ru.citeck.ecos.commands;
 
-import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.ServiceRegistry;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.amqp.rabbit.connection.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEvent;
@@ -17,10 +17,10 @@ import org.springframework.extensions.surf.util.AbstractLifecycleBean;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.commands.rabbit.RabbitCommandsService;
 import ru.citeck.ecos.commands.remote.RemoteCommandsService;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import ru.citeck.ecos.commands.transaction.TransactionManager;
 import ru.citeck.ecos.eureka.EurekaAlfInstanceConfig;
 
+import java.util.Properties;
 import java.util.concurrent.Callable;
 
 @Slf4j
@@ -28,7 +28,15 @@ import java.util.concurrent.Callable;
 @DependsOn({"moduleStarter"})
 public class CommandsServiceFactoryConfig extends CommandsServiceFactory {
 
-    private ConnectionFactory connectionFactory;
+    private static final String RABBIT_MQ_HOST = "rabbitmq.server.host";
+    private static final String RABBIT_MQ_PORT= "rabbitmq.server.port";
+    private static final String RABBIT_MQ_USERNAME= "rabbitmq.server.username";
+    private static final String RABBIT_MQ_PASSWORD = "rabbitmq.server.password";
+
+    @Autowired
+    @Qualifier("global-properties")
+    private Properties properties;
+
     private RetryingTransactionHelper retryHelper;
 
     @Autowired
@@ -53,17 +61,20 @@ public class CommandsServiceFactoryConfig extends CommandsServiceFactory {
     @Override
     public RemoteCommandsService createRemoteCommandsService() {
 
-        if (connectionFactory != null) {
-            try {
-                Connection connection = connectionFactory.createConnection();
-                Channel channel = connection.createChannel(false);
-                return new RabbitCommandsService(this, channel);
-            } catch (Exception e) {
-                log.error("Cannot configure connection to RabbitMQ", e);
-            }
+        String host = properties.getProperty(RABBIT_MQ_HOST);
+        if (StringUtils.isBlank(host)) {
+            log.warn("Rabbit mq host is null. Remote commands won't be available");
+            return super.createRemoteCommandsService();
         }
-        log.warn("Rabbit mq host is null. Remote commands will not be available");
-        return super.createRemoteCommandsService();
+
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        connectionFactory.setAutomaticRecoveryEnabled(true);
+        connectionFactory.setHost(host);
+        connectionFactory.setPort(Integer.valueOf(properties.getProperty(RABBIT_MQ_PORT)));
+        connectionFactory.setUsername(properties.getProperty(RABBIT_MQ_USERNAME));
+        connectionFactory.setPassword(properties.getProperty(RABBIT_MQ_PASSWORD));
+
+        return new RabbitCommandsService(this, connectionFactory);
     }
 
     @NotNull
@@ -76,12 +87,6 @@ public class CommandsServiceFactoryConfig extends CommandsServiceFactory {
                     AuthenticationUtil.runAsSystem(callable::call), false, false);
             }
         };
-    }
-
-    @Autowired(required = false)
-    @Qualifier("historyRabbitConnectionFactory")
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
     }
 
     @Autowired

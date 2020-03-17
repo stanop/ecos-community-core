@@ -72,7 +72,7 @@
         <ecos.apps.lib.version>2.0.2</ecos.apps.lib.version>
         <ecos.jackson.version>2.10.2.3</ecos.jackson.version>
         <ecos.commons.version>1.3.4</ecos.commons.version>
-        <ecos.commands.version>1.1.0</ecos.commands.version>
+        <ecos.commands.version>1.2.0</ecos.commands.version>
         <ecos.meta-repo.version>1.1.0</ecos.meta-repo.version>
 
         <spring.retry.version>1.2.4.RELEASE</spring.retry.version>
