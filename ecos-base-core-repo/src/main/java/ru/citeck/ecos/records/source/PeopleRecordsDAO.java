@@ -1,21 +1,31 @@
 package ru.citeck.ecos.records.source;
 
+import lombok.NonNull;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.MutableAuthenticationService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.commons.data.DataValue;
+import ru.citeck.ecos.commons.data.ObjectData;
 import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
 import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.RecordConstants;
+import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.records2.request.delete.RecordsDelResult;
+import ru.citeck.ecos.records2.request.delete.RecordsDeletion;
+import ru.citeck.ecos.records2.request.mutation.RecordsMutResult;
+import ru.citeck.ecos.records2.request.mutation.RecordsMutation;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records2.source.dao.MutableRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsMetaLocalDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsQueryWithMetaLocalDAO;
@@ -28,8 +38,9 @@ import java.util.stream.Collectors;
 
 @Component
 public class PeopleRecordsDAO extends LocalRecordsDAO
-                              implements RecordsQueryWithMetaLocalDAO<PeopleRecordsDAO.UserValue>,
-                                         RecordsMetaLocalDAO<PeopleRecordsDAO.UserValue> {
+    implements RecordsQueryWithMetaLocalDAO<PeopleRecordsDAO.UserValue>,
+    RecordsMetaLocalDAO<PeopleRecordsDAO.UserValue>,
+    MutableRecordsDAO {
 
     public static final String ID = "people";
     private static final RecordRef ETYPE = RecordRef.valueOf("emodel/type@person");
@@ -42,6 +53,9 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
     private static final String PROP_IS_MUTABLE = "isMutable";
     private static final String PROP_IS_ADMIN = "isAdmin";
     private static final String PROP_AUTHORITIES = "authorities";
+    private static final String ECOS_OLD_PASS = "ecos:oldPass";
+    private static final String ECOS_PASS = "ecos:pass";
+    private static final String ECOS_PASS_VERIFY = "ecos:passVerify";
 
     private AuthorityUtils authorityUtils;
     private AuthorityService authorityService;
@@ -61,10 +75,76 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
     }
 
     @Override
+    public RecordsDelResult delete(RecordsDeletion deletion) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public RecordsMutResult mutate(RecordsMutation mutation) {
+
+        List<RecordMeta> handledMeta = mutation.getRecords().stream()
+            .map(this::handleMeta)
+            .collect(Collectors.toList());
+
+        mutation.setRecords(handledMeta);
+
+        return alfNodesRecordsDAO.mutate(mutation);
+    }
+
+    private RecordMeta handleMeta(RecordMeta meta) {
+
+        String username = meta.getId().getId();
+
+        if (meta.hasAttribute(ECOS_PASS)) {
+            String oldPass = meta.getAttribute(ECOS_OLD_PASS).asText();
+            String newPass = meta.getAttribute(ECOS_PASS).asText();
+            String verifyPass = meta.getAttribute(ECOS_PASS_VERIFY).asText();
+
+            this.updatePassword(username, oldPass, newPass, verifyPass);
+
+        }
+
+        //  search and set nodeRef for requested user
+        meta.setId(authorityService.getAuthorityNodeRef(username).toString());
+
+        ObjectData attributes = meta.getAttributes();
+        attributes.remove(ECOS_OLD_PASS);
+        attributes.remove(ECOS_PASS);
+        attributes.remove(ECOS_PASS_VERIFY);
+
+        return meta;
+    }
+
+    /**
+     * Update Alfresco's user password value
+     */
+    private void updatePassword(@NonNull String username,
+                                String oldPass,
+                                @NonNull String newPass,
+                                @NonNull String verifyPass) {
+
+        if (!newPass.equals(verifyPass)) {
+            throw new RuntimeException("New password verification failed");
+        }
+
+        String currentAuthUser = AuthenticationUtil.getFullyAuthenticatedUser();
+        if (StringUtils.isNotEmpty(oldPass) && currentAuthUser.equals(username)) {
+            authenticationService.updateAuthentication(username, oldPass.toCharArray(), newPass.toCharArray());
+        } else {
+            boolean isAdmin = authorityService.isAdminAuthority(currentAuthUser);
+            if (isAdmin) {
+                authenticationService.setAuthentication(username, newPass.toCharArray());
+            } else {
+                throw new RuntimeException("Modification of user credentials is not allowed for current user");
+            }
+        }
+    }
+
+    @Override
     public List<UserValue> getMetaValues(List<RecordRef> records) {
         return records.stream()
-                      .map(r -> new UserValue(r.toString()))
-                      .collect(Collectors.toList());
+            .map(r -> new UserValue(r.toString()))
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -110,7 +190,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
         }
 
         UserValue(RecordRef recordRef) {
-            this.alfNode =  new AlfNodeRecord(recordRef);
+            this.alfNode = new AlfNodeRecord(recordRef);
         }
 
         @Override
@@ -122,9 +202,9 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
                 try {
                     List<? extends MetaValue> attribute = alfNode.getAttribute(PROP_CM_USER_NAME, metaField);
                     userName = attribute.stream()
-                                        .findFirst()
-                                        .map(MetaValue::getString)
-                                        .orElse(null);
+                        .findFirst()
+                        .map(MetaValue::getString)
+                        .orElse(null);
                 } catch (Exception e) {
                     throw new RuntimeException("Error! " + alfNode.getId(), e);
                 }
