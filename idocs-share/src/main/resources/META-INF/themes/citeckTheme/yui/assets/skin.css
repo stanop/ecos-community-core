@@ -162,6 +162,13 @@ version: 2.6.0
     border-radius: 6px;
 }
 
+/*
+  display buttons in admin console
+ */
+.yui-skin-citeckTheme #alfresco-console .yui-dt-data .yui-button button {
+    min-height: 2em;
+}
+
 .yui-skin-citeckTheme .yui-button.yui-button-disabled > span.first-child > button {
     color: gray;
 }
