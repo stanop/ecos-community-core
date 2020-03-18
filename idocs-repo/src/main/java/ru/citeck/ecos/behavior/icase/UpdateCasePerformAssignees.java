@@ -4,6 +4,9 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.impl.ServiceImpl;
 import org.activiti.engine.impl.interceptor.CommandExecutor;
 import org.alfresco.repo.policy.Behaviour;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Component;
 import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
@@ -13,6 +16,7 @@ import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.CasePerformModel;
@@ -21,14 +25,18 @@ import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.role.CaseRolePolicies;
 import ru.citeck.ecos.service.AlfrescoServices;
 import ru.citeck.ecos.service.CiteckServices;
+import ru.citeck.ecos.utils.AlfActivityUtils;
 import ru.citeck.ecos.workflow.activiti.cmd.UpdateCasePerformAssigneesCmd;
 import ru.citeck.ecos.workflow.perform.CasePerformUtils;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
 /**
  * @author Pavel Simonov
  */
+@Component
+@DependsOn("idocs.dictionaryBootstrap")
 public class UpdateCasePerformAssignees implements CaseRolePolicies.OnRoleAssigneesChangedPolicy,
                                                    CaseRolePolicies.OnCaseRolesAssigneesChangedPolicy {
 
@@ -40,7 +48,19 @@ public class UpdateCasePerformAssignees implements CaseRolePolicies.OnRoleAssign
     private RuntimeService runtimeService;
     private PolicyComponent policyComponent;
     private CaseActivityService caseActivityService;
+    private AlfActivityUtils alfActivityUtils;
 
+    @Autowired
+    public UpdateCasePerformAssignees(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
+        this.nodeService = serviceRegistry.getNodeService();
+        this.runtimeService = (RuntimeService) serviceRegistry.getService(AlfrescoServices.ACTIVITI_RUNTIME_SERVICE);
+        this.policyComponent = (PolicyComponent) serviceRegistry.getService(AlfrescoServices.POLICY_COMPONENT);
+        this.caseActivityService = (CaseActivityService) serviceRegistry.getService(CiteckServices.CASE_ACTIVITY_SERVICE);
+        this.alfActivityUtils = (AlfActivityUtils) serviceRegistry.getService(CiteckServices.ALF_ACTIVITY_UTILS);
+    }
+
+    @PostConstruct
     public void init() {
         this.policyComponent.bindClassBehaviour(
                 CaseRolePolicies.OnCaseRolesAssigneesChangedPolicy.QNAME,
@@ -145,19 +165,15 @@ public class UpdateCasePerformAssignees implements CaseRolePolicies.OnRoleAssign
 
     private String getActiveWorkflowID(NodeRef taskRef) {
         QName type = nodeService.getType(taskRef);
-        CaseActivity activity = caseActivityService.getActivity(taskRef.toString());
-        if (CasePerformModel.TYPE_PERFORM_CASE_TASK.equals(type) && activity.isActive()) {
+        if (!CasePerformModel.TYPE_PERFORM_CASE_TASK.equals(type)) {
+            return null;
+        }
+        ActivityRef activityRef = alfActivityUtils.composeActivityRef(taskRef);
+        CaseActivity activity = caseActivityService.getActivity(activityRef);
+        if (activity.isActive()) {
             return (String) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID);
         }
         return null;
-    }
-
-    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
-        this.nodeService = serviceRegistry.getNodeService();
-        this.runtimeService = (RuntimeService) serviceRegistry.getService(AlfrescoServices.ACTIVITI_RUNTIME_SERVICE);
-        this.policyComponent = (PolicyComponent) serviceRegistry.getService(AlfrescoServices.POLICY_COMPONENT);
-        this.caseActivityService = (CaseActivityService) serviceRegistry.getService(CiteckServices.CASE_ACTIVITY_SERVICE);
     }
 
     private static class RoleState {

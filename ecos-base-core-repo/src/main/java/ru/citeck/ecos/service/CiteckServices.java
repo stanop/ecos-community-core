@@ -41,8 +41,13 @@ public interface CiteckServices {
 	public QName HISTORY_SERVICE = QName.createQName(CITECK_NAMESPACE, "historyService");
 	public QName CRITERIA_SEARCH_SERVICE = QName.createQName(CITECK_NAMESPACE, "criteriaSearchService");
 	public QName LIFECYCLE_SERVICE = QName.createQName(CITECK_NAMESPACE, "lifeCycleService");
+	public QName CASE_STATUS_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseStatusService");
 	public QName CASE_ACTIVITY_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseActivityService");
+	public QName ALF_ACTIVITY_UTILS = QName.createQName(CITECK_NAMESPACE, "alfActivityUtils");
 	public QName JOURNAL_SERVICE = QName.createQName(CITECK_NAMESPACE, "journalService");
+	public QName CASE_COMPLETENESS_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseCompletenessService");
+	public QName ACTION_DAO = QName.createQName(CITECK_NAMESPACE, "EcoS.ActionDAO");
+	public QName EVENT_SERVICE = QName.createQName(CITECK_NAMESPACE, "EcoS.EventService");
 
 	public QName NODE_ATTRIBUTE_SERVICE = QName.createQName(CITECK_NAMESPACE, "nodeAttributeService");
 	public QName INVARIANT_SERVICE = QName.createQName(CITECK_NAMESPACE, "invariantService");

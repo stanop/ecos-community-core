@@ -1,9 +1,10 @@
 package ru.citeck.ecos.icase.activity.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.alfresco.service.cmr.repository.NodeRef;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
+import ru.citeck.ecos.icase.activity.dto.CaseServiceType;
 import ru.citeck.ecos.icase.activity.service.alfresco.AlfrescoCaseActivityDelegate;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcCaseActivityDelegate;
 
@@ -16,140 +17,106 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     private EProcCaseActivityDelegate eprocDelegate;
 
     @Override
-    public void startActivity(CaseActivity activity) {
-        if (isAlfrescoCase(activity)) {
-            alfrescoDelegate.startActivity(activity);
+    public void startActivity(ActivityRef activityRef) {
+        if (isAlfrescoRef(activityRef)) {
+            alfrescoDelegate.startActivity(activityRef);
         } else {
-            eprocDelegate.startActivity(activity);
+            eprocDelegate.startActivity(activityRef);
         }
     }
 
     @Override
-    public void stopActivity(CaseActivity activity) {
-        if (isAlfrescoCase(activity)) {
-            alfrescoDelegate.stopActivity(activity);
+    public void stopActivity(ActivityRef activityRef) {
+        if (isAlfrescoRef(activityRef)) {
+            alfrescoDelegate.stopActivity(activityRef);
         } else {
-            eprocDelegate.stopActivity(activity);
+            eprocDelegate.stopActivity(activityRef);
         }
     }
 
     @Override
-    public void restartChildActivity(CaseActivity parent, CaseActivity child) {
-        if (isAlfrescoCase(parent, child)) {
-            alfrescoDelegate.restartChildActivity(parent, child);
+    public void reset(ActivityRef activityRef) {
+        if (isAlfrescoRef(activityRef)) {
+            alfrescoDelegate.reset(activityRef);
         } else {
-            eprocDelegate.restartChildActivity(parent, child);
+            eprocDelegate.reset(activityRef);
         }
     }
 
     @Override
-    public String getDocumentId(String activityId) {
-        if (isAlfrescoCase(activityId)) {
-            return alfrescoDelegate.getDocumentId(activityId);
+    public CaseActivity getActivity(ActivityRef activityRef) {
+        if (isAlfrescoRef(activityRef)) {
+            return alfrescoDelegate.getActivity(activityRef);
         } else {
-            return eprocDelegate.getDocumentId(activityId);
+            return eprocDelegate.getActivity(activityRef);
         }
     }
 
     @Override
-    public void setParent(String activityId, String receivedParentId) {
-        if (isAlfrescoCase(activityId, receivedParentId)) {
-            alfrescoDelegate.setParent(activityId, receivedParentId);
+    public List<CaseActivity> getActivities(ActivityRef activityRef) {
+        if (isAlfrescoRef(activityRef)) {
+            return alfrescoDelegate.getActivities(activityRef);
         } else {
-            eprocDelegate.setParent(activityId, receivedParentId);
+            return eprocDelegate.getActivities(activityRef);
         }
     }
 
     @Override
-    public CaseActivity getActivity(String activityId) {
-        if (isAlfrescoCase(activityId)) {
-            return alfrescoDelegate.getActivity(activityId);
+    public List<CaseActivity> getActivities(ActivityRef activityRef, boolean recurse) {
+        if (isAlfrescoRef(activityRef)) {
+            return alfrescoDelegate.getActivities(activityRef, recurse);
         } else {
-            return eprocDelegate.getActivity(activityId);
+            return eprocDelegate.getActivities(activityRef, recurse);
         }
     }
 
     @Override
-    public List<CaseActivity> getActivities(String documentId) {
-        if (isAlfrescoCase(documentId)) {
-            return alfrescoDelegate.getActivities(documentId);
+    public List<CaseActivity> getStartedActivities(ActivityRef activityRef) {
+        if (isAlfrescoRef(activityRef)) {
+            return alfrescoDelegate.getStartedActivities(activityRef);
         } else {
-            return eprocDelegate.getActivities(documentId);
+            return eprocDelegate.getStartedActivities(activityRef);
         }
     }
 
     @Override
-    public List<CaseActivity> getActivities(String documentId, boolean recurse) {
-        if (isAlfrescoCase(documentId)) {
-            return alfrescoDelegate.getActivities(documentId, recurse);
+    public CaseActivity getActivityByTitle(ActivityRef activityRef, String title, boolean recurse) {
+        if (isAlfrescoRef(activityRef)) {
+            return alfrescoDelegate.getActivityByTitle(activityRef, title, recurse);
         } else {
-            return eprocDelegate.getActivities(documentId, recurse);
+            return eprocDelegate.getActivityByTitle(activityRef, title, recurse);
         }
     }
 
     @Override
-    public List<CaseActivity> getStartedActivities(String documentId) {
-        if (isAlfrescoCase(documentId)) {
-            return alfrescoDelegate.getStartedActivities(documentId);
+    public void setParent(ActivityRef activityRef, ActivityRef parentRef) {
+        if (isAlfrescoRef(activityRef) && isAlfrescoRef(parentRef)) {
+            alfrescoDelegate.setParent(activityRef, parentRef);
         } else {
-            return eprocDelegate.getStartedActivities(documentId);
+            eprocDelegate.setParent(activityRef, parentRef);
         }
     }
 
     @Override
-    public CaseActivity getActivityByTitle(String documentId, String title, boolean recurse) {
-        if (isAlfrescoCase(documentId)) {
-            return alfrescoDelegate.getActivityByTitle(documentId, title, recurse);
+    public void setParentInIndex(ActivityRef activityRef, int newIndex) {
+        if (isAlfrescoRef(activityRef)) {
+            alfrescoDelegate.setParentInIndex(activityRef, newIndex);
         } else {
-            return eprocDelegate.getActivityByTitle(documentId, title, recurse);
+            eprocDelegate.setParentInIndex(activityRef, newIndex);
         }
     }
 
     @Override
-    public void reset(String id) {
-        if (isAlfrescoCase(id)) {
-            alfrescoDelegate.reset(id);
+    public boolean hasActiveChildren(ActivityRef activityRef) {
+        if (isAlfrescoRef(activityRef)) {
+            return alfrescoDelegate.hasActiveChildren(activityRef);
         } else {
-            eprocDelegate.reset(id);
+            return eprocDelegate.hasActiveChildren(activityRef);
         }
     }
 
-    @Override
-    public void setParentInIndex(CaseActivity activity, int newIndex) {
-        if (isAlfrescoCase(activity)) {
-            alfrescoDelegate.setParentInIndex(activity, newIndex);
-        } else {
-            eprocDelegate.setParentInIndex(activity, newIndex);
-        }
-    }
-
-    @Override
-    public boolean hasActiveChildren(CaseActivity activity) {
-        if (isAlfrescoCase(activity)) {
-            return alfrescoDelegate.hasActiveChildren(activity);
-        } else {
-            return eprocDelegate.hasActiveChildren(activity);
-        }
-    }
-
-    private boolean isAlfrescoCase(CaseActivity... activities) {
-        for (CaseActivity activity : activities) {
-            String id = activity.getId();
-            if (!isAlfrescoCase(id)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean isAlfrescoCase(String... activityIds) {
-        for (String activityId : activityIds) {
-            if (!NodeRef.isNodeRef(activityId)) {
-                //TODO: Provide check of situation where NodeRef is document (it can be EProc and Alfresco case)
-                return false;
-            }
-        }
-        return true;
+    private boolean isAlfrescoRef(ActivityRef activityRef) {
+        return activityRef.getCaseServiceType() == CaseServiceType.ALFRESCO;
     }
 
     @Autowired

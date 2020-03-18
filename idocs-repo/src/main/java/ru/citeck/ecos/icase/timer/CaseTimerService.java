@@ -8,6 +8,7 @@ import org.alfresco.util.ISO8601DateFormat;
 import org.apache.commons.lang.time.DateUtils;
 import org.joda.time.Interval;
 import ru.citeck.ecos.event.EventService;
+import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.icase.timer.evaluator.Evaluator;
@@ -17,6 +18,7 @@ import ru.citeck.ecos.model.CaseTimerModel;
 import ru.citeck.ecos.model.ICaseEventModel;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.service.EcosCoreServices;
+import ru.citeck.ecos.utils.AlfActivityUtils;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -38,6 +40,7 @@ public class CaseTimerService {
     private NodeService nodeService;
     private EventService eventService;
     private CaseActivityService caseActivityService;
+    private AlfActivityUtils alfActivityUtils;
 
     public CaseTimerService() {
         calendarCodeByPrecision.put(DatePrecision.MONTH, Calendar.MONTH);
@@ -72,8 +75,8 @@ public class CaseTimerService {
     }
 
     public void timerOccur(NodeRef timerRef) {
-
-        CaseActivity activity = caseActivityService.getActivity(timerRef.toString());
+        ActivityRef timerActivityRef = alfActivityUtils.composeActivityRef(timerRef);
+        CaseActivity activity = caseActivityService.getActivity(timerActivityRef);
 
         if (activity.isActive()) {
 
@@ -81,7 +84,7 @@ public class CaseTimerService {
             int counter = getRepeatCounter(timerRef) + 1;
 
             if (!startTimer(timerRef, fromDate, counter)) {
-                caseActivityService.stopActivity(activity);
+                caseActivityService.stopActivity(timerActivityRef);
             } else {
                 eventService.fireEvent(timerRef, ICaseEventModel.CONSTR_ACTIVITY_STOPPED);
             }
@@ -173,8 +176,9 @@ public class CaseTimerService {
     }
 
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        nodeService = serviceRegistry.getNodeService();
-        caseActivityService = (CaseActivityService) serviceRegistry.getService(CiteckServices.CASE_ACTIVITY_SERVICE);
-        eventService = (EventService) serviceRegistry.getService(EcosCoreServices.EVENT_SERVICE);
+        this.nodeService = serviceRegistry.getNodeService();
+        this.eventService = (EventService) serviceRegistry.getService(EcosCoreServices.EVENT_SERVICE);
+        this.caseActivityService = (CaseActivityService) serviceRegistry.getService(CiteckServices.CASE_ACTIVITY_SERVICE);
+        this.alfActivityUtils = (AlfActivityUtils) serviceRegistry.getService(CiteckServices.ALF_ACTIVITY_UTILS);
     }
 }

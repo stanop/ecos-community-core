@@ -8,6 +8,7 @@
     <bean id="caseActivityServiceJS" name="CaseActivityServiceJS" class="ru.citeck.ecos.icase.activity.CaseActivityServiceJS"
           parent="baseJavaScriptExtension">
         <property name="caseActivityService" ref="caseActivityService"/>
+        <property name="alfActivityUtils" ref="alfActivityUtils"/>
         <property name="createVariantsProvider" ref="ru.citeck.ecos.icase.activity.create.menu.MenuCreateVariantsProvider"/>
         <property name="extensionName" value="caseActivityService"/>
         <property name="serviceRegistry" ref="ServiceRegistry"/>
@@ -15,7 +16,7 @@
     </bean>
 
     <bean id="caseTaskBehavior" name="CaseTaskBehavior" class="ru.citeck.ecos.behavior.activity.CaseTaskBehavior" init-method="init">
-        <property name="caseActivityService" ref="caseActivityService"/>
+        <property name="alfActivityUtils" ref="alfActivityUtils"/>
         <property name="dictionaryService" ref="DictionaryService"/>
         <property name="namespaceService" ref="namespaceService"/>
         <property name="policyComponent" ref="policyComponent"/>

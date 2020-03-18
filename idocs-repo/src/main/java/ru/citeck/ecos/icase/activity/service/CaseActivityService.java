@@ -1,45 +1,42 @@
 package ru.citeck.ecos.icase.activity.service;
 
 import lombok.NonNull;
+import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 
 import java.util.List;
 
 public interface CaseActivityService {
 
-    void startActivity(CaseActivity activity);
+    void startActivity(ActivityRef activity);
 
-    void stopActivity(CaseActivity activity);
+    void stopActivity(ActivityRef activity);
 
-    void restartChildActivity(CaseActivity parentId, CaseActivity childId);
+    void reset(ActivityRef activityRef);
 
-    void reset(String documentId);
+    CaseActivity getActivity(ActivityRef activityRef);
 
-    CaseActivity getActivity(String activityId);
+    List<CaseActivity> getActivities(ActivityRef activityRef);
 
-    List<CaseActivity> getActivities(String documentId);
+    List<CaseActivity> getActivities(ActivityRef activityRef, boolean recurse);
 
-    List<CaseActivity> getActivities(String documentId, boolean recurse);
+    List<CaseActivity> getStartedActivities(ActivityRef activityRef);
 
-    List<CaseActivity> getStartedActivities(String documentId);
+    CaseActivity getActivityByTitle(ActivityRef activityRef, String title, boolean recurse);
 
-    CaseActivity getActivityByTitle(String documentId, String title, boolean recurse);
-
-    String getDocumentId(String activityId);
-
-    void setParent(String activityId, String parentId);
+    void setParent(ActivityRef activityRef, ActivityRef parentRef);
 
     /**
      * Set new parent in result list method getActivities()
      *
-     * @param activity activity.
-     * @param newIndex Index define activities order when "getActivities" method called.
-     *                 If this value less than zero, than activity moved to the beginning.
-     *                 If this value greater or equal to activities count, than activity moved to the end.
-     *                 In other case activity position in result list of "getActivities" equals to this parameter.
+     * @param activityRef activityRef.
+     * @param newIndex    Index define activities order when "getActivities" method called.
+     *                    If this value less than zero, than activity moved to the beginning.
+     *                    If this value greater or equal to activities count, than activity moved to the end.
+     *                    In other case activity position in result list of "getActivities" equals to this parameter.
      */
-    void setParentInIndex(@NonNull CaseActivity activity, int newIndex);
+    void setParentInIndex(@NonNull ActivityRef activityRef, int newIndex);
 
-    boolean hasActiveChildren(CaseActivity activity);
+    boolean hasActiveChildren(ActivityRef activityRef);
 
 }
