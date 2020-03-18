@@ -22,37 +22,41 @@ import org.alfresco.service.namespace.QName;
 
 public interface CiteckServices {
 
-	public String CITECK_NAMESPACE = "http://www.citeck.ru";
+	String CITECK_NAMESPACE = "http://www.citeck.ru";
 
-	public QName GRANT_PERMISSION_SERVICE = QName.createQName(CITECK_NAMESPACE, "GrantPermissionService");
-	public QName CONFISCATE_SERVICE = QName.createQName(CITECK_NAMESPACE, "ConfiscateService");
-	public QName AVAILABILITY_SERVICE = QName.createQName(CITECK_NAMESPACE, "AvailabilityService");
-	public QName DEPUTY_SERVICE = QName.createQName(CITECK_NAMESPACE, "DeputyService");
-	public QName ORG_STRUCT_SERVICE = QName.createQName(CITECK_NAMESPACE, "OrgStructService");
-	public QName ORG_META_SERVICE = QName.createQName(CITECK_NAMESPACE, "OrgMetaService");
-	public QName COUNTER_SERVICE = QName.createQName(CITECK_NAMESPACE, "CounterService");
-	public QName ENUMERATION_SERVICE = QName.createQName(CITECK_NAMESPACE, "EnumerationService");
-	public QName CONFIRM_SERVICE = QName.createQName(CITECK_NAMESPACE, "ConfirmService");
-	public QName CARD_TEMPLATE_SERVICE = QName.createQName(CITECK_NAMESPACE, "CardTemplateService");
-	public QName CARDLET_SERVICE = QName.createQName(CITECK_NAMESPACE, "CardletService");
-	public QName EXCEPTION_SERVICE = QName.createQName(CITECK_NAMESPACE, "ExceptionService");
-	public QName ADVANCED_WORKFLOW_SERVICE = QName.createQName(CITECK_NAMESPACE, "advancedWorkflowService");
-	public QName WORKFLOW_MIRROR_SERVICE = QName.createQName(CITECK_NAMESPACE, "workflowMirrorService");
-	public QName HISTORY_SERVICE = QName.createQName(CITECK_NAMESPACE, "historyService");
-	public QName CRITERIA_SEARCH_SERVICE = QName.createQName(CITECK_NAMESPACE, "criteriaSearchService");
-	public QName LIFECYCLE_SERVICE = QName.createQName(CITECK_NAMESPACE, "lifeCycleService");
-	public QName CASE_STATUS_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseStatusService");
-	public QName CASE_ACTIVITY_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseActivityService");
-	public QName ALF_ACTIVITY_UTILS = QName.createQName(CITECK_NAMESPACE, "alfActivityUtils");
-	public QName JOURNAL_SERVICE = QName.createQName(CITECK_NAMESPACE, "journalService");
-	public QName CASE_COMPLETENESS_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseCompletenessService");
-	public QName ACTION_DAO = QName.createQName(CITECK_NAMESPACE, "EcoS.ActionDAO");
-	public QName EVENT_SERVICE = QName.createQName(CITECK_NAMESPACE, "EcoS.EventService");
+	QName GRANT_PERMISSION_SERVICE = QName.createQName(CITECK_NAMESPACE, "GrantPermissionService");
+	QName CONFISCATE_SERVICE = QName.createQName(CITECK_NAMESPACE, "ConfiscateService");
+	QName AVAILABILITY_SERVICE = QName.createQName(CITECK_NAMESPACE, "AvailabilityService");
+	QName DEPUTY_SERVICE = QName.createQName(CITECK_NAMESPACE, "DeputyService");
+	QName ORG_STRUCT_SERVICE = QName.createQName(CITECK_NAMESPACE, "OrgStructService");
+	QName ORG_META_SERVICE = QName.createQName(CITECK_NAMESPACE, "OrgMetaService");
+	QName COUNTER_SERVICE = QName.createQName(CITECK_NAMESPACE, "CounterService");
+	QName ENUMERATION_SERVICE = QName.createQName(CITECK_NAMESPACE, "EnumerationService");
+	QName CONFIRM_SERVICE = QName.createQName(CITECK_NAMESPACE, "ConfirmService");
+	QName CARD_TEMPLATE_SERVICE = QName.createQName(CITECK_NAMESPACE, "CardTemplateService");
+	QName CARDLET_SERVICE = QName.createQName(CITECK_NAMESPACE, "CardletService");
+	QName EXCEPTION_SERVICE = QName.createQName(CITECK_NAMESPACE, "ExceptionService");
+	QName ADVANCED_WORKFLOW_SERVICE = QName.createQName(CITECK_NAMESPACE, "advancedWorkflowService");
+	QName WORKFLOW_MIRROR_SERVICE = QName.createQName(CITECK_NAMESPACE, "workflowMirrorService");
+	QName HISTORY_SERVICE = QName.createQName(CITECK_NAMESPACE, "historyService");
+	QName CRITERIA_SEARCH_SERVICE = QName.createQName(CITECK_NAMESPACE, "criteriaSearchService");
+	QName LIFECYCLE_SERVICE = QName.createQName(CITECK_NAMESPACE, "lifeCycleService");
+	QName CASE_STATUS_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseStatusService");
+	QName CASE_ACTIVITY_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseActivityService");
+	QName CASE_ACTIVITY_EVENT_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseActivityEventService");
+	QName ALF_ACTIVITY_UTILS = QName.createQName(CITECK_NAMESPACE, "alfActivityUtils");
+	QName JOURNAL_SERVICE = QName.createQName(CITECK_NAMESPACE, "journalService");
+	QName CASE_COMPLETENESS_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseCompletenessService");
+	QName ACTION_DAO = QName.createQName(CITECK_NAMESPACE, "EcoS.ActionDAO");
+	QName CONDITION_DAO = QName.createQName(CITECK_NAMESPACE, "EcoS.ConditionDAO");
 
-	public QName NODE_ATTRIBUTE_SERVICE = QName.createQName(CITECK_NAMESPACE, "nodeAttributeService");
-	public QName INVARIANT_SERVICE = QName.createQName(CITECK_NAMESPACE, "invariantService");
+	QName NODE_ATTRIBUTE_SERVICE = QName.createQName(CITECK_NAMESPACE, "nodeAttributeService");
+	QName INVARIANT_SERVICE = QName.createQName(CITECK_NAMESPACE, "invariantService");
 
-    public QName NODE_INFO_FACTORY = QName.createQName(CITECK_NAMESPACE, "NodeInfoFactory");
-	public QName CASE_ROLE_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseRoleService");
+    QName NODE_INFO_FACTORY = QName.createQName(CITECK_NAMESPACE, "NodeInfoFactory");
+	QName CASE_ROLE_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseRoleService");
+
+	QName ITEMS_UPDATE_STATE = QName.createQName(CITECK_NAMESPACE, "ecos.itemsUpdateState");
+	QName CASE_XML_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseXmlService");
 
 }

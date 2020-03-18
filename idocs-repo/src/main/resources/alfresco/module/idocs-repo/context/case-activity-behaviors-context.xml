@@ -3,34 +3,10 @@
         "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
 <beans>
 
-    <bean id="caseEventTrigger" class="ru.citeck.ecos.behavior.event.trigger.CaseEventTrigger" init-method="init">
-        <property name="policyComponent" ref="policyComponent" />
-        <property name="eventService" ref="EcoS.EventService" />
-        <property name="order" value="200" />
-    </bean>
-
-    <bean id="userActionEventTrigger" class="ru.citeck.ecos.behavior.event.trigger.UserActionEventTrigger" init-method="init">
-        <property name="policyComponent" ref="policyComponent"/>
-        <property name="nodeService" ref="nodeService"/>
-        <property name="eventService" ref="EcoS.EventService"/>
-    </bean>
-
     <bean id="addConfirmerHistoryBehaviour" class="ru.citeck.ecos.behavior.event.AddConfirmerHistoryBehaviour" init-method="init">
         <property name="nodeService" ref="nodeService"/>
         <property name="historyService" ref="historyService"/>
         <property name="policyComponent" ref="policyComponent"/>
-    </bean>
-
-    <bean id="caseTemplateBehavior" class="ru.citeck.ecos.behavior.CaseTemplateBehavior" init-method="init">
-        <property name="policyComponent" ref="policyComponent" />
-        <property name="nodeService" ref="nodeService" />
-        <property name="namespaceService" ref="NamespaceService" />
-        <property name="order" value="${behavior.order.case.template}" />
-        <property name="repositoryState" ref="repositoryState"/>
-        <property name="caseXmlService" ref="caseXmlService"/>
-        <property name="eventService" ref="EcoS.EventService"/>
-        <property name="itemsUpdateState" ref="ecos.itemsUpdateState"/>
-        <property name="caseStatusService" ref="caseStatusService"/>
     </bean>
 
     <!--TODO Fix 'save as template' action to allow uncomment this bean -->
