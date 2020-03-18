@@ -21,6 +21,14 @@ public class UserActionEventDto extends EventDto {
      * Confirmation message
      */
     private String confirmationMessage;
+    /**
+     * Success message
+     */
+    private String successMessage;
+    /**
+     * Success message css class
+     */
+    private String successMessageSpanClass;
 
     /**
      * Roles
@@ -66,4 +74,19 @@ public class UserActionEventDto extends EventDto {
         this.additionalDataItems = additionalDataItems;
     }
 
+    public String getSuccessMessage() {
+        return successMessage;
+    }
+
+    public void setSuccessMessage(String successMessage) {
+        this.successMessage = successMessage;
+    }
+
+    public String getSuccessMessageSpanClass() {
+        return successMessageSpanClass;
+    }
+
+    public void setSuccessMessageSpanClass(String successMessageSpanClass) {
+        this.successMessageSpanClass = successMessageSpanClass;
+    }
 }

@@ -84,6 +84,8 @@
         <field prop="cm:title" />
         <field assoc="iEvent:eventSource" />
         <field prop="iEvent:confirmationMessage" />
+        <field prop="iEvent:successMessage" />
+        <field prop="iEvent:successMessageSpanClass" />
         <field prop="iEvent:additionalDataType">
             <region name="input" template="select" />
         </field>

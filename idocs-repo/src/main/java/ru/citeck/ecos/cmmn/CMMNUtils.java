@@ -73,8 +73,10 @@ public class CMMNUtils implements ContentValueConverter {
     public static final QName QNAME_CASE_TYPE = new QName(NAMESPACE, "caseType");
     public static final QName QNAME_CASE_CONDITION = new QName(NAMESPACE, "condition");
 
-    private static final QName QNAME_UE_CONFIRMATION_MESSAGE = new QName(NAMESPACE, "confirmationMessage");
     private static final QName QNAME_UE_ADDITIONAL_DATA_TYPE = new QName(NAMESPACE, "additionalDataType");
+    private static final QName QNAME_UE_CONFIRMATION_MESSAGE = new QName(NAMESPACE, "confirmationMessage");
+    private static final QName QNAME_UE_SUCCESS_MESSAGE = new QName(NAMESPACE, "successMessage");
+    private static final QName QNAME_UE_SUCCESS_MESSAGE_SPAN_CLASS = new QName(NAMESPACE, "successMessageSpanClass");
 
     private static final QName QNAME_CONFIRMERS = new QName(NAMESPACE, "confirmers");
     private static final QName QNAME_PERFORMER = new QName(NAMESPACE, "performer");
@@ -128,6 +130,8 @@ public class CMMNUtils implements ContentValueConverter {
         mapping = new HashMap<>();
         mapping.put(QNAME_UE_ADDITIONAL_DATA_TYPE, EventModel.PROP_ADDITIONAL_DATA_TYPE);
         mapping.put(QNAME_UE_CONFIRMATION_MESSAGE, EventModel.PROP_CONFIRMATION_MESSAGE);
+        mapping.put(QNAME_UE_SUCCESS_MESSAGE, EventModel.PROP_SUCCESS_MESSAGE);
+        mapping.put(QNAME_UE_SUCCESS_MESSAGE_SPAN_CLASS, EventModel.PROP_SUCCESS_MESSAGE_SPAN_CLASS);
         EVENT_PROPS_MAPPING = Collections.unmodifiableMap(mapping);
 
         mapping = new HashMap<>();
