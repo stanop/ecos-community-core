@@ -15,6 +15,13 @@
         <property name="remoteRestoreCaseModelService" ref="remoteRestoreCaseModelService"/>
     </bean>
 
+    <bean id="caseActivityEventServiceJS" class="ru.citeck.ecos.icase.activity.CaseActivityEventServiceJS"
+          parent="baseJavaScriptExtension">
+        <property name="extensionName" value="caseActivityEventService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="caseActivityEventService" ref="caseActivityEventService"/>
+    </bean>
+
     <bean id="caseTaskBehavior" name="CaseTaskBehavior" class="ru.citeck.ecos.behavior.activity.CaseTaskBehavior" init-method="init">
         <property name="alfActivityUtils" ref="alfActivityUtils"/>
         <property name="dictionaryService" ref="DictionaryService"/>

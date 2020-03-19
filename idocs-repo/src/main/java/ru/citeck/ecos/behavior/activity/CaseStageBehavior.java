@@ -11,7 +11,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.icase.CaseStatusService;
-import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
+import ru.citeck.ecos.icase.activity.service.alfresco.CaseActivityPolicies;
 import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.model.StagesModel;
 import ru.citeck.ecos.records.RecordsUtils;

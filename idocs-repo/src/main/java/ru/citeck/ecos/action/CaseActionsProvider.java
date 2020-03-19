@@ -14,9 +14,12 @@ import ru.citeck.ecos.action.node.CreateNodeAction;
 import ru.citeck.ecos.action.node.NodeActionDefinition;
 import ru.citeck.ecos.action.node.NodeActionsProvider;
 import ru.citeck.ecos.action.node.RequestAction;
-import ru.citeck.ecos.event.EventService;
+import ru.citeck.ecos.icase.activity.dto.CaseServiceType;
+import ru.citeck.ecos.icase.activity.dto.EventRef;
+import ru.citeck.ecos.icase.activity.service.CaseActivityEventService;
 import ru.citeck.ecos.model.EventModel;
 import ru.citeck.ecos.model.ICaseRoleModel;
+import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import java.util.ArrayList;
@@ -32,9 +35,9 @@ public class CaseActionsProvider extends NodeActionsProvider {
 
     private static final String FIRE_EVENT_URL_TEMPLATE = "citeck/event/fire-event?eventRef=%s";
 
+    private CaseActivityEventService caseActivityEventService;
     private AuthorityService authorityService;
     private Repository repositoryHelper;
-    private EventService eventService;
     private NamespaceService namespaceService;
 
     @Override
@@ -80,11 +83,15 @@ public class CaseActionsProvider extends NodeActionsProvider {
         List<NodeRef> events = RepoUtils.getSourceNodeRefs(eventSource, EventModel.ASSOC_EVENT_SOURCE, nodeService);
 
         return CollectionUtils.filter(events, eventRef -> {
-            QName eventType = nodeService.getType(eventRef);
-            return eventType.equals(EventModel.TYPE_USER_ACTION)
+            return checkEventType(eventRef)
                     && checkRoles(eventRef)
-                    && eventService.checkConditions(eventRef, eventSource);
+                    && checkEventConditions(eventRef, eventSource);
         });
+    }
+
+    private boolean checkEventType(NodeRef eventRef) {
+        QName eventType = nodeService.getType(eventRef);
+        return eventType.equals(EventModel.TYPE_USER_ACTION);
     }
 
     private boolean checkRoles(NodeRef eventNodeRef) {
@@ -111,8 +118,14 @@ public class CaseActionsProvider extends NodeActionsProvider {
         return !userAuthorities.isEmpty();
     }
 
-    public void setEventService(EventService eventService) {
-        this.eventService = eventService;
+    private boolean checkEventConditions(NodeRef eventNodeRef, NodeRef eventSource) {
+        RecordRef caseRef = RecordRef.valueOf(eventSource.toString());
+        EventRef eventRef = EventRef.of(CaseServiceType.ALFRESCO, caseRef, eventNodeRef.toString());
+        return caseActivityEventService.checkConditions(eventRef);
+    }
+
+    public void setCaseActivityEventService(CaseActivityEventService caseActivityEventService) {
+        this.caseActivityEventService = caseActivityEventService;
     }
 
     public void setAuthorityService(AuthorityService authorityService) {

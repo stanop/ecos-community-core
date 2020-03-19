@@ -114,7 +114,7 @@
     <alias name="EcoS.ActionDAO" alias="EcoS.ConditionDAO" />
 
     <bean id="caseActionsProvider" class="ru.citeck.ecos.action.CaseActionsProvider" parent="abstractNodeActionProvider">
-        <property name="eventService" ref="EcoS.EventService" />
+        <property name="caseActivityEventService" ref="caseActivityEventService"/>
         <property name="authorityService" ref="authorityService" />
         <property name="repositoryHelper" ref="repositoryHelper" />
         <property name="namespaceService" ref="namespaceService" />

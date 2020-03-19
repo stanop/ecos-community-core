@@ -9,6 +9,7 @@ import ru.citeck.ecos.icase.activity.create.provider.impl.MenuCreateVariantsProv
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
+import ru.citeck.ecos.utils.ActivityUtilsJS;
 import ru.citeck.ecos.utils.AlfActivityUtils;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
@@ -34,17 +35,17 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
             }
         }
         /* Call common activity */
-        ActivityRef activityRef = getActivityRef(ref);
+        ActivityRef activityRef = ActivityUtilsJS.getActivityRef(ref, alfActivityUtils);
         caseActivityService.startActivity(activityRef);
     }
 
     public void stopActivity(Object ref) {
-        ActivityRef activityRef = getActivityRef(ref);
+        ActivityRef activityRef = ActivityUtilsJS.getActivityRef(ref, alfActivityUtils);
         caseActivityService.stopActivity(activityRef);
     }
 
     public ScriptNode[] getStartedActivities(Object ref) {
-        ActivityRef activityRef = getActivityRef(ref);
+        ActivityRef activityRef = ActivityUtilsJS.getActivityRef(ref, alfActivityUtils);
         List<CaseActivity> activities = caseActivityService.getStartedActivities(activityRef);
         List<NodeRef> nodeRefs = activities.stream()
             .map(activity -> alfActivityUtils.getActivityNodeRef(activity.getActivityRef()))
@@ -53,7 +54,7 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
     }
 
     public ScriptNode[] getActivities(Object ref) {
-        ActivityRef activityRef = getActivityRef(ref);
+        ActivityRef activityRef = ActivityUtilsJS.getActivityRef(ref, alfActivityUtils);
         List<CaseActivity> activities = caseActivityService.getActivities(activityRef);
         List<NodeRef> activityNodeRefs = activities.stream()
             .map(activity -> alfActivityUtils.getActivityNodeRef(activity.getActivityRef()))
@@ -66,68 +67,42 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
     }
 
     public ScriptNode getActivityByTitle(Object ref, String title, boolean recurse) {
-        ActivityRef activityRef = getActivityRef(ref);
+        ActivityRef activityRef = ActivityUtilsJS.getActivityRef(ref, alfActivityUtils);
         CaseActivity caseActivity = caseActivityService.getActivityByTitle(activityRef, title, recurse);
         NodeRef activityNodeRef = alfActivityUtils.getActivityNodeRef(caseActivity.getActivityRef());
         return JavaScriptImplUtils.wrapNode(activityNodeRef, this);
     }
 
     public void reset(Object ref) {
-        ActivityRef activityRef = getActivityRef(ref);
+        ActivityRef activityRef = ActivityUtilsJS.getActivityRef(ref, alfActivityUtils);
         caseActivityService.reset(activityRef);
     }
 
     public void setParent(Object childRef, Object parentRef) {
-        ActivityRef activityRef = getActivityRef(childRef);
-        ActivityRef parentActivityRef = getActivityRef(parentRef);
+        ActivityRef activityRef = ActivityUtilsJS.getActivityRef(childRef, alfActivityUtils);
+        ActivityRef parentActivityRef = ActivityUtilsJS.getActivityRef(parentRef, alfActivityUtils);
         caseActivityService.setParent(activityRef, parentActivityRef);
     }
 
     public void setIndex(Object ref, Object newIndexRaw) {
-        ActivityRef activityRef = getActivityRef(ref);
+        ActivityRef activityRef = ActivityUtilsJS.getActivityRef(ref, alfActivityUtils);
         int newIndex = getInt(newIndexRaw);
         caseActivityService.setParentInIndex(activityRef, newIndex);
     }
 
     public boolean hasActiveChildren(Object ref) {
-        ActivityRef activityRef = getActivityRef(ref);
+        ActivityRef activityRef = ActivityUtilsJS.getActivityRef(ref, alfActivityUtils);
         return caseActivityService.hasActiveChildren(activityRef);
     }
 
     public boolean isActive(Object ref) {
-        ActivityRef activityRef = getActivityRef(ref);
+        ActivityRef activityRef = ActivityUtilsJS.getActivityRef(ref, alfActivityUtils);
         CaseActivity activity = caseActivityService.getActivity(activityRef);
         return activity.isActive();
     }
 
     public List<ActivityCreateVariant> getCreateVariants() {
         return createVariantsProvider.getCreateVariants();
-    }
-
-    //TODO: algorithm for eproc activities is missed.
-    private ActivityRef getActivityRef(Object object) {
-        if (object == null) {
-            return null;
-        }
-        if (object instanceof ActivityRef) {
-            return (ActivityRef) object;
-        }
-        if (object instanceof CaseActivity) {
-            return ((CaseActivity) object).getActivityRef();
-        }
-        if (object instanceof NodeRef) {
-            return alfActivityUtils.composeActivityRef((NodeRef) object);
-        }
-        if (object instanceof ScriptNode) {
-            return alfActivityUtils.composeActivityRef(((ScriptNode) object).getNodeRef());
-        }
-        if (object instanceof String) {
-            if (NodeRef.isNodeRef((String) object)) {
-                return alfActivityUtils.composeActivityRef(new NodeRef((String) object));
-            }
-        }
-        throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to NodeRef. " +
-            "Source: " + object.toString());
     }
 
     private int getInt(Object newIndex) {

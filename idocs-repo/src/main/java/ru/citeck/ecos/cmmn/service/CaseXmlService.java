@@ -5,6 +5,8 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Service;
 import ru.citeck.ecos.cmmn.CMMNUtils;
 import ru.citeck.ecos.cmmn.model.Case;
 import ru.citeck.ecos.cmmn.model.Definitions;
@@ -14,6 +16,8 @@ import ru.citeck.ecos.service.EcosCoreServices;
 
 import java.util.*;
 
+@Service("caseXmlService")
+@DependsOn("idocs.dictionaryBootstrap")
 public class CaseXmlService {
 
     private ServiceRegistry serviceRegistry;
@@ -40,6 +44,7 @@ public class CaseXmlService {
         }
     }
 
+    @Autowired
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
         this.nodeService = serviceRegistry.getNodeService();

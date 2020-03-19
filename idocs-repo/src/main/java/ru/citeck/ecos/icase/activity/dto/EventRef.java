@@ -15,12 +15,12 @@ import java.util.regex.Pattern;
 
 @EqualsAndHashCode
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class ActivityRef {
+public class EventRef {
 
-    private static final String REGEXP = "(?<serviceType>\\w*\\$)?(?<processId>.*%)?(?<id>.*)";
+    private static String REGEXP = "(?<serviceType>\\w*\\$)?(?<processId>.*%)?(?<id>.*)";
     private static final Pattern PATTERN = Pattern.compile(REGEXP, Pattern.CASE_INSENSITIVE);
 
-    public static final ActivityRef EMPTY = new ActivityRef(null, RecordRef.EMPTY, "");
+    public static final EventRef EMPTY = new EventRef(null, RecordRef.EMPTY, "");
     public static final String ROOT_ID = "root";
     public static final char SERVICE_TYPE_DELIMITER = '$';
     public static final char PROCESS_ID_DELIMITER = '%';
@@ -30,12 +30,12 @@ public class ActivityRef {
     @Getter private String id;
 
     @JsonCreator
-    public static ActivityRef of(String activityRef) {
-        if (StringUtils.isBlank(activityRef)) {
+    public static EventRef of(String eventRef) {
+        if (StringUtils.isBlank(eventRef)) {
             return EMPTY;
         }
 
-        Matcher matcher = PATTERN.matcher(activityRef);
+        Matcher matcher = PATTERN.matcher(eventRef);
         if (!matcher.find()) {
             return EMPTY;
         }
@@ -72,8 +72,8 @@ public class ActivityRef {
         return str;
     }
 
-    public static ActivityRef of(CaseServiceType caseServiceType, RecordRef processId, String id) {
-        return new ActivityRef(caseServiceType, processId, id);
+    public static EventRef of(CaseServiceType caseServiceType, RecordRef processId, String id) {
+        return new EventRef(caseServiceType, processId, id);
     }
 
     @JsonIgnore

@@ -29,10 +29,6 @@
         <property name="contentService" ref="contentService" />
     </bean>
 
-    <bean id="caseXmlService" class="ru.citeck.ecos.cmmn.service.CaseXmlService" depends-on="idocs.dictionaryBootstrap">
-        <property name="serviceRegistry" ref="ServiceRegistry" />
-    </bean>
-
     <bean id="cmmnImportServiceJS" class="ru.citeck.ecos.cmmn.service.CaseImportServiceJS" parent="baseJavaScriptExtension" depends-on="cmmnImportService">
         <property name="extensionName" value="cmmnImportServiceJS"/>
         <property name="serviceRegistry" ref="ServiceRegistry"/>

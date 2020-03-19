@@ -4,7 +4,6 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import ru.citeck.ecos.action.ActionConditionUtils;
-import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.icase.timer.CaseTimerService;
 import ru.citeck.ecos.model.CaseTimerModel;
 import ru.citeck.ecos.model.CaseTimerModel.ExpressionType;

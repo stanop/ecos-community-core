@@ -13,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
-import ru.citeck.ecos.event.EventService;
-import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
+import ru.citeck.ecos.icase.activity.service.CaseActivityEventService;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
+import ru.citeck.ecos.icase.activity.service.alfresco.CaseActivityPolicies;
 import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.ICaseEventModel;
 import ru.citeck.ecos.model.StagesModel;
@@ -39,19 +39,20 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
     private static final int STAGE_COMPLETE_LIMIT = 40;
 
     private CaseActivityService caseActivityService;
+    private CaseActivityEventService caseActivityEventService;
     private AlfActivityUtils alfActivityUtils;
     private DictionaryService dictionaryService;
     private PolicyComponent policyComponent;
-    private EventService eventService;
     private NodeService nodeService;
 
     @Autowired
     public CaseActivityEventTrigger(ServiceRegistry serviceRegistry) {
         this.caseActivityService = (CaseActivityService) serviceRegistry.getService(CiteckServices.CASE_ACTIVITY_SERVICE);
+        this.caseActivityEventService = (CaseActivityEventService) serviceRegistry
+            .getService(CiteckServices.CASE_ACTIVITY_EVENT_SERVICE);
         this.alfActivityUtils = (AlfActivityUtils) serviceRegistry.getService(CiteckServices.ALF_ACTIVITY_UTILS);
         this.dictionaryService = serviceRegistry.getDictionaryService();
         this.policyComponent = serviceRegistry.getPolicyComponent();
-        this.eventService = (EventService) serviceRegistry.getService(CiteckServices.EVENT_SERVICE);
         this.nodeService = serviceRegistry.getNodeService();
     }
 
@@ -66,9 +67,8 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
     }
 
     @Override
-    public void onCaseActivityStarted(NodeRef activityRef) {
-        RecordRef documentId = alfActivityUtils.getDocumentId(activityRef);
-        NodeRef documentNodeRef = RecordsUtils.toNodeRef(documentId);
+    public void onCaseActivityStarted(NodeRef activityNodeRef) {
+        ActivityRef activityRef = alfActivityUtils.composeActivityRef(activityNodeRef);
 
         TransactionData data = getTransactionData();
         boolean isDataOwner = false;
@@ -76,25 +76,26 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
             data.hasOwner = isDataOwner = true;
         }
 
-        eventService.fireEvent(activityRef, documentNodeRef, ICaseEventModel.CONSTR_ACTIVITY_STARTED);
+        caseActivityEventService.fireEvent(activityRef, ICaseEventModel.CONSTR_ACTIVITY_STARTED);
 
-        if (dictionaryService.isSubClass(nodeService.getType(activityRef), StagesModel.TYPE_STAGE)) {
-            Integer version = (Integer) nodeService.getProperty(activityRef, ActivityModel.PROP_TYPE_VERSION);
+        if (dictionaryService.isSubClass(nodeService.getType(activityNodeRef), StagesModel.TYPE_STAGE)) {
+            Integer version = (Integer) nodeService.getProperty(activityNodeRef, ActivityModel.PROP_TYPE_VERSION);
             if (version != null && version >= 1) {
-                data.stagesToTryComplete.add(activityRef);
+                data.stagesToTryComplete.add(activityNodeRef);
             }
         }
 
         if (isDataOwner) {
+            RecordRef documentId = activityRef.getProcessId();
+            NodeRef documentNodeRef = RecordsUtils.toNodeRef(documentId);
             tryToFireStageChildrenStoppedEvents(data, documentNodeRef);
             data.hasOwner = false;
         }
     }
 
     @Override
-    public void onCaseActivityStopped(NodeRef activityRef) {
-        RecordRef documentId = alfActivityUtils.getDocumentId(activityRef);
-        NodeRef documentNodeRef = RecordsUtils.toNodeRef(documentId);
+    public void onCaseActivityStopped(NodeRef activityNodeRef) {
+        ActivityRef activityRef = alfActivityUtils.composeActivityRef(activityNodeRef);
 
         TransactionData data = getTransactionData();
         boolean isDataOwner = false;
@@ -102,14 +103,16 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
             data.hasOwner = isDataOwner = true;
         }
 
-        eventService.fireEvent(activityRef, documentNodeRef, ICaseEventModel.CONSTR_ACTIVITY_STOPPED);
+        caseActivityEventService.fireEvent(activityRef, ICaseEventModel.CONSTR_ACTIVITY_STOPPED);
 
-        NodeRef parent = nodeService.getPrimaryParent(activityRef).getParentRef();
+        NodeRef parent = nodeService.getPrimaryParent(activityNodeRef).getParentRef();
         if (parent != null && dictionaryService.isSubClass(nodeService.getType(parent), StagesModel.TYPE_STAGE)) {
             data.stagesToTryComplete.add(parent);
         }
 
         if (isDataOwner) {
+            RecordRef documentId = activityRef.getProcessId();
+            NodeRef documentNodeRef = RecordsUtils.toNodeRef(documentId);
             tryToFireStageChildrenStoppedEvents(data, documentNodeRef);
             data.hasOwner = false;
         }
@@ -137,7 +140,7 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
                     throw new IllegalStateException("Stage " + stage + " completed more than " + STAGE_COMPLETE_LIMIT +
                                                     " times. Seems it is a infinite loop. Document: " + document);
                 }
-                eventService.fireEvent(stage, document, ICaseEventModel.CONSTR_STAGE_CHILDREN_STOPPED);
+                caseActivityEventService.fireEvent(stageRef, ICaseEventModel.CONSTR_STAGE_CHILDREN_STOPPED);
             }
             for (NodeRef st : data.stagesToTryComplete) {
                 if (!stages.contains(st)) {

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.dto.CaseServiceType;
+import ru.citeck.ecos.icase.activity.dto.EventRef;
 import ru.citeck.ecos.icase.activity.service.alfresco.AlfrescoCaseActivityDelegate;
 import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.ICaseModel;
@@ -51,6 +52,17 @@ public class AlfActivityUtils {
         return activityRef.isRoot() ?
             RecordsUtils.toNodeRef(activityRef.getProcessId()) :
             new NodeRef(activityRef.getId());
+    }
+
+    public EventRef composeEventRef(NodeRef eventRef) {
+        RecordRef documentRef = getDocumentId(eventRef);
+        return EventRef.of(CaseServiceType.ALFRESCO, documentRef, eventRef.toString());
+    }
+
+    public NodeRef getEventNodeRef(EventRef eventRef) {
+        return eventRef.isRoot() ?
+            RecordsUtils.toNodeRef(eventRef.getProcessId()) :
+            new NodeRef(eventRef.getId());
     }
 
     public RecordRef getDocumentId(NodeRef activityNodeRef) {

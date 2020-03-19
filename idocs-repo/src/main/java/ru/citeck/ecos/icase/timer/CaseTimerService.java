@@ -7,17 +7,18 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.util.ISO8601DateFormat;
 import org.apache.commons.lang.time.DateUtils;
 import org.joda.time.Interval;
-import ru.citeck.ecos.event.EventService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
+import ru.citeck.ecos.icase.activity.service.CaseActivityEventService;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.icase.timer.evaluator.Evaluator;
+import ru.citeck.ecos.model.CaseTimerModel;
 import ru.citeck.ecos.model.CaseTimerModel.DatePrecision;
 import ru.citeck.ecos.model.CaseTimerModel.ExpressionType;
-import ru.citeck.ecos.model.CaseTimerModel;
 import ru.citeck.ecos.model.ICaseEventModel;
 import ru.citeck.ecos.service.CiteckServices;
-import ru.citeck.ecos.service.EcosCoreServices;
 import ru.citeck.ecos.utils.AlfActivityUtils;
 
 import java.util.Calendar;
@@ -30,6 +31,7 @@ import java.util.regex.Pattern;
 /**
  * @author Pavel Simonov
  */
+@Service
 public class CaseTimerService {
 
     private static final Pattern REPEAT_PATTERN = Pattern.compile("^R([0-9]*)/(.*)");
@@ -38,16 +40,24 @@ public class CaseTimerService {
     private Map<DatePrecision, Integer> calendarCodeByPrecision = new HashMap<>();
 
     private NodeService nodeService;
-    private EventService eventService;
     private CaseActivityService caseActivityService;
+    private CaseActivityEventService caseActivityEventService;
     private AlfActivityUtils alfActivityUtils;
 
-    public CaseTimerService() {
-        calendarCodeByPrecision.put(DatePrecision.MONTH, Calendar.MONTH);
-        calendarCodeByPrecision.put(DatePrecision.DAY, Calendar.DATE);
-        calendarCodeByPrecision.put(DatePrecision.HOUR, Calendar.HOUR);
-        calendarCodeByPrecision.put(DatePrecision.MINUTE, Calendar.MINUTE);
-        calendarCodeByPrecision.put(DatePrecision.SECOND, Calendar.SECOND);
+    @Autowired
+    public CaseTimerService(ServiceRegistry serviceRegistry) {
+        this.nodeService = serviceRegistry.getNodeService();
+        this.caseActivityService = (CaseActivityService) serviceRegistry
+            .getService(CiteckServices.CASE_ACTIVITY_SERVICE);
+        this.caseActivityEventService = (CaseActivityEventService) serviceRegistry
+            .getService(CiteckServices.CASE_ACTIVITY_EVENT_SERVICE);
+        this.alfActivityUtils = (AlfActivityUtils) serviceRegistry.getService(CiteckServices.ALF_ACTIVITY_UTILS);
+
+        this.calendarCodeByPrecision.put(DatePrecision.MONTH, Calendar.MONTH);
+        this.calendarCodeByPrecision.put(DatePrecision.DAY, Calendar.DATE);
+        this.calendarCodeByPrecision.put(DatePrecision.HOUR, Calendar.HOUR);
+        this.calendarCodeByPrecision.put(DatePrecision.MINUTE, Calendar.MINUTE);
+        this.calendarCodeByPrecision.put(DatePrecision.SECOND, Calendar.SECOND);
     }
 
     public boolean startTimer(NodeRef timerRef) {
@@ -86,7 +96,7 @@ public class CaseTimerService {
             if (!startTimer(timerRef, fromDate, counter)) {
                 caseActivityService.stopActivity(timerActivityRef);
             } else {
-                eventService.fireEvent(timerRef, ICaseEventModel.CONSTR_ACTIVITY_STOPPED);
+                caseActivityEventService.fireEvent(timerActivityRef, ICaseEventModel.CONSTR_ACTIVITY_STOPPED);
             }
         }
     }
@@ -173,12 +183,5 @@ public class CaseTimerService {
 
     public void registerEvaluator(CaseTimerModel.ExpressionType type, Evaluator evaluator) {
         evaluators.put(type, evaluator);
-    }
-
-    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        this.nodeService = serviceRegistry.getNodeService();
-        this.eventService = (EventService) serviceRegistry.getService(EcosCoreServices.EVENT_SERVICE);
-        this.caseActivityService = (CaseActivityService) serviceRegistry.getService(CiteckServices.CASE_ACTIVITY_SERVICE);
-        this.alfActivityUtils = (AlfActivityUtils) serviceRegistry.getService(CiteckServices.ALF_ACTIVITY_UTILS);
     }
 }

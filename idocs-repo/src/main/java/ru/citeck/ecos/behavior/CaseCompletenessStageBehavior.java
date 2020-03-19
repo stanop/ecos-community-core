@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
+import ru.citeck.ecos.icase.activity.service.alfresco.CaseActivityPolicies;
 import ru.citeck.ecos.icase.completeness.CaseCompletenessServiceImpl;
 import ru.citeck.ecos.model.StagesModel;
 import ru.citeck.ecos.records.RecordsUtils;
