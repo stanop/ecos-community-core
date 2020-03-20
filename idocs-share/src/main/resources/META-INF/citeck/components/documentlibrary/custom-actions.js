@@ -904,7 +904,7 @@ YAHOO.Bubbling.fire("registerAction", {
                             scope: this,
                             fn: function () {
                                 Alfresco.util.PopupManager.displayMessage({
-                                    text: this.msg(props.successMessage || "message.transitionSuccess"),
+                                    text: Alfresco.util.message(props.successMessage || "message.transitionSuccess"),
                                     spanClass: props.successMessageSpanClass || ""
                                 });
                                 _.delay(function () {
