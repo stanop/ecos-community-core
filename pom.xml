@@ -928,13 +928,6 @@
 
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
-                            <artifactId>ecos-graphql-share</artifactId>
-                            <version>${project.version}</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-                        <moduleDependency>
-                            <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-flowable-share</artifactId>
                             <version>${project.version}</version>
                             <type>amp</type>

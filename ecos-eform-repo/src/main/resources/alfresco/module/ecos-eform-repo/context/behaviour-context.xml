@@ -6,9 +6,6 @@
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 
-    <bean class="ru.citeck.ecos.eform.behaviour.EcosFormBehaviour">
-    </bean>
-
     <bean id="eform.files-temp-root.split-children" parent="ecos.splitChildrenBehaviour">
         <property name="node" value="workspace://SpacesStore/eform-files-temp-root" />
         <property name="splitBehaviour">
