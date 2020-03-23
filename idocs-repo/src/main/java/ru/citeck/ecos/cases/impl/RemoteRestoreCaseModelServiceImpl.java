@@ -375,6 +375,8 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
     private void fillAdditionalUserActionEventInfo(UserActionEventDto eventDto, NodeRef eventRef) {
         nodeService.setProperty(eventRef, EventModel.PROP_ADDITIONAL_DATA_TYPE, eventDto.getAdditionalDataType());
         nodeService.setProperty(eventRef, EventModel.PROP_CONFIRMATION_MESSAGE, eventDto.getConfirmationMessage());
+        nodeService.setProperty(eventRef, EventModel.PROP_SUCCESS_MESSAGE, eventDto.getSuccessMessage());
+        nodeService.setProperty(eventRef, EventModel.PROP_SUCCESS_MESSAGE_SPAN_CLASS, eventDto.getSuccessMessageSpanClass());
         /* Roles */
         for (RoleDto roleDto : eventDto.getRoles()) {
             NodeRef roleNodeRef = new NodeRef(WORKSPACE_PREFIX + roleDto.getNodeUUID());

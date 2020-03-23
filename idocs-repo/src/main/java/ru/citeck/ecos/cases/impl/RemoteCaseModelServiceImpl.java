@@ -476,6 +476,8 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
     private void fillAdditionalUserActionEventInfo(NodeRef eventNodeRef, ObjectNode objectNode) {
         objectNode.put("additionalDataType", (String) nodeService.getProperty(eventNodeRef, EventModel.PROP_ADDITIONAL_DATA_TYPE));
         objectNode.put("confirmationMessage", (String) nodeService.getProperty(eventNodeRef, EventModel.PROP_CONFIRMATION_MESSAGE));
+        objectNode.put("successMessage", (String) nodeService.getProperty(eventNodeRef, EventModel.PROP_SUCCESS_MESSAGE));
+        objectNode.put("successMessageSpanClass", (String) nodeService.getProperty(eventNodeRef, EventModel.PROP_SUCCESS_MESSAGE_SPAN_CLASS));
         /* Roles */
         ArrayNode rolesNode = objectMapper.createArrayNode();
         List<AssociationRef> rolesAssocs = nodeService.getTargetAssocs(eventNodeRef, EventModel.ASSOC_AUTHORIZED_ROLES);

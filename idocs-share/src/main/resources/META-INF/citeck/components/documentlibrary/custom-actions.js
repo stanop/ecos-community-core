@@ -19,7 +19,7 @@
 require([
 	'citeck/components/form/constraints'
 ], function() {
-    
+
     var PopupManager = Alfresco.util.PopupManager;
 
 /**
@@ -37,7 +37,7 @@ YAHOO.Bubbling.fire("registerRenderer",
 
 /**
  * Upload new version action.
- * 
+ *
  * All is like in the original version of handler,
  * except that siteId is not set, because it is not necessary for new version upload,
  * but can cause errors, when site is not accessible.
@@ -126,12 +126,12 @@ function getVersions(record, propertyName) {
 YAHOO.Bubbling.fire("registerAction", {
 	actionName: "onActionCompareWithConsidered",
 	fn: function(record) {
-	
+
 		var userName = Alfresco.constants.USERNAME;
-		
+
 		// get consideredVersions property:
 		var consideredVersions = getVersions(record, "wfcf:consideredVersions");
-		
+
 		if(!consideredVersions[userName]) {
 			Alfresco.util.PopupManager.displayMessage({
 				text: this.msg("confirm.no-considered-versions.message")
@@ -144,7 +144,7 @@ YAHOO.Bubbling.fire("registerAction", {
 
         var considerableVersionsRef = (considerableVersions && considerableVersions[userName]
             && considerableVersions[userName].versionRef) ? considerableVersions[userName].versionRef : record.node.nodeRef;
-	
+
 		window.open(YAHOO.lang.substitute(Alfresco.constants.URL_PAGECONTEXT + "versions-difference?nodeRef={nodeRef}&versRef={versRef}", {
 			nodeRef: considerableVersionsRef,
 			versRef: consideredVersions[userName].versionRef
@@ -210,9 +210,9 @@ function renderConfirmStatus(record, confirmer, labelPrefix, active) {
 	var confirmStatus = consideredVersions[confirmer];
 	var consideredVersionLabel = confirmStatus && confirmStatus.versionLabel || null;
 	var currentVersionLabel = record.version;
-	
+
 	var html = '';
-	
+
 	if(consideredVersionLabel == null) {
 		html = this.msg(labelPrefix + ".no-decision", confirmer);
 	} else if(consideredVersionLabel == currentVersionLabel) {
@@ -270,7 +270,7 @@ function renderConfirmStatus(record, confirmer, labelPrefix, active) {
     }
 
 YAHOO.Bubbling.fire("registerRenderer", {
-	propertyName: "confirmStatus", 
+	propertyName: "confirmStatus",
 	renderer: function(record, label) {
 		return renderConfirmStatus.call(this, record, Alfresco.constants.USERNAME, "confirm-status", true);
 	}
@@ -284,7 +284,7 @@ YAHOO.Bubbling.fire("registerRenderer", {
 });
 
 YAHOO.Bubbling.fire("registerRenderer", {
-	propertyName: "correctStatus", 
+	propertyName: "correctStatus",
 	renderer: function(record, label) {
 		var senderField = document.getElementsByName("prop_cwf_sender")[0];
 		if(senderField && senderField.value) {
@@ -306,10 +306,10 @@ YAHOO.Bubbling.fire("registerRenderer", {
 YAHOO.Bubbling.fire("registerAction", {
 	actionName: "onActionBlockContractor",
 	fn: function(asset) {
-			
+
 	    	  var displayName = asset.displayName,
 	    	  nodeRef = new Alfresco.util.NodeRef(asset.nodeRef);
-	    	  
+
 				this.modules.actions.genericAction(
 			            {
 			                success:
@@ -317,7 +317,7 @@ YAHOO.Bubbling.fire("registerAction", {
 			                    event:
 			                    {
 			                    	name: "metadataRefresh"
-			                    },			                	
+			                    },
 			                    message: this.msg("message.blockContractor.success", displayName)
 			                },
 			                failure:
@@ -431,9 +431,9 @@ YAHOO.Bubbling.fire("registerAction", {
 
 function onActionRemoveCaseItem(nodeRef, caseNodeRef, caseElementConfigName) {
 	Alfresco.util.Ajax.jsonDelete({
-		url: Alfresco.constants.PROXY_URI + "citeck/case/elements" 
-		        + "?nodeRef=" + nodeRef 
-		        + "&caseNode=" + caseNodeRef 
+		url: Alfresco.constants.PROXY_URI + "citeck/case/elements"
+		        + "?nodeRef=" + nodeRef
+		        + "&caseNode=" + caseNodeRef
 		        + "&elementType=" + caseElementConfigName,
 		successCallback: {
 			fn: function (response) {
@@ -493,7 +493,7 @@ YAHOO.Bubbling.fire("registerAction", {
                     text: self.msg("button.yes"),
                     handler: function() {
                         Alfresco.util.Ajax.jsonPost({
-                            url: Alfresco.constants.PROXY_URI + "citeck/case/template" 
+                            url: Alfresco.constants.PROXY_URI + "citeck/case/template"
                                     + "?nodeRef=" + record.nodeRef,
                             successCallback: {
                                 fn: function (response) {
@@ -861,7 +861,7 @@ YAHOO.Bubbling.fire("registerAction", {
 	 * for Node Actions Service
 	 * */
 	YAHOO.Bubbling.fire("registerAction", {
-        actionName: "onServerAction",
+	    actionName: "onServerAction",
         fn: function (asset, element) {
             var actionId = element.className;
             var props = asset.actionParams[actionId].actionProperties;
@@ -904,7 +904,8 @@ YAHOO.Bubbling.fire("registerAction", {
                             scope: this,
                             fn: function () {
                                 Alfresco.util.PopupManager.displayMessage({
-                                    text: Alfresco.util.message("message.transitionSuccess")
+                                    text: Alfresco.util.message(props.successMessage || "message.transitionSuccess"),
+                                    spanClass: props.successMessageSpanClass || ""
                                 });
                                 _.delay(function () {
                                     window.location.reload();
@@ -971,7 +972,7 @@ YAHOO.Bubbling.fire("registerAction", {
                     fn: function () {
                         Alfresco.util.PopupManager.displayMessage({
                             text: this.msg("message.transitionSuccess")
-                        });
+						});
                         _.delay(function () {
                             window.location.reload();
                         }, 3000);
