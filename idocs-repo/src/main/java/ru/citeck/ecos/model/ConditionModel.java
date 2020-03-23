@@ -4,7 +4,6 @@ import org.alfresco.repo.action.evaluator.ComparePropertyValueEvaluator;
 import org.alfresco.service.namespace.QName;
 
 import ru.citeck.ecos.action.evaluator.CompareLifecycleProcessVariableValueEvaluator;
-import ru.citeck.ecos.action.evaluator.ScriptEvaluator;
 import ru.citeck.ecos.action.evaluator.UserHasPermissionEvaluator;
 import ru.citeck.ecos.action.evaluator.UserInDocumentEvaluator;
 import ru.citeck.ecos.action.evaluator.UserInGroupEvaluator;
@@ -30,8 +29,8 @@ public final class ConditionModel {
     }
     
     public static class EvaluateScript {
-        public static final QName TYPE = QName.createQName(NAMESPACE, ScriptEvaluator.NAME);
-        public static final QName PROP_SCRIPT = QName.createQName(TYPE + PROP_DELIM + ScriptEvaluator.PARAM_SCRIPT);
+        public static final QName TYPE = QName.createQName(NAMESPACE, "evaluate-script");
+        public static final QName PROP_SCRIPT = QName.createQName(TYPE + PROP_DELIM + "script");
     }
 
     public static class UserInDocument {

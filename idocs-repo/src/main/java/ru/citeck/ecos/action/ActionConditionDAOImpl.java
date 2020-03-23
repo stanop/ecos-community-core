@@ -1,14 +1,6 @@
 package ru.citeck.ecos.action;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.alfresco.service.cmr.action.Action;
-import org.alfresco.service.cmr.action.ActionCondition;
 import org.alfresco.service.cmr.action.ActionService;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
@@ -20,16 +12,17 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 
+import java.io.Serializable;
+import java.util.*;
 
 //TODO: association saving doesn't work
 
-class ActionConditionDAOImpl implements ActionDAO, ConditionDAO {
+class ActionConditionDAOImpl implements ActionDAO {
 
     private NodeService nodeService;
     private ActionService actionService;
     private DictionaryService dictionaryService;
     private String actionNamespace;
-    private String conditionNamespace;
 
     @Override
     public NodeRef save(Action action, NodeRef parent, QName childAssocType) {
@@ -46,35 +39,12 @@ class ActionConditionDAOImpl implements ActionDAO, ConditionDAO {
     }
 
     @Override
-    public NodeRef save(ActionCondition condition, NodeRef parent, QName childAssocType) {
-        QName type = getConditionTypeName(condition);
-        Map<QName, Serializable> properties = getConditionProperties(condition);
-        return nodeService.createNode(parent, childAssocType, type, type, properties).getChildRef();
-    }
-
-    @Override
-    public void save(ActionCondition condition, NodeRef nodeRef) {
-        ensureCorrectType(nodeRef, getConditionTypeName(condition));
-        Map<QName, Serializable> properties = getConditionProperties(condition);
-        nodeService.setProperties(nodeRef, properties);
-    }
-
-    @Override
     public Action readAction(NodeRef nodeRef) {
         QName type = nodeService.getType(nodeRef);
         String name = convertTypeToName(type, actionNamespace);
         Map<String, Serializable> parameters = extractParameters(nodeRef, actionNamespace);
-        
+
         return actionService.createAction(name, parameters);
-    }
-
-    @Override
-    public ActionCondition readCondition(NodeRef nodeRef) {
-        QName type = nodeService.getType(nodeRef);
-        String name = convertTypeToName(type, conditionNamespace);
-        Map<String, Serializable> parameters = extractParameters(nodeRef, conditionNamespace);
-
-        return actionService.createActionCondition(name, parameters);
     }
 
     @Override
@@ -92,23 +62,8 @@ class ActionConditionDAOImpl implements ActionDAO, ConditionDAO {
         }
     }
 
-    @Override
-    public List<ActionCondition> readConditions(NodeRef parent, QName childAssocType) {
-        List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(parent, childAssocType, RegexQNamePattern.MATCH_ALL);
-        switch(childAssocs.size()) {
-        case 0: return Collections.emptyList();
-        case 1: return Collections.singletonList(readCondition(childAssocs.get(0).getChildRef()));
-        default:
-            List<ActionCondition> actions = new ArrayList<>(childAssocs.size());
-            for(ChildAssociationRef childAssoc : childAssocs) {
-                actions.add(readCondition(childAssoc.getChildRef()));
-            }
-            return Collections.unmodifiableList(actions);
-        }
-    }
-
     // common private staff
-    
+
     private QName convertNameToType(String name, String namespaceURI) {
         QName type = QName.createQName(namespaceURI, name);
         TypeDefinition typeDef = dictionaryService.getType(type);
@@ -218,7 +173,7 @@ class ActionConditionDAOImpl implements ActionDAO, ConditionDAO {
     }
 
     // actions private staff
-    
+
     private QName getActionTypeName(Action action) {
         String actionName = action.getActionDefinitionName();
         return convertNameToType(actionName, actionNamespace);
@@ -226,23 +181,10 @@ class ActionConditionDAOImpl implements ActionDAO, ConditionDAO {
 
     private Map<QName, Serializable> getActionProperties(Action action) {
         return convertParametersToProperties(
-                action.getParameterValues(), 
+                action.getParameterValues(),
                 actionNamespace, action.getActionDefinitionName() + ":");
     }
 
-    // conditions private staff
-    
-    private QName getConditionTypeName(ActionCondition condition) {
-        String conditionName = condition.getActionConditionDefinitionName();
-        return convertNameToType(conditionName, conditionNamespace);
-    }
-
-    private Map<QName, Serializable> getConditionProperties(ActionCondition condition) {
-        return convertParametersToProperties(
-                condition.getParameterValues(), 
-                conditionNamespace, condition.getActionConditionDefinitionName() + ":");
-    }
-    
     // spring interface
 
     public void setNodeService(NodeService nodeService) {
@@ -255,10 +197,6 @@ class ActionConditionDAOImpl implements ActionDAO, ConditionDAO {
 
     public void setDictionaryService(DictionaryService dictionaryService) {
         this.dictionaryService = dictionaryService;
-    }
-
-    public void setConditionNamespace(String conditionNamespace) {
-        this.conditionNamespace = conditionNamespace;
     }
 
     public void setActionNamespace(String actionNamespace) {

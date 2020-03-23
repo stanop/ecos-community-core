@@ -48,7 +48,6 @@ public interface CiteckServices {
 	QName JOURNAL_SERVICE = QName.createQName(CITECK_NAMESPACE, "journalService");
 	QName CASE_COMPLETENESS_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseCompletenessService");
 	QName ACTION_DAO = QName.createQName(CITECK_NAMESPACE, "EcoS.ActionDAO");
-	QName CONDITION_DAO = QName.createQName(CITECK_NAMESPACE, "EcoS.ConditionDAO");
 
 	QName NODE_ATTRIBUTE_SERVICE = QName.createQName(CITECK_NAMESPACE, "nodeAttributeService");
 	QName INVARIANT_SERVICE = QName.createQName(CITECK_NAMESPACE, "invariantService");
