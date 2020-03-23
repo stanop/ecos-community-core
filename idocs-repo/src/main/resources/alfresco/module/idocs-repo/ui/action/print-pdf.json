@@ -1,0 +1,22 @@
+{
+    "id": "print-pdf",
+    "name": {
+        "ru": "Распечатать PDF",
+        "en": "Print PDF"
+    },
+    "type": "open-url",
+    "key": "print.pdf",
+    "icon": null,
+    "typeRef": null,
+    "config": {
+        "url": "/share/proxy/alfresco/citeck/print/printpdf?nodeRef=${recordRef}&print=true"
+    },
+    "evaluator": {
+        "id": null,
+        "type": "has-attribute",
+        "inverse": false,
+        "config": {
+            "attribute": "_content"
+        }
+    }
+}
