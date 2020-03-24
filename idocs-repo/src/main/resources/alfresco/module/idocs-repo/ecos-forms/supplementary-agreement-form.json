@@ -5567,7 +5567,7 @@
               {
                 "label": "Save",
                 "removeIndents": true,
-                "action": "submit1",
+                "action": "submit",
                 "state": "draft",
                 "showValidations": false,
                 "event": "",
