@@ -103,13 +103,6 @@
         <property name="lifecycleService" ref="lifeCycleService" />
     </bean>
 
-    <bean name="EcoS.ActionDAO" class="ru.citeck.ecos.action.ActionConditionDAOImpl">
-        <property name="nodeService" ref="nodeService" />
-        <property name="actionService" ref="actionService" />
-        <property name="dictionaryService" ref="dictionaryService" />
-        <property name="actionNamespace" value="http://www.citeck.ru/model/action/1.0" />
-    </bean>
-
     <bean id="caseActionsProvider" class="ru.citeck.ecos.action.CaseActionsProvider" parent="abstractNodeActionProvider">
         <property name="caseActivityEventService" ref="caseActivityEventService"/>
         <property name="authorityService" ref="authorityService" />
