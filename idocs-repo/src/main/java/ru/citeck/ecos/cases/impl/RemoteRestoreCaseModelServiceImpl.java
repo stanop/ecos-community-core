@@ -607,7 +607,7 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
         if (caseModelDto.getCaseStatus() != null) {
             NodeRef statusNodeRef = new NodeRef(WORKSPACE_PREFIX + caseModelDto.getCaseStatus().getNodeUUID());
             if (nodeService.exists(statusNodeRef)) {
-                nodeService.createAssociation(caseModelRef, statusNodeRef, ActionModel.SetCaseStatus.PROP_STATUS);
+                nodeService.createAssociation(caseModelRef, statusNodeRef, ActionModel.SetCaseStatus.ASSOC_STATUS);
             }
         }
     }

@@ -58,6 +58,6 @@ public final class ActionModel {
 
     public static class SetCaseStatus {
         public static final QName TYPE = QName.createQName(NAMESPACE, SetCaseStatusActionExecuter.NAME);
-        public static final QName PROP_STATUS = QName.createQName(TYPE + PROP_DELIM + SetCaseStatusActionExecuter.PARAM_STATUS);
+        public static final QName ASSOC_STATUS = QName.createQName(TYPE + PROP_DELIM + SetCaseStatusActionExecuter.PARAM_STATUS);
     }
 }

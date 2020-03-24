@@ -15,8 +15,6 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.alfresco.service.transaction.TransactionService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
@@ -25,7 +23,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.citeck.ecos.cases.RemoteCaseModelService;
 import ru.citeck.ecos.dto.*;
-import ru.citeck.ecos.job.SendAndRemoveCompletedCasesJob;
 import ru.citeck.ecos.model.*;
 
 import java.io.IOException;
@@ -689,7 +686,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
      * @param objectNode Object node
      */
     private void fillAdditionalSetCaseStatusInfo(NodeRef caseModelRef, ObjectNode objectNode) {
-        List<AssociationRef> assocs = nodeService.getTargetAssocs(caseModelRef, ActionModel.SetCaseStatus.PROP_STATUS);
+        List<AssociationRef> assocs = nodeService.getTargetAssocs(caseModelRef, ActionModel.SetCaseStatus.ASSOC_STATUS);
         if (!CollectionUtils.isEmpty(assocs)) {
             NodeRef statusRef = assocs.get(0).getTargetRef();
             if (statusRef != null) {
