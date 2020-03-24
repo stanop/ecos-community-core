@@ -12,6 +12,8 @@ import org.alfresco.service.cmr.site.SiteService;
 
 import java.util.List;
 
+//TODO: remove if unused
+@Deprecated
 public class SiteMemberEvaluator extends ActionConditionEvaluatorAbstractBase {
 
     public static final String NAME = "site-member";
