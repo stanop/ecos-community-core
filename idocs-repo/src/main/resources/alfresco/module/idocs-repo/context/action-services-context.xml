@@ -39,13 +39,6 @@
 
     <bean id="fail" class="ru.citeck.ecos.action.FailActionExecuter" parent="action-executer" />
 
-    <bean id="evaluate-script" class="ru.citeck.ecos.action.evaluator.ScriptEvaluator" parent="action-condition-evaluator">
-        <property name="serviceRegistry" ref="ServiceRegistry" />
-        <property name="storeUrl" value="${spaces.store}" />
-        <property name="companyHomePath" value="/${spaces.company_home.childname}" />
-        <property name="sysAdminParams" ref="sysAdminParams" />
-    </bean>
-
     <bean id="user-in-document" class="ru.citeck.ecos.action.evaluator.UserInDocumentEvaluator" parent="action-condition-evaluator">
         <property name="namespaceService" ref="namespaceService" />
     </bean>
@@ -108,10 +101,7 @@
         <property name="actionService" ref="actionService" />
         <property name="dictionaryService" ref="dictionaryService" />
         <property name="actionNamespace" value="http://www.citeck.ru/model/action/1.0" />
-        <property name="conditionNamespace" value="http://www.citeck.ru/model/condition/1.0" />
     </bean>
-
-    <alias name="EcoS.ActionDAO" alias="EcoS.ConditionDAO" />
 
     <bean id="caseActionsProvider" class="ru.citeck.ecos.action.CaseActionsProvider" parent="abstractNodeActionProvider">
         <property name="caseActivityEventService" ref="caseActivityEventService"/>

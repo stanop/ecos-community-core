@@ -5,8 +5,6 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.repo.policy.ClassPolicyDelegate;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.action.ActionCondition;
-import org.alfresco.service.cmr.action.ActionService;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -15,20 +13,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.ActionConditionUtils;
-import ru.citeck.ecos.action.ConditionDAO;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.EventRef;
 import ru.citeck.ecos.icase.activity.service.CaseActivityEventDelegate;
 import ru.citeck.ecos.model.EventModel;
 import ru.citeck.ecos.records.RecordsUtils;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.evaluator.RecordEvaluatorDto;
+import ru.citeck.ecos.records2.evaluator.RecordEvaluatorService;
+import ru.citeck.ecos.records2.evaluator.evaluators.GroupEvaluator;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.utils.AlfActivityUtils;
 import ru.citeck.ecos.utils.DictionaryUtils;
+import ru.citeck.ecos.utils.EvaluatorUtils;
+import ru.citeck.ecos.utils.RepoUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -40,21 +44,22 @@ public class AlfrescoCaseActivityEventDelegate implements CaseActivityEventDeleg
     private ClassPolicyDelegate<EventPolicies.OnEventPolicy> onEventDelegate;
     private ClassPolicyDelegate<EventPolicies.BeforeEventPolicy> beforeEventDelegate;
 
+    private RecordEvaluatorService recordEvaluatorService;
+    private CaseEvaluatorConverter caseEvaluatorConverter;
     private AlfActivityUtils alfActivityUtils;
 
     private PolicyComponent policyComponent;
     private NodeService nodeService;
 
-    private ActionService actionService;
-    private ConditionDAO conditionDAO;
-
     @Autowired
-    public AlfrescoCaseActivityEventDelegate(ServiceRegistry serviceRegistry) {
+    public AlfrescoCaseActivityEventDelegate(ServiceRegistry serviceRegistry,
+                                             CaseEvaluatorConverter caseEvaluatorConverter,
+                                             RecordEvaluatorService recordEvaluatorService) {
         this.alfActivityUtils = (AlfActivityUtils) serviceRegistry.getService(CiteckServices.ALF_ACTIVITY_UTILS);
         this.policyComponent = serviceRegistry.getPolicyComponent();
         this.nodeService = serviceRegistry.getNodeService();
-        this.actionService = serviceRegistry.getActionService();
-        this.conditionDAO = (ConditionDAO) serviceRegistry.getService(CiteckServices.CONDITION_DAO);
+        this.caseEvaluatorConverter = caseEvaluatorConverter;
+        this.recordEvaluatorService = recordEvaluatorService;
     }
 
     @PostConstruct
@@ -66,11 +71,10 @@ public class AlfrescoCaseActivityEventDelegate implements CaseActivityEventDeleg
     @Override
     public void fireEvent(ActivityRef activityRef, String eventType) {
         NodeRef activityNodeRef = alfActivityUtils.getActivityNodeRef(activityRef);
-        NodeRef caseNodeRef = RecordsUtils.toNodeRef(activityRef.getProcessId());
-        fireEventImpl(activityNodeRef, caseNodeRef, eventType);
+        fireEventImpl(activityNodeRef, activityRef.getProcessId(), eventType);
     }
 
-    private void fireEventImpl(NodeRef eventSourceRef, NodeRef caseRef, String eventType) {
+    private void fireEventImpl(NodeRef eventSourceRef, RecordRef caseRef, String eventType) {
         if (!nodeService.exists(eventSourceRef)) {
             return;
         }
@@ -92,16 +96,28 @@ public class AlfrescoCaseActivityEventDelegate implements CaseActivityEventDeleg
         }
     }
 
+    private List<NodeRef> getEvents(NodeRef nodeRef, String eventType) {
+        List<NodeRef> events = new ArrayList<>();
+        List<AssociationRef> eventsAssocs = nodeService.getSourceAssocs(nodeRef, EventModel.ASSOC_EVENT_SOURCE);
+        for (AssociationRef assoc : eventsAssocs) {
+            NodeRef eventRef = assoc.getSourceRef();
+            if (eventType.equals(nodeService.getProperty(eventRef, EventModel.PROP_TYPE))) {
+                events.add(eventRef);
+            }
+        }
+        return events;
+    }
+
     @Override
     public void fireConcreteEvent(EventRef eventRef) {
         NodeRef eventNodeRef = alfActivityUtils.getEventNodeRef(eventRef);
         NodeRef caseRef = RecordsUtils.toNodeRef(eventRef.getProcessId());
         EventPolicies.BeforeEventPolicy beforePolicy = getBeforePolicy(caseRef);
         EventPolicies.OnEventPolicy onPolicy = getOnPolicy(caseRef);
-        fireConcreteEventImpl(eventNodeRef, caseRef, beforePolicy, onPolicy);
+        fireConcreteEventImpl(eventNodeRef, eventRef.getProcessId(), beforePolicy, onPolicy);
     }
 
-    private void fireConcreteEventImpl(NodeRef eventRef, NodeRef conditionContextRef,
+    private void fireConcreteEventImpl(NodeRef eventRef, RecordRef conditionContextRef,
                                        EventPolicies.BeforeEventPolicy beforePolicy,
                                        EventPolicies.OnEventPolicy onPolicy) {
 
@@ -118,31 +134,34 @@ public class AlfrescoCaseActivityEventDelegate implements CaseActivityEventDeleg
     @Override
     public boolean checkConditions(EventRef eventRef) {
         NodeRef eventNodeRef = alfActivityUtils.getEventNodeRef(eventRef);
-        NodeRef caseRef = RecordsUtils.toNodeRef(eventRef.getProcessId());
-        return checkConditionsImpl(eventNodeRef, caseRef);
+        return checkConditionsImpl(eventNodeRef, eventRef.getProcessId());
     }
 
-    private boolean checkConditionsImpl(NodeRef eventRef, NodeRef conditionContextRef) {
-        List<ActionCondition> eventConditions = conditionDAO.readConditions(eventRef, EventModel.ASSOC_CONDITIONS);
+    private boolean checkConditionsImpl(NodeRef eventRef, RecordRef conditionContextRef) {
         ActionConditionUtils.getTransactionVariables().put(TRANSACTION_EVENT_VARIABLE, eventRef);
-        for (ActionCondition condition : eventConditions) {
-            if (!actionService.evaluateActionCondition(condition, conditionContextRef)) {
-                return false;
-            }
+        RecordEvaluatorDto evaluatorDefinition = getEvaluatorDefinition(eventRef);
+        if (evaluatorDefinition != null) {
+            return recordEvaluatorService.evaluate(conditionContextRef, evaluatorDefinition);
         }
         return true;
     }
 
-    private List<NodeRef> getEvents(NodeRef nodeRef, String eventType) {
-        List<NodeRef> events = new ArrayList<>();
-        List<AssociationRef> eventsAssocs = nodeService.getSourceAssocs(nodeRef, EventModel.ASSOC_EVENT_SOURCE);
-        for (AssociationRef assoc : eventsAssocs) {
-            NodeRef eventRef = assoc.getSourceRef();
-            if (eventType.equals(nodeService.getProperty(eventRef, EventModel.PROP_TYPE))) {
-                events.add(eventRef);
-            }
+    private RecordEvaluatorDto getEvaluatorDefinition(NodeRef eventRef) {
+        List<NodeRef> conditionRefs = RepoUtils.getChildrenByAssoc(eventRef, EventModel.ASSOC_CONDITIONS, nodeService);
+        switch (conditionRefs.size()) {
+            case 0:
+                return null;
+            case 1:
+                return caseEvaluatorConverter.convertCondition(conditionRefs.get(0));
+            default:
+                GroupEvaluator.Config config = new GroupEvaluator.Config();
+                config.setJoinBy(GroupEvaluator.JoinType.AND);
+                List<RecordEvaluatorDto> groupedEvaluators = conditionRefs.stream()
+                    .map(caseEvaluatorConverter::convertCondition)
+                    .collect(Collectors.toList());
+                config.setEvaluators(groupedEvaluators);
+                return EvaluatorUtils.createEvaluatorDto("group", config, false);
         }
-        return events;
     }
 
     private EventPolicies.OnEventPolicy getOnPolicy(NodeRef nodeRef) {
@@ -154,5 +173,4 @@ public class AlfrescoCaseActivityEventDelegate implements CaseActivityEventDeleg
         List<QName> classes = DictionaryUtils.getNodeClassNames(nodeRef, nodeService);
         return beforeEventDelegate.get(new HashSet<>(classes));
     }
-
 }
