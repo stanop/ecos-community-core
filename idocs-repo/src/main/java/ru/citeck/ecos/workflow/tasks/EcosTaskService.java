@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.locks.LockUtils;
+import ru.citeck.ecos.props.EcosPropertiesService;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,6 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @Service
 public class EcosTaskService {
+
+    private static final String ECOS_TASK_STR_VARS_LIMIT_KEY = "ecos.task.variable.type.str.limit";
 
     private static final String TASKS_PREFIX = "task-%s";
 
@@ -25,6 +28,9 @@ public class EcosTaskService {
     private Map<String, EngineTaskService> taskServices = new ConcurrentHashMap<>();
 
     private LockUtils lockUtils;
+
+    @Autowired
+    private EcosPropertiesService ecosProperties;
 
     public void endTask(String taskId, Map<String, Object> variables) {
         endTask(taskId, null, variables, null);
@@ -44,6 +50,9 @@ public class EcosTaskService {
                         Map<String, Object> transientVariables) {
 
         ParameterCheck.mandatoryString("taskId", taskId);
+
+        validateStrFields(variables);
+        validateStrFields(transientVariables);
 
         if (variables == null) {
             variables = Collections.emptyMap();
@@ -70,6 +79,30 @@ public class EcosTaskService {
 
         lockUtils.doWithLock(String.format(TASKS_PREFIX, taskId), () -> {
             taskService.endTask(task.getLocalId(), transition, finalVariables, finalTransientVariables);
+        });
+    }
+
+    private void validateStrFields(Map<String, Object> variables) {
+
+        if (variables == null) {
+            return;
+        }
+
+        int limit = ecosProperties.getInt(ECOS_TASK_STR_VARS_LIMIT_KEY, 5000);
+        if (limit <= 0) {
+            return;
+        }
+
+        variables.forEach((k, v) -> {
+
+            if (v instanceof String && ((String) v).length() > limit) {
+
+                String msg = "Variable length can't exceed limit " + limit;
+                log.error(msg + ". You can setup this limit by config key " + ECOS_TASK_STR_VARS_LIMIT_KEY +
+                    " Value key: " + k + " Value: " + v);
+
+                throw new IllegalArgumentException(msg);
+            }
         });
     }
 
