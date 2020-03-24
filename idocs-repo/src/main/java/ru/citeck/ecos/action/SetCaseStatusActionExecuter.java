@@ -13,7 +13,10 @@ import java.util.List;
 
 /**
  * @author Pavel Simonov
+ * @deprecated use {@link ru.citeck.ecos.icase.commands.executors.SetCaseStatusCommandExecutor}
  */
+//TODO: remove if unused
+@Deprecated
 public class SetCaseStatusActionExecuter extends ActionExecuterAbstractBase {
 
     public static final String NAME = "set-case-status";
