@@ -169,12 +169,17 @@ class StatusRecordsUtils {
         }
 
         StatusDTO dto = getDocumentStatus(new NodeRef(id));
-        StatusRecord statusRecord = new StatusRecord(dto);
 
-        RecordsQueryResult<StatusRecord> result = new RecordsQueryResult<>();
-        result.setRecords(Collections.singletonList(statusRecord));
-        result.setTotalCount(1);
-        return result;
+        if (dto != null) {
+
+            StatusRecord statusRecord = new StatusRecord(dto);
+
+            RecordsQueryResult<StatusRecord> result = new RecordsQueryResult<>();
+            result.setRecords(Collections.singletonList(statusRecord));
+            result.setTotalCount(1);
+            return result;
+        }
+        return new RecordsQueryResult<>();
     }
 
     private StatusDTO getDocumentStatus(NodeRef document) {
