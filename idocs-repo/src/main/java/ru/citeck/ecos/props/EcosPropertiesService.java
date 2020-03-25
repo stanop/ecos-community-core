@@ -4,8 +4,8 @@ import ecos.com.google.common.base.CaseFormat;
 import ecos.com.google.common.cache.CacheBuilder;
 import ecos.com.google.common.cache.CacheLoader;
 import ecos.com.google.common.cache.LoadingCache;
-import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
+import org.alfresco.util.Pair;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -77,8 +77,8 @@ public class EcosPropertiesService {
 
     private Optional<Object> getPropertyImpl(Pair<String, Class<?>> keyAndType) {
 
-        String key = keyAndType.getKey();
-        Class<?> type = keyAndType.getValue();
+        String key = keyAndType.getFirst();
+        Class<?> type = keyAndType.getSecond();
 
         Object value = convert(ecosConfigService.getParamValue(key), type);
         if (value == null) {
