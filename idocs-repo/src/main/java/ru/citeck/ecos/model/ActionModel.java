@@ -36,6 +36,7 @@ public final class ActionModel {
         public static final QName PROP_SCRIPT = QName.createQName(TYPE + PROP_DELIM + ScriptParamActionExecuter.PARAM_SCRIPT);
     }
 
+    @Deprecated
     public static class StartWorkflow {
         public static final QName TYPE = QName.createQName(NAMESPACE, StartWorkflowActionExecuter.NAME);
         public static final QName PROP_WORKFLOW_NAME = QName.createQName(TYPE + PROP_DELIM + StartWorkflowActionExecuter.PARAM_WORKFLOW_NAME);

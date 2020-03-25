@@ -228,9 +228,6 @@ public class CaseActivityGet extends DeclarativeWebScript {
         if (caseModelDto instanceof SetPropertyValueDto) {
             return ActionModel.SetPropertyValue.TYPE;
         }
-        if (caseModelDto instanceof StartWorkflowDto) {
-            return ActionModel.StartWorkflow.TYPE;
-        }
         if (caseModelDto instanceof SetCaseStatusDto) {
             return ActionModel.SetCaseStatus.TYPE;
         }

@@ -585,9 +585,6 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         if (SetPropertyValueDto.DTO_TYPE.equals(dtoType)) {
             fillAdditionalSetPropertyValueInfo(caseModelRef, objectNode);
         }
-        if (StartWorkflowDto.DTO_TYPE.equals(dtoType)) {
-            fillAdditionalStartWorkflowInfo(caseModelRef, objectNode);
-        }
         if (SetCaseStatusDto.DTO_TYPE.equals(dtoType)) {
             fillAdditionalSetCaseStatusInfo(caseModelRef, objectNode);
         }
@@ -669,15 +666,6 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         QName propertyName = (QName) nodeService.getProperty(caseModelRef, ActionModel.SetPropertyValue.PROP_PROPERTY);
         objectNode.put("propertyFullName", propertyName != null ? propertyName.toString() : "");
         objectNode.put("propertyValue", (String) nodeService.getProperty(caseModelRef, ActionModel.SetPropertyValue.PROP_VALUE));
-    }
-
-    /**
-     * Fill additional info start workflow info
-     * @param caseModelRef Case model node reference
-     * @param objectNode Object node
-     */
-    private void fillAdditionalStartWorkflowInfo(NodeRef caseModelRef, ObjectNode objectNode) {
-        objectNode.put("workflowName", (String) nodeService.getProperty(caseModelRef, ActionModel.StartWorkflow.PROP_WORKFLOW_NAME));
     }
 
     /**
@@ -821,9 +809,6 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         }
         if (dictionaryService.isSubClass(nodeType, ActionModel.SetPropertyValue.TYPE)) {
             return SetPropertyValueDto.DTO_TYPE;
-        }
-        if (dictionaryService.isSubClass(nodeType, ActionModel.StartWorkflow.TYPE)) {
-            return StartWorkflowDto.DTO_TYPE;
         }
         if (dictionaryService.isSubClass(nodeType, ActionModel.SetCaseStatus.TYPE)) {
             return SetCaseStatusDto.DTO_TYPE;
