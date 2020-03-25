@@ -148,6 +148,7 @@
         <property name="ignoredTypes">
             <set>
                 <value>{http://www.citeck.ru/model/icaseTask/1.0}defaultTask</value>
+                <value>{http://www.citeck.ru/model/action/1.0}mail</value>
             </set>
         </property>
     </bean>
