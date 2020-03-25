@@ -14,6 +14,11 @@ import ru.citeck.ecos.workflow.EcosWorkflowService;
 
 import java.util.List;
 
+/**
+ * @deprecated use {@link ru.citeck.ecos.icase.commands.executors.SendWorkflowSignalCommandExecutor}
+ */
+//TODO: remove if unused
+@Deprecated
 public class SendWorkflowSignalActionExecutor extends ActionExecuterAbstractBase {
 
     private static final Logger logger = LoggerFactory.getLogger(SendWorkflowSignalActionExecutor.class);
