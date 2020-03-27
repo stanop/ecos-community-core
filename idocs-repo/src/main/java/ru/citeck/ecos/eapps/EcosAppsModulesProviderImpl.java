@@ -12,26 +12,34 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.apps.app.EcosApp;
+import ru.citeck.ecos.apps.app.EcosAppType;
+import ru.citeck.ecos.apps.app.provider.ComputedModule;
+import ru.citeck.ecos.apps.app.provider.ComputedModulesProvider;
 import ru.citeck.ecos.apps.app.provider.EcosAppsProvider;
+import ru.citeck.ecos.apps.module.command.getmodules.GetModulesMeta;
+import ru.citeck.ecos.apps.module.type.TypeContext;
 import ru.citeck.ecos.apps.module.type.provider.ModuleTypesProvider;
 import ru.citeck.ecos.commons.io.file.EcosFile;
 import ru.citeck.ecos.commons.io.file.mem.EcosMemDir;
 import ru.citeck.ecos.commons.io.file.std.EcosStdFile;
 import ru.citeck.ecos.utils.ResourceResolver;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
-public class EcosAppsModulesProviderImpl implements EcosAppsProvider, ModuleTypesProvider {
+public class EcosAppsModulesProviderImpl implements EcosAppsProvider, ModuleTypesProvider, ComputedModulesProvider {
+
+    private static final String MIGRATION_APP_ID = "ecos-modules-migration";
 
     private ResourceResolver resolver;
     private ModuleService moduleService;
 
     @Getter(lazy = true)
     private final List<EcosApp> registeredEcosApps = findEcosAppsImpl();
+
+    private final Map<String, ModuleMigration> migrations = new ConcurrentHashMap<>();
 
     private boolean updateRequired = false;
 
@@ -50,6 +58,26 @@ public class EcosAppsModulesProviderImpl implements EcosAppsProvider, ModuleType
     @Override
     public EcosFile getModuleTypes() {
         return getDir("extension/emtypes");
+    }
+
+    @NotNull
+    @Override
+    public List<ComputedModule> getComputedModules(@NotNull String app,
+                                                   @NotNull TypeContext typeContext,
+                                                   @NotNull GetModulesMeta getModulesMeta) {
+
+        if (!MIGRATION_APP_ID.equals(app) || !migrations.containsKey(typeContext.getId())) {
+            return Collections.emptyList();
+        }
+
+        List<ComputedModule> result = migrations.get(typeContext.getId())
+            .getModulesSince(getModulesMeta.getLastConsumedMs());
+
+        if (result == null) {
+            result = Collections.emptyList();
+        }
+
+        return result;
     }
 
     @NotNull
@@ -99,7 +127,21 @@ public class EcosAppsModulesProviderImpl implements EcosAppsProvider, ModuleType
 
         log.info("Found " + modules.size() + " modules");
 
+        result.add(EcosApp.create(b -> {
+            b.setId(MIGRATION_APP_ID);
+            b.setName(MIGRATION_APP_ID);
+            b.setVersion("1.0.0");
+            b.setProvidedTypes(migrations.keySet());
+            b.setType(EcosAppType.COMPUTED);
+            return Unit.INSTANCE;
+        }));
+
         return result;
+    }
+
+    @Autowired(required = false)
+    public void setMigrations(List<ModuleMigration> migrations) {
+        migrations.forEach(m -> this.migrations.put(m.getModuleType(), m));
     }
 
     private EcosApp convertToEcosApp(ModuleDetails module) {
