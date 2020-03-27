@@ -47,7 +47,7 @@ public class EcosTypesMigration implements ModuleMigration {
 
         childAssocs.stream().map(ChildAssociationRef::getChildRef).forEach(typeRef -> {
 
-            typeModules.add(getTypeModule(typeRef, null));
+            typeModules.add(getTypeModule(typeRef, null, null));
 
             nodeService.getChildAssocs(
                 typeRef,
@@ -55,14 +55,15 @@ public class EcosTypesMigration implements ModuleMigration {
                 RegexQNamePattern.MATCH_ALL
             ).stream().map(ChildAssociationRef::getChildRef).forEach(kindRef -> {
 
-                typeModules.add(getTypeModule(kindRef, typeRef));
+                TypeModule kindType = getTypeModule(kindRef, typeRef, typeRef.getId());
+                typeModules.add(kindType);
 
                 nodeService.getChildAssocs(
                     kindRef,
                     ContentModel.ASSOC_SUBCATEGORIES,
                     RegexQNamePattern.MATCH_ALL
                 ).stream().map(ChildAssociationRef::getChildRef).forEach(kind2Ref ->
-                    typeModules.add(getTypeModule(kind2Ref, kindRef))
+                    typeModules.add(getTypeModule(kind2Ref, kindRef, kindType.getId()))
                 );
             });
         });
@@ -74,7 +75,7 @@ public class EcosTypesMigration implements ModuleMigration {
         ).collect(Collectors.toList());
     }
 
-    private TypeModule getTypeModule(NodeRef typeRef, NodeRef parentRef) {
+    private TypeModule getTypeModule(NodeRef typeRef, NodeRef parentRef, String parentId) {
 
         Map<QName, Serializable> props = getTypeProps(typeRef);
 
@@ -100,7 +101,7 @@ public class EcosTypesMigration implements ModuleMigration {
             module.setParent(RecordRef.create("emodel", "type", "user-base"));
         } else {
             module.setId(parentRef.getId() + "/" + typeRef.getId());
-            module.setParent(RecordRef.create("emodel", "type", parentRef.getId()));
+            module.setParent(RecordRef.create("emodel", "type", parentId));
         }
 
         return module;
