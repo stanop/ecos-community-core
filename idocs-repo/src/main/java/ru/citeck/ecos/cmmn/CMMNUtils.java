@@ -136,7 +136,7 @@ public class CMMNUtils implements ContentValueConverter {
 
         mapping = new HashMap<>();
         mapping.put(QNAME_CASE_STATUS, StagesModel.ASSOC_CASE_STATUS);
-        mapping.put(QNAME_ACTION_CASE_STATUS, ActionModel.SetCaseStatus.PROP_STATUS);
+        mapping.put(QNAME_ACTION_CASE_STATUS, ActionModel.SetCaseStatus.ASSOC_STATUS);
         STATUS_ASSOCS_MAPPING = Collections.unmodifiableMap(mapping);
     }
 

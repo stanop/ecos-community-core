@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.extensions.surf.util.AbstractLifecycleBean;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.commands.context.CommandCtxController;
+import ru.citeck.ecos.commands.context.CommandCtxManager;
 import ru.citeck.ecos.commands.rabbit.RabbitCommandsService;
 import ru.citeck.ecos.commands.remote.RemoteCommandsService;
 import ru.citeck.ecos.commands.transaction.TransactionManager;
@@ -83,8 +85,42 @@ public class CommandsServiceFactoryConfig extends CommandsServiceFactory {
         return new TransactionManager() {
             @Override
             public <T> T doInTransaction(@NotNull Callable<T> callable) {
-                return retryHelper.doInTransaction(() ->
-                    AuthenticationUtil.runAsSystem(callable::call), false, false);
+                return retryHelper.doInTransaction(() -> {
+                    CommandCtxManager commandCtxManager = getCommandCtxManager();
+                    String currentUser = commandCtxManager.getCurrentUser();
+                    return AuthenticationUtil.runAs(callable::call, currentUser);
+                }, false, false);
+            }
+        };
+    }
+
+    @NotNull
+    @Override
+    protected CommandCtxController createCommandCtxController() {
+        return new CommandCtxController() {
+            @NotNull
+            @Override
+            public String setCurrentUser(@NotNull String username) {
+                AuthenticationUtil.setRunAsUser(username);
+                return AuthenticationUtil.getRunAsUser();
+            }
+
+            @NotNull
+            @Override
+            public String getCurrentUser() {
+                return AuthenticationUtil.getRunAsUser();
+            }
+
+            @NotNull
+            @Override
+            public String setCurrentTenant(@NotNull String tenant) {
+                return tenant;
+            }
+
+            @NotNull
+            @Override
+            public String getCurrentTenant() {
+                return "";
             }
         };
     }
