@@ -6,13 +6,13 @@
             status.setStatus(status.STATUS_BAD_REQUEST, "Argument eventType is missing");
             return;
         }
-        events.fireEvent(nodeRef, eventType);
+        caseActivityEventService.fireEvent(nodeRef, eventType);
     } else {
         var eventRef = args.eventRef;
         if (!eventRef) {
             status.setStatus(status.STATUS_BAD_REQUEST, "At least one of 'nodeRef' or 'eventRef' must be specified!");
             return;
         }
-        events.fireConcreteEvent(eventRef);
+        caseActivityEventService.fireConcreteEvent(eventRef);
     }
 })();
