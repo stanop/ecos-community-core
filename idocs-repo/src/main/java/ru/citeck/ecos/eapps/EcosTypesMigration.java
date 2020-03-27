@@ -53,9 +53,18 @@ public class EcosTypesMigration implements ModuleMigration {
                 typeRef,
                 ContentModel.ASSOC_SUBCATEGORIES,
                 RegexQNamePattern.MATCH_ALL
-            ).stream().map(ChildAssociationRef::getChildRef).forEach(kindRef ->
-                typeModules.add(getTypeModule(kindRef, typeRef))
-            );
+            ).stream().map(ChildAssociationRef::getChildRef).forEach(kindRef -> {
+
+                typeModules.add(getTypeModule(kindRef, typeRef));
+
+                nodeService.getChildAssocs(
+                    kindRef,
+                    ContentModel.ASSOC_SUBCATEGORIES,
+                    RegexQNamePattern.MATCH_ALL
+                ).stream().map(ChildAssociationRef::getChildRef).forEach(kind2Ref ->
+                    typeModules.add(getTypeModule(kind2Ref, kindRef))
+                );
+            });
         });
 
         log.info("Types found to export: " + typeModules.size());
