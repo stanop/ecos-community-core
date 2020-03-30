@@ -63,7 +63,7 @@ public class UserActionEventTrigger implements OnCreateChildAssociationPolicy {
         if (nodeService.exists(eventNodeRef) && nodeService.exists(additionalDataRef)) {
             ActionConditionUtils.getTransactionVariables().put(ADDITIONAL_DATA_VARIABLE, additionalDataRef);
             EventRef eventRef = alfActivityUtils.composeEventRef(eventNodeRef);
-            caseActivityEventService.checkConditions(eventRef);
+            caseActivityEventService.fireConcreteEvent(eventRef);
         }
     }
 }
