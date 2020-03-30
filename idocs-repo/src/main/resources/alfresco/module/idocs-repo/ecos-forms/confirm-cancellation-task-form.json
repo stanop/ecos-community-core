@@ -121,31 +121,7 @@
                   "eq": ""
                 },
                 "customConditional": "",
-                "logic": [
-                  {
-                    "name": "event",
-                    "trigger": {
-                      "type": "simple",
-                      "simple": {
-                        "show": true,
-                        "when": "comment",
-                        "eq": ""
-                      }
-                    },
-                    "actions": [
-                      {
-                        "name": "set_disabled",
-                        "type": "property",
-                        "property": {
-                          "label": "Disabled",
-                          "value": "disabled",
-                          "type": "boolean"
-                        },
-                        "state": "true"
-                      }
-                    ]
-                  }
-                ],
+                "logic": [],
                 "attributes": {},
                 "type": "button",
                 "input": true,
