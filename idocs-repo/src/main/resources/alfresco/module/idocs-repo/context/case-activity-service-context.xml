@@ -18,6 +18,7 @@
     <bean id="caseActivityEventServiceJS" class="ru.citeck.ecos.icase.activity.CaseActivityEventServiceJS"
           parent="baseJavaScriptExtension">
         <property name="extensionName" value="caseActivityEventService"/>
+        <property name="alfActivityUtils" ref="alfActivityUtils"/>
         <property name="serviceRegistry" ref="ServiceRegistry"/>
         <property name="caseActivityEventService" ref="caseActivityEventService"/>
     </bean>
