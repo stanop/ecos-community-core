@@ -101,6 +101,9 @@ public class CommandsServiceFactoryConfig extends CommandsServiceFactory {
             @NotNull
             @Override
             public String setCurrentUser(@NotNull String username) {
+                if (StringUtils.isEmpty(username)) {
+                    username = AuthenticationUtil.getSystemUserName();
+                }
                 AuthenticationUtil.setRunAsUser(username);
                 return AuthenticationUtil.getRunAsUser();
             }
@@ -108,7 +111,8 @@ public class CommandsServiceFactoryConfig extends CommandsServiceFactory {
             @NotNull
             @Override
             public String getCurrentUser() {
-                return AuthenticationUtil.getRunAsUser();
+                String user = AuthenticationUtil.getRunAsUser();
+                return user == null ? AuthenticationUtil.getSystemUserName() : user;
             }
 
             @NotNull
