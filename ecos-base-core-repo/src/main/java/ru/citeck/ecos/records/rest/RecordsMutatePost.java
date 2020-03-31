@@ -1,7 +1,6 @@
 package ru.citeck.ecos.records.rest;
 
 import lombok.extern.slf4j.Slf4j;
-import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.lang.StringUtils;
@@ -46,11 +45,7 @@ public class RecordsMutatePost extends AbstractWebScript {
             contentType = "";
         }
 
-        if (contentType.contains(MimetypeMap.MIMETYPE_JSON)) {
-
-            request = utils.readBody(req, Request.class);
-
-        } else if (contentType.contains(WebScriptRequestImpl.MULTIPART_FORM_DATA)) {
+        if (contentType.contains(WebScriptRequestImpl.MULTIPART_FORM_DATA)) {
 
             RecordMeta recordMeta = new RecordMeta();
             ObjectData attributes = new ObjectData();
@@ -89,8 +84,8 @@ public class RecordsMutatePost extends AbstractWebScript {
             request.setRecord(recordMeta);
 
         } else {
-            throw new WebScriptException(Status.STATUS_BAD_REQUEST,
-                "Content type " + req.getContentType() + " is not supported");
+
+            request = utils.readBody(req, Request.class);
         }
 
         RecordsMutResult result = mutate(request);

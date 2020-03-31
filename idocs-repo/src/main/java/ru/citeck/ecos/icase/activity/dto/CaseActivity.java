@@ -2,12 +2,14 @@ package ru.citeck.ecos.icase.activity.dto;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@ToString(exclude = {"parent", "children"})
 @EqualsAndHashCode(exclude = {"parent", "children"})
 public class CaseActivity {
 
