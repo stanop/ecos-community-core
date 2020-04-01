@@ -103,11 +103,4 @@
         <property name="lifecycleService" ref="lifeCycleService" />
     </bean>
 
-    <bean id="caseActionsProvider" class="ru.citeck.ecos.action.CaseActionsProvider" parent="abstractNodeActionProvider">
-        <property name="caseActivityEventService" ref="caseActivityEventService"/>
-        <property name="authorityService" ref="authorityService" />
-        <property name="repositoryHelper" ref="repositoryHelper" />
-        <property name="namespaceService" ref="namespaceService" />
-    </bean>
-
 </beans>

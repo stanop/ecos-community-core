@@ -778,12 +778,6 @@
         <property name="nodeUtils" ref="nodeUtils" />
     </bean>
 
-    <!--<bean id="ecos.caseStatusCompleteBehaviour" class="ru.citeck.ecos.behavior.icase.CaseStatusCompleteBehaviourOld" init-method="init">
-        <property name="policyComponent" ref="policyComponent" />
-        <property name="nodeService" ref="nodeService" />
-        <property name="searchService" ref="searchService"/>
-    </bean>-->
-
     <bean class="ru.citeck.ecos.behavior.role.UpdateRolesBehaviour" init-method="init">
         <property name="caseRoleService" ref="caseRoleService" />
         <property name="policyComponent" ref="policyComponent" />

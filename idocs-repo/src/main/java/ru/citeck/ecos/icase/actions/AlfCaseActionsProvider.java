@@ -1,18 +1,23 @@
-package ru.citeck.ecos.action;
+package ru.citeck.ecos.icase.actions;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.model.Repository;
+import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.extensions.surf.util.I18NUtil;
+import org.springframework.stereotype.Service;
 import ru.citeck.ecos.action.node.CreateNodeAction;
 import ru.citeck.ecos.action.node.NodeActionDefinition;
-import ru.citeck.ecos.action.node.NodeActionsProvider;
 import ru.citeck.ecos.action.node.RequestAction;
 import ru.citeck.ecos.icase.activity.dto.CaseServiceType;
 import ru.citeck.ecos.icase.activity.dto.EventRef;
@@ -20,6 +25,7 @@ import ru.citeck.ecos.icase.activity.service.CaseActivityEventService;
 import ru.citeck.ecos.model.EventModel;
 import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import java.util.ArrayList;
@@ -27,27 +33,39 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * @author deathNC on 30.04.2016.
- * @author Pavel Simonov
- */
-public class CaseActionsProvider extends NodeActionsProvider {
+@Service
+public class AlfCaseActionsProvider implements CaseActionsProvider {
 
     private static final String FIRE_EVENT_URL_TEMPLATE = "citeck/event/fire-event?eventRef=%s";
 
     private CaseActivityEventService caseActivityEventService;
+    private NodeService nodeService;
+    private DictionaryService dictionaryService;
     private AuthorityService authorityService;
-    private Repository repositoryHelper;
     private NamespaceService namespaceService;
+    private Repository repositoryHelper;
+
+    @Autowired
+    public AlfCaseActionsProvider(ServiceRegistry serviceRegistry,
+                                  @Qualifier("repositoryHelper") Repository repositoryHelper) {
+
+        this.caseActivityEventService = (CaseActivityEventService) serviceRegistry
+            .getService(CiteckServices.CASE_ACTIVITY_EVENT_SERVICE);
+        this.nodeService = serviceRegistry.getNodeService();
+        this.dictionaryService = serviceRegistry.getDictionaryService();
+        this.authorityService = serviceRegistry.getAuthorityService();
+        this.namespaceService = serviceRegistry.getNamespaceService();
+        this.repositoryHelper = repositoryHelper;
+    }
 
     @Override
-    public List<ru.citeck.ecos.action.node.NodeActionDefinition> getNodeActions(NodeRef nodeRef) {
+    public List<NodeActionDefinition> getCaseActions(NodeRef nodeRef) {
         return getActions(nodeRef);
     }
 
-    private List<ru.citeck.ecos.action.node.NodeActionDefinition> getActions(NodeRef eventSource) {
+    private List<NodeActionDefinition> getActions(NodeRef eventSource) {
         List<NodeRef> events = getUserActionEvents(eventSource);
-        List<ru.citeck.ecos.action.node.NodeActionDefinition> actions = new ArrayList<>(events.size());
+        List<NodeActionDefinition> actions = new ArrayList<>(events.size());
         for (NodeRef event : events) {
             String additionalDataType = (String) nodeService.getProperty(event, EventModel.PROP_ADDITIONAL_DATA_TYPE);
             NodeActionDefinition definition;
@@ -89,8 +107,8 @@ public class CaseActionsProvider extends NodeActionsProvider {
 
         return CollectionUtils.filter(events, eventRef -> {
             return checkEventType(eventRef)
-                    && checkRoles(eventRef)
-                    && checkEventConditions(eventRef, eventSource);
+                && checkRoles(eventRef)
+                && checkEventConditions(eventRef, eventSource);
         });
     }
 
@@ -127,21 +145,5 @@ public class CaseActionsProvider extends NodeActionsProvider {
         RecordRef caseRef = RecordRef.valueOf(eventSource.toString());
         EventRef eventRef = EventRef.of(CaseServiceType.ALFRESCO, caseRef, eventNodeRef.toString());
         return caseActivityEventService.checkConditions(eventRef);
-    }
-
-    public void setCaseActivityEventService(CaseActivityEventService caseActivityEventService) {
-        this.caseActivityEventService = caseActivityEventService;
-    }
-
-    public void setAuthorityService(AuthorityService authorityService) {
-        this.authorityService = authorityService;
-    }
-
-    public void setRepositoryHelper(Repository repositoryHelper) {
-        this.repositoryHelper = repositoryHelper;
-    }
-
-    public void setNamespaceService(NamespaceService namespaceService) {
-        this.namespaceService = namespaceService;
     }
 }
