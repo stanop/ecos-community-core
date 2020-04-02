@@ -57,6 +57,7 @@ public class TitleGenerationBehaviour implements NodeServicePolicies.OnUpdatePro
     private Map<Locale, String> descriptionMLTemplate = new HashMap<>();
 
 	private int order = 80;
+
     private boolean enabled;
 
     public void init() {

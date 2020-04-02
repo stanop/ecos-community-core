@@ -53,13 +53,13 @@ public class AutoNameBehaviour implements
     VersionServicePolicies.OnCreateVersionPolicy {
 
     private static Log logger = LogFactory.getLog(AutoNameBehaviour.class);
-    
+
     private static ConcurrentHashMap<Object, Boolean> nameCache;
-    
+
     static {
         nameCache = new ConcurrentHashMap<>(100);
     }
-    
+
     // constants
     private static final String EMPTY_EXTENSION = "";
 
@@ -81,6 +81,7 @@ public class AutoNameBehaviour implements
     private boolean ignoreRenameFailure = false;
     private Boolean appendExtension = null;
     private int order = 100;
+
     private boolean enabled;
 
     public void init() {
