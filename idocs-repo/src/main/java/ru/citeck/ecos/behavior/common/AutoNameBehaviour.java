@@ -47,7 +47,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-public class AutoNameBehaviour implements 
+public class AutoNameBehaviour implements
     NodeServicePolicies.OnUpdatePropertiesPolicy,
     NodeServicePolicies.OnMoveNodePolicy,
     VersionServicePolicies.OnCreateVersionPolicy {
@@ -81,7 +81,6 @@ public class AutoNameBehaviour implements
     private boolean ignoreRenameFailure = false;
     private Boolean appendExtension = null;
     private int order = 100;
-
     private boolean enabled;
 
     public void init() {
