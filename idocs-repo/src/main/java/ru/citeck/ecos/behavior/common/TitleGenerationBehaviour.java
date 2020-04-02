@@ -57,6 +57,7 @@ public class TitleGenerationBehaviour implements NodeServicePolicies.OnUpdatePro
     private Map<Locale, String> descriptionMLTemplate = new HashMap<>();
 
 	private int order = 80;
+	private boolean enabled;
 
     public void init() {
 		OrderedBehaviour updateBehaviour = new OrderedBehaviour(
@@ -75,7 +76,9 @@ public class TitleGenerationBehaviour implements NodeServicePolicies.OnUpdatePro
     @Override
     public void onUpdateProperties(NodeRef nodeRef, Map<QName, Serializable> before,
                                    Map<QName, Serializable> after) {
-        updateName(nodeRef);
+        if (enabled) {
+            updateName(nodeRef);
+        }
     }
 
     private void updateName(final NodeRef nodeRef) {
@@ -201,6 +204,10 @@ public class TitleGenerationBehaviour implements NodeServicePolicies.OnUpdatePro
     }
     public void setOrder(int order) {
         this.order = order;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled.booleanValue();
     }
 
 
