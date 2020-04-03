@@ -903,13 +903,29 @@ YAHOO.Bubbling.fire("registerAction", {
                         successCallback: {
                             scope: this,
                             fn: function () {
-                                Alfresco.util.PopupManager.displayMessage({
-                                    text: Alfresco.util.message(props.successMessage || "message.transitionSuccess"),
-                                    spanClass: props.successMessageSpanClass || ""
-                                });
-                                _.delay(function () {
-                                    window.location.reload();
-                                }, 3000);
+								if (!!props.successMessage) {
+									Alfresco.util.PopupManager.displayPrompt({
+										text : Alfresco.util.message(props.successMessage),
+										noEscape: true,
+										buttons: [
+											{
+												text: Alfresco.util.message("button.yes"),
+												handler: function() {
+													this.destroy();
+													window.location.reload();
+												}
+											}
+										]
+									});
+								} else {
+									Alfresco.util.PopupManager.displayMessage({
+										text: Alfresco.util.message("message.transitionSuccess"),
+										spanClass: props.successMessageSpanClass || ""
+									});
+									_.delay(function () {
+										window.location.reload();
+									}, 3000);
+								}
                             }
                         },
                         failureCallback: {
