@@ -57,7 +57,7 @@ public class TitleGenerationBehaviour implements NodeServicePolicies.OnUpdatePro
     private Map<Locale, String> descriptionMLTemplate = new HashMap<>();
 
 	private int order = 80;
-	private boolean enabled;
+	private boolean enabled = true;
 
     public void init() {
 		OrderedBehaviour updateBehaviour = new OrderedBehaviour(
@@ -206,8 +206,8 @@ public class TitleGenerationBehaviour implements NodeServicePolicies.OnUpdatePro
         this.order = order;
     }
 
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled.booleanValue();
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
 

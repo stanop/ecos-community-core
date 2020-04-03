@@ -81,7 +81,7 @@ public class AutoNameBehaviour implements
     private boolean ignoreRenameFailure = false;
     private Boolean appendExtension = null;
     private int order = 100;
-    private boolean enabled;
+    private boolean enabled = true;
 
     public void init() {
         if (nameTemplate != null && nameTemplateJS != null) {
@@ -345,8 +345,8 @@ public class AutoNameBehaviour implements
         this.order = order;
     }
 
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled.booleanValue();
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
 }
