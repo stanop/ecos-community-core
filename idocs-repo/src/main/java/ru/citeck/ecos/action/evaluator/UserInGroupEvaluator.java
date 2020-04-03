@@ -35,7 +35,12 @@ import org.alfresco.service.cmr.security.PersonService;
  * Is user in group evaluator
  *
  * @author Alexey Moiseyev
+ *
+ * @deprecated <br/>
+ * see {@link ru.citeck.ecos.icase.evaluators.UserInGroupEvaluator} <br/>
+ * and see mapping at {@link ru.citeck.ecos.icase.activity.service.alfresco.CaseEvaluatorConverter}
  */
+@Deprecated
 public class UserInGroupEvaluator extends ActionConditionEvaluatorAbstractBase {
 
     /**

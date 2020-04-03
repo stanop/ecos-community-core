@@ -2,28 +2,47 @@ package ru.citeck.ecos.behavior.activity;
 
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.PolicyComponent;
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Component;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.icase.CaseStatusService;
-import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
-import ru.citeck.ecos.icase.activity.service.CaseActivityService;
+import ru.citeck.ecos.icase.activity.service.alfresco.CaseActivityPolicies;
 import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.model.StagesModel;
+import ru.citeck.ecos.records.RecordsUtils;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.service.CiteckServices;
+import ru.citeck.ecos.utils.AlfActivityUtils;
 import ru.citeck.ecos.utils.RepoUtils;
 
-import java.util.List;
+import javax.annotation.PostConstruct;
 
 /**
  * @author Pavel Simonov
  */
+@Component
+@DependsOn("idocs.dictionaryBootstrap")
 public class CaseStageBehavior implements CaseActivityPolicies.BeforeCaseActivityStartedPolicy {
 
-    private CaseActivityService caseActivityService;
+    private AlfActivityUtils alfActivityUtils;
     private CaseStatusService caseStatusService;
     private PolicyComponent policyComponent;
     private NodeService nodeService;
 
+    @Autowired
+    public CaseStageBehavior(ServiceRegistry serviceRegistry) {
+        this.alfActivityUtils = (AlfActivityUtils) serviceRegistry.getService(CiteckServices.ALF_ACTIVITY_UTILS);
+        this.caseStatusService = (CaseStatusService) serviceRegistry.getService(CiteckServices.CASE_STATUS_SERVICE);
+        this.policyComponent = serviceRegistry.getPolicyComponent();
+        this.nodeService = serviceRegistry.getNodeService();
+    }
+
+    @PostConstruct
     public void init() {
         this.policyComponent.bindClassBehaviour(
                 CaseActivityPolicies.BeforeCaseActivityStartedPolicy.QNAME,
@@ -41,35 +60,18 @@ public class CaseStageBehavior implements CaseActivityPolicies.BeforeCaseActivit
         if (!nodeService.exists(stageRef)) {
             return;
         }
+
+        RecordRef documentId = alfActivityUtils.getDocumentId(stageRef);
+        NodeRef documentNodeRef = RecordsUtils.toNodeRef(documentId);
+
         String documentStatus = (String) nodeService.getProperty(stageRef, StagesModel.PROP_DOCUMENT_STATUS);
-        if (documentStatus != null && !documentStatus.isEmpty()) {
-            String documentId = caseActivityService.getDocumentId(stageRef.toString());
-            NodeRef documentNodeRef = new NodeRef(documentId);
+        if (StringUtils.isNotEmpty(documentStatus)) {
             nodeService.setProperty(documentNodeRef, IdocsModel.PROP_DOCUMENT_STATUS, documentStatus);
         }
-        List<NodeRef> nodeRefs = RepoUtils.getTargetAssoc(stageRef, StagesModel.ASSOC_CASE_STATUS, nodeService);
-        if (nodeRefs != null && !nodeRefs.isEmpty()) {
-            NodeRef caseStatusRef = nodeRefs.get(0);
-            String documentId = caseActivityService.getDocumentId(stageRef.toString());
-            NodeRef documentNodeRef = new NodeRef(documentId);
+
+        NodeRef caseStatusRef = RepoUtils.getFirstTargetAssoc(stageRef, StagesModel.ASSOC_CASE_STATUS, nodeService);
+        if (caseStatusRef != null) {
             caseStatusService.setStatus(documentNodeRef, caseStatusRef);
         }
-    }
-
-    public void setCaseActivityService(CaseActivityService caseActivityService) {
-        this.caseActivityService = caseActivityService;
-    }
-
-    public void setPolicyComponent(PolicyComponent policyComponent) {
-        this.policyComponent = policyComponent;
-    }
-
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
-
-
-    public void setCaseStatusService(CaseStatusService caseStatusService) {
-        this.caseStatusService = caseStatusService;
     }
 }

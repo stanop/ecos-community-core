@@ -568,10 +568,6 @@
         <property name="enabled" value="${job.caseTimer.enabled}"/>
     </bean>
 
-    <bean id="caseTimerService" class="ru.citeck.ecos.icase.timer.CaseTimerService">
-        <property name="serviceRegistry" ref="ServiceRegistry" />
-    </bean>
-
     <bean id="ru.citeck.ecos.caseTimerEvaluator" class="ru.citeck.ecos.icase.timer.evaluator.Evaluator"
           init-method="init" abstract="true">
         <property name="serviceRegistry" ref="ServiceRegistry" />

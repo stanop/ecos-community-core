@@ -9,21 +9,29 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Component;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
-import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
+import ru.citeck.ecos.icase.activity.service.alfresco.CaseActivityPolicies;
+import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.icase.timer.CaseTimerService;
 import ru.citeck.ecos.model.CaseTimerModel;
 import ru.citeck.ecos.service.AlfrescoServices;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.service.EcosCoreServices;
+import ru.citeck.ecos.utils.AlfActivityUtils;
 
+import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.util.*;
 
 /**
  * @author Pavel Simonov
  */
+@Component
+@DependsOn("idocs.dictionaryBootstrap")
 public class CaseTimerBehavior implements CaseActivityPolicies.BeforeCaseActivityStartedPolicy,
                                           CaseActivityPolicies.OnCaseActivityStartedPolicy,
                                           CaseActivityPolicies.OnCaseActivityResetPolicy,
@@ -36,7 +44,18 @@ public class CaseTimerBehavior implements CaseActivityPolicies.BeforeCaseActivit
 
     private CaseTimerService caseTimerService;
     private CaseActivityService caseActivityService;
+    private AlfActivityUtils alfActivityUtils;
 
+    @Autowired
+    public CaseTimerBehavior(ServiceRegistry serviceRegistry) {
+        nodeService = serviceRegistry.getNodeService();
+        policyComponent = (PolicyComponent) serviceRegistry.getService(AlfrescoServices.POLICY_COMPONENT);
+        caseTimerService = (CaseTimerService) serviceRegistry.getService(EcosCoreServices.CASE_TIMER_SERVICE);
+        caseActivityService = (CaseActivityService) serviceRegistry.getService(CiteckServices.CASE_ACTIVITY_SERVICE);
+        alfActivityUtils = (AlfActivityUtils) serviceRegistry.getService(CiteckServices.ALF_ACTIVITY_UTILS);
+    }
+
+    @PostConstruct
     public void init() {
         this.policyComponent.bindClassBehaviour(
                 CaseActivityPolicies.BeforeCaseActivityStartedPolicy.QNAME,
@@ -104,7 +123,8 @@ public class CaseTimerBehavior implements CaseActivityPolicies.BeforeCaseActivit
             if (caseTimerService.isOccurred(timerRef)) {
                 caseTimerService.timerOccur(timerRef);
             } else if (!caseTimerService.isActive(timerRef)) {
-                caseActivityService.reset(timerRef.toString());
+                ActivityRef timerActivityRef = alfActivityUtils.composeActivityRef(timerRef);
+                caseActivityService.reset(timerActivityRef);
             }
             return null;
         });
@@ -127,12 +147,5 @@ public class CaseTimerBehavior implements CaseActivityPolicies.BeforeCaseActivit
             caseTimerService.stopTimer(timerRef);
             return null;
         });
-    }
-
-    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        nodeService = serviceRegistry.getNodeService();
-        policyComponent = (PolicyComponent) serviceRegistry.getService(AlfrescoServices.POLICY_COMPONENT);
-        caseTimerService = (CaseTimerService) serviceRegistry.getService(EcosCoreServices.CASE_TIMER_SERVICE);
-        caseActivityService = (CaseActivityService) serviceRegistry.getService(CiteckServices.CASE_ACTIVITY_SERVICE);
     }
 }

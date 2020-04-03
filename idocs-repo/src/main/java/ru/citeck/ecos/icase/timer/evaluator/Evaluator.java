@@ -4,12 +4,12 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import ru.citeck.ecos.action.ActionConditionUtils;
-import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.icase.timer.CaseTimerService;
 import ru.citeck.ecos.model.CaseTimerModel;
 import ru.citeck.ecos.model.CaseTimerModel.ExpressionType;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.service.EcosCoreServices;
+import ru.citeck.ecos.utils.AlfActivityUtils;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -26,7 +26,7 @@ public abstract class Evaluator {
 
     protected NodeService nodeService;
     protected CaseTimerService caseTimerService;
-    protected CaseActivityService caseActivityService;
+    protected AlfActivityUtils alfActivityUtils;
 
     public void init() {
         caseTimerService.registerEvaluator(getType(), this);
@@ -49,8 +49,7 @@ public abstract class Evaluator {
             model.put(variable.getKey(), variable.getValue());
         }
         if (!variables.containsKey(MODEL_DOCUMENT)) {
-
-            model.put(MODEL_DOCUMENT, caseActivityService.getDocumentId(timerRef.toString()));
+            model.put(MODEL_DOCUMENT, alfActivityUtils.getDocumentId(timerRef).toString());
         }
 
         model.put(MODEL_TIMER, timerRef);
@@ -62,6 +61,6 @@ public abstract class Evaluator {
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         nodeService = serviceRegistry.getNodeService();
         caseTimerService = (CaseTimerService) serviceRegistry.getService(EcosCoreServices.CASE_TIMER_SERVICE);
-        caseActivityService = (CaseActivityService) serviceRegistry.getService(CiteckServices.CASE_ACTIVITY_SERVICE);
+        alfActivityUtils = (AlfActivityUtils) serviceRegistry.getService(CiteckServices.ALF_ACTIVITY_UTILS);
     }
 }

@@ -23,6 +23,8 @@ public class EventModel {
     public static final QName PROP_TYPE = QName.createQName(NAMESPACE, "type");
     public static final QName PROP_ADDITIONAL_DATA_TYPE = QName.createQName(NAMESPACE, "additionalDataType");
     public static final QName PROP_CONFIRMATION_MESSAGE = QName.createQName(NAMESPACE, "confirmationMessage");
+    public static final QName PROP_SUCCESS_MESSAGE = QName.createQName(NAMESPACE, "successMessage");
+    public static final QName PROP_SUCCESS_MESSAGE_SPAN_CLASS = QName.createQName(NAMESPACE, "successMessageSpanClass");
     public static final QName PROP_COMMENT = QName.createQName(NAMESPACE, "comment");
 
     // associations

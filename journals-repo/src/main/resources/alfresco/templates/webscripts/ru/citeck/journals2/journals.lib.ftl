@@ -130,7 +130,7 @@
         "destination": <#if createVariant.assocs["journal:destination"]??>"${createVariant.assocs["journal:destination"][0].nodeRef}"<#else>null</#if>,
         "type": "<#if createVariant.properties["journal:type"]??>${shortQName(createVariant.properties["journal:type"])}</#if>",
         "formId": "${createVariant.properties["journal:formId"]!}",
-        "canCreate": ${createVariant.assocs["journal:destination"][0].hasPermission("CreateChildren")?string("true","false")},
+        "canCreate": <#if createVariant.assocs["journal:destination"]?? && createVariant.assocs["journal:destination"]?size != 0>${createVariant.assocs["journal:destination"][0].hasPermission("CreateChildren")?string("true","false")}<#else>false</#if>,
         "isDefault": ${(createVariant.properties["journal:isDefault"]!false)?string},
         "createArguments": "${(createVariant.properties["journal:createArguments"]!"")}",
         "recordRef": "${(createVariant.properties["journal:recordRef"]!"")}",

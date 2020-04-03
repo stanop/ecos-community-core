@@ -3,11 +3,7 @@ package ru.citeck.ecos.model;
 import org.alfresco.repo.action.evaluator.ComparePropertyValueEvaluator;
 import org.alfresco.service.namespace.QName;
 
-import ru.citeck.ecos.action.evaluator.CompareLifecycleProcessVariableValueEvaluator;
-import ru.citeck.ecos.action.evaluator.ScriptEvaluator;
-import ru.citeck.ecos.action.evaluator.UserHasPermissionEvaluator;
-import ru.citeck.ecos.action.evaluator.UserInDocumentEvaluator;
-import ru.citeck.ecos.action.evaluator.UserInGroupEvaluator;
+import ru.citeck.ecos.action.evaluator.*;
 
 public final class ConditionModel {
 

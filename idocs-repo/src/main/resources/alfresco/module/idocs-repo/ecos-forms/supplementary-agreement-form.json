@@ -1175,7 +1175,7 @@
                                       {
                                         "name": "set_value",
                                         "type": "value",
-                                        "value": "if (instance.options.formMode === 'CREATE') {\n  value = ' ';\n}"
+                                        "value": "if (instance.options.formMode === 'CREATE') {\n  value = '-';\n}"
                                       }
                                     ]
                                   },
@@ -1193,7 +1193,7 @@
                                       {
                                         "name": "set_value",
                                         "type": "value",
-                                        "value": "if (instance.options.formMode === 'CREATE') {\n  if (' ' == value) value = '';\n}"
+                                        "value": "if (instance.options.formMode === 'CREATE') {\n  if ('-' == value) value = '';\n}"
                                       }
                                     ]
                                   }
@@ -5567,7 +5567,7 @@
               {
                 "label": "Save",
                 "removeIndents": true,
-                "action": "event",
+                "action": "submit",
                 "state": "draft",
                 "showValidations": false,
                 "event": "",

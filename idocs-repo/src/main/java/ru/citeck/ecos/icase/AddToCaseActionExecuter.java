@@ -44,7 +44,7 @@ import ru.citeck.ecos.model.ICaseModel;
 public class AddToCaseActionExecuter extends ActionExecuterAbstractBase {
 
     private NodeService nodeService;
-    private  CaseElementService caseElementService;
+    private CaseElementService caseElementService;
     private DictionaryService dictionaryService;
 
     @Override

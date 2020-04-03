@@ -923,7 +923,7 @@ ko.bindingHandlers.dateControl = {
 
                 calendarDialog = new YAHOO.widget.Dialog(calendarDialogId, {
                     visible:    false,
-                    context:    [calendarAccessorId, "tl", "bl"],
+                    context:    [calendarAccessorId, "tl", "bl", ["beforeShow", "windowResize"], [-210,  5]],
                     draggable:  false,
                     close:      true,
                     zindex:     zindex

@@ -3,7 +3,6 @@ package ru.citeck.ecos.service;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.cmmn.service.CaseTemplateRegistry;
-import ru.citeck.ecos.event.EventService;
 import ru.citeck.ecos.icase.element.CaseElementService;
 import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
@@ -16,16 +15,11 @@ import static ru.citeck.ecos.service.CiteckServices.CITECK_NAMESPACE;
  */
 public final class EcosCoreServices {
 
-    public static final QName EVENT_SERVICE = QName.createQName(CITECK_NAMESPACE, "EcoS.EventService");
     public static final QName CASE_TIMER_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseTimerService");
     public static final QName CASE_TEMPLATE_REGISTRY = QName.createQName(CITECK_NAMESPACE, "caseTemplateRegistry");
     public static final QName CASE_ELEMENT_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseElementService");
     public static final QName CASE_STATUS_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseStatusService");
     public static final QName CASE_ACTIVITY_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseActivityService");
-
-    public static EventService getEventService(ServiceRegistry services) {
-        return (EventService) services.getService(EVENT_SERVICE);
-    }
 
     public static CaseTimerService getCaseTimerService(ServiceRegistry services) {
         return (CaseTimerService) services.getService(CASE_TIMER_SERVICE);
