@@ -18,7 +18,7 @@
  */
 require([
     'citeck/components/form/constraints'
-], function () {
+], function() {
 
     var PopupManager = Alfresco.util.PopupManager;
 
@@ -28,7 +28,7 @@ require([
     YAHOO.Bubbling.fire("registerRenderer",
         {
             propertyName: "type",
-            renderer: function (record, label) {
+            renderer: function(record, label) {
                 var type = record.node.type;
                 return "<span class='item'><em>" + label + "</em>" + Alfresco.util.message("type." + type.replace(":", "_")) + "</span>";
             }
@@ -46,7 +46,7 @@ require([
      */
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onActionUploadNewVersion",
-        fn: function (record) {
+        fn: function(record) {
             var jsNode = record.jsNode,
                 displayName = record.displayName,
                 nodeRef = jsNode.nodeRef,
@@ -79,7 +79,7 @@ require([
                     mode: this.fileUpload.MODE_SINGLE_UPDATE,
                     onFileUploadComplete:
                         {
-                            fn: function () {
+                            fn: function() {
                                 // do not use site, it can be unaccessible
                                 var site = this.options.siteId;
                                 this.options.siteId = null;
@@ -120,7 +120,7 @@ require([
 
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onActionCompareWithConsidered",
-        fn: function (record) {
+        fn: function(record) {
 
             var userName = Alfresco.constants.USERNAME;
 
@@ -160,7 +160,7 @@ require([
             url: url,
             successCallback: {
                 scope: this,
-                fn: function (response) {
+                fn: function(response) {
                     YAHOO.Bubbling.fire("metadataRefresh", {
                         "highlightFile": record.fileName
                     });
@@ -176,7 +176,7 @@ require([
                 url: Alfresco.constants.PROXY_URI + "citeck/confirm/update-considerable?nodeRef=" + record.nodeRef,
                 successCallback: {
                     scope: this,
-                    fn: function (response) {
+                    fn: function(response) {
                         YAHOO.Bubbling.fire("metadataRefresh", {
                             "highlightFile": record.fileName
                         });
@@ -188,14 +188,14 @@ require([
 
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onActionConfirm",
-        fn: function (record) {
+        fn: function(record) {
             onConfirmDecline.call(this, record, "confirm");
         }
     });
 
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onActionDecline",
-        fn: function (record) {
+        fn: function(record) {
             onConfirmDecline.call(this, record, "decline");
         }
     });
@@ -266,21 +266,21 @@ require([
 
     YAHOO.Bubbling.fire("registerRenderer", {
         propertyName: "confirmStatus",
-        renderer: function (record, label) {
+        renderer: function(record, label) {
             return renderConfirmStatus.call(this, record, Alfresco.constants.USERNAME, "confirm-status", true);
         }
     });
 
     YAHOO.Bubbling.fire("registerRenderer", {
         propertyName: "currentConfirmStatus",
-        renderer: function (record, label) {
+        renderer: function(record, label) {
             return renderCurrentConfirm.call(this, record, Alfresco.constants.USERNAME, "current-status", true);
         }
     });
 
     YAHOO.Bubbling.fire("registerRenderer", {
         propertyName: "correctStatus",
-        renderer: function (record, label) {
+        renderer: function(record, label) {
             var senderField = document.getElementsByName("prop_cwf_sender")[0];
             if (senderField && senderField.value) {
                 var sender = senderField.value;
@@ -300,7 +300,7 @@ require([
      */
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onActionBlockContractor",
-        fn: function (asset) {
+        fn: function(asset) {
 
             var displayName = asset.displayName,
                 nodeRef = new Alfresco.util.NodeRef(asset.nodeRef);
@@ -350,7 +350,7 @@ require([
 
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onVersionDocumentViewDetails",
-        fn: function (record) {
+        fn: function(record) {
             var considerableVersions = getVersions(record, "wfcf:considerableVersions");
             var confirmStatus = considerableVersions[Alfresco.constants.USERNAME];
             var considerableVersionRef = confirmStatus && confirmStatus.versionRef || null;
@@ -362,7 +362,7 @@ require([
 
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onDocumentConsiderableDownload",
-        fn: function (record) {
+        fn: function(record) {
             var considerableVersions = getVersions(record, "wfcf:considerableVersions");
             var confirmStatus = considerableVersions[Alfresco.constants.USERNAME];
             var considerableVersionRef = confirmStatus && confirmStatus.versionRef || null;
@@ -375,12 +375,12 @@ require([
 
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onUpdateVersion",
-        fn: function (record) {
+        fn: function(record) {
             Alfresco.util.Ajax.jsonGet({
                 url: Alfresco.constants.PROXY_URI + "citeck/confirm/update-considerable?nodeRef=" + record.nodeRef,
                 successCallback: {
                     scope: this,
-                    fn: function (response) {
+                    fn: function(response) {
                         YAHOO.Bubbling.fire("metadataRefresh", {
                             "highlightFile": record.fileName
                         });
@@ -391,12 +391,12 @@ require([
     });
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onActionRegister",
-        fn: function (record) {
+        fn: function(record) {
             Alfresco.util.Ajax.jsonPost({
                 url: Alfresco.constants.PROXY_URI + "citeck/document-registration/register?nodeRef=" + record.nodeRef,
                 successCallback: {
                     scope: this,
-                    fn: function (response) {
+                    fn: function(response) {
                         document.location.reload(true);
                     }
                 }
@@ -406,14 +406,14 @@ require([
 
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onActionCopyInPlace",
-        fn: function (record) {
+        fn: function(record) {
             var destination = record.parent.nodeRef;
 
             Alfresco.util.Ajax.jsonPost({
                 url: Alfresco.constants.PROXY_URI + "citeck/node/copy?source=" + record.nodeRef + "&destination=" + destination,
                 successCallback: {
                     scope: this,
-                    fn: function (response) {
+                    fn: function(response) {
                         var resultNodeRef = response.json.copy;
                         var copyLocation = Alfresco.util.siteURL("card-details?nodeRef=" + resultNodeRef);
                         document.location = copyLocation;
@@ -430,7 +430,7 @@ require([
                 + "&caseNode=" + caseNodeRef
                 + "&elementType=" + caseElementConfigName,
             successCallback: {
-                fn: function (response) {
+                fn: function(response) {
                     YAHOO.Bubbling.fire("metadataRefresh");
                 },
                 scope: this
@@ -442,7 +442,7 @@ require([
 
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onActionRemoveCaseItem",
-        fn: function (record) {
+        fn: function(record) {
             if (record.actionRendererAdditionalObject) {
                 var scope = this,
                     nodeRef = record.nodeRef,
@@ -475,7 +475,7 @@ require([
 
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onActionCaseSaveAsTemplate",
-        fn: function (record) {
+        fn: function(record) {
             var self = this;
             return PopupManager.displayPrompt({
                 title: this.msg("message.confirm.title"),
@@ -483,18 +483,18 @@ require([
                 buttons: [
                     {
                         text: self.msg("button.yes"),
-                        handler: function () {
+                        handler: function() {
                             Alfresco.util.Ajax.jsonPost({
                                 url: Alfresco.constants.PROXY_URI + "citeck/case/template"
                                     + "?nodeRef=" + record.nodeRef,
                                 successCallback: {
-                                    fn: function (response) {
+                                    fn: function(response) {
                                         window.location = Alfresco.util.siteURL("card-details?nodeRef=" + response.json.template);
                                     }
                                 },
                                 failureCallback: {
                                     scope: this,
-                                    fn: function (response) {
+                                    fn: function(response) {
                                         var msg = response.json.message.substr(0, response.json.message.indexOf('('));
                                         Alfresco.util.PopupManager.displayPrompt({
                                             text: msg
@@ -507,7 +507,7 @@ require([
                     },
                     {
                         text: self.msg("button.no"),
-                        handler: function () {
+                        handler: function() {
                             this.destroy();
                         },
                         isDefault: true
@@ -523,7 +523,7 @@ require([
                 "&targetRef=" + targetRef + "&assocTypes=" + assocTypes,
             method: Alfresco.util.Ajax.DELETE,
             successCallback: {
-                fn: function (response) {
+                fn: function(response) {
                     YAHOO.Bubbling.fire("metadataRefresh");
                 },
                 scope: this
@@ -535,7 +535,7 @@ require([
 
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onDeleteAssociations",
-        fn: function (record) {
+        fn: function(record) {
             if (record.actionRendererAdditionalObject) {
                 var scope = this,
                     targetRef = record.nodeRef,
@@ -568,10 +568,10 @@ require([
 
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onDocumentFillTemplateDialog",
-        fn: function (record) {
+        fn: function(record) {
             var documentRef = record.nodeRef;
 
-            Citeck.forms.dialog(documentRef, "template", function () {
+            Citeck.forms.dialog(documentRef, "template", function() {
                 window.location.reload();
             }, {
                 forceOldDialog: true
@@ -582,7 +582,7 @@ require([
 
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onShowTaskForm",
-        fn: function (record, owner) {
+        fn: function(record, owner) {
             var jsNode = record.jsNode,
                 params = this.getAction(record, owner).params,
                 formMode = params.formMode || "view";
@@ -591,7 +591,7 @@ require([
                 url: Alfresco.constants.PROXY_URI + "citeck/invariants/view-check?taskId=" + jsNode.properties["cm:name"],
                 successCallback: {
                     scope: this,
-                    fn: function (response) {
+                    fn: function(response) {
                         var redirection = "/share/page/";
 
                         if (response.serverResponse.status == 200) {
@@ -625,7 +625,7 @@ require([
     var CALENDAR_VIEW = 'day';
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onActionOpenCalendarEvent",
-        fn: function (record) {
+        fn: function(record) {
             var node = record.node,
                 location = record.location;
             if (node && node.properties && node.properties['ia:fromDate'] && location) {
@@ -640,8 +640,8 @@ require([
     });
 
     Citeck.format = Citeck.format || {};
-    Citeck.format.openCalendar = function () {
-        return function (elCell, oRecord, oColumn, oData) {
+    Citeck.format.openCalendar = function() {
+        return function(elCell, oRecord, oColumn, oData) {
             if (!oData) {
                 elCell.innerHTML = '';
                 return;
@@ -656,7 +656,7 @@ require([
 
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onActionUploadSignedVersion",
-        fn: function (record) {
+        fn: function(record) {
             var jsNode = record.jsNode,
                 nodeRef = jsNode.nodeRef;
             var fui = Alfresco.getFileUploadInstance();
@@ -671,7 +671,7 @@ require([
                 flashUploadURL: uploadUrl,
                 onFileUploadComplete: {
                     scope: this,
-                    fn: function (response) {
+                    fn: function(response) {
                         var files = response.successful;
                         if (typeof files !== 'undefined' && files.length > 0) {
                             YAHOO.Bubbling.fire("metadataRefresh");
@@ -688,7 +688,7 @@ require([
 
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onShowSignedVersion",
-        fn: function (record) {
+        fn: function(record) {
             var jsNode = record.jsNode,
                 nodeRef = jsNode.nodeRef;
 
@@ -696,7 +696,7 @@ require([
                 url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + nodeRef.nodeRef,
                 successCallback: {
                     scope: this,
-                    fn: function (response) {
+                    fn: function(response) {
                         var redirection = '/share/page/card-details?nodeRef=' + response.json.childAssocs["idocs:signedVersion"][0];
                         window.location = redirection;
                     }
@@ -708,14 +708,14 @@ require([
 
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onActionDialogForm",
-        fn: function (record, owner) {
+        fn: function(record, owner) {
             var scope = this,
                 nodeRef = record.nodeRef,
                 jsNode = record.jsNode,
                 params = this.getAction(record, owner).params,
                 formId = (params && params.formId) ? params.formId : '';
 
-            var successCallback = function (response) {
+            var successCallback = function(response) {
                 // Reload the node's metadata
                 var webscriptPath = "components/documentlibrary/data";
                 if (Alfresco.util.isValueSet(this.options.siteId)) {
@@ -725,7 +725,7 @@ require([
                     url: Alfresco.util.combinePaths(Alfresco.constants.URL_SERVICECONTEXT, webscriptPath, "/node/", jsNode.nodeRef.uri) + "?view=" + this.actionsView,
                     successCallback:
                         {
-                            fn: function (response) {
+                            fn: function(response) {
                                 var record = response.json.item;
                                 record.jsNode = new Alfresco.util.Node(response.json.item.node);
 
@@ -758,7 +758,7 @@ require([
                         },
                     failureCallback:
                         {
-                            fn: function (response) {
+                            fn: function(response) {
                                 Alfresco.util.PopupManager.displayMessage(
                                     {
                                         text: this.msg("message.details.failure")
@@ -780,7 +780,7 @@ require([
 
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onActionCaseStartTask",
-        fn: function (record) {
+        fn: function(record) {
             var scope = this,
                 nodeRef = record.nodeRef;
             PopupManager.displayPrompt(
@@ -796,7 +796,7 @@ require([
                                     url: Alfresco.constants.PROXY_URI + "citeck/case-activity/start-activity?nodeRef=" + record.nodeRef,
                                     successCallback: {
                                         scope: this,
-                                        fn: function (response) {
+                                        fn: function(response) {
                                             YAHOO.Bubbling.fire("metadataRefresh");
                                         }
                                     }
@@ -819,7 +819,7 @@ require([
 
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onEditNodeMetadata",
-        fn: function (asset, element) {
+        fn: function(asset, element) {
 
             var nodeRef = asset.node.nodeRef;
             var oldFormUrl = "/share/page/node-edit?nodeRef=" + nodeRef;
@@ -827,10 +827,10 @@ require([
             try {
                 Citeck.forms.editRecord({
                     recordRef: nodeRef,
-                    fallback: function () {
+                    fallback: function() {
                         window.location = oldFormUrl;
                     },
-                    onSubmit: function () {
+                    onSubmit: function() {
                         YAHOO.Bubbling.fire("metadataRefresh");
                     }
                 });
@@ -846,7 +846,7 @@ require([
      * */
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onServerAction",
-        fn: function (asset, element) {
+        fn: function(asset, element) {
             var actionId = element.className;
             var props = asset.actionParams[actionId].actionProperties;
             var actionType = props.actionType;
@@ -854,23 +854,23 @@ require([
             if (props.title == "Register" || props.title == "Зарегистрировать") {
                 Citeck.forms.dialog(asset.node.nodeRef, "register", {
                     scope: this,
-                    fn: function () {
+                    fn: function() {
                         Alfresco.util.Ajax.jsonPost({
                             url: Alfresco.constants.PROXY_URI + "api/lifecycle/do-transition?nodeRef=" + asset.nodeRef,
                             successCallback: {
                                 scope: this,
-                                fn: function () {
+                                fn: function() {
                                     PopupManager.displayMessage({
                                         text: this.msg("message.transitionSuccess")
                                     });
-                                    _.delay(function () {
+                                    _.delay(function() {
                                         window.location.reload();
                                     }, 3000);
                                 }
                             },
                             failureCallback: {
                                 scope: this,
-                                fn: function () {
+                                fn: function() {
                                     PopupManager.displayMessage({
                                         text: this.msg("message.transitionError")
                                     });
@@ -880,13 +880,13 @@ require([
                     }
                 }, {title: props.title});
             } else if (actionType === "REQUEST") {
-                var makeRequest = function () {
+                var makeRequest = function() {
                     Alfresco.util.Ajax.request({
                         url: Alfresco.constants[props.context] + props.url,
                         method: props.requestMethod,
                         successCallback: {
                             scope: this,
-                            fn: function () {
+                            fn: function() {
                                 if (!!props.successMessage) {
                                     Alfresco.util.PopupManager.displayPrompt({
                                         text: Alfresco.util.message(props.successMessage),
@@ -894,7 +894,7 @@ require([
                                         buttons: [
                                             {
                                                 text: Alfresco.util.message("button.yes"),
-                                                handler: function () {
+                                                handler: function() {
                                                     this.destroy();
                                                     window.location.reload();
                                                 }
@@ -906,7 +906,7 @@ require([
                                         text: Alfresco.util.message("message.transitionSuccess"),
                                         spanClass: props.successMessageSpanClass || ""
                                     });
-                                    _.delay(function () {
+                                    _.delay(function() {
                                         window.location.reload();
                                     }, 3000);
                                 }
@@ -914,7 +914,7 @@ require([
                         },
                         failureCallback: {
                             scope: this,
-                            fn: function (response) {
+                            fn: function(response) {
                                 var json = Alfresco.util.parseJSON(response.serverResponse.responseText);
                                 Alfresco.util.PopupManager.displayMessage({
                                     text: json.message
@@ -951,7 +951,7 @@ require([
             } else if (actionType === "REDIRECT") {
                 window.open(Alfresco.constants[props.context] + props.url, "_self");
             } else if (actionType === "CREATE_NODE") {
-                Citeck.forms.dialog(props.nodeType, props.formId, function () {
+                Citeck.forms.dialog(props.nodeType, props.formId, function() {
                     YAHOO.Bubbling.fire("metadataRefresh");
                 }, {
                     "destination": props.destination,
@@ -964,23 +964,23 @@ require([
 
     YAHOO.Bubbling.fire("registerAction", {
         actionName: "onUserActionEvent",
-        fn: function (record) {
+        fn: function(record) {
             Alfresco.util.Ajax.jsonPost({
                 url: Alfresco.constants.PROXY_URI + "/citeck/event/fire-events?nodeRef=" + record.nodeRef + "&eventType=user-action",
                 successCallback: {
                     scope: this,
-                    fn: function () {
+                    fn: function() {
                         Alfresco.util.PopupManager.displayMessage({
                             text: this.msg("message.transitionSuccess")
                         });
-                        _.delay(function () {
+                        _.delay(function() {
                             window.location.reload();
                         }, 3000);
                     }
                 },
                 failureCallback: {
                     scope: this,
-                    fn: function (response) {
+                    fn: function(response) {
                         var json = Alfresco.util.parseJSON(response.serverResponse.responseText);
                         Alfresco.util.PopupManager.displayMessage({
                             text: json.message
@@ -995,28 +995,28 @@ require([
 
         actionName: "onUserActionEventReset",
 
-        fn: function (record) {
+        fn: function(record) {
             Alfresco.util.Ajax.jsonPost({
                 url: Alfresco.constants.PROXY_URI + "/citeck/case/activity/reset?nodeRef=" + record.nodeRef,
                 successCallback: {
                     scope: this,
-                    fn: function () {
+                    fn: function() {
                         Alfresco.util.Ajax.jsonPost({
                             url: Alfresco.constants.PROXY_URI + "/citeck/event/fire-events?nodeRef=" + record.nodeRef + "&eventType=user-action",
                             successCallback: {
                                 scope: this,
-                                fn: function () {
+                                fn: function() {
                                     Alfresco.util.PopupManager.displayMessage({
                                         text: this.msg("message.transitionSuccess")
                                     });
-                                    _.delay(function () {
+                                    _.delay(function() {
                                         window.location.reload();
                                     }, 3000);
                                 }
                             },
                             failureCallback: {
                                 scope: this,
-                                fn: function (response) {
+                                fn: function(response) {
                                     var json = Alfresco.util.parseJSON(response.serverResponse.responseText);
                                     Alfresco.util.PopupManager.displayMessage({
                                         text: json.message
@@ -1028,7 +1028,7 @@ require([
                 },
                 failureCallback: {
                     scope: this,
-                    fn: function (response) {
+                    fn: function(response) {
                         var json = Alfresco.util.parseJSON(response.serverResponse.responseText);
                         Alfresco.util.PopupManager.displayMessage({
                             text: json.message
@@ -1043,7 +1043,7 @@ require([
 
         actionName: "importCaseTemplate",
 
-        fn: function (record) {
+        fn: function(record) {
 
             var fileUpload = Alfresco.getFileUploadInstance();
             var uploadUrl = "/case/import";
@@ -1057,7 +1057,7 @@ require([
                 filter: [{description: "Case template", extensions: "*.xml"}],
                 onFileUploadComplete: {
                     scope: this,
-                    fn: function (response) {
+                    fn: function(response) {
                         var files = response.successful;
                     }
                 }
