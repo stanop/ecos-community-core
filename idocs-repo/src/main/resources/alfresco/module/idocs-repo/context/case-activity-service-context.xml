@@ -8,14 +8,23 @@
     <bean id="caseActivityServiceJS" name="CaseActivityServiceJS" class="ru.citeck.ecos.icase.activity.CaseActivityServiceJS"
           parent="baseJavaScriptExtension">
         <property name="caseActivityService" ref="caseActivityService"/>
+        <property name="alfActivityUtils" ref="alfActivityUtils"/>
         <property name="createVariantsProvider" ref="ru.citeck.ecos.icase.activity.create.menu.MenuCreateVariantsProvider"/>
         <property name="extensionName" value="caseActivityService"/>
         <property name="serviceRegistry" ref="ServiceRegistry"/>
         <property name="remoteRestoreCaseModelService" ref="remoteRestoreCaseModelService"/>
     </bean>
 
+    <bean id="caseActivityEventServiceJS" class="ru.citeck.ecos.icase.activity.CaseActivityEventServiceJS"
+          parent="baseJavaScriptExtension">
+        <property name="extensionName" value="caseActivityEventService"/>
+        <property name="alfActivityUtils" ref="alfActivityUtils"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="caseActivityEventService" ref="caseActivityEventService"/>
+    </bean>
+
     <bean id="caseTaskBehavior" name="CaseTaskBehavior" class="ru.citeck.ecos.behavior.activity.CaseTaskBehavior" init-method="init">
-        <property name="caseActivityService" ref="caseActivityService"/>
+        <property name="alfActivityUtils" ref="alfActivityUtils"/>
         <property name="dictionaryService" ref="DictionaryService"/>
         <property name="namespaceService" ref="namespaceService"/>
         <property name="policyComponent" ref="policyComponent"/>
@@ -140,6 +149,7 @@
         <property name="ignoredTypes">
             <set>
                 <value>{http://www.citeck.ru/model/icaseTask/1.0}defaultTask</value>
+                <value>{http://www.citeck.ru/model/action/1.0}mail</value>
             </set>
         </property>
     </bean>

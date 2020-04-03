@@ -4,20 +4,30 @@ import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.PolicyComponent;
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.extensions.surf.util.I18NUtil;
-import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
-import ru.citeck.ecos.icase.activity.service.CaseActivityService;
+import org.springframework.stereotype.Component;
+import ru.citeck.ecos.icase.activity.service.alfresco.CaseActivityPolicies;
 import ru.citeck.ecos.icase.completeness.CaseCompletenessServiceImpl;
 import ru.citeck.ecos.model.StagesModel;
+import ru.citeck.ecos.records.RecordsUtils;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.service.CiteckServices;
+import ru.citeck.ecos.utils.AlfActivityUtils;
 import ru.citeck.ecos.utils.RepoUtils;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
+@Component
+@DependsOn("idocs.dictionaryBootstrap")
 public class CaseCompletenessStageBehavior implements CaseActivityPolicies.BeforeCaseActivityStartedPolicy,
                                                       CaseActivityPolicies.BeforeCaseActivityStoppedPolicy {
 
@@ -27,9 +37,18 @@ public class CaseCompletenessStageBehavior implements CaseActivityPolicies.Befor
 
     private NodeService nodeService;
     private PolicyComponent policyComponent;
-    private CaseActivityService caseActivityService;
+    private AlfActivityUtils alfActivityUtils;
     private CaseCompletenessServiceImpl caseCompletenessService;
 
+    @Autowired
+    public CaseCompletenessStageBehavior(ServiceRegistry serviceRegistry) {
+        this.nodeService = serviceRegistry.getNodeService();
+        this.policyComponent = serviceRegistry.getPolicyComponent();
+        this.alfActivityUtils = (AlfActivityUtils) serviceRegistry.getService(CiteckServices.ALF_ACTIVITY_UTILS);
+        this.caseCompletenessService = (CaseCompletenessServiceImpl) serviceRegistry.getService(CiteckServices.CASE_COMPLETENESS_SERVICE);
+    }
+
+    @PostConstruct
     public void init() {
         policyComponent.bindClassBehaviour(
                 CaseActivityPolicies.BeforeCaseActivityStartedPolicy.QNAME,
@@ -66,11 +85,11 @@ public class CaseCompletenessStageBehavior implements CaseActivityPolicies.Befor
     }
 
     private void checkCompletenessLevel(NodeRef stageRef, QName assocTypeQName) {
-        String documentId = caseActivityService.getDocumentId(stageRef.toString());
-        NodeRef caseRef = new NodeRef(documentId);
-        if (caseRef == null) {
+        RecordRef documentId = alfActivityUtils.getDocumentId(stageRef);
+        if (documentId == null) {
             return;
         }
+        NodeRef caseRef = RecordsUtils.toNodeRef(documentId);
         List<NodeRef> completenessLevels = RepoUtils.getTargetAssoc(stageRef, assocTypeQName, nodeService);
 
         StringBuilder incompleteLevels = null;
@@ -101,9 +120,5 @@ public class CaseCompletenessStageBehavior implements CaseActivityPolicies.Befor
 
     public void setCaseCompletenessService(CaseCompletenessServiceImpl caseCompletenessService) {
         this.caseCompletenessService = caseCompletenessService;
-    }
-
-    public void setCaseActivityService(CaseActivityService caseActivityService) {
-        this.caseActivityService = caseActivityService;
     }
 }

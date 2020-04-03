@@ -3,31 +3,48 @@ package ru.citeck.ecos.behavior.event.trigger;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
-import ru.citeck.ecos.behavior.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import ru.citeck.ecos.event.EventService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Component;
+import ru.citeck.ecos.behavior.OrderedBehaviour;
+import ru.citeck.ecos.icase.activity.dto.ActivityRef;
+import ru.citeck.ecos.icase.activity.service.ActivityCommonService;
+import ru.citeck.ecos.icase.activity.service.CaseActivityEventService;
 import ru.citeck.ecos.model.ICaseEventModel;
 import ru.citeck.ecos.model.ICaseModel;
+import ru.citeck.ecos.service.CiteckServices;
 
+import javax.annotation.PostConstruct;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Map;
 
 /**
  * @author Pavel Simonov
  */
+@Component
+@DependsOn("idocs.dictionaryBootstrap")
 public class CaseEventTrigger implements NodeServicePolicies.OnUpdatePropertiesPolicy {
 
-    private static final Log logger = LogFactory.getLog(CaseEventTrigger.class);
-
-    private int order = 60;
-
     private PolicyComponent policyComponent;
-    private EventService eventService;
+    private ActivityCommonService activityCommonService;
+    private CaseActivityEventService caseActivityEventService;
 
+    private int order = 200;
+
+    @Autowired
+    public CaseEventTrigger(ServiceRegistry serviceRegistry) {
+        this.policyComponent = serviceRegistry.getPolicyComponent();
+        this.activityCommonService = (ActivityCommonService) serviceRegistry
+            .getService(CiteckServices.ACTIVITY_COMMON_SERVICE);
+        this.caseActivityEventService = (CaseActivityEventService) serviceRegistry
+            .getService(CiteckServices.CASE_ACTIVITY_EVENT_SERVICE);
+    }
+
+    @PostConstruct
     public void init() {
         OrderedBehaviour behaviour;
         QName type = ICaseModel.ASPECT_CASE;
@@ -38,19 +55,8 @@ public class CaseEventTrigger implements NodeServicePolicies.OnUpdatePropertiesP
     }
 
     @Override
-    public void onUpdateProperties(NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
-        eventService.fireEvent(nodeRef, ICaseEventModel.CONSTR_CASE_PROPERTIES_CHANGED);
-    }
-
-    public void setOrder(int order) {
-        this.order = order;
-    }
-
-    public void setPolicyComponent(PolicyComponent policyComponent) {
-        this.policyComponent = policyComponent;
-    }
-
-    public void setEventService(EventService eventService) {
-        this.eventService = eventService;
+    public void onUpdateProperties(NodeRef caseRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
+        ActivityRef rootActivityRef = activityCommonService.composeRootActivityRef(caseRef);
+        caseActivityEventService.fireEvent(rootActivityRef, ICaseEventModel.CONSTR_CASE_PROPERTIES_CHANGED);
     }
 }

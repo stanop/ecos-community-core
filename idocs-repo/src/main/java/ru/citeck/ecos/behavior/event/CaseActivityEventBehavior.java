@@ -3,37 +3,57 @@ package ru.citeck.ecos.behavior.event;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.PolicyComponent;
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.behavior.event.trigger.UserActionEventTrigger;
-import ru.citeck.ecos.event.EventPolicies;
-import ru.citeck.ecos.icase.activity.dto.CaseActivity;
-import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
+import ru.citeck.ecos.icase.activity.service.alfresco.EventPolicies;
+import ru.citeck.ecos.icase.activity.service.alfresco.CaseActivityPolicies;
+import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.EventModel;
 import ru.citeck.ecos.model.ICaseEventModel;
+import ru.citeck.ecos.service.CiteckServices;
+import ru.citeck.ecos.utils.AlfActivityUtils;
 import ru.citeck.ecos.utils.RepoUtils;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 
 /**
  * @author Pavel Simonov
  */
+@Component
+@DependsOn("idocs.dictionaryBootstrap")
 public class CaseActivityEventBehavior implements EventPolicies.OnEventPolicy,
                                                   CaseActivityPolicies.OnCaseActivityResetPolicy {
 
     private CaseActivityService caseActivityService;
+    private AlfActivityUtils alfActivityUtils;
     private DictionaryService dictionaryService;
     private PolicyComponent policyComponent;
     private NodeService nodeService;
 
+    @Autowired
+    public CaseActivityEventBehavior(ServiceRegistry serviceRegistry) {
+        this.caseActivityService = (CaseActivityService) serviceRegistry.getService(CiteckServices.CASE_ACTIVITY_SERVICE);
+        this.alfActivityUtils = (AlfActivityUtils) serviceRegistry.getService(CiteckServices.ALF_ACTIVITY_UTILS);
+        this.dictionaryService = serviceRegistry.getDictionaryService();
+        this.policyComponent = serviceRegistry.getPolicyComponent();
+        this.nodeService = serviceRegistry.getNodeService();
+    }
+
+    @PostConstruct
     public void init() {
         policyComponent.bindClassBehaviour(EventPolicies.OnEventPolicy.QNAME,
                 ContentModel.TYPE_CMOBJECT,
@@ -51,18 +71,18 @@ public class CaseActivityEventBehavior implements EventPolicies.OnEventPolicy,
         ChildAssociationRef parentAssocRef = nodeService.getPrimaryParent(eventRef);
         QName assocType = parentAssocRef.getTypeQName();
 
-        NodeRef activityRef = parentAssocRef.getParentRef();
+        NodeRef activityNodeRef = parentAssocRef.getParentRef();
+        ActivityRef activityRef = alfActivityUtils.composeActivityRef(activityNodeRef);
 
-        CaseActivity activity = caseActivityService.getActivity(activityRef.toString());
         if (assocType.equals(ICaseEventModel.ASSOC_ACTIVITY_START_EVENTS)) {
-            caseActivityService.startActivity(activity);
+            caseActivityService.startActivity(activityRef);
         } else if (assocType.equals(ICaseEventModel.ASSOC_ACTIVITY_END_EVENTS)) {
-            caseActivityService.stopActivity(activity);
+            caseActivityService.stopActivity(activityRef);
         } else if (assocType.equals(ICaseEventModel.ASSOC_ACTIVITY_RESET_EVENTS)) {
-            caseActivityService.reset(activity.getId());
+            caseActivityService.reset(activityRef);
         } else if (assocType.equals(ICaseEventModel.ASSOC_ACTIVITY_RESTART_EVENTS)) {
-            caseActivityService.reset(activity.getId());
-            caseActivityService.startActivity(activity);
+            caseActivityService.reset(activityRef);
+            caseActivityService.startActivity(activityRef);
         }
     }
 
@@ -89,19 +109,28 @@ public class CaseActivityEventBehavior implements EventPolicies.OnEventPolicy,
         }
     }
 
-    public void setPolicyComponent(PolicyComponent policyComponent) {
-        this.policyComponent = policyComponent;
-    }
-
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
-
+    @Autowired
     public void setCaseActivityService(CaseActivityService caseActivityService) {
         this.caseActivityService = caseActivityService;
     }
 
+    @Autowired
+    public void setAlfActivityUtils(AlfActivityUtils alfActivityUtils) {
+        this.alfActivityUtils = alfActivityUtils;
+    }
+
+    @Autowired
     public void setDictionaryService(DictionaryService dictionaryService) {
         this.dictionaryService = dictionaryService;
+    }
+
+    @Autowired
+    public void setPolicyComponent(PolicyComponent policyComponent) {
+        this.policyComponent = policyComponent;
+    }
+
+    @Autowired
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
     }
 }

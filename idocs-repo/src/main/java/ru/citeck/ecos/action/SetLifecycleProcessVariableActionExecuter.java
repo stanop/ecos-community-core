@@ -36,7 +36,10 @@ import ru.citeck.ecos.lifecycle.LifeCycleServiceImpl;
  * Set Lifecycle Process Variable Action Executer
  *
  * @author Alexey Moiseyev
+ * @deprecated use {@link ru.citeck.ecos.icase.commands.executors.SetProcessVariableCommandExecutor}
  */
+//TODO: remove if unused
+@Deprecated
 public class SetLifecycleProcessVariableActionExecuter extends ActionExecuterAbstractBase {
 
     /**

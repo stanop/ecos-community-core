@@ -18,51 +18,74 @@
  */
 package ru.citeck.ecos.behavior;
 
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.admin.RepositoryState;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 import ru.citeck.ecos.cmmn.service.CaseXmlService;
-import ru.citeck.ecos.event.EventService;
 import ru.citeck.ecos.icase.CaseStatusService;
+import ru.citeck.ecos.icase.activity.dto.ActivityRef;
+import ru.citeck.ecos.icase.activity.dto.CaseServiceType;
+import ru.citeck.ecos.icase.activity.service.CaseActivityEventService;
 import ru.citeck.ecos.model.ICaseEventModel;
 import ru.citeck.ecos.model.ICaseModel;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.service.AlfrescoServices;
+import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.state.ItemsUpdateState;
 import ru.citeck.ecos.utils.TransactionUtils;
 
+import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
+@Slf4j
+@Component
+@DependsOn("idocs.dictionaryBootstrap")
 public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnAddAspectPolicy {
 
     private static final String KEY_FILLED_CASE_NODES = "filled-case-nodes";
     private static final String STATUS_PROCESS_START_ERROR = "ecos-process-start-error";
 
-    private static final Log logger = LogFactory.getLog(CaseTemplateBehavior.class);
-
-    protected PolicyComponent policyComponent;
-    protected NodeService nodeService;
-    protected NamespaceService namespaceService;
+    private PolicyComponent policyComponent;
+    private NodeService nodeService;
     private CaseXmlService caseXmlService;
 
     private RepositoryState repositoryState;
-    private EventService eventService;
     private ItemsUpdateState itemsUpdateState;
     private CaseStatusService caseStatusService;
+    private CaseActivityEventService caseActivityEventService;
 
-    private int order = 40;
+    private int order;
 
+    @Autowired
+    public CaseTemplateBehavior(ServiceRegistry serviceRegistry, @Value("${behavior.order.case.template:40}") int order) {
+        this.policyComponent = serviceRegistry.getPolicyComponent();
+        this.nodeService = serviceRegistry.getNodeService();
+        this.caseXmlService = (CaseXmlService) serviceRegistry.getService(CiteckServices.CASE_XML_SERVICE);
+        this.repositoryState = (RepositoryState) serviceRegistry.getService(AlfrescoServices.REPOSITORY_STATE);
+        this.itemsUpdateState = (ItemsUpdateState) serviceRegistry.getService(CiteckServices.ITEMS_UPDATE_STATE);
+        this.caseStatusService = (CaseStatusService) serviceRegistry.getService(CiteckServices.CASE_STATUS_SERVICE);
+        this.caseActivityEventService = (CaseActivityEventService) serviceRegistry
+            .getService(CiteckServices.CASE_ACTIVITY_EVENT_SERVICE);
+        this.order = order;
+    }
+
+    @PostConstruct
     public void init() {
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, ICaseModel.ASPECT_CASE,
                 new OrderedBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT, order));
@@ -93,8 +116,8 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
             return;
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Applying template to node. nodeRef=" + caseNode);
+        if (log.isDebugEnabled()) {
+            log.debug("Applying template to node. nodeRef=" + caseNode);
         }
 
         Consumer<Exception> errorHandler = e -> {
@@ -121,10 +144,13 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
                 if (!stopWatch.isRunning()) {
                     stopWatch.start("fire '" + ICaseEventModel.CONSTR_CASE_CREATED + "' event. caseRef: " + caseNode);
                 }
-                eventService.fireEvent(caseNode, ICaseEventModel.CONSTR_CASE_CREATED);
+
+                RecordRef caseRef = RecordRef.valueOf(caseNode.toString());
+                ActivityRef activityRef = ActivityRef.of(CaseServiceType.ALFRESCO, caseRef, ActivityRef.ROOT_ID);
+                caseActivityEventService.fireEvent(activityRef, ICaseEventModel.CONSTR_CASE_CREATED);
                 stopWatch.stop();
 
-                logger.info(stopWatch.prettyPrint());
+                log.info(stopWatch.prettyPrint());
 
             }, errorHandler);
 
@@ -144,41 +170,5 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
             AlfrescoTransactionSupport.bindResource(KEY_FILLED_CASE_NODES, filledCaseNodes = new HashSet<>());
         }
         return filledCaseNodes;
-    }
-
-    public void setPolicyComponent(PolicyComponent policyComponent) {
-        this.policyComponent = policyComponent;
-    }
-
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
-
-    public void setNamespaceService(NamespaceService namespaceService) {
-        this.namespaceService = namespaceService;
-    }
-
-    public void setCaseXmlService(CaseXmlService caseXmlService) {
-        this.caseXmlService = caseXmlService;
-    }
-
-    public void setOrder(int order) {
-        this.order = order;
-    }
-
-    public void setRepositoryState(RepositoryState repositoryState) {
-        this.repositoryState = repositoryState;
-    }
-
-    public void setEventService(EventService eventService) {
-        this.eventService = eventService;
-    }
-
-    public void setItemsUpdateState(ItemsUpdateState itemsUpdateState) {
-        this.itemsUpdateState = itemsUpdateState;
-    }
-
-    public void setCaseStatusService(CaseStatusService caseStatusService) {
-        this.caseStatusService = caseStatusService;
     }
 }

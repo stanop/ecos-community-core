@@ -98,40 +98,40 @@ public class CasePlanModelExport {
         fixSentriesIds(casePlanModel);
     }
 
-    private void exportActivityNode(Stage parentStage, List<CaseActivity> activitiesRef) {
+    private void exportActivityNode(Stage parentStage, List<CaseActivity> activities) {
         if (logger.isDebugEnabled()) {
             logger.debug("Exporting parent activities");
         }
-        for (CaseActivity activity : activitiesRef) {
-            NodeRef activityRef = new NodeRef(activity.getId());
-            if (isStage(activityRef)) {
-                Stage stage = toStage(activityRef);
+        for (CaseActivity activity : activities) {
+            NodeRef activityNodeRef = alfActivityUtils.getActivityNodeRef(activity.getActivityRef());;
+            if (isStage(activityNodeRef)) {
+                Stage stage = toStage(activityNodeRef);
                 TPlanItem planItem = getPlanItem(stage);
                 parentStage.getPlanItem().add(planItem);
-                exportActivityNode(stage, caseActivityService.getActivities(activityRef.toString()));
+                exportActivityNode(stage, caseActivityService.getActivities(activity.getActivityRef()));
                 parentStage.getPlanItemDefinition().add(caseExportService.getObjectFactory().createStage(stage));
-                parentStage.getSentry().addAll(exportSentries(activityRef, planItem, parentStage));
-                processCompletnessLevels(activityRef, stage);
-            } else if (isAction(activityRef)) {
-                TTask task = getTask(activityRef);
+                parentStage.getSentry().addAll(exportSentries(activityNodeRef, planItem, parentStage));
+                processCompletnessLevels(activityNodeRef, stage);
+            } else if (isAction(activityNodeRef)) {
+                TTask task = getTask(activityNodeRef);
                 TPlanItem planItem = getPlanItem(task);
                 parentStage.getPlanItem().add(planItem);
                 parentStage.getPlanItemDefinition().add(caseExportService.getObjectFactory().createTask(task));
-                parentStage.getSentry().addAll(exportSentries(activityRef, planItem, parentStage));
-                processCompletnessLevels(activityRef, task);
-            } else if (isTask(activityRef)) {
-                TProcessTask task = getProcessTask(activityRef);
+                parentStage.getSentry().addAll(exportSentries(activityNodeRef, planItem, parentStage));
+                processCompletnessLevels(activityNodeRef, task);
+            } else if (isTask(activityNodeRef)) {
+                TProcessTask task = getProcessTask(activityNodeRef);
                 TPlanItem planItem = getPlanItem(task);
                 parentStage.getPlanItem().add(planItem);
                 parentStage.getPlanItemDefinition().add(caseExportService.getObjectFactory().createProcessTask(task));
-                parentStage.getSentry().addAll(exportSentries(activityRef, planItem, parentStage));
-                processCompletnessLevels(activityRef, task);
-            } else if (isTimer(activityRef)) {
-                TTimerEventListener timer = getTimerListener(activityRef);
+                parentStage.getSentry().addAll(exportSentries(activityNodeRef, planItem, parentStage));
+                processCompletnessLevels(activityNodeRef, task);
+            } else if (isTimer(activityNodeRef)) {
+                TTimerEventListener timer = getTimerListener(activityNodeRef);
                 TPlanItem planItem = getPlanItem(timer);
                 parentStage.getPlanItem().add(planItem);
                 parentStage.getPlanItemDefinition().add(caseExportService.getObjectFactory().createTimerEventListener(timer));
-                parentStage.getSentry().addAll(exportSentries(activityRef, planItem, parentStage));
+                parentStage.getSentry().addAll(exportSentries(activityNodeRef, planItem, parentStage));
                 //move entry and exit criterion to other attributes because standard not allow it for timer
                 moveCriterionToAttributes(planItem);
             }

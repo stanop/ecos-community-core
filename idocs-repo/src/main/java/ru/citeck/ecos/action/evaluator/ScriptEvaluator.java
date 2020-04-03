@@ -36,11 +36,17 @@ import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.util.UrlUtil;
 import ru.citeck.ecos.action.ActionConditionUtils;
 
+/**
+ * @deprecated
+ * see {@link ru.citeck.ecos.icase.evaluators.ScriptEvaluator} <br/>
+ * and see mapping at {@link ru.citeck.ecos.icase.activity.service.alfresco.CaseEvaluatorConverter}
+ */
+@Deprecated
 public class ScriptEvaluator extends ActionConditionEvaluatorAbstractBase
 {
     public static final String NAME = "evaluate-script";
     public static final String PARAM_SCRIPT = "script";
-    
+
     private ServiceRegistry serviceRegistry;
     private SysAdminParams sysAdminParams;
     private String companyHomePath;
@@ -53,7 +59,7 @@ public class ScriptEvaluator extends ActionConditionEvaluatorAbstractBase
     {
         this.serviceRegistry = serviceRegistry;
     }
-    
+
     /**
      * @param sysAdminParams The sysAdminParams to set.
      */
@@ -71,10 +77,10 @@ public class ScriptEvaluator extends ActionConditionEvaluatorAbstractBase
     {
         this.companyHomePath = companyHomePath;
     }
-    
+
     /**
      * Allow adhoc properties to be passed to this action
-     * 
+     *
      * @see org.alfresco.repo.action.ParameterizedItemAbstractBase#getAdhocPropertiesAllowed()
      */
     protected boolean getAdhocPropertiesAllowed()
@@ -91,21 +97,21 @@ public class ScriptEvaluator extends ActionConditionEvaluatorAbstractBase
         NodeService nodeService = this.serviceRegistry.getNodeService();
         if (!nodeService.exists(actionedUponNodeRef))
             return false;
-        
+
         String script = (String) actionCondition.getParameterValue(PARAM_SCRIPT);
-        
+
         // get the references we need to build the default scripting data-model
         String userName = this.serviceRegistry.getAuthenticationService().getCurrentUserName();
         NodeRef personRef = this.serviceRegistry.getPersonService().getPerson(userName);
         NodeRef homeSpaceRef = (NodeRef) nodeService.getProperty(personRef, ContentModel.PROP_HOMEFOLDER);
-        
+
         // the default scripting model provides access to well known objects and searching
         // facilities - it also provides basic create/update/delete/copy/move services
         Map<String, Object> model = this.serviceRegistry.getScriptService().buildDefaultModel(
-                personRef, getCompanyHome(), homeSpaceRef, null, actionedUponNodeRef, null);
-        
+            personRef, getCompanyHome(), homeSpaceRef, null, actionedUponNodeRef, null);
+
         // Add the action to the default model
-        model.put("webApplicationContextUrl", UrlUtil.getAlfrescoUrl(sysAdminParams)); 
+        model.put("webApplicationContextUrl", UrlUtil.getAlfrescoUrl(sysAdminParams));
 
         // add context variables
         Map<String, Object> variables = ActionConditionUtils.getTransactionVariables();
@@ -114,15 +120,15 @@ public class ScriptEvaluator extends ActionConditionEvaluatorAbstractBase
                 model.put(variable.getKey(), variable.getValue());
             } else {
                 throw new AlfrescoRuntimeException(String.format("Error occurred during reading context variables. " +
-                                                   "Variable \"%s\" is already defined and you can't override it.", variable.getKey()));
+                    "Variable \"%s\" is already defined and you can't override it.", variable.getKey()));
             }
         }
 
         Object result = this.serviceRegistry.getScriptService().executeScriptString(script, model);
-        
+
         return Boolean.TRUE.equals(result);
     }
-    
+
     /**
      * @see org.alfresco.repo.action.ParameterizedItemAbstractBase#addParameterDefinitions(java.util.List)
      */
@@ -130,22 +136,22 @@ public class ScriptEvaluator extends ActionConditionEvaluatorAbstractBase
     {
         paramList.add(new ParameterDefinitionImpl(PARAM_SCRIPT, DataTypeDefinition.TEXT, true, getParamDisplayLabel(PARAM_SCRIPT), false));
     }
-    
+
     /**
      * Gets the company home node
-     * 
+     *
      * @return  the company home node ref
      */
     private NodeRef getCompanyHome()
     {
         NodeRef companyHomeRef;
-        
+
         List<NodeRef> refs = this.serviceRegistry.getSearchService().selectNodes(
-                this.serviceRegistry.getNodeService().getRootNode(storeRef),
-                companyHomePath,
-                null,
-                this.serviceRegistry.getNamespaceService(),
-                false);
+            this.serviceRegistry.getNodeService().getRootNode(storeRef),
+            companyHomePath,
+            null,
+            this.serviceRegistry.getNamespaceService(),
+            false);
         if (refs.size() != 1)
         {
             throw new IllegalStateException("Invalid company home path: " + companyHomePath + " - found: " + refs.size());

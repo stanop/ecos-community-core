@@ -187,7 +187,7 @@ public class AlfNodeContentFileHelper {
         }
 
         NodeRef tempFile = new NodeRef(tempRefStr);
-        ContentReader reader = contentService.getReader(tempFile, propName);
+        ContentReader reader = contentService.getReader(tempFile, ContentModel.PROP_CONTENT);
         ContentWriter writer = contentService.getWriter(node, propName, true);
         writer.setEncoding(reader.getEncoding());
         writer.setMimetype(reader.getMimetype());

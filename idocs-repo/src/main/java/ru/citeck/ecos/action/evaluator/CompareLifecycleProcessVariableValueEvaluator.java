@@ -36,7 +36,12 @@ import ru.citeck.ecos.lifecycle.LifeCycleServiceImpl;
  * Compare lifecycle process variable value evaluator
  *
  * @author Alexey Moiseyev
+ *
+ * @deprecated <br/>
+ * see {@link ru.citeck.ecos.icase.evaluators.CompareLifecycleProcessVariableValueEvaluator} <br/>
+ * and see mapping at {@link ru.citeck.ecos.icase.activity.service.alfresco.CaseEvaluatorConverter}
  */
+@Deprecated
 public class CompareLifecycleProcessVariableValueEvaluator extends ActionConditionEvaluatorAbstractBase {
 
     /**
