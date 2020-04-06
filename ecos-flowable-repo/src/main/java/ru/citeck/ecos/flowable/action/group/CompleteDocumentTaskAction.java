@@ -33,13 +33,19 @@ public class CompleteDocumentTaskAction implements GroupActionFactory<RecordRef>
 
     public static final String ACTION_ID = "complete-document-task";
     public static final String TASKS = "tasks";
+    public static final String WORKFLOW_DEFINITIONS = "workflowDefinitions";
+    public static final String DEFAULT_COMMENT = "defaultComment";
+
+    private static final String FLOWABLE_PREFIX = "flowable$";
+    private static final String ACTIVITI_PREFIX = "activiti$";
 
     private static final String MSG_TASKS_NOT_FOUND = "group-action.complete-doc-tasks.task-not-found";
     private static final String MSG_WITHOUT_WORKFLOW = "group-action.complete-doc-tasks.without-workflow";
+    private static final String MSG_WITHOUT_DEFINED_WORKFLOW = "group-action.complete-doc-tasks.without-defined-workflow";
     private static final String MSG_WITHOUT_USER_TASKS = "group-action.complete-doc-tasks.without-user-tasks";
     private static final String MSG_WITHOUT_ACTIVE_TASKS = "group-action.complete-doc-tasks.without-active-tasks";
 
-    private static final String[] MANDATORY_PARAMS = { TASKS };
+    private static final String[] MANDATORY_PARAMS = {TASKS};
 
     private AuthorityUtils authorityUtils;
     private WorkflowService workflowService;
@@ -52,7 +58,7 @@ public class CompleteDocumentTaskAction implements GroupActionFactory<RecordRef>
     public CompleteDocumentTaskAction(TransactionService transactionService,
                                       GroupActionService groupActionService,
                                       @Qualifier("WorkflowService")
-                                              WorkflowService workflowService,
+                                          WorkflowService workflowService,
                                       AuthorityUtils authorityUtils,
                                       EcosTaskService ecosTaskService) {
 
@@ -81,7 +87,9 @@ public class CompleteDocumentTaskAction implements GroupActionFactory<RecordRef>
     class Action extends TxnGroupAction<RecordRef> {
 
         private TasksParam tasksToComplete;
+        private List<String> workflowDefinitions = new ArrayList<>();
         private String defaultTransition;
+        private String defaultComment;
 
         Action(GroupActionConfig config) {
             super(transactionService, config);
@@ -100,6 +108,17 @@ public class CompleteDocumentTaskAction implements GroupActionFactory<RecordRef>
                     break;
                 }
             }
+
+            String workflowDefinitionStr = config.getStrParam(WORKFLOW_DEFINITIONS);
+            if (workflowDefinitionStr != null) {
+                try {
+                    workflowDefinitions = objectMapper.readValue(workflowDefinitionStr, ArrayList.class);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+            defaultComment = config.getStrParam(DEFAULT_COMMENT);
         }
 
         @Override
@@ -110,7 +129,28 @@ public class CompleteDocumentTaskAction implements GroupActionFactory<RecordRef>
             if (workflows.isEmpty()) {
                 return ActionStatus.skipped(MSG_WITHOUT_WORKFLOW);
             }
-            WorkflowInstance workflow = workflows.get(0);
+
+            WorkflowInstance workflow;
+
+            if (workflowDefinitions.isEmpty()) {
+                workflow = workflows.get(0);
+            } else {
+                workflows = workflows.stream().filter(workflowInstance -> {
+                    WorkflowDefinition currentDefinition = workflowInstance.getDefinition();
+                    String currentDefinitionName = currentDefinition.getName();
+                    if (currentDefinitionName.startsWith(FLOWABLE_PREFIX)) {
+                        currentDefinitionName = currentDefinitionName.substring(FLOWABLE_PREFIX.length());
+                    } else if (currentDefinitionName.startsWith(ACTIVITI_PREFIX)) {
+                        currentDefinitionName = currentDefinitionName.substring(ACTIVITI_PREFIX.length());
+                    }
+                    return workflowDefinitions.contains(currentDefinitionName);
+                }).collect(Collectors.toList());
+
+                if (workflows.isEmpty()) {
+                    return ActionStatus.skipped(MSG_WITHOUT_DEFINED_WORKFLOW);
+                }
+                workflow = workflows.get(0);
+            }
 
             WorkflowTaskQuery taskQuery = new WorkflowTaskQuery();
             taskQuery.setProcessId(workflow.getId());
@@ -182,6 +222,10 @@ public class CompleteDocumentTaskAction implements GroupActionFactory<RecordRef>
 
                 params.put(outcomeField, transition);
                 params.put("outcome", transition);
+                if (defaultComment != null) {
+                    params.put("comment", defaultComment);
+                }
+
             }
 
             try {
@@ -247,7 +291,7 @@ public class CompleteDocumentTaskAction implements GroupActionFactory<RecordRef>
             }
             TaskParam taskParam = (TaskParam) o;
             return Objects.equals(transition, taskParam.transition) &&
-                   Objects.equals(taskId, taskParam.taskId);
+                Objects.equals(taskId, taskParam.taskId);
         }
 
         @Override
