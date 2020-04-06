@@ -14,6 +14,7 @@ import ru.citeck.ecos.cases.RemoteCaseModelService;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * Send and remove completed cases job
@@ -49,6 +50,7 @@ public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
 
     /**
      * Init job service
+     *
      * @param jobDataMap Job data map
      */
     private void init(JobDataMap jobDataMap) {
@@ -78,11 +80,14 @@ public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
             watch.stop();
 
             List<NodeRef> documents = resultSet.getNodeRefs();
-            for (NodeRef documentRef : documents) {
-                runWatch(watch, "Processing of " + documentRef.toString() + " document");
-                remoteCaseModelService.sendAndRemoveCaseModelsByDocument(documentRef);
-                watch.stop();
-            }
+
+            runWatch(watch, "Documents processing in parallel stream");
+            ForkJoinPool customThreadPool = new ForkJoinPool(10);
+            customThreadPool.submit(() ->
+                documents.parallelStream()
+                    .forEach(documentRef -> remoteCaseModelService.sendAndRemoveCaseModelsByDocument(documentRef))
+            );
+            watch.stop();
 
             log.debug(watch.prettyPrint());
             log.info("SendToRemoteCompletedCasesJob stopped");
@@ -93,6 +98,7 @@ public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
 
     /**
      * Get documents by offset
+     *
      * @return Set of documents
      */
     private ResultSet getDocumentsResultSet() {
@@ -100,8 +106,8 @@ public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
         parameters.addStore(storeRef);
         parameters.setLanguage(SearchService.LANGUAGE_LUCENE);
         parameters.setQuery("TYPE:\"idocs:doc\" " +
-                "AND @idocs\\:caseCompleted:true " +
-                "AND -@idocs\\:caseModelsSent:true");
+            "AND @idocs\\:caseCompleted:true " +
+            "AND -@idocs\\:caseModelsSent:true");
         parameters.addSort("@cm:created", true);
         parameters.setMaxItems(getMaxItemsCount());
         return searchService.query(parameters);
@@ -109,6 +115,7 @@ public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
 
     /**
      * Get max items count
+     *
      * @return Max items count
      */
     private Integer getMaxItemsCount() {
