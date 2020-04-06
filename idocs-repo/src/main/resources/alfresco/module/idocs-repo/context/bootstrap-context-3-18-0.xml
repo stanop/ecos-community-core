@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="idocs.import-spaces.3-18-0" abstract="true" parent="idocs.import-spaces">
+        <property name="sinceVersion" value="3.16.0" />
+        <property name="appliesFromVersion" value="3.16.0" />
+    </bean>
+
+    <bean id="idocs.import-scripts.3-18-0" abstract="true" parent="idocs.import-scripts">
+        <property name="sinceVersion" value="3.16.0" />
+        <property name="appliesFromVersion" value="3.16.0" />
+    </bean>
+
+    <bean id="idocs.module-component.config.completed-cases-job-threads.create" parent="module.baseComponent"
+          class="ru.citeck.ecos.config.patch.CreateConfig">
+        <property name="dependsOn">
+            <list>
+                <ref bean="ecos-base-core.module-component.ecos-config-root" />
+            </list>
+        </property>
+        <property name="configKey" value="completed-cases-job-threads" />
+        <property name="configValue" value="10" />
+        <property name="configTitle" value="ecos-config.completed-cases-job-threads.title" />
+        <property name="configDescription" value="ecos-config.completed-cases-job-threads.description" />
+        <property name="moduleId" value="idocs-repo" />
+        <property name="sinceVersion" value="3.18.0" />
+        <property name="appliesFromVersion" value="3.18.0" />
+        <property name="name" value="idocs.module-component.config.completed-cases-job-threads.create" />
+        <property name="description" value="idocs.module-component.config.completed-cases-job-threads.create" />
+    </bean>
+
+</beans>
