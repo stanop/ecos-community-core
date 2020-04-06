@@ -718,4 +718,22 @@
         <property name="moduleId" value="idocs-repo" />
     </bean>
 
+    <bean id="idocs.module-component.config.completed-cases-job-threads.create" parent="module.baseComponent"
+          class="ru.citeck.ecos.config.patch.CreateConfig">
+        <property name="dependsOn">
+            <list>
+                <ref bean="ecos-base-core.module-component.ecos-config-root" />
+            </list>
+        </property>
+        <property name="configKey" value="completed-cases-job-threads" />
+        <property name="configValue" value="10" />
+        <property name="configTitle" value="ecos-config.completed-cases-job-threads.title" />
+        <property name="configDescription" value="ecos-config.completed-cases-job-threads.description" />
+        <property name="moduleId" value="idocs-repo" />
+        <property name="sinceVersion" value="3.18.0" />
+        <property name="appliesFromVersion" value="3.18.0" />
+        <property name="name" value="idocs.module-component.config.completed-cases-job-threads.create" />
+        <property name="description" value="idocs.module-component.config.completed-cases-job-threads.create" />
+    </bean>
+
 </beans>
