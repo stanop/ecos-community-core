@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.lock.LockService;
 import org.alfresco.service.cmr.lock.LockStatus;
@@ -154,6 +155,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             return;
         }
         transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
+            AuthenticationUtil.setAdminUserAsFullyAuthenticatedUser();
             ArrayNode arrayNode = objectMapper.createArrayNode();
             List<NodeRef> forDelete = new ArrayList<>();
 
