@@ -1,7 +1,10 @@
 {
     "id": "confirm-list-html",
     "key": "card-template.confirm-list.html",
-    "name": "Скачать лист согласования",
+    "name":{
+        "ru": "Скачать лист согласования",
+        "en": "Download confirm list"
+    },
     "type": "download-card-template",
     "config": {
         "templateType": "confirm-list",
