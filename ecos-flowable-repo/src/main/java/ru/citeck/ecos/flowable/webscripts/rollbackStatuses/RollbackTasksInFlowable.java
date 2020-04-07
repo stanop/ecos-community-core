@@ -23,9 +23,9 @@ import ru.citeck.ecos.flowable.services.FlowableTaskService;
 import ru.citeck.ecos.flowable.services.RollbackFlowableTasksService;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
+import ru.citeck.ecos.icase.activity.service.ActivityCommonService;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.InvariantsModel;
-import ru.citeck.ecos.utils.AlfActivityUtils;
 
 import java.util.*;
 
@@ -37,7 +37,7 @@ public class RollbackTasksInFlowable extends DeclarativeWebScript {
     private NodeService nodeService;
     private RollbackFlowableTasksService rollbackFlowableTasksService;
     private CaseActivityService caseActivityService;
-    private AlfActivityUtils alfActivityUtils;
+    private ActivityCommonService activityCommonService;
     private WorkflowService workflowService;
     private FlowableTaskService flowableTaskService;
 
@@ -60,13 +60,13 @@ public class RollbackTasksInFlowable extends DeclarativeWebScript {
             return result;
         }
 
-        NodeRef nodeRef = getNodeFromJSON(jsonData);
-        if (nodeRef == null || !nodeService.exists(nodeRef)) {
+        NodeRef caseRef = getNodeFromJSON(jsonData);
+        if (caseRef == null || !nodeService.exists(caseRef)) {
             result.put("resultOfRollback", createJsonResponse(I18NUtil.getMessage(nodeNotFound)));
             return result;
         }
 
-        List<String> currentTasks = getCurrentTasksID(nodeRef);
+        List<String> currentTasks = getCurrentTasksID(caseRef);
 
         String key = (String) getKeyForDestinationMapFromJSON(jsonData, TARGET_STATUS_KEY);
 
@@ -78,23 +78,23 @@ public class RollbackTasksInFlowable extends DeclarativeWebScript {
         boolean rollbackSuccess;
         if (!StringUtils.contains(key, "draft")) {
             List<String> destinationTask = destinationMap.get(key);
-            rollbackSuccess = rollbackFlowableTasksService.rollbackTasks(nodeRef, destinationTask);
+            rollbackSuccess = rollbackFlowableTasksService.rollbackTasks(caseRef, destinationTask);
         } else {
-            rollbackSuccess = rollbackNotFlowableCaseToDraft(nodeRef, true);
+            rollbackSuccess = rollbackNotFlowableCaseToDraft(caseRef, true);
         }
 
         if (rollbackSuccess) {
             result.put("resultOfRollback", createJsonResponse(I18NUtil.getMessage(completeWithoutErrors)));
         } else {
             result.put("resultOfRollback", createJsonResponse(I18NUtil.getMessage(rollbackTasksError)));
-            rollbackFlowableTasksService.rollbackTasks(nodeRef, currentTasks);
+            rollbackFlowableTasksService.rollbackTasks(caseRef, currentTasks);
         }
         return result;
     }
 
-    private List<String> getCurrentTasksID(NodeRef nodeRef) {
+    private List<String> getCurrentTasksID(NodeRef caseRef) {
         List<String> currentTask = new LinkedList<>();
-        List<WorkflowInstance> workflowInstancesList = workflowService.getWorkflowsForContent(nodeRef, true);
+        List<WorkflowInstance> workflowInstancesList = workflowService.getWorkflowsForContent(caseRef, true);
         if (workflowInstancesList == null || workflowInstancesList.isEmpty()) {
             return Collections.emptyList();
         }
@@ -155,11 +155,11 @@ public class RollbackTasksInFlowable extends DeclarativeWebScript {
         }
     }
 
-    private boolean rollbackNotFlowableCaseToDraft(NodeRef node, boolean setDraft) {
-        ActivityRef activityRef = alfActivityUtils.composeActivityRef(node);
+    private boolean rollbackNotFlowableCaseToDraft(NodeRef caseRef, boolean setDraft) {
+        ActivityRef activityRef = activityCommonService.composeRootActivityRef(caseRef);
         caseActivityService.reset(activityRef);
         if (setDraft) {
-            nodeService.setProperty(node, InvariantsModel.PROP_IS_DRAFT, true);
+            nodeService.setProperty(caseRef, InvariantsModel.PROP_IS_DRAFT, true);
         }
         List<CaseActivity> activities = caseActivityService.getActivities(activityRef);
         for (CaseActivity activity : activities) {
@@ -184,8 +184,8 @@ public class RollbackTasksInFlowable extends DeclarativeWebScript {
     }
 
     @Autowired
-    public void setAlfActivityUtils(AlfActivityUtils alfActivityUtils) {
-        this.alfActivityUtils = alfActivityUtils;
+    public void setActivityCommonService(ActivityCommonService activityCommonService) {
+        this.activityCommonService = activityCommonService;
     }
 
     public void setDestinationMap(Map<String, List<String>> destinationMap) {

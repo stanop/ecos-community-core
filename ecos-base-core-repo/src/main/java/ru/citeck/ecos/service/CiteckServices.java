@@ -45,6 +45,7 @@ public interface CiteckServices {
 	QName CASE_COMMANDS_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseCommandsService");
 	QName CASE_ACTIVITY_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseActivityService");
 	QName CASE_ACTIVITY_EVENT_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseActivityEventService");
+	QName ACTIVITY_COMMON_SERVICE = QName.createQName(CITECK_NAMESPACE, "activityCommonService");
 	QName ALF_ACTIVITY_UTILS = QName.createQName(CITECK_NAMESPACE, "alfActivityUtils");
 	QName JOURNAL_SERVICE = QName.createQName(CITECK_NAMESPACE, "journalService");
 	QName CASE_COMPLETENESS_SERVICE = QName.createQName(CITECK_NAMESPACE, "caseCompletenessService");

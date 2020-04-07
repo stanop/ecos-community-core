@@ -70,6 +70,7 @@
                 <property name="iEvent:successMessage">
                     <type>d:text</type>
                 </property>
+                <!-- FIXME: rename to  MessageSpanClass|SpanClass -->
                 <property name="iEvent:successMessageSpanClass">
                     <type>d:text</type>
                 </property>

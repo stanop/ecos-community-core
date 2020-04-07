@@ -49,11 +49,10 @@ public class CaseStatusChangeNotificationBehaviour extends AbstractICaseDocument
         }
 
         if (excludeStageName != null && !excludeStageName.isEmpty()) {
-            ActivityRef activityRef = alfActivityUtils.composeActivityRef(caseRef);
+            ActivityRef activityRef = activityCommonService.composeRootActivityRef(caseRef);
             List<CaseActivity> startedActivities = caseActivityService.getStartedActivities(activityRef);
             for (CaseActivity activity : startedActivities) {
-                NodeRef activityNodeRef = alfActivityUtils.getActivityNodeRef(activity.getActivityRef());
-                if (excludeStageName.equals(nodeService.getProperty(activityNodeRef, ContentModel.PROP_TITLE))) {
+                if (excludeStageName.equals(activity.getTitle())) {
                     return;
                 }
             }

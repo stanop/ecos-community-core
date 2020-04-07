@@ -81,6 +81,7 @@ public class AutoNameBehaviour implements
     private boolean ignoreRenameFailure = false;
     private Boolean appendExtension = null;
     private int order = 100;
+    private boolean enabled = true;
 
     public void init() {
         if (nameTemplate != null && nameTemplateJS != null) {
@@ -101,13 +102,17 @@ public class AutoNameBehaviour implements
     public void onUpdateProperties(NodeRef nodeRef,
                                    Map<QName, Serializable> before,
                                    Map<QName, Serializable> after) {
-        updateName(nodeRef, false);
+        if (enabled) {
+            updateName(nodeRef, false);
+        }
     }
 
     @Override
     public void onMoveNode(ChildAssociationRef oldChildAssocRef,
                            ChildAssociationRef newChildAssocRef) {
-        updateName(newChildAssocRef.getChildRef(), true);
+        if (enabled) {
+            updateName(newChildAssocRef.getChildRef(), true);
+        }
     }
 
     @Override
@@ -115,7 +120,9 @@ public class AutoNameBehaviour implements
                                 NodeRef nodeRef,
                                 Map<String, Serializable> versionProperties,
                                 PolicyScope nodeDetails) {
-        updateName(nodeRef, false);
+        if (enabled) {
+            updateName(nodeRef, false);
+        }
     }
 
     private void updateName(final NodeRef nodeRef, boolean forceRename) {
@@ -336,6 +343,10 @@ public class AutoNameBehaviour implements
 
     public void setOrder(int order) {
         this.order = order;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
 }

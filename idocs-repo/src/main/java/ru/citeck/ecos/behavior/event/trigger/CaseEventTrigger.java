@@ -12,11 +12,10 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.behavior.OrderedBehaviour;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
-import ru.citeck.ecos.icase.activity.dto.CaseServiceType;
+import ru.citeck.ecos.icase.activity.service.ActivityCommonService;
 import ru.citeck.ecos.icase.activity.service.CaseActivityEventService;
 import ru.citeck.ecos.model.ICaseEventModel;
 import ru.citeck.ecos.model.ICaseModel;
-import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.service.CiteckServices;
 
 import javax.annotation.PostConstruct;
@@ -31,6 +30,7 @@ import java.util.Map;
 public class CaseEventTrigger implements NodeServicePolicies.OnUpdatePropertiesPolicy {
 
     private PolicyComponent policyComponent;
+    private ActivityCommonService activityCommonService;
     private CaseActivityEventService caseActivityEventService;
 
     private int order = 200;
@@ -38,6 +38,8 @@ public class CaseEventTrigger implements NodeServicePolicies.OnUpdatePropertiesP
     @Autowired
     public CaseEventTrigger(ServiceRegistry serviceRegistry) {
         this.policyComponent = serviceRegistry.getPolicyComponent();
+        this.activityCommonService = (ActivityCommonService) serviceRegistry
+            .getService(CiteckServices.ACTIVITY_COMMON_SERVICE);
         this.caseActivityEventService = (CaseActivityEventService) serviceRegistry
             .getService(CiteckServices.CASE_ACTIVITY_EVENT_SERVICE);
     }
@@ -53,9 +55,8 @@ public class CaseEventTrigger implements NodeServicePolicies.OnUpdatePropertiesP
     }
 
     @Override
-    public void onUpdateProperties(NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
-        RecordRef caseRef = RecordRef.valueOf(nodeRef.toString());
-        ActivityRef activityRef = ActivityRef.of(CaseServiceType.ALFRESCO, caseRef, ActivityRef.ROOT_ID);
-        caseActivityEventService.fireEvent(activityRef, ICaseEventModel.CONSTR_CASE_PROPERTIES_CHANGED);
+    public void onUpdateProperties(NodeRef caseRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
+        ActivityRef rootActivityRef = activityCommonService.composeRootActivityRef(caseRef);
+        caseActivityEventService.fireEvent(rootActivityRef, ICaseEventModel.CONSTR_CASE_PROPERTIES_CHANGED);
     }
 }
