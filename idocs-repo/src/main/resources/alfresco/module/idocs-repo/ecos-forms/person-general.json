@@ -2,7 +2,8 @@
     "id": "person_general",
     "formKey": "alf_cm:person",
     "title": {
-        "en": "General"
+        "en": "General",
+        "ru": "Основное"
     },
     "description": {
         "en": ""
