@@ -1105,7 +1105,7 @@
                                                                     "json": "",
                                                                     "eq": ""
                                                                 },
-                                                                "customConditional": "show = !(instance.options.readOnly && instance.options.viewAsHtml)",
+                                                                "customConditional": "show = instance.options.formMode === 'CREATE'",
                                                                 "logic": [],
                                                                 "attributes": {},
                                                                 "type": "checkbox",
