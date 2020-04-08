@@ -10,7 +10,34 @@
     "customModule": null,
     "typeRef": "emodel/type@letter-doctype-income",
     "width": "default",
-    "i18n": {},
+    "i18n": {
+        "ru": {
+            "Accounting": "Бухгалтерский",
+            "Letter from regulatory authorities": "Письмо из надзорных органов",
+            "Miscellaneous": "Разное",
+            "Letter": "Письмо",
+            "Snailmail": "Почта",
+            "Courier": "Курьер",
+            "Fax": "Факс",
+            "Express": "С курьером",
+            "Registered letter": "Заказное письмо",
+            "Registered letter with notification": "Заказное письмо с уведомлением",
+            "Huntsman courier": "Фельдсвязь"
+        },
+        "en": {
+            "Accounting": "Accounting",
+            "Letter from regulatory authorities": "Letter from regulatory authorities",
+            "Miscellaneous": "Miscellaneous",
+            "Letter": "Letter",
+            "Snailmail": "Snailmail",
+            "Courier": "Courier",
+            "Fax": "Fax",
+            "Express": "Express",
+            "Registered letter": "Registered letter",
+            "Registered letter with notification": "Registered letter with notification",
+            "Huntsman courier": "Huntsman courier"
+        }
+    },
     "definition": {
         "components": [
             {
@@ -23,13 +50,30 @@
                                 "mask": false,
                                 "tableView": true,
                                 "alwaysEnabled": false,
-                                "dataSrc": "custom",
+                                "dataSrc": "values",
                                 "data": {
-                                    "custom": "for (var i in data.docTypeList.records) {\n  values.push({label: data.docTypeList.records[i].key,value: data.docTypeList.records[i].id})\n}",
-                                    "values": [],
+                                    "values": [
+                                        {
+                                            "label": "Accounting",
+                                            "value": "accounting"
+                                        },
+                                        {
+                                            "label": "Letter from regulatory authorities",
+                                            "value": "letterFromRegulatoryAuthorities"
+                                        },
+                                        {
+                                            "label": "Miscellaneous",
+                                            "value": "miscellaneous"
+                                        },
+                                        {
+                                            "label": "Letter",
+                                            "value": "letter"
+                                        }
+                                    ],
                                     "json": "",
                                     "url": "",
-                                    "resource": ""
+                                    "resource": "",
+                                    "custom": ""
                                 },
                                 "refreshOnEvent": false,
                                 "selectThreshold": 0.3,
@@ -101,7 +145,7 @@
                                 "fuseOptions": {},
                                 "customOptions": {},
                                 "refreshEventName": "",
-                                "id": "eoc9sd"
+                                "id": "ezm3luw"
                             }
                         ],
                         "xs": 0,
@@ -157,7 +201,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "eayagas"
+                        "id": "earciq9"
                     },
                     {
                         "xs": 0,
@@ -179,25 +223,46 @@
                                 "mask": false,
                                 "tableView": true,
                                 "alwaysEnabled": false,
+                                "dataSrc": "values",
                                 "data": {
-                                    "headers": [
+                                    "values": [
                                         {
-                                            "key": "",
-                                            "value": ""
+                                            "label": "Snailmail",
+                                            "value": "snailmail"
+                                        },
+                                        {
+                                            "label": "Courier",
+                                            "value": "courier"
+                                        },
+                                        {
+                                            "label": "Fax",
+                                            "value": "fax"
+                                        },
+                                        {
+                                            "label": "Express",
+                                            "value": "express"
+                                        },
+                                        {
+                                            "label": "Registered letter",
+                                            "value": "registeredLetter"
+                                        },
+                                        {
+                                            "label": "Registered letter with notification",
+                                            "value": "registeredLetterWithNotification"
+                                        },
+                                        {
+                                            "label": "Huntsman courier",
+                                            "value": "huntsmanCourier"
                                         }
                                     ],
-                                    "values": [],
                                     "json": "",
                                     "url": "",
                                     "resource": "",
                                     "custom": ""
                                 },
-                                "lazyLoad": false,
-                                "selectValues": "",
-                                "disableLimit": false,
-                                "sort": "",
                                 "refreshOnEvent": false,
                                 "selectThreshold": 0.3,
+                                "defaultValue": "",
                                 "refreshOn": [],
                                 "encrypted": false,
                                 "validate": {
@@ -212,9 +277,9 @@
                                     "attribute": "letters:deliveryMethod"
                                 },
                                 "conditional": {
-                                    "json": "",
                                     "show": "",
                                     "when": "",
+                                    "json": "",
                                     "eq": ""
                                 },
                                 "customConditional": "",
@@ -223,7 +288,6 @@
                                 "type": "ecosSelect",
                                 "input": true,
                                 "tags": [],
-                                "defaultValue": "",
                                 "placeholder": "",
                                 "prefix": "",
                                 "customClass": "",
@@ -253,7 +317,6 @@
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
                                 "limit": 100,
-                                "dataSrc": "url",
                                 "valueProperty": "value",
                                 "filter": "",
                                 "searchEnabled": true,
@@ -267,7 +330,7 @@
                                 "fuseOptions": {},
                                 "customOptions": {},
                                 "refreshEventName": "",
-                                "id": "edtwx9n"
+                                "id": "e6579c7"
                             }
                         ],
                         "placeholder": "",
@@ -310,7 +373,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "es2sj84"
+                        "id": "ebvwq1"
                     }
                 ],
                 "mask": false,
@@ -368,7 +431,7 @@
                 "inlineColumns": false,
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "efe9db8"
+                "id": "e3zt9m"
             },
             {
                 "label": "Columns",
@@ -508,7 +571,7 @@
                                 "hideDeleteRowButton": false,
                                 "isFullScreenWidthModal": false,
                                 "isSelectedValueAsText": false,
-                                "id": "eca7d4m"
+                                "id": "edf409j"
                             }
                         ],
                         "xs": 0,
@@ -564,7 +627,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "e27weei"
+                        "id": "egqkun"
                     },
                     {
                         "xs": 0,
@@ -670,7 +733,7 @@
                                 "hideDeleteRowButton": false,
                                 "isFullScreenWidthModal": false,
                                 "isSelectedValueAsText": false,
-                                "id": "eqrmgwh"
+                                "id": "e2n72r8"
                             }
                         ],
                         "placeholder": "",
@@ -713,7 +776,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "eaejwvi"
+                        "id": "emq471t"
                     }
                 ],
                 "mask": false,
@@ -771,7 +834,7 @@
                 "inlineColumns": false,
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "ehn9sa"
+                "id": "e7gzfr"
             },
             {
                 "label": "Columns",
@@ -903,7 +966,7 @@
                                 "hideDeleteRowButton": false,
                                 "isFullScreenWidthModal": false,
                                 "isSelectedValueAsText": false,
-                                "id": "edp7li"
+                                "id": "eie62je"
                             }
                         ],
                         "xs": 0,
@@ -959,7 +1022,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "erxds0m"
+                        "id": "eakebhn"
                     },
                     {
                         "xs": 0,
@@ -1051,7 +1114,7 @@
                                 "mask": false,
                                 "inputType": "text",
                                 "inputMask": "",
-                                "id": "ew0xfkv"
+                                "id": "ez48gv"
                             }
                         ],
                         "placeholder": "",
@@ -1094,7 +1157,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "ep8r5z"
+                        "id": "eay5m8g"
                     }
                 ],
                 "mask": false,
@@ -1152,7 +1215,7 @@
                 "inlineColumns": false,
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "elyw8w9"
+                "id": "eegju6r"
             },
             {
                 "label": "Columns",
@@ -1228,7 +1291,7 @@
                                 "excludeAuthoritiesByType": "",
                                 "modalTitle": "",
                                 "isSelectedValueAsText": false,
-                                "id": "e9zrcwg"
+                                "id": "eekkp9"
                             }
                         ],
                         "xs": 0,
@@ -1284,7 +1347,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "edlxm3r"
+                        "id": "efux1y"
                     },
                     {
                         "xs": 0,
@@ -1376,7 +1439,7 @@
                                 "mask": false,
                                 "inputType": "text",
                                 "inputMask": "",
-                                "id": "ez1zac"
+                                "id": "et41gkg"
                             }
                         ],
                         "placeholder": "",
@@ -1419,7 +1482,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "evg1sp"
+                        "id": "eexrvs5"
                     }
                 ],
                 "mask": false,
@@ -1477,7 +1540,7 @@
                 "inlineColumns": false,
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "eyx3c0w"
+                "id": "e0ynl2f"
             },
             {
                 "label": "idocs:summary",
@@ -1557,7 +1620,7 @@
                 "inputMask": "",
                 "wysiwyg": false,
                 "editor": "",
-                "id": "ekttxf"
+                "id": "efuvobh"
             },
             {
                 "label": "idocs:note",
@@ -1637,7 +1700,7 @@
                 "inputMask": "",
                 "wysiwyg": false,
                 "editor": "",
-                "id": "ezkz3im"
+                "id": "e4ha6v4"
             },
             {
                 "label": "Columns",
@@ -1710,7 +1773,7 @@
                                 "refreshOn": "",
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
-                                "id": "ewr50d9"
+                                "id": "exv5x65"
                             }
                         ],
                         "xs": 0,
@@ -1766,7 +1829,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "eb0i6z"
+                        "id": "ebhbxif"
                     },
                     {
                         "xs": 0,
@@ -1849,7 +1912,7 @@
                                 "refreshOn": "",
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
-                                "id": "extj3hb"
+                                "id": "emlkmmn"
                             }
                         ],
                         "placeholder": "",
@@ -1892,7 +1955,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "e05efgl"
+                        "id": "ehco12s"
                     }
                 ],
                 "mask": false,
@@ -1950,7 +2013,7 @@
                 "inlineColumns": false,
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "ef8mb0x"
+                "id": "epixrcg"
             },
             {
                 "label": "Columns",
@@ -2032,7 +2095,7 @@
                                 "mask": false,
                                 "inputType": "text",
                                 "inputMask": "",
-                                "id": "eme46x"
+                                "id": "e5dxv59"
                             }
                         ],
                         "xs": 0,
@@ -2088,7 +2151,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "ewk8uy"
+                        "id": "et1kw8d"
                     },
                     {
                         "xs": 0,
@@ -2171,7 +2234,7 @@
                                 "refreshOn": "",
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
-                                "id": "eimgsyq"
+                                "id": "ek3pc6"
                             }
                         ],
                         "placeholder": "",
@@ -2214,7 +2277,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "eyr4w13"
+                        "id": "e6t99p"
                     }
                 ],
                 "mask": false,
@@ -2272,7 +2335,7 @@
                 "inlineColumns": false,
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "e06tgba"
+                "id": "ez6cs1s"
             },
             {
                 "label": "Columns",
@@ -2359,7 +2422,7 @@
                                 "defaultOverlayHeight": 200,
                                 "onFileClick": "openDashboard",
                                 "displayElementsJS": {},
-                                "id": "evg04i"
+                                "id": "eq2f1g"
                             }
                         ],
                         "xs": 0,
@@ -2415,7 +2478,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "edqed4w"
+                        "id": "e7chrn"
                     }
                 ],
                 "mask": false,
@@ -2473,7 +2536,7 @@
                 "inlineColumns": false,
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "esesp9"
+                "id": "e46vnuq"
             },
             {
                 "label": "Columns",
@@ -2549,7 +2612,7 @@
                                 "disableOnInvalid": false,
                                 "theme": "default",
                                 "removeIndents": false,
-                                "id": "ed4o4tm"
+                                "id": "ej6qgtc"
                             }
                         ],
                         "xs": 0,
@@ -2605,7 +2668,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "evw96ra"
+                        "id": "e0aoktc"
                     },
                     {
                         "xs": 0,
@@ -2690,7 +2753,7 @@
                                 "disableOnInvalid": false,
                                 "theme": "default",
                                 "removeIndents": false,
-                                "id": "eh82b7t"
+                                "id": "ehs9i4j"
                             }
                         ],
                         "placeholder": "",
@@ -2733,7 +2796,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "e5jo4lf"
+                        "id": "e1euto"
                     },
                     {
                         "xs": 0,
@@ -2817,7 +2880,7 @@
                                 "action": "submit",
                                 "disableOnInvalid": false,
                                 "removeIndents": false,
-                                "id": "ebikd9f"
+                                "id": "emzjfq"
                             }
                         ],
                         "placeholder": "",
@@ -2860,7 +2923,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "enokg6"
+                        "id": "e24yqb4"
                     }
                 ],
                 "mask": false,
@@ -2918,7 +2981,7 @@
                 "inlineColumns": false,
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "e3sjvdc"
+                "id": "e4v90x7"
             }
         ]
     },

@@ -10,7 +10,34 @@
     "customModule": null,
     "typeRef": "emodel/type@letter-doctype-outcome",
     "width": "default",
-    "i18n": {},
+    "i18n": {
+        "ru": {
+            "Accounting": "Бухгалтерский",
+            "Letter from regulatory authorities": "Письмо из надзорных органов",
+            "Miscellaneous": "Разное",
+            "Letter": "Письмо",
+            "Snailmail": "Почта",
+            "Courier": "Курьер",
+            "Fax": "Факс",
+            "Express": "С курьером",
+            "Registered letter": "Заказное письмо",
+            "Registered letter with notification": "Заказное письмо с уведомлением",
+            "Huntsman courier": "Фельдсвязь"
+        },
+        "en": {
+            "Accounting": "Accounting",
+            "Letter from regulatory authorities": "Letter from regulatory authorities",
+            "Miscellaneous": "Miscellaneous",
+            "Letter": "Letter",
+            "Snailmail": "Snailmail",
+            "Courier": "Courier",
+            "Fax": "Fax",
+            "Express": "Express",
+            "Registered letter": "Registered letter",
+            "Registered letter with notification": "Registered letter with notification",
+            "Huntsman courier": "Huntsman courier"
+        }
+    },
     "definition": {
         "components": [
             {
@@ -23,23 +50,31 @@
                                 "mask": false,
                                 "tableView": true,
                                 "alwaysEnabled": false,
+                                "dataSrc": "values",
                                 "data": {
-                                    "headers": [
+                                    "values": [
                                         {
-                                            "key": "",
-                                            "value": ""
+                                            "label": "Accounting",
+                                            "value": "accounting"
+                                        },
+                                        {
+                                            "label": "Letter from regulatory authorities",
+                                            "value": "letterFromRegulatoryAuthorities"
+                                        },
+                                        {
+                                            "label": "Miscellaneous",
+                                            "value": "miscellaneous"
+                                        },
+                                        {
+                                            "label": "Letter",
+                                            "value": "letter"
                                         }
                                     ],
-                                    "values": [],
                                     "json": "",
                                     "url": "",
                                     "resource": "",
                                     "custom": ""
                                 },
-                                "lazyLoad": false,
-                                "selectValues": "",
-                                "disableLimit": false,
-                                "sort": "",
                                 "refreshOnEvent": false,
                                 "selectThreshold": 0.3,
                                 "defaultValue": "",
@@ -97,7 +132,6 @@
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
                                 "limit": 100,
-                                "dataSrc": "url",
                                 "valueProperty": "value",
                                 "filter": "",
                                 "searchEnabled": true,
@@ -111,7 +145,7 @@
                                 "fuseOptions": {},
                                 "customOptions": {},
                                 "refreshEventName": "",
-                                "id": "exgaaal"
+                                "id": "egc8d58"
                             }
                         ],
                         "xs": 0,
@@ -167,7 +201,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "eaif1g"
+                        "id": "e3d8kqc"
                     },
                     {
                         "xs": 0,
@@ -189,23 +223,43 @@
                                 "mask": false,
                                 "tableView": true,
                                 "alwaysEnabled": false,
+                                "dataSrc": "values",
                                 "data": {
-                                    "headers": [
+                                    "values": [
                                         {
-                                            "key": "",
-                                            "value": ""
+                                            "label": "Snailmail",
+                                            "value": "snailmail"
+                                        },
+                                        {
+                                            "label": "Courier",
+                                            "value": "courier"
+                                        },
+                                        {
+                                            "label": "Fax",
+                                            "value": "fax"
+                                        },
+                                        {
+                                            "label": "Express",
+                                            "value": "express"
+                                        },
+                                        {
+                                            "label": "Registered letter",
+                                            "value": "registeredLetter"
+                                        },
+                                        {
+                                            "label": "Registered letter with notification",
+                                            "value": "registeredLetterWithNotification"
+                                        },
+                                        {
+                                            "label": "Huntsman courier",
+                                            "value": "huntsmanCourier"
                                         }
                                     ],
-                                    "values": [],
                                     "json": "",
                                     "url": "",
                                     "resource": "",
                                     "custom": ""
                                 },
-                                "lazyLoad": false,
-                                "selectValues": "",
-                                "disableLimit": false,
-                                "sort": "",
                                 "refreshOnEvent": false,
                                 "selectThreshold": 0.3,
                                 "defaultValue": "",
@@ -263,7 +317,6 @@
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
                                 "limit": 100,
-                                "dataSrc": "url",
                                 "valueProperty": "value",
                                 "filter": "",
                                 "searchEnabled": true,
@@ -277,7 +330,7 @@
                                 "fuseOptions": {},
                                 "customOptions": {},
                                 "refreshEventName": "",
-                                "id": "ewykgb9"
+                                "id": "evahjgp"
                             }
                         ],
                         "placeholder": "",
@@ -320,7 +373,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "e1rcype"
+                        "id": "eb3s6s"
                     }
                 ],
                 "mask": false,
@@ -378,7 +431,7 @@
                 "inlineColumns": false,
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "euu4qyq"
+                "id": "eg5idk"
             },
             {
                 "label": "Columns",
@@ -522,7 +575,7 @@
                                 "hideDeleteRowButton": false,
                                 "isFullScreenWidthModal": false,
                                 "isSelectedValueAsText": false,
-                                "id": "egavubh"
+                                "id": "e7hu3a5"
                             }
                         ],
                         "xs": 0,
@@ -578,7 +631,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "ek8m8j"
+                        "id": "ety5neb"
                     },
                     {
                         "xs": 0,
@@ -684,7 +737,7 @@
                                 "hideDeleteRowButton": false,
                                 "isFullScreenWidthModal": false,
                                 "isSelectedValueAsText": false,
-                                "id": "eug50ex"
+                                "id": "eqjv44y"
                             }
                         ],
                         "placeholder": "",
@@ -727,7 +780,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "e8k3h6v"
+                        "id": "e7m2vgm"
                     }
                 ],
                 "mask": false,
@@ -785,7 +838,7 @@
                 "inlineColumns": false,
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "ea1om5g"
+                "id": "e8zxlja"
             },
             {
                 "label": "Columns",
@@ -861,7 +914,7 @@
                                 "excludeAuthoritiesByType": "",
                                 "modalTitle": "",
                                 "isSelectedValueAsText": false,
-                                "id": "ekslzxm"
+                                "id": "eka14lo"
                             }
                         ],
                         "xs": 0,
@@ -917,7 +970,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "ejpzqg"
+                        "id": "ei02e6"
                     },
                     {
                         "xs": 0,
@@ -1003,7 +1056,7 @@
                                 "excludeAuthoritiesByType": "",
                                 "modalTitle": "",
                                 "isSelectedValueAsText": false,
-                                "id": "em8je9"
+                                "id": "e9eiytf"
                             }
                         ],
                         "placeholder": "",
@@ -1046,7 +1099,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "eb913hj"
+                        "id": "ebxwfbdi"
                     }
                 ],
                 "mask": false,
@@ -1104,7 +1157,7 @@
                 "inlineColumns": false,
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "epvgmrl"
+                "id": "eo9jrp"
             },
             {
                 "label": "Columns",
@@ -1232,7 +1285,7 @@
                                 "hideDeleteRowButton": false,
                                 "isFullScreenWidthModal": false,
                                 "isSelectedValueAsText": false,
-                                "id": "e1kamv4"
+                                "id": "ezzom18"
                             }
                         ],
                         "xs": 0,
@@ -1288,7 +1341,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "ezh04uc"
+                        "id": "ehcbyta"
                     },
                     {
                         "xs": 0,
@@ -1426,7 +1479,7 @@
                                 "hideDeleteRowButton": false,
                                 "isFullScreenWidthModal": false,
                                 "isSelectedValueAsText": false,
-                                "id": "elwcqrd"
+                                "id": "erpqcw"
                             }
                         ],
                         "placeholder": "",
@@ -1469,7 +1522,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "euz7b3y"
+                        "id": "es75wkd"
                     }
                 ],
                 "mask": false,
@@ -1527,7 +1580,7 @@
                 "inlineColumns": false,
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "egr30s6"
+                "id": "eclbeam"
             },
             {
                 "label": "idocs:summary",
@@ -1607,7 +1660,7 @@
                 "inputMask": "",
                 "wysiwyg": false,
                 "editor": "",
-                "id": "ewznoid"
+                "id": "e9xvz77"
             },
             {
                 "label": "idocs:note",
@@ -1687,7 +1740,7 @@
                 "inputMask": "",
                 "wysiwyg": false,
                 "editor": "",
-                "id": "eu6sq9"
+                "id": "ejaoibd"
             },
             {
                 "label": "Columns",
@@ -1760,7 +1813,7 @@
                                 "refreshOn": "",
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
-                                "id": "e6kr1wh"
+                                "id": "e925cw7"
                             }
                         ],
                         "xs": 0,
@@ -1816,7 +1869,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "es80qxv"
+                        "id": "e5z4y4"
                     },
                     {
                         "xs": 0,
@@ -1899,7 +1952,7 @@
                                 "refreshOn": "",
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
-                                "id": "eg3udj"
+                                "id": "eq1ycxx"
                             }
                         ],
                         "placeholder": "",
@@ -1942,7 +1995,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "ea66264"
+                        "id": "ezj5y78"
                     }
                 ],
                 "mask": false,
@@ -2000,7 +2053,7 @@
                 "inlineColumns": false,
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "ejbferd"
+                "id": "e74f261"
             },
             {
                 "label": "cm:content",
@@ -2082,7 +2135,7 @@
                 "defaultOverlayHeight": 200,
                 "onFileClick": "openDashboard",
                 "displayElementsJS": {},
-                "id": "ely3mfc"
+                "id": "es2l1m"
             },
             {
                 "label": "Columns",
@@ -2158,7 +2211,7 @@
                                 "disableOnInvalid": false,
                                 "theme": "default",
                                 "removeIndents": false,
-                                "id": "eqvj38p"
+                                "id": "e7b28ri"
                             }
                         ],
                         "xs": 0,
@@ -2214,7 +2267,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "elhuq2o"
+                        "id": "ec4goa8"
                     },
                     {
                         "xs": 0,
@@ -2299,7 +2352,7 @@
                                 "disableOnInvalid": false,
                                 "theme": "default",
                                 "removeIndents": false,
-                                "id": "ega21o5"
+                                "id": "e5bdwf3"
                             }
                         ],
                         "placeholder": "",
@@ -2342,7 +2395,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "ewjlzw"
+                        "id": "ej1nt9"
                     },
                     {
                         "xs": 0,
@@ -2426,7 +2479,7 @@
                                 "rightIcon": "",
                                 "action": "submit",
                                 "removeIndents": false,
-                                "id": "edu7str"
+                                "id": "ewrxz3ye"
                             }
                         ],
                         "placeholder": "",
@@ -2469,7 +2522,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "ezmwm0h"
+                        "id": "e0ub6fd"
                     }
                 ],
                 "mask": false,
@@ -2527,7 +2580,7 @@
                 "inlineColumns": false,
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "ex1g1ot"
+                "id": "e2lkw2"
             }
         ]
     },
