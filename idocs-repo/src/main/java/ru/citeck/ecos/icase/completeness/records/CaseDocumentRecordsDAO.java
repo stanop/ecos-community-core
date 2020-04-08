@@ -1,16 +1,19 @@
 package ru.citeck.ecos.icase.completeness.records;
 
-import javafx.util.Pair;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
+import org.alfresco.service.namespace.QName;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.icase.completeness.CaseCompletenessService;
+import ru.citeck.ecos.icase.completeness.records.registry.CaseDocumentsAssociation;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
@@ -21,6 +24,8 @@ import ru.citeck.ecos.records2.request.result.RecordsResult;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.v2.LocalRecordsQueryWithMetaDAO;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
+import ru.citeck.ecos.spring.registry.MappingRegistry;
+import ru.citeck.ecos.utils.NodeUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,16 +39,26 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
     private static final String TYPES_DOCUMENTS_QUERY_LANGUAGE = "types-documents";
     private static final String DOCUMENTS_QUERY_LANGUAGE = "documents";
 
+    private final NodeService nodeService;
+    private final NodeUtils nodeUtils;
     private final CaseCompletenessService caseCompletenessService;
     private final SearchService searchService;
+    private final MappingRegistry<String, List<CaseDocumentsAssociation>> registry;
 
     @Autowired
     public CaseDocumentRecordsDAO(@Qualifier("caseCompletenessService")
                                       CaseCompletenessService caseCompletenessService,
-                                  SearchService searchService) {
+                                  @Qualifier("core.case-document-type.type-children-assocs.mappingRegistry")
+                                      MappingRegistry<String, List<CaseDocumentsAssociation>> registry,
+                                  SearchService searchService,
+                                  NodeService nodeService,
+                                  NodeUtils nodeUtils) {
         setId(ID);
         this.caseCompletenessService = caseCompletenessService;
         this.searchService = searchService;
+        this.registry = registry;
+        this.nodeService = nodeService;
+        this.nodeUtils = nodeUtils;
     }
 
     @Override
@@ -81,6 +96,26 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
                 .map(DocInfo::getRef)
                 .collect(Collectors.toList())))
             .collect(Collectors.toList());
+
+        NodeRef typeNodeRef = new NodeRef(recordRef.getId());
+        QName caseDocumentType = nodeService.getType(typeNodeRef);
+        List<CaseDocumentsAssociation> caseDocumentsAssociations = registry.get(caseDocumentType.toString());
+        if (CollectionUtils.isNotEmpty(caseDocumentsAssociations)) {
+
+            for (CaseDocumentsAssociation caseDocumentsAssociation : caseDocumentsAssociations) {
+
+                List<RecordRef> assocsRecordRefs = nodeUtils.getAssocTargets(typeNodeRef,
+                    QName.createQName(caseDocumentsAssociation.getChildAssocQName()))
+                    .stream()
+                    .map(nodeRef -> RecordRef.create("", nodeRef.toString()))
+                    .collect(Collectors.toList());
+
+                TypeDocumentsRecord document = new TypeDocumentsRecord(caseDocumentsAssociation.getETypeRef(),
+                    assocsRecordRefs);
+
+                typeDocumentsList.add(document);
+            }
+        }
 
         RecordsQueryResult<TypeDocumentsRecord> typeDocumentsRecords = new RecordsQueryResult<>();
         typeDocumentsRecords.setRecords(typeDocumentsList);
