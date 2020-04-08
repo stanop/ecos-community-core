@@ -1,5 +1,6 @@
 package ru.citeck.ecos.job;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -9,7 +10,6 @@ import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StopWatch;
 import ru.citeck.ecos.cases.RemoteCaseModelService;
 import ru.citeck.ecos.config.EcosConfigService;
@@ -24,7 +24,7 @@ import java.util.concurrent.ForkJoinPool;
 @Slf4j
 public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
 
-    @Autowired
+    @Setter
     private EcosConfigService ecosConfigService;
 
     /**
