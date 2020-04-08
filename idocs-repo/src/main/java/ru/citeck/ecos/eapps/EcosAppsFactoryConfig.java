@@ -74,6 +74,7 @@ public class EcosAppsFactoryConfig extends EcosAppsServiceFactory {
 
         Map<String, String> mapping = new HashMap<>();
         mapping.put("ui/form", "ecos-forms");
+        mapping.put("process/cmmn", "case/templates");
 
         localModulesService.setModuleLocations(mapping);
         return localModulesService;
