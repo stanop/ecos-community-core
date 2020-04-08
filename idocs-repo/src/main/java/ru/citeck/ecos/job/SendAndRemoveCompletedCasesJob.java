@@ -24,9 +24,6 @@ import java.util.concurrent.ForkJoinPool;
 @Slf4j
 public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
 
-    @Setter
-    private EcosConfigService ecosConfigService;
-
     /**
      * Constants
      */
@@ -50,6 +47,11 @@ public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
     private RemoteCaseModelService remoteCaseModelService;
 
     /**
+     * Ecos Config Service
+     */
+    private EcosConfigService ecosConfigService;
+
+    /**
      * Global properties
      */
     private Properties globalProperties;
@@ -63,6 +65,7 @@ public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
         searchService = (SearchService) jobDataMap.get("searchService");
         remoteCaseModelService = (RemoteCaseModelService) jobDataMap.get("remoteCaseModelService");
         globalProperties = (Properties) jobDataMap.get("global-properties");
+        ecosConfigService = (EcosConfigService) jobDataMap.get("ecosConfigService");
         storeRef = StoreRef.STORE_REF_WORKSPACE_SPACESSTORE;
     }
 
