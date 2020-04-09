@@ -97,7 +97,7 @@ public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
             customThreadPool.submit(() ->
                 documents.parallelStream()
                     .forEach(documentRef -> remoteCaseModelService.sendAndRemoveCaseModelsByDocument(documentRef))
-            );
+            ).get();
             watch.stop();
 
             log.debug(watch.prettyPrint());
