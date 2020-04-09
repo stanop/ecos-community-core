@@ -94,10 +94,11 @@ public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
             String threadsCountStr = (String) ecosConfigService.getParamValue(THREADS_COUNT_PROPERTY);
             int threadsCount = Integer.parseInt(threadsCountStr);
             ForkJoinPool customThreadPool = new ForkJoinPool(threadsCount);
+            // Use .get() to force wait for threads completion
             customThreadPool.submit(() ->
                 documents.parallelStream()
                     .forEach(documentRef -> remoteCaseModelService.sendAndRemoveCaseModelsByDocument(documentRef))
-            );
+            ).get();
             watch.stop();
 
             log.debug(watch.prettyPrint());
