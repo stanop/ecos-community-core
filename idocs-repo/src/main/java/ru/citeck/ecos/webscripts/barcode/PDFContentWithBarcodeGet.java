@@ -49,7 +49,7 @@ public class PDFContentWithBarcodeGet extends AbstractWebScript {
         }
 
         String barcodePropStr = req.getParameter(PARAM_BARCODEPROP);
-        if(TYPE_BARCODE128.equals(barcodeTypeStr) && StringUtils.isBlank(barcodePropStr)) {
+        if (TYPE_BARCODE128.equals(barcodeTypeStr) && StringUtils.isBlank(barcodePropStr)) {
             throw new WebScriptException(Status.STATUS_BAD_REQUEST, "barcodeProp is a mandatory parameter for barcodeType = Barcode128");
         }
 

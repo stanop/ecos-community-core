@@ -40,7 +40,7 @@ public class PDFBarcodeService implements ApplicationContextAware {
     private static final Integer STAMP_MARGIN = 20;
 
     public DataBundle putBarcodeOnDocument(DataBundle transformedDocument, String barcode) {
-        return  putBarcodeOnDocument(transformedDocument, barcode, null);
+        return putBarcodeOnDocument(transformedDocument, barcode, null);
     }
 
     public DataBundle putBarcodeOnDocument(DataBundle transformedDocument, String barCodeStr, String documentRef) {
@@ -60,7 +60,7 @@ public class PDFBarcodeService implements ApplicationContextAware {
 
             ContentWriter writer = contentService.getTempWriter();
 
-            try{
+            try {
                 PdfReader reader = new PdfReader(transformedDocument.getInputStream());
                 PdfStamper stamper = new PdfStamper(reader, writer.getContentOutputStream());
 
@@ -79,10 +79,10 @@ public class PDFBarcodeService implements ApplicationContextAware {
                 if (imageBarcode != null) {
                     for (int i = 1; i <= countPages; i++) {
                         AffineTransform transformPrefs = AffineTransform.getTranslateInstance(
-                                stamper.getReader().getPageSize(i).getWidth() / 2 - imageBarcode.getWidth() / 2,
-                                UNDER_MARGIN);
+                            stamper.getReader().getPageSize(i).getWidth() / 2 - imageBarcode.getWidth() / 2,
+                            UNDER_MARGIN);
                         transformPrefs.concatenate(AffineTransform.getScaleInstance(
-                                imageBarcode.getScaledWidth(), imageBarcode.getScaledHeight()));
+                            imageBarcode.getScaledWidth(), imageBarcode.getScaledHeight()));
                         stamper.getUnderContent(i).addImage(imageBarcode, transformPrefs);
                     }
                 }
@@ -92,12 +92,12 @@ public class PDFBarcodeService implements ApplicationContextAware {
                     if (imageBarcode != null) {
                         marginFromCenter = imageBarcode.getWidth() / 2 + STAMP_MARGIN;
                     } else {
-                        marginFromCenter = - imageQRcode.getWidth() / 2;
+                        marginFromCenter = -imageQRcode.getWidth() / 2;
                     }
 
                     AffineTransform transformPrefsQRcode = AffineTransform.getTranslateInstance(
-                            stamper.getReader().getPageSize(1).getWidth() / 2 + marginFromCenter,
-                            UNDER_MARGIN);
+                        stamper.getReader().getPageSize(1).getWidth() / 2 + marginFromCenter,
+                        UNDER_MARGIN);
                     transformPrefsQRcode.concatenate(AffineTransform.getScaleInstance(imageQRcode.getScaledWidth(), imageQRcode.getScaledHeight()));
                     stamper.getUnderContent(1).addImage(imageQRcode, transformPrefsQRcode);
                 }
@@ -146,9 +146,9 @@ public class PDFBarcodeService implements ApplicationContextAware {
 
     private String getUrl(SysAdminParams sysAdminParams) {
         return buildUrl(
-                sysAdminParams.getShareProtocol(),
-                sysAdminParams.getShareHost(),
-                sysAdminParams.getSharePort()
+            sysAdminParams.getShareProtocol(),
+            sysAdminParams.getShareHost(),
+            sysAdminParams.getSharePort()
         );
     }
 
@@ -173,15 +173,18 @@ public class PDFBarcodeService implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
+
     @Autowired
     @Qualifier("DataBundleProcessorHelper")
     public void setHelper(ProcessorHelper helper) {
         this.helper = helper;
     }
+
     @Autowired
     public void setContentService(ContentService contentService) {
         this.contentService = contentService;
     }
+
     @Autowired
     public void setSysAdminParams(SysAdminParams sysAdminParams) {
         this.sysAdminParams = sysAdminParams;

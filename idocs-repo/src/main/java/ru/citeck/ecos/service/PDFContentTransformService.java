@@ -49,7 +49,8 @@ public class PDFContentTransformService {
         return transformBundle;
     }
 
-    private DataBundle transformToPdf(ContentWriter writer, ContentReader reader, TransformationOptions options, Map<String, Object> model) {
+    private DataBundle transformToPdf(ContentWriter writer, ContentReader reader,
+                                      TransformationOptions options, Map<String, Object> model) {
         try {
             contentService.transform(reader, writer, options);
         } catch (ContentIOException | NoTransformerException var6) {
@@ -59,7 +60,8 @@ public class PDFContentTransformService {
         return this.helper.getDataBundle(resultReader, model);
     }
 
-    private DataBundle bmpAndJpegTransformToPdf(ContentWriter writer, ContentReader reader, TransformationOptions options, Map<String, Object> model) {
+    private DataBundle bmpAndJpegTransformToPdf(ContentWriter writer, ContentReader reader,
+                                                TransformationOptions options, Map<String, Object> model) {
         writer.setMimetype(MimetypeMap.MIMETYPE_IMAGE_JPEG);
         try {
             contentService.transform(reader, writer, options);
@@ -71,7 +73,7 @@ public class PDFContentTransformService {
         ContentWriter tempWriterForPdf = contentService.getTempWriter();
         tempWriterForPdf.setMimetype(MimetypeMap.MIMETYPE_PDF);
         ContentTransformer JpgTpPdfTransformer = contentService.getTransformer(contentJpgReader.getMimetype(),
-                MimetypeMap.MIMETYPE_PDF);
+            MimetypeMap.MIMETYPE_PDF);
         JpgTpPdfTransformer.transform(contentJpgReader, tempWriterForPdf);
         ContentReader resultReader = tempWriterForPdf.getReader();
 
