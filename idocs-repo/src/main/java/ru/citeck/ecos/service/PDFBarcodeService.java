@@ -98,7 +98,8 @@ public class PDFBarcodeService implements ApplicationContextAware {
                     AffineTransform transformPrefsQRcode = AffineTransform.getTranslateInstance(
                         stamper.getReader().getPageSize(1).getWidth() / 2 + marginFromCenter,
                         UNDER_MARGIN);
-                    transformPrefsQRcode.concatenate(AffineTransform.getScaleInstance(imageQRcode.getScaledWidth(), imageQRcode.getScaledHeight()));
+                    transformPrefsQRcode.concatenate(AffineTransform.getScaleInstance(imageQRcode.getScaledWidth(),
+                        imageQRcode.getScaledHeight()));
                     stamper.getUnderContent(1).addImage(imageQRcode, transformPrefsQRcode);
                 }
 
