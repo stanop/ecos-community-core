@@ -1368,7 +1368,7 @@
                                                                     "when": "",
                                                                     "eq": ""
                                                                 },
-                                                                "customConditional": "",
+                                                                "customConditional": "show = instance.options.formMode === 'CREATE'",
                                                                 "logic": [],
                                                                 "attributes": {},
                                                                 "type": "checkbox",
