@@ -2,6 +2,7 @@ package ru.citeck.ecos.records.source.alf;
 
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -287,7 +288,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
             props.put(ContentModel.PROP_NAME, name);
 
-            nodeRef = nodeUtils.createNode(parent, type, parentAssoc, props);
+            nodeRef = AuthenticationUtil.runAsSystem(() -> nodeUtils.createNode(parent, type, parentAssoc, props));
             resultRecord = new RecordMeta(RecordRef.valueOf(nodeRef.toString()));
 
         } else {
