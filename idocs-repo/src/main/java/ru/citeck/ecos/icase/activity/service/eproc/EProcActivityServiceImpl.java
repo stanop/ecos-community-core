@@ -9,6 +9,7 @@ import org.alfresco.service.cmr.dictionary.TypeDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.util.Pair;
 import org.alfresco.util.transaction.TransactionSupportUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -73,6 +74,18 @@ public class EProcActivityServiceImpl implements EProcActivityService {
     }
 
     @Override
+    public Pair<String, byte[]> getRawDefinitionForType(RecordRef caseRef) {
+        NodeRef caseNodeRef = RecordsUtils.toNodeRef(caseRef);
+        String processRevisionId = getRevisionIdForNode(caseNodeRef);
+
+        GetProcDefRevResp result = getProcessDefinitionByRevisionIdFromMicroserviceImpl(processRevisionId);
+        if (result == null) {
+            return null;
+        }
+        return new Pair<>(processRevisionId, result.getData());
+    }
+
+    @Override
     public ProcessDefinition getFullDefinition(RecordRef caseRef) {
         NodeRef caseNodeRef = RecordsUtils.toNodeRef(caseRef);
 
@@ -95,13 +108,17 @@ public class EProcActivityServiceImpl implements EProcActivityService {
     }
 
     private ProcessDefinition getFullDefinitionForNewCase(NodeRef caseNodeRef) {
+        String processRevisionId = getRevisionIdForNode(caseNodeRef);
+        return revisionIdToProcessDefinitionCache.getUnchecked(processRevisionId);
+    }
+
+    private String getRevisionIdForNode(NodeRef caseNodeRef) {
         EcosAlfTypesKey ecosAlfTypesKey = composeEcosAlfTypesKey(caseNodeRef);
         String processRevisionId = typesToRevisionIdCache.getUnchecked(ecosAlfTypesKey);
         if (StringUtils.isBlank(processRevisionId)) {
             throw new RuntimeException("Can not find processRevisionId for caseRef=" + caseNodeRef);
         }
-
-        return revisionIdToProcessDefinitionCache.getUnchecked(processRevisionId);
+        return processRevisionId;
     }
 
     private EcosAlfTypesKey composeEcosAlfTypesKey(NodeRef caseNodeRef) {
@@ -161,6 +178,14 @@ public class EProcActivityServiceImpl implements EProcActivityService {
     }
 
     private ProcessDefinition getProcessDefinitionByRevisionIdFromMicroservice(String definitionRevisionId) {
+        GetProcDefRevResp response = getProcessDefinitionByRevisionIdFromMicroserviceImpl(definitionRevisionId);
+        if (response == null) {
+            return null;
+        }
+        return cmmnSchemaParser.parse(response.getData());
+    }
+
+    private GetProcDefRevResp getProcessDefinitionByRevisionIdFromMicroserviceImpl(String definitionRevisionId) {
         GetProcDefRev getProcDefRevCommand = new GetProcDefRev();
         getProcDefRevCommand.setProcType(CMMN_PROCESS_TYPE);
         getProcDefRevCommand.setProcDefRevId(definitionRevisionId);
@@ -171,11 +196,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
                     "For detailed information see logs");
         }
 
-        GetProcDefRevResp response = commandResult.getCommandAs(GetProcDefRevResp.class);
-        if (response == null) {
-            return null;
-        }
-        return cmmnSchemaParser.parse(response.getData());
+        return commandResult.getCommandAs(GetProcDefRevResp.class);
     }
 
     @Override
@@ -189,6 +210,24 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_STATE_ID, createProcResp.getProcStateId());
 
         ProcessDefinition definition = getFullDefinitionForNewCase(caseNodeRef);
+        ProcessInstance processInstance = createProcessInstanceFromDefinition(
+                createProcResp.getProcId(),
+                caseRef,
+                definition);
+
+        putInstanceToTransactionScopeByStateId(caseRef, processInstance);
+
+        return processInstance;
+    }
+
+    @Override
+    public ProcessInstance createDefaultState(RecordRef caseRef, String revisionId, ProcessDefinition definition) {
+        NodeRef caseNodeRef = RecordsUtils.toNodeRef(caseRef);
+
+        CreateProcResp createProcResp = createProcessInstanceInMicroservice(revisionId, caseRef);
+        nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_PROCESS_ID, createProcResp.getProcId());
+        nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_STATE_ID, createProcResp.getProcStateId());
+
         ProcessInstance processInstance = createProcessInstanceFromDefinition(
                 createProcResp.getProcId(),
                 caseRef,

@@ -12,10 +12,7 @@ import ru.citeck.ecos.cmmn.condition.Condition;
 import ru.citeck.ecos.cmmn.condition.ConditionProperty;
 import ru.citeck.ecos.cmmn.condition.ConditionsList;
 import ru.citeck.ecos.cmmn.model.*;
-import ru.citeck.ecos.icase.CaseConstants;
-import ru.citeck.ecos.icase.element.CaseElementService;
 import ru.citeck.ecos.icase.CaseStatusService;
-import ru.citeck.ecos.icase.element.config.ElementConfigDto;
 import ru.citeck.ecos.model.*;
 import ru.citeck.ecos.service.EcosCoreServices;
 
@@ -25,7 +22,10 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.Serializable;
 import java.io.StringReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Maxim Strizhov (maxim.strizhov@citeck.ru)
@@ -35,7 +35,6 @@ public class CasePlanModelImport {
 
     private NodeService nodeService;
     private CaseStatusService caseStatusService;
-    private CaseElementService caseElementService;
 
     private CMMNUtils utils;
 
@@ -47,15 +46,12 @@ public class CasePlanModelImport {
     public CasePlanModelImport(ServiceRegistry serviceRegistry, CMMNUtils utils) {
         this.nodeService = serviceRegistry.getNodeService();
         this.caseStatusService = EcosCoreServices.getCaseStatusService(serviceRegistry);
-        this.caseElementService = EcosCoreServices.getCaseElementService(serviceRegistry);
         this.utils = utils;
     }
 
     public void importCasePlan(NodeRef caseRef, Case caseItem, Map<String, NodeRef> rolesRef) {
 
         log.info("Importing case plan... caseRef: " + caseRef);
-
-        importCaseElementTypes(caseRef, caseItem);
 
         planItemsMapping.put(caseItem.getId(), caseRef);
         Stage casePlanModel = caseItem.getCasePlanModel();
@@ -91,24 +87,6 @@ public class CasePlanModelImport {
             }
         }
         importEvents(casePlanModel);
-    }
-
-    private void importCaseElementTypes(NodeRef caseRef, Case caseItem) {
-
-        String elementsStr = caseItem.getOtherAttributes().get(CMMNUtils.QNAME_ELEMENT_TYPES);
-
-        if (StringUtils.isNotBlank(elementsStr)) {
-
-            String[] elements = elementsStr.split(",");
-
-            for (String element : elements) {
-                Optional<ElementConfigDto> config = caseElementService.getConfig(element);
-                config.ifPresent(configDto -> {
-                    NodeRef elementRef = configDto.getNodeRef();
-                    caseElementService.addElement(elementRef, caseRef, CaseConstants.ELEMENT_TYPES);
-                });
-            }
-        }
     }
 
     private void importTimer(NodeRef parentStageRef, TTimerEventListener timer) {

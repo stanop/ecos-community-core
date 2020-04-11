@@ -67,9 +67,22 @@ public class CmmnSchemaParser {
     public ProcessDefinition parse(byte[] source) {
         try (ByteArrayInputStream stream = new ByteArrayInputStream(source)) {
             Definitions definitions = xmlContentDAO.read(stream);
-            return parseDefinitions(definitions);
+            if (definitions == null || CollectionUtils.isEmpty(definitions.getCase())) {
+                return null;
+            }
+            return parse(definitions.getCase().get(0));
         } catch (IOException e) {
             throw new RuntimeException("Could not parse definition", e);
+        }
+    }
+
+    public ProcessDefinition parse(Case caseItem) {
+        try {
+            ProcessDefinition definition = new ProcessDefinition();
+            definition.setId(caseItem.getId());
+            definition.setRoles(parseRoleDefinitions(caseItem));
+            definition.setActivityDefinition(parseRootActivityDefinition(caseItem));
+            return definition;
         } finally {
             clearParsingExecutionCache();
         }
@@ -81,21 +94,6 @@ public class CmmnSchemaParser {
         evaluatorDefinitionIdCounter.remove();
         activityIndexCounter.remove();
         idToVarNameRoleCache.remove();
-    }
-
-    private ProcessDefinition parseDefinitions(Definitions definitions) {
-        if (definitions == null || CollectionUtils.isEmpty(definitions.getCase())) {
-            return null;
-        }
-        return parseCase(definitions.getCase().get(0));
-    }
-
-    private ProcessDefinition parseCase(Case caseItem) {
-        ProcessDefinition definition = new ProcessDefinition();
-        definition.setId(caseItem.getId());
-        definition.setRoles(parseRoleDefinitions(caseItem));
-        definition.setActivityDefinition(parseRootActivityDefinition(caseItem));
-        return definition;
     }
 
     private ActivityDefinition parseRootActivityDefinition(Case caseItem) {
