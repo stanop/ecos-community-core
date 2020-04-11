@@ -1,12 +1,12 @@
 package ru.citeck.ecos.cmmn.service.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import ru.citeck.ecos.cmmn.CMMNUtils;
 import ru.citeck.ecos.cmmn.condition.Condition;
 import ru.citeck.ecos.cmmn.condition.ConditionProperty;
@@ -30,10 +30,8 @@ import java.util.*;
 /**
  * @author Maxim Strizhov (maxim.strizhov@citeck.ru)
  */
+@Slf4j
 public class CasePlanModelImport {
-    private static final Logger logger = Logger.getLogger(CasePlanModelImport.class);
-    public static final QName ASSOC_ACTIVITIES = QName.createQName("http://www.citeck.ru/model/activity/1.0", "activities");
-    public static final QName ASSOC_COMPLETENESS_LEVELS = QName.createQName("http://www.citeck.ru/model/case/requirement/1.0", "completenessLevels");
 
     private NodeService nodeService;
     private CaseStatusService caseStatusService;
@@ -55,7 +53,7 @@ public class CasePlanModelImport {
 
     public void importCasePlan(NodeRef caseRef, Case caseItem, Map<String, NodeRef> rolesRef) {
 
-        logger.info("Importing case plan... caseRef: " + caseRef);
+        log.info("Importing case plan... caseRef: " + caseRef);
 
         importCaseElementTypes(caseRef, caseItem);
 
@@ -71,13 +69,13 @@ public class CasePlanModelImport {
                 NodeRef nodeRef = utils.extractNodeRefFromCmmnId(comletnessLevel);
                 completnessLevelRefs.put(comletnessLevel, nodeRef);
                 if (!nodeService.exists(nodeRef)) {
-                    logger.error("Completness level with nodeRef = " + nodeRef + " doesn't exists!");
+                    log.error("Completness level with nodeRef = " + nodeRef + " doesn't exists!");
                     isCompletnessLevelsExists = false;
                 }
             }
             if (isCompletnessLevelsExists) {
                 for (NodeRef nodeRef : completnessLevelRefs.values()) {
-                    nodeService.createAssociation(caseRef, nodeRef, ASSOC_COMPLETENESS_LEVELS);
+                    nodeService.createAssociation(caseRef, nodeRef, RequirementModel.ASSOC_COMPLETENESS_LEVELS);
                 }
             }
         }
@@ -85,11 +83,11 @@ public class CasePlanModelImport {
         List<JAXBElement<? extends TPlanItemDefinition>> definitions = casePlanModel.getPlanItemDefinition();
         for (JAXBElement<? extends TPlanItemDefinition> jaxbElement : definitions) {
             if (utils.isTask(jaxbElement) || utils.isProcessTask(jaxbElement)) {
-                importTask(caseRef, (TTask) jaxbElement.getValue(), ASSOC_ACTIVITIES);
+                importTask(caseRef, (TTask) jaxbElement.getValue());
             } else if (utils.isStage(jaxbElement)) {
-                importStage(caseRef, (Stage) jaxbElement.getValue(), ASSOC_ACTIVITIES);
+                importStage(caseRef, (Stage) jaxbElement.getValue());
             } else if (utils.isTimer(jaxbElement)) {
-                importTimer(caseRef, (TTimerEventListener) jaxbElement.getValue(), ASSOC_ACTIVITIES);
+                importTimer(caseRef, (TTimerEventListener) jaxbElement.getValue());
             }
         }
         importEvents(casePlanModel);
@@ -113,27 +111,33 @@ public class CasePlanModelImport {
         }
     }
 
-    private void importTimer(NodeRef parentStageRef, TTimerEventListener timer, QName assocName) {
+    private void importTimer(NodeRef parentStageRef, TTimerEventListener timer) {
         QName nodeType = QName.createQName(timer.getOtherAttributes().get(CMMNUtils.QNAME_NODE_TYPE));
-        NodeRef timerRef = nodeService.createNode(parentStageRef, assocName, assocName, nodeType).getChildRef();
+        NodeRef timerRef = nodeService.createNode(parentStageRef,
+                ActivityModel.ASSOC_ACTIVITIES,
+                ActivityModel.ASSOC_ACTIVITIES,
+                nodeType).getChildRef();
         importAttributes(timer, timerRef);
         planItemsMapping.put(timer.getId(), timerRef);
     }
 
-    private void importStage(NodeRef parentStageRef, Stage stage, QName assocName) {
-        logger.debug("Importing stage: " + stage.getId());
-        NodeRef stageNodeRef = nodeService.createNode(parentStageRef, assocName, assocName, StagesModel.TYPE_STAGE).getChildRef();
+    private void importStage(NodeRef parentStageRef, Stage stage) {
+        log.debug("Importing stage: " + stage.getId());
+        NodeRef stageNodeRef = nodeService.createNode(parentStageRef,
+                ActivityModel.ASSOC_ACTIVITIES,
+                ActivityModel.ASSOC_ACTIVITIES,
+                StagesModel.TYPE_STAGE).getChildRef();
         stage.getOtherAttributes().put(CMMNUtils.QNAME_NEW_ID, stageNodeRef.toString());
         importAttributes(stage, stageNodeRef);
         planItemsMapping.put(stage.getId(), stageNodeRef);
         if (!stage.getPlanItemDefinition().isEmpty()) {
             for (JAXBElement<? extends TPlanItemDefinition> jaxbElement : stage.getPlanItemDefinition()) {
                 if (utils.isTask(jaxbElement) || utils.isProcessTask(jaxbElement)) {
-                    importTask(stageNodeRef, (TTask) jaxbElement.getValue(), ActivityModel.ASSOC_ACTIVITIES);
+                    importTask(stageNodeRef, (TTask) jaxbElement.getValue());
                 } else if (utils.isStage(jaxbElement)) {
-                    importStage(stageNodeRef, (Stage) jaxbElement.getValue(), ActivityModel.ASSOC_ACTIVITIES);
+                    importStage(stageNodeRef, (Stage) jaxbElement.getValue());
                 } else if (utils.isTimer(jaxbElement)) {
-                    importTimer(stageNodeRef, (TTimerEventListener) jaxbElement.getValue(), ASSOC_ACTIVITIES);
+                    importTimer(stageNodeRef, (TTimerEventListener) jaxbElement.getValue());
                 }
             }
         }
@@ -141,10 +145,13 @@ public class CasePlanModelImport {
         addCompletnessLevels(stage, stageNodeRef);
     }
 
-    private void importTask(NodeRef parentStageRef, TTask task, QName assocName) {
-        logger.debug("Importing task: " + task.getId());
+    private void importTask(NodeRef parentStageRef, TTask task) {
+        log.debug("Importing task: " + task.getId());
         QName nodeType = QName.createQName(task.getOtherAttributes().get(CMMNUtils.QNAME_NODE_TYPE));
-        NodeRef taskNodeRef = nodeService.createNode(parentStageRef, assocName, assocName, nodeType).getChildRef();
+        NodeRef taskNodeRef = nodeService.createNode(parentStageRef,
+                ActivityModel.ASSOC_ACTIVITIES,
+                ActivityModel.ASSOC_ACTIVITIES,
+                nodeType).getChildRef();
         addRoles(task, taskNodeRef);
         importAttributes(task, taskNodeRef);
         planItemsMapping.put(task.getId(), taskNodeRef);
@@ -227,7 +234,7 @@ public class CasePlanModelImport {
                 if (statusRef != null) {
                     nodeService.createAssociation(nodeRef, statusRef, entry.getValue());
                 } else {
-                    logger.error("Status " + status + " not found in system. Please create it and import the template again");
+                    log.error("Status " + status + " not found in system. Please create it and import the template again");
                 }
             }
         }
@@ -245,7 +252,7 @@ public class CasePlanModelImport {
             TPlanItemDefinition planItemDefinition = (TPlanItemDefinition) planItem.getDefinitionRef();
             NodeRef activityRef = planItemsMapping.get(planItemDefinition.getId());
 
-            logger.debug("Importing events for " + planItem.getId());
+            log.debug("Importing events for " + planItem.getId());
             for (Sentry sentry : getEntrySentries(planItem, stageSentries)) {
                 importEvent(activityRef, sentry, true);
             }

@@ -86,7 +86,7 @@ public class CMMNUtils implements ContentValueConverter {
     private static final QName QNAME_TASK_AUTHORITIES = new QName(NAMESPACE, "taskAuthorities");
     private static final QName QNAME_TASK_ROLES = new QName(NAMESPACE, "taskRoles");
 
-    private static final QName QNAME_ROLE_VARNAME = new QName(NAMESPACE, "roleVarName");
+    public static final QName QNAME_ROLE_VARNAME = new QName(NAMESPACE, "roleVarName");
     private static final QName QNAME_ROLE_REFERENSE = new QName(NAMESPACE, "isReferenceRole");
     private static final QName QNAME_ROLE_SCRIPT = new QName(NAMESPACE, "roleScript");
 
