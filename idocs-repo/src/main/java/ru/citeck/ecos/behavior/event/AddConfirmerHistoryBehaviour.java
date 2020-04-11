@@ -3,10 +3,13 @@ package ru.citeck.ecos.behavior.event;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.PolicyComponent;
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.behavior.event.trigger.UserActionEventTrigger;
@@ -16,6 +19,7 @@ import ru.citeck.ecos.model.EventModel;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
+import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,16 +27,25 @@ import java.util.Map;
 /**
  * @author Pavel Simonov
  */
+@Component
 public class AddConfirmerHistoryBehaviour implements EventPolicies.BeforeEventPolicy {
 
     private static final String HISTORY_EVENT_MESSAGE = "Добавлен согласующий - %s";
     private static final String HISTORY_EVENT_COMMENT = " с комментарием: \"%s\"";
     private static final String USER_EVENT_HISTORY_TYPE = "user.action";
 
-    private PolicyComponent policyComponent;
     private HistoryService historyService;
+    private PolicyComponent policyComponent;
     private NodeService nodeService;
 
+    @Autowired
+    public AddConfirmerHistoryBehaviour(ServiceRegistry serviceRegistry, HistoryService historyService) {
+        this.historyService = historyService;
+        this.policyComponent = serviceRegistry.getPolicyComponent();
+        this.nodeService = serviceRegistry.getNodeService();
+    }
+
+    @PostConstruct
     public void init() {
         policyComponent.bindClassBehaviour(EventPolicies.BeforeEventPolicy.QNAME,
                 ContentModel.TYPE_CMOBJECT,
@@ -42,7 +55,8 @@ public class AddConfirmerHistoryBehaviour implements EventPolicies.BeforeEventPo
     @Override
     public void beforeEvent(NodeRef eventRef) {
         if (nodeService.getType(eventRef).equals(EventModel.TYPE_USER_ACTION)) {
-            NodeRef additionalData = (NodeRef) ActionConditionUtils.getTransactionVariables().get(UserActionEventTrigger.ADDITIONAL_DATA_VARIABLE);
+            NodeRef additionalData = (NodeRef) ActionConditionUtils.getTransactionVariables()
+                    .get(UserActionEventTrigger.ADDITIONAL_DATA_VARIABLE);
             if (additionalData != null) {
                 QName dataType = nodeService.getType(additionalData);
                 NodeRef eventSource = RepoUtils.getFirstTargetAssoc(eventRef, EventModel.ASSOC_EVENT_SOURCE, nodeService);
@@ -53,19 +67,9 @@ public class AddConfirmerHistoryBehaviour implements EventPolicies.BeforeEventPo
                 eventProperties.put(HistoryModel.PROP_NAME, USER_EVENT_HISTORY_TYPE);
                 eventProperties.put(HistoryModel.ASSOC_DOCUMENT, eventSource);
                 eventProperties.put(HistoryModel.PROP_TASK_COMMENT, buildEventComment(additionalData));
-                NodeRef historyEvent = historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
-                if (historyEvent != null) {
-                    transferAttributes(additionalData, historyEvent);
-                }
+                historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
             }
         }
-    }
-
-    private void transferAttributes(NodeRef additionalData, NodeRef historyEvent) {
-        String comment = (String) nodeService.getProperty(additionalData, EventModel.PROP_COMMENT);
-        nodeService.setProperty(historyEvent, EventModel.PROP_COMMENT, comment != null ? comment : "");
-        NodeRef confirmerRef = RepoUtils.getFirstTargetAssoc(additionalData, EventModel.ASSOC_CONFIRMER, nodeService);
-        nodeService.createAssociation(historyEvent, confirmerRef, EventModel.ASSOC_CONFIRMER);
     }
 
     private String buildEventComment(NodeRef additionalDataRef) {
@@ -85,17 +89,5 @@ public class AddConfirmerHistoryBehaviour implements EventPolicies.BeforeEventPo
             result = result + String.format(HISTORY_EVENT_COMMENT, comment);
         }
         return result;
-    }
-
-    public void setPolicyComponent(PolicyComponent policyComponent) {
-        this.policyComponent = policyComponent;
-    }
-
-    public void setHistoryService(HistoryService historyService) {
-        this.historyService = historyService;
-    }
-
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
     }
 }
