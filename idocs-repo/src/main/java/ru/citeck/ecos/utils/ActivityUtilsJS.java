@@ -8,7 +8,7 @@ import ru.citeck.ecos.icase.activity.dto.EventRef;
 
 public class ActivityUtilsJS {
 
-    //TODO: algorithm for eproc activities is missed.
+    //TODO: algorithm for eproc activities is missed?
     public static ActivityRef getActivityRef(Object object, AlfActivityUtils alfActivityUtils) {
         if (object == null) {
             return null;
@@ -34,7 +34,7 @@ public class ActivityUtilsJS {
             "Source: " + object.toString());
     }
 
-    //TODO: algorithm for eproc events is missed.
+    //TODO: algorithm for eproc events is missed?
     public static EventRef getEventRef(Object object, AlfActivityUtils alfActivityUtils) {
         if (object == null) {
             return null;

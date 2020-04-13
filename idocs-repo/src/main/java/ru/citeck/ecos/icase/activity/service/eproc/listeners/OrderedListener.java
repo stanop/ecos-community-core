@@ -5,7 +5,11 @@ import org.jetbrains.annotations.NotNull;
 
 public interface OrderedListener extends Comparable<OrderedListener> {
 
-    int getOrder();
+    int DEFAULT_ORDER_VALUE = 100;
+
+    default int getOrder() {
+        return DEFAULT_ORDER_VALUE;
+    }
 
     /**
      * @param another another listener

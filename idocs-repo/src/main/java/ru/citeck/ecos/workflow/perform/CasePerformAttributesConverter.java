@@ -9,6 +9,9 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.behavior.activity.CaseTaskAttributesConverter;
+import ru.citeck.ecos.icase.activity.dto.ActivityInstance;
+import ru.citeck.ecos.icase.activity.service.eproc.EProcUtils;
+import ru.citeck.ecos.icase.activity.service.eproc.parser.CmmnDefinitionConstants;
 import ru.citeck.ecos.model.CasePerformModel;
 import ru.citeck.ecos.model.RouteModel;
 import ru.citeck.ecos.role.CaseRoleService;
@@ -34,7 +37,24 @@ public class CasePerformAttributesConverter implements CaseTaskAttributesConvert
 
     @Override
     public Map<QName, Serializable> convert(Map<QName, Serializable> properties, NodeRef taskRef) {
+        List<NodeRef> performersRoles = nodeUtils.getAssocTargets(taskRef, CasePerformModel.ASSOC_PERFORMERS_ROLES);
+        return convertImpl(properties, performersRoles);
+    }
 
+    @Override
+    public Map<QName, Serializable> convert(Map<QName, Serializable> properties,
+                                            NodeRef caseRef, ActivityInstance instance) {
+
+        String[] taskRoleVarNames = EProcUtils.getAnyAttribute(instance,
+                CmmnDefinitionConstants.TASK_ROLE_VAR_NAMES_SET_KEY, String[].class);
+        List<NodeRef> performersRoles = new ArrayList<>(taskRoleVarNames.length);
+        for (String taskRoleVarName : taskRoleVarNames) {
+            performersRoles.add(caseRoleService.getRole(caseRef, taskRoleVarName));
+        }
+        return convertImpl(properties, performersRoles);
+    }
+
+    private Map<QName, Serializable> convertImpl(Map<QName, Serializable> properties, List<NodeRef> performersRoles) {
         Map<QName, Serializable> result = new HashMap<>(properties);
 
         TaskStages stages = new TaskStages();
@@ -42,8 +62,6 @@ public class CasePerformAttributesConverter implements CaseTaskAttributesConvert
 
         Date defaultDueDate = (Date) properties.get(WorkflowModel.PROP_WORKFLOW_DUE_DATE);
         String formKey = (String) properties.get(CasePerformModel.PROP_FORM_KEY);
-
-        List<NodeRef> performersRoles = nodeUtils.getAssocTargets(taskRef, CasePerformModel.ASSOC_PERFORMERS_ROLES);
 
         for (NodeRef roleRef : performersRoles) {
 
@@ -121,7 +139,7 @@ public class CasePerformAttributesConverter implements CaseTaskAttributesConvert
     @Override
     public Set<String> getWorkflowTypes() {
         return new HashSet<>(Arrays.asList("activiti$case-perform",
-                                           "flowable$case-perform"));
+                "flowable$case-perform"));
     }
 
     @Autowired

@@ -37,9 +37,9 @@
             </properties>
         </aspect>
 
-        <aspect name="icaseEproc:hasActivityId">
+        <aspect name="icaseEproc:hasActivityRef">
             <properties>
-                <property name="icaseEproc:activityId">
+                <property name="icaseEproc:activityRef">
                     <type>d:text</type>
                 </property>
             </properties>

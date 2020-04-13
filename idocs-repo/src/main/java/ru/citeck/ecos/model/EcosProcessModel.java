@@ -8,11 +8,11 @@ public interface EcosProcessModel {
 
     QName ASPECT_HAS_PROCESS_ID = QName.createQName(NAMESPACE, "hasProcessId");
     QName ASPECT_HAS_STATE_ID = QName.createQName(NAMESPACE, "hasStateId");
-    QName ASPECT_HAS_ACTIVITY_ID = QName.createQName(NAMESPACE, "hasActivityId");
+    QName ASPECT_HAS_ACTIVITY_REF = QName.createQName(NAMESPACE, "hasActivityRef");
 
     QName PROP_PROCESS_ID = QName.createQName(NAMESPACE, "processId");
     QName PROP_STATE_ID = QName.createQName(NAMESPACE, "stateId");
-    QName PROP_ACTIVITY_ID = QName.createQName(NAMESPACE, "activityId");
+    QName PROP_ACTIVITY_REF = QName.createQName(NAMESPACE, "activityRef");
 
 
 }
