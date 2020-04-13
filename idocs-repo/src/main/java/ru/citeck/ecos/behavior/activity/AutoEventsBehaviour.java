@@ -9,17 +9,21 @@ import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.behavior.base.AbstractBehaviour;
 import ru.citeck.ecos.behavior.base.PolicyMethod;
+import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
-import ru.citeck.ecos.icase.activity.CaseActivityPolicies.OnChildrenIndexChangedPolicy;
+import ru.citeck.ecos.icase.activity.service.alfresco.CaseActivityPolicies.OnChildrenIndexChangedPolicy;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.EventModel;
 import ru.citeck.ecos.model.ICaseEventModel;
 import ru.citeck.ecos.model.StagesModel;
 import ru.citeck.ecos.service.EcosCoreServices;
+import ru.citeck.ecos.utils.AlfActivityUtils;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -28,6 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Component
+@DependsOn("idocs.dictionaryBootstrap")
 public class AutoEventsBehaviour extends AbstractBehaviour
                                  implements OnChildrenIndexChangedPolicy,
                                             OnCreateChildAssociationPolicy,
@@ -37,6 +42,9 @@ public class AutoEventsBehaviour extends AbstractBehaviour
     private static final QName TYPE_ACTIVITY = ActivityModel.TYPE_ACTIVITY;
 
     private CaseActivityService caseActivityService;
+
+    @Autowired
+    private AlfActivityUtils alfActivityUtils;
 
     @Override
     protected void beforeInit() {
@@ -75,34 +83,37 @@ public class AutoEventsBehaviour extends AbstractBehaviour
         }
     }
 
-    private void updateChildren(NodeRef parentRef) {
-
-        List<CaseActivity> activities = caseActivityService.getActivities(parentRef.toString());
+    private void updateChildren(NodeRef parentNodeRef) {
+        ActivityRef parentRef = alfActivityUtils.composeActivityRef(parentNodeRef);
+        List<CaseActivity> activities = caseActivityService.getActivities(parentRef);
 
         for (int i = 0; i < activities.size(); i++) {
 
-            NodeRef beforeRef = null;
+            NodeRef beforeNodeRef = null;
             if (i > 0) {
-                beforeRef = new NodeRef(activities.get(i - 1).getId());
+                beforeNodeRef = alfActivityUtils.getActivityNodeRef(activities.get(i - 1).getActivityRef());
             }
 
-            NodeRef activityRef = new NodeRef(activities.get(i).getId());
-            updateActivity(parentRef, activityRef, beforeRef);
+            NodeRef activityNodeRef = alfActivityUtils.getActivityNodeRef(activities.get(i).getActivityRef());
+            updateActivity(parentNodeRef, activityNodeRef, beforeNodeRef);
         }
     }
 
-    private void updateActivity(NodeRef activityRef) {
-        NodeRef parentRef = nodeService.getPrimaryParent(activityRef).getParentRef();
+    private void updateActivity(NodeRef activityNodeRef) {
+        ActivityRef activityRef = alfActivityUtils.composeActivityRef(activityNodeRef);
+        ActivityRef parentRef = alfActivityUtils.getParentActivityRef(activityRef);
 
-        List<CaseActivity> activities = caseActivityService.getActivities(parentRef.toString());
-        CaseActivity selectedActivity = caseActivityService.getActivity(activityRef.toString());
+        NodeRef parentNodeRef = alfActivityUtils.getActivityNodeRef(parentRef);
+
+        List<CaseActivity> activities = caseActivityService.getActivities(parentRef);
+        CaseActivity selectedActivity = caseActivityService.getActivity(activityRef);
         int idx = activities.indexOf(selectedActivity);
 
-        NodeRef beforeRef = null;
+        NodeRef beforeNodeRef = null;
         if (idx > 0) {
-            beforeRef = new NodeRef(activities.get(idx - 1).getId());
+            beforeNodeRef = alfActivityUtils.getActivityNodeRef(activities.get(idx - 1).getActivityRef());
         }
-        updateActivity(parentRef, activityRef, beforeRef);
+        updateActivity(parentNodeRef, activityNodeRef, beforeNodeRef);
     }
 
     private void updateActivity(NodeRef parentRef, NodeRef activityRef, NodeRef beforeRef) {

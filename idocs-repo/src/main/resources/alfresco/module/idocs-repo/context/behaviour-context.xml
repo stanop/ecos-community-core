@@ -120,6 +120,7 @@
             </map>
         </property>
         <property name="order" value="${behavior.order.autoname}"/>
+        <property name="enabled" value="true"/>
     </bean>
 
     <bean id="TitleGenerationBehaviour" class="ru.citeck.ecos.behavior.common.TitleGenerationBehaviour"
@@ -132,6 +133,7 @@
         <property name="templateEngine" value="freemarker"/>
         <property name="nodeVariable" value="node"/>
         <property name="order" value="${behavior.order.title}"/>
+        <property name="enabled" value="true"/>
     </bean>
 
     <bean id="FieldAutoFillBehaviour" class="ru.citeck.ecos.behavior.common.FieldAutoFillBehaviour"
@@ -778,12 +780,6 @@
         <property name="nodeUtils" ref="nodeUtils" />
     </bean>
 
-    <!--<bean id="ecos.caseStatusCompleteBehaviour" class="ru.citeck.ecos.behavior.icase.CaseStatusCompleteBehaviourOld" init-method="init">
-        <property name="policyComponent" ref="policyComponent" />
-        <property name="nodeService" ref="nodeService" />
-        <property name="searchService" ref="searchService"/>
-    </bean>-->
-
     <bean class="ru.citeck.ecos.behavior.role.UpdateRolesBehaviour" init-method="init">
         <property name="caseRoleService" ref="caseRoleService" />
         <property name="policyComponent" ref="policyComponent" />
@@ -795,10 +791,6 @@
         <property name="caseRoleService" ref="caseRoleService" />
         <property name="policyComponent" ref="policyComponent" />
         <property name="nodeService" ref="nodeService" />
-    </bean>
-
-    <bean class="ru.citeck.ecos.behavior.icase.UpdateCasePerformAssignees" init-method="init">
-        <property name="serviceRegistry" ref="ServiceRegistry" />
     </bean>
 
     <bean class="ru.citeck.ecos.behavior.icase.ClearNodeActionsCache" />

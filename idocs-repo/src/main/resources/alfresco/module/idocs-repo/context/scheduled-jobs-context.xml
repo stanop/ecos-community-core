@@ -88,6 +88,7 @@
                     <map>
                         <entry key="searchService" value-ref="searchService"/>
                         <entry key="remoteCaseModelService" value-ref="remoteCaseModelService"/>
+                        <entry key="ecosConfigService" value-ref="ecosConfigService"/>
                         <entry key="global-properties" value-ref="global-properties"/>
                         <entry key="jobLockService">
                             <ref bean="jobLockService"/>
@@ -103,7 +104,7 @@
         </property>
         <property name="enabled" value="${citeck.remote.case.service.enabled}"/>
     </bean>
-    
+
     <!-- not tested -->
 	<!--bean id="RemoveDetachedJob" class="org.alfresco.util.CronTriggerBean">
         <property name="jobDetail">
@@ -113,7 +114,7 @@
                 </property>
 				<property name="jobDataAsMap">
 					<map>
-						<entry key="NodeService" value-ref="NodeService" />	
+						<entry key="NodeService" value-ref="NodeService" />
 						<entry key="searchService" value-ref="searchService" />
 						<entry key="minusDays" value="${workflow.remove.orphaned.minusDays}" />
 						<entry key="jobLockService">

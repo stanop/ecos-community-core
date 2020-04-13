@@ -1,6 +1,7 @@
 package ru.citeck.ecos.icase.activity.service.eproc;
 
 import org.springframework.stereotype.Service;
+import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.service.CaseActivityDelegate;
 
@@ -10,67 +11,57 @@ import java.util.List;
 public class EProcCaseActivityDelegate implements CaseActivityDelegate {
 
     @Override
-    public void startActivity(CaseActivity activity) {
+    public void startActivity(ActivityRef activity) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public void stopActivity(CaseActivity activity) {
+    public void stopActivity(ActivityRef activity) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public void restartChildActivity(CaseActivity parentId, CaseActivity childId) {
+    public void reset(ActivityRef activityRef) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public void reset(String documentId) {
+    public CaseActivity getActivity(ActivityRef activityRef) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public CaseActivity getActivity(String activityId) {
+    public List<CaseActivity> getActivities(ActivityRef activityRef) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<CaseActivity> getActivities(String documentId) {
+    public List<CaseActivity> getActivities(ActivityRef activityRef, boolean recurse) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<CaseActivity> getActivities(String documentId, boolean recurse) {
+    public List<CaseActivity> getStartedActivities(ActivityRef activityRef) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<CaseActivity> getStartedActivities(String documentId) {
+    public CaseActivity getActivityByTitle(ActivityRef activityRef, String title, boolean recurse) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public CaseActivity getActivityByTitle(String documentId, String title, boolean recurse) {
+    public void setParent(ActivityRef activityRef, ActivityRef parentRef) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public String getDocumentId(String activityId) {
+    public void setParentInIndex(ActivityRef activityRef, int newIndex) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public void setParent(String activityId, String parentId) {
-        throw new UnsupportedOperationException("Method not implemented");
-    }
-
-    @Override
-    public void setParentInIndex(CaseActivity activity, int newIndex) {
-        throw new UnsupportedOperationException("Method not implemented");
-    }
-
-    @Override
-    public boolean hasActiveChildren(CaseActivity activity) {
+    public boolean hasActiveChildren(ActivityRef activityRef) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 }

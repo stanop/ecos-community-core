@@ -1,6 +1,5 @@
 package ru.citeck.ecos.icase.completeness;
 
-import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -30,7 +29,6 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
 
     private NodeService nodeService;
     private PredicateService predicateService;
-    private DictionaryService dictionaryService;
     private CaseElementServiceImpl caseElementService;
 
     private final List<CurrentLevelsResolver> currentLevelsResolvers = new ArrayList<>();
@@ -249,9 +247,5 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
 
     public void setCaseElementService(CaseElementServiceImpl caseElementService) {
         this.caseElementService = caseElementService;
-    }
-
-    public void setDictionaryService(DictionaryService dictionaryService) {
-        this.dictionaryService = dictionaryService;
     }
 }

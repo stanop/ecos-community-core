@@ -26,7 +26,7 @@
     cursor: pointer;
 }
 
-.content-table tr > td > div.yui-dt-liner 
+.content-table tr > td > div.yui-dt-liner
 {
 	min-height: 20px;
 }
@@ -84,7 +84,6 @@
 .filter-criteria .criterion .criterion-actions{
 	display: table-cell;
 	vertical-align: middle;
-	line-height: 1px;
 }
 
 .filter-criteria .criterion .criterion-actions {
@@ -124,7 +123,7 @@
     margin-right: 10px;
 }
 
-.filter-criteria .criterion .criterion-value .criterion-value-field-input, 
+.filter-criteria .criterion .criterion-value .criterion-value-field-input,
 .filter-criteria .criterion .criterion-value .criterion-value-field-view,
 .filter-criteria .criterion .criterion-value .orgstruct-control,
 .filter-criteria .criterion .criterion-value-field-view,
@@ -145,7 +144,7 @@
 
 .filter-criteria .criterion .criterion-value .criterion-value-field-input select {
     background-color: white;
-    
+
 }
 
 .filter-criteria .criterion .criterion-value .criterion-value-field-input select,
@@ -383,7 +382,7 @@ div.toolbar.flat-button span.yui-checkbox-button-checked span.first-child
 
 
 /* filter button */
-.toolbar .yui-button.filter span.first-child button, 
+.toolbar .yui-button.filter span.first-child button,
 .toolbar .yui-button.filter-select span.first-child button {
 	background-image: url(images/filter.png);
 }
@@ -394,14 +393,14 @@ div.toolbar.flat-button span.yui-checkbox-button-checked span.first-child
 	background-image: url(images/filter-active.png);
 }
 
-.toolbar .yui-button.yui-button-checked.filter span.first-child button, 
+.toolbar .yui-button.yui-button-checked.filter span.first-child button,
 .toolbar .yui-button.yui-button-checked.filter-select span.first-child button {
 	background-image: url(images/filter-checked.png);
 }
 
 
 /* settings button */
-.toolbar .yui-button.settings span.first-child button, 
+.toolbar .yui-button.settings span.first-child button,
 .toolbar .yui-button.settings-select span.first-child button {
 	background-image: url(images/settings.png);
 }
@@ -457,7 +456,7 @@ div.toolbar.flat-button span.yui-checkbox-button-checked span.first-child
 .toolbar .yui-button.fullscreen,
 .toolbar .yui-button.fullscreen span.first-child a {
   padding: 0;
-  margin: 0; 
+  margin: 0;
 }
 
 .toolbar .yui-button.fullscreen span.first-child a {
@@ -497,7 +496,7 @@ div.toolbar.flat-button span.yui-checkbox-button-checked span.first-child
 	background-image: url(images/twister-open.png);
 }
 
-.toolbar.icon-buttons .yui-button.yui-button-disabled.yui-menu-button.yui-menu-button-disabled span.first-child, 
+.toolbar.icon-buttons .yui-button.yui-button-disabled.yui-menu-button.yui-menu-button-disabled span.first-child,
 .toolbar-menu .icon-buttons .yui-button.yui-button-disabled.yui-menu-button.yui-menu-button-disabled span.first-child {
 	background-image: url(images/twister-disabled.png);
 }
@@ -668,7 +667,7 @@ select.yui-pg-rpp-options
 	min-width: 200px;
 	padding: 10px 0;
 	text-align: center;
-    border: 1px solid transparent; 
+    border: 1px solid transparent;
 }
 
 .journals-menu .journal:hover {

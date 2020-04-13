@@ -101,6 +101,7 @@ var utils = {
         if (activity) caseActivityService.startActivity(activity);
     },
 
+    //TODO: use caseActivityService
     getActivityByName: function(name) {
         var activities = document.childAssocs['activ:activities'] || [];
         for (var i in activities) {

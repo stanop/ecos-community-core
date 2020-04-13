@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.lock.LockService;
 import org.alfresco.service.cmr.lock.LockStatus;
@@ -15,8 +16,6 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.alfresco.service.transaction.TransactionService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
@@ -25,7 +24,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.citeck.ecos.cases.RemoteCaseModelService;
 import ru.citeck.ecos.dto.*;
-import ru.citeck.ecos.job.SendAndRemoveCompletedCasesJob;
 import ru.citeck.ecos.model.*;
 
 import java.io.IOException;
@@ -157,38 +155,41 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             return;
         }
         transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
-            ArrayNode arrayNode = objectMapper.createArrayNode();
-            List<NodeRef> forDelete = new ArrayList<>();
+            AuthenticationUtil.runAsSystem(() -> {
+                ArrayNode arrayNode = objectMapper.createArrayNode();
+                List<NodeRef> forDelete = new ArrayList<>();
 
-            StopWatch watch = new StopWatch(RemoteCaseModelServiceImpl.class.getName());
+                StopWatch watch = new StopWatch(RemoteCaseModelServiceImpl.class.getName());
 
-            /* Create json array */
-            runWatch(watch, "Receiving of caseModels for " + documentRef.toString());
-            for (NodeRef caseRef : getCaseModelsByNode(documentRef)) {
-                ObjectNode objectNode = createObjectNodeFromCaseModel(caseRef);
-                if (objectNode != null) {
-                    arrayNode.add(objectNode);
+                /* Create json array */
+                runWatch(watch, "Receiving of caseModels for " + documentRef.toString());
+                for (NodeRef caseRef : getCaseModelsByNode(documentRef)) {
+                    ObjectNode objectNode = createObjectNodeFromCaseModel(caseRef);
+                    if (objectNode != null) {
+                        arrayNode.add(objectNode);
+                    }
+                    forDelete.add(caseRef);
                 }
-                forDelete.add(caseRef);
-            }
-            nodeService.setProperty(documentRef, IdocsModel.PROP_CASE_MODELS_SENT, true);
-            watch.stop();
+                nodeService.setProperty(documentRef, IdocsModel.PROP_CASE_MODELS_SENT, true);
+                watch.stop();
 
-            /* Send request */
-            runWatch(watch, "Post request for saving case models for " + documentRef.toString());
-            postForObject(SAVE_CASE_MODELS_METHOD, arrayNode.toString(), String.class);
-            watch.stop();
+                /* Send request */
+                runWatch(watch, "Post request for saving case models for " + documentRef.toString());
+                postForObject(SAVE_CASE_MODELS_METHOD, arrayNode.toString(), String.class);
+                watch.stop();
 
-            /* Delete nodes */
-            runWatch(watch, "Deletion of case models nodes from alfresco for " + documentRef.toString());
-            for (NodeRef caseNodeRef : forDelete) {
-                nodeService.addAspect(caseNodeRef, ContentModel.ASPECT_TEMPORARY, Collections.emptyMap());
-                nodeService.deleteNode(caseNodeRef);
-            }
-            watch.stop();
+                /* Delete nodes */
+                runWatch(watch, "Deletion of case models nodes from alfresco for " + documentRef.toString());
+                for (NodeRef caseNodeRef : forDelete) {
+                    nodeService.addAspect(caseNodeRef, ContentModel.ASPECT_TEMPORARY, Collections.emptyMap());
+                    nodeService.deleteNode(caseNodeRef);
+                }
+                watch.stop();
 
-            log.debug(watch.prettyPrint());
+                log.debug(watch.prettyPrint());
 
+                return null;
+            });
             return null;
         });
     }
@@ -476,6 +477,8 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
     private void fillAdditionalUserActionEventInfo(NodeRef eventNodeRef, ObjectNode objectNode) {
         objectNode.put("additionalDataType", (String) nodeService.getProperty(eventNodeRef, EventModel.PROP_ADDITIONAL_DATA_TYPE));
         objectNode.put("confirmationMessage", (String) nodeService.getProperty(eventNodeRef, EventModel.PROP_CONFIRMATION_MESSAGE));
+        objectNode.put("successMessage", (String) nodeService.getProperty(eventNodeRef, EventModel.PROP_SUCCESS_MESSAGE));
+        objectNode.put("successMessageSpanClass", (String) nodeService.getProperty(eventNodeRef, EventModel.PROP_SUCCESS_MESSAGE_SPAN_CLASS));
         /* Roles */
         ArrayNode rolesNode = objectMapper.createArrayNode();
         List<AssociationRef> rolesAssocs = nodeService.getTargetAssocs(eventNodeRef, EventModel.ASSOC_AUTHORIZED_ROLES);
@@ -586,9 +589,6 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         if (SetPropertyValueDto.DTO_TYPE.equals(dtoType)) {
             fillAdditionalSetPropertyValueInfo(caseModelRef, objectNode);
         }
-        if (StartWorkflowDto.DTO_TYPE.equals(dtoType)) {
-            fillAdditionalStartWorkflowInfo(caseModelRef, objectNode);
-        }
         if (SetCaseStatusDto.DTO_TYPE.equals(dtoType)) {
             fillAdditionalSetCaseStatusInfo(caseModelRef, objectNode);
         }
@@ -673,21 +673,12 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
     }
 
     /**
-     * Fill additional info start workflow info
-     * @param caseModelRef Case model node reference
-     * @param objectNode Object node
-     */
-    private void fillAdditionalStartWorkflowInfo(NodeRef caseModelRef, ObjectNode objectNode) {
-        objectNode.put("workflowName", (String) nodeService.getProperty(caseModelRef, ActionModel.StartWorkflow.PROP_WORKFLOW_NAME));
-    }
-
-    /**
      * Fill additional info set case status info
      * @param caseModelRef Case model node reference
      * @param objectNode Object node
      */
     private void fillAdditionalSetCaseStatusInfo(NodeRef caseModelRef, ObjectNode objectNode) {
-        List<AssociationRef> assocs = nodeService.getTargetAssocs(caseModelRef, ActionModel.SetCaseStatus.PROP_STATUS);
+        List<AssociationRef> assocs = nodeService.getTargetAssocs(caseModelRef, ActionModel.SetCaseStatus.ASSOC_STATUS);
         if (!CollectionUtils.isEmpty(assocs)) {
             NodeRef statusRef = assocs.get(0).getTargetRef();
             if (statusRef != null) {
@@ -822,9 +813,6 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         }
         if (dictionaryService.isSubClass(nodeType, ActionModel.SetPropertyValue.TYPE)) {
             return SetPropertyValueDto.DTO_TYPE;
-        }
-        if (dictionaryService.isSubClass(nodeType, ActionModel.StartWorkflow.TYPE)) {
-            return StartWorkflowDto.DTO_TYPE;
         }
         if (dictionaryService.isSubClass(nodeType, ActionModel.SetCaseStatus.TYPE)) {
             return SetCaseStatusDto.DTO_TYPE;

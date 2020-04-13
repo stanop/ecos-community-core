@@ -39,6 +39,8 @@
           ?replace("^org.alfresco.error.AlfrescoRuntimeException: ", "", "r")
           ?replace("^Exception while invoking TaskListener: Exception while invoking TaskListener: *|problem evaluating script: *", "", 'r')
           ?replace("in <eval> at line number *[0-9]+ at column number *[0-9]+ *", "", 'r')
+          ?replace(".*Exception while processing action '.*\\$.*%.*', exceptionMessage='", "", "r")
+          ?replace("', exceptionType='.*'. StackTrace of root exception may be fount in logs", "", "r")
 }"
 </#escape>
 </#macro>

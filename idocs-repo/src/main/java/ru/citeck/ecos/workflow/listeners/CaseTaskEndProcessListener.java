@@ -21,27 +21,27 @@ package ru.citeck.ecos.workflow.listeners;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import ru.citeck.ecos.action.ActionConditionUtils;
-import ru.citeck.ecos.icase.activity.dto.CaseActivity;
+import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.service.CiteckServices;
-
-import java.util.List;
+import ru.citeck.ecos.utils.AlfActivityUtils;
+import ru.citeck.ecos.utils.RepoUtils;
 
 @Slf4j
 public class CaseTaskEndProcessListener extends AbstractExecutionListener {
 
     private CaseActivityService caseActivityService;
+    private AlfActivityUtils alfActivityUtils;
     private NodeService nodeService;
     private WorkflowDocumentResolverRegistry documentResolverRegistry;
 
     @Override
-    protected void notifyImpl(final DelegateExecution delegateExecution) throws Exception {
+    protected void notifyImpl(final DelegateExecution delegateExecution) {
         AuthenticationUtil.runAsSystem(() -> {
             CaseTaskEndProcessListener.this.doWork(delegateExecution);
             return null;
@@ -56,21 +56,16 @@ public class CaseTaskEndProcessListener extends AbstractExecutionListener {
     }
 
     private void stopActivity(DelegateExecution delegateExecution) {
-
         NodeRef bpmPackage = ListenerUtils.getWorkflowPackage(delegateExecution);
         nodeService.setProperty(bpmPackage, CiteckWorkflowModel.PROP_IS_WORKFLOW_ACTIVE, false);
 
-        List<AssociationRef> packageAssocs = nodeService.getSourceAssocs(bpmPackage, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
-
-        if (packageAssocs != null && !packageAssocs.isEmpty()) {
+        NodeRef taskActivityNodeRef = RepoUtils.getFirstSourceAssoc(bpmPackage,
+            ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE, nodeService);
+        if (taskActivityNodeRef != null) {
             ActionConditionUtils.getProcessVariables().putAll(delegateExecution.getVariables());
 
-            CaseActivity activity = caseActivityService.getActivity(packageAssocs.get(0).getSourceRef().toString());
-            if (activity != null) {
-                caseActivityService.stopActivity(activity);
-            } else {
-                log.warn("Cannot stop activity. CaseActivity is null");
-            }
+            ActivityRef taskActivityRef = alfActivityUtils.composeActivityRef(taskActivityNodeRef);
+            caseActivityService.stopActivity(taskActivityRef);
         }
     }
 
@@ -78,6 +73,7 @@ public class CaseTaskEndProcessListener extends AbstractExecutionListener {
     protected void initImpl() {
         this.nodeService = serviceRegistry.getNodeService();
         this.caseActivityService = (CaseActivityService) serviceRegistry.getService(CiteckServices.CASE_ACTIVITY_SERVICE);
+        this.alfActivityUtils = (AlfActivityUtils) serviceRegistry.getService(CiteckServices.ALF_ACTIVITY_UTILS);
         documentResolverRegistry = getBean(WorkflowDocumentResolverRegistry.BEAN_NAME, WorkflowDocumentResolverRegistry.class);
     }
 }

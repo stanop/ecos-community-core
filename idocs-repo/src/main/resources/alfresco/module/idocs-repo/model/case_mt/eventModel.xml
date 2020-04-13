@@ -67,6 +67,13 @@
                 <property name="iEvent:confirmationMessage">
                     <type>d:text</type>
                 </property>
+                <property name="iEvent:successMessage">
+                    <type>d:text</type>
+                </property>
+                <!-- FIXME: rename to  MessageSpanClass|SpanClass -->
+                <property name="iEvent:successMessageSpanClass">
+                    <type>d:text</type>
+                </property>
             </properties>
             <associations>
                 <association name="iEvent:authorizedRoles">

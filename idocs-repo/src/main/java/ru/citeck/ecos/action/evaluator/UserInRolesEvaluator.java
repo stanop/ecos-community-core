@@ -15,6 +15,8 @@ import java.util.List;
 /**
  * @author Maxim Strizhov (maxim.strizhov@citeck.ru)
  */
+//TODO: remove if unused
+@Deprecated
 public class UserInRolesEvaluator extends ActionConditionEvaluatorAbstractBase {
     /**
      * Evaluator constants

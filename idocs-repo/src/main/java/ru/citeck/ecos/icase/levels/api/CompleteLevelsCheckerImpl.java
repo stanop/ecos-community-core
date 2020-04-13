@@ -11,6 +11,7 @@ import java.util.Set;
  * @author Alexander Nemerov
  * created on 17.03.2015.
  */
+//TODO: remove if unused
 public class CompleteLevelsCheckerImpl implements CompleteLevelsChecker {
 
     private CaseCompletenessService completenessService;

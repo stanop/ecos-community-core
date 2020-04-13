@@ -1,38 +1,26 @@
 package ru.citeck.ecos.flowable.listeners.global.impl.process.end;
 
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.flowable.engine.delegate.DelegateExecution;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.flowable.listeners.global.GlobalEndExecutionListener;
 import ru.citeck.ecos.flowable.utils.FlowableListenerUtils;
-import ru.citeck.ecos.icase.activity.dto.CaseActivity;
+import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
-import java.util.List;
+import ru.citeck.ecos.utils.AlfActivityUtils;
+import ru.citeck.ecos.utils.RepoUtils;
 
-/**
- * Case task end process listener
- */
 public class CaseTaskEndProcessListener implements GlobalEndExecutionListener {
 
-    /**
-     * Node service
-     */
     private NodeService nodeService;
-
-    /**
-     * Case activity service
-     */
     private CaseActivityService caseActivityService;
+    private AlfActivityUtils alfActivityUtils;
 
-    /**
-     * Notify
-     * @param delegateExecution Execution
-     */
     @Override
     public void notify(DelegateExecution delegateExecution) {
         AuthenticationUtil.runAsSystem(() -> {
@@ -44,37 +32,30 @@ public class CaseTaskEndProcessListener implements GlobalEndExecutionListener {
         });
     }
 
-    /**
-     * Stop activity
-     * @param delegateExecution Execution
-     */
     private void stopActivity(DelegateExecution delegateExecution) {
-
         NodeRef bpmPackage = FlowableListenerUtils.getWorkflowPackage(delegateExecution);
         nodeService.setProperty(bpmPackage, CiteckWorkflowModel.PROP_IS_WORKFLOW_ACTIVE, false);
-        List<AssociationRef> packageAssocs = nodeService.getSourceAssocs(bpmPackage, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
 
-        if (packageAssocs != null && !packageAssocs.isEmpty()) {
+        NodeRef taskActivityNodeRef = RepoUtils.getFirstSourceAssoc(bpmPackage,
+            ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE, nodeService);
+        if (taskActivityNodeRef != null) {
             ActionConditionUtils.getProcessVariables().putAll(delegateExecution.getVariables());
 
-            CaseActivity activity = caseActivityService.getActivity(packageAssocs.get(0).getSourceRef().toString());
-            caseActivityService.stopActivity(activity);
+            ActivityRef taskActivityRef = alfActivityUtils.composeActivityRef(taskActivityNodeRef);
+            caseActivityService.stopActivity(taskActivityRef);
         }
     }
 
-    /**
-     * Set node service
-     * @param nodeService Node service
-     */
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
     }
 
-    /**
-     * Set case activity service
-     * @param caseActivityService Case activity service
-     */
     public void setCaseActivityService(CaseActivityService caseActivityService) {
         this.caseActivityService = caseActivityService;
+    }
+
+    @Autowired
+    public void setAlfActivityUtils(AlfActivityUtils alfActivityUtils) {
+        this.alfActivityUtils = alfActivityUtils;
     }
 }

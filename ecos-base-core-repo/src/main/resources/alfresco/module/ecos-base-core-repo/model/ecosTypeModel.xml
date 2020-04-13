@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<model name="etype:model" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <description>ECOS Types model</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/ecos/type/1.0" prefix="etype" />
+    </namespaces>
+
+    <aspects>
+        <aspect name="etype:hasType">
+            <properties>
+                <property name="etype:type">
+                    <title>ECOS Type</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+            </properties>
+        </aspect>
+    </aspects>
+
+</model>

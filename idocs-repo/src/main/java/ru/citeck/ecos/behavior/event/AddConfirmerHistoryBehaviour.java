@@ -10,7 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.behavior.event.trigger.UserActionEventTrigger;
-import ru.citeck.ecos.event.EventPolicies;
+import ru.citeck.ecos.icase.activity.service.alfresco.EventPolicies;
 import ru.citeck.ecos.history.HistoryService;
 import ru.citeck.ecos.model.EventModel;
 import ru.citeck.ecos.model.HistoryModel;

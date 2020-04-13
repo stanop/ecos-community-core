@@ -37,6 +37,10 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.util.UrlUtil;
 
+/**
+ * @deprecated use {@link ru.citeck.ecos.icase.commands.executors.ExecuteScriptCommandExecutor}
+ */
+@Deprecated
 public class ScriptParamActionExecuter extends ActionExecuterAbstractBase
 {
     public static final String NAME = "execute-script";
