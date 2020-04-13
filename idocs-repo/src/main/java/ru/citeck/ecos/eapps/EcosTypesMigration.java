@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.apps.app.provider.ComputedMeta;
 import ru.citeck.ecos.apps.app.provider.ComputedModule;
+import ru.citeck.ecos.model.EcosTypeModel;
 import ru.citeck.ecos.records2.RecordRef;
 
 import java.io.Serializable;
@@ -96,12 +97,22 @@ public class EcosTypesMigration implements ModuleMigration {
         TypeModule module = new TypeModule();
         module.setName(name);
 
+        String idFromUuid;
+
         if (parentRef == null) {
-            module.setId(typeRef.getId());
+            idFromUuid = typeRef.getId();
             module.setParent(RecordRef.create("emodel", "type", "user-base"));
         } else {
-            module.setId(parentRef.getId() + "/" + typeRef.getId());
+            idFromUuid = parentRef.getId() + "/" + typeRef.getId();
             module.setParent(RecordRef.create("emodel", "type", parentId));
+        }
+
+        String ecosType = (String) props.get(EcosTypeModel.PROP_TYPE);
+        if (StringUtils.isNotBlank(ecosType)) {
+            module.setId(ecosType);
+            module.setAliases(Collections.singletonList(idFromUuid));
+        } else {
+            module.setId(idFromUuid);
         }
 
         return module;
@@ -126,6 +137,7 @@ public class EcosTypesMigration implements ModuleMigration {
         private String id;
         private ru.citeck.ecos.commons.data.MLText name;
         private RecordRef parent;
+        private List<String> aliases;
     }
 
     @Override

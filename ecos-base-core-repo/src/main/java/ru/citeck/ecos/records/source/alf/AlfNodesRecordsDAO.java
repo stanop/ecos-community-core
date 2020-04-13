@@ -101,6 +101,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     }
 
     private RecordMeta processSingleRecord(RecordMeta record) {
+
         RecordMeta resultRecord;
         Map<QName, Serializable> props = new HashMap<>();
         Map<QName, DataValue> contentProps = new HashMap<>();
@@ -118,9 +119,18 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
         // if we get "att_add_someAtt" and "someAtt", then ignore "att_add_*"
         attributes.forEach((name, value) -> {
+
             if (name.startsWith(ADD_CMD_PREFIX) || name.startsWith(REMOVE_CMD_PREFIX)) {
-                String actualName = extractActualAttName(name);
-                if (value.isNotNull()) {
+
+                String attrNameWithoutPrefix;
+                if (name.startsWith(ADD_CMD_PREFIX)) {
+                    attrNameWithoutPrefix = name.replaceFirst(ADD_CMD_PREFIX, StringUtils.EMPTY);
+                } else {
+                    attrNameWithoutPrefix = name.replaceFirst(REMOVE_CMD_PREFIX, StringUtils.EMPTY);
+                }
+
+                if (attributes.has(attrNameWithoutPrefix) && value.isNotNull()) {
+                    String actualName = extractActualAttName(name);
                     attsToIgnore.put(name, actualName);
                 }
             }
@@ -190,20 +200,21 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 if (DataTypeDefinition.CONTENT.equals(typeName)) {
                     contentProps.put(fieldName, fieldValue);
                 } else {
-                    if (!fieldValue.isNull()) {
 
-                        Object converted = fieldValue.asJavaObj();
+                    Object converted = fieldValue.asJavaObj();
 
+                    if (converted != null) {
                         if (!DataTypeDefinition.TEXT.equals(typeName)
-                            && converted instanceof String
-                            && ((String) converted).isEmpty()) {
+                                && converted instanceof String
+                                && ((String) converted).isEmpty()) {
                             converted = null;
                         }
                         if (!(converted instanceof Serializable)) {
                             converted = null;
                         }
-                        props.put(fieldName, (Serializable) converted);
                     }
+
+                    props.put(fieldName, (Serializable) converted);
                 }
             } else {
                 AssociationDefinition assocDef = dictionaryService.getAssociation(fieldName);
@@ -227,6 +238,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                         } else if (fieldValue.isArray()) {
                             refsStream = StreamSupport.stream(fieldValue.spliterator(), false)
                                 .map(DataValue::asText);
+                        } else if (fieldValue.isNull()) {
+                            refsStream = Stream.empty();
                         }
                         if (refsStream != null) {
                             Set<NodeRef> targetRefs = refsStream
@@ -292,7 +305,19 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
         } else {
 
-            nodeService.addProperties(nodeRef, props);
+            Map<QName, Serializable> currentProps = nodeService.getProperties(nodeRef);
+
+            List<QName> toRemove = new ArrayList<>();
+            for (Map.Entry<QName, Serializable> keyValue : props.entrySet()) {
+                if (keyValue.getValue() == null && currentProps.get(keyValue.getKey()) == null) {
+                    toRemove.add(keyValue.getKey());
+                }
+            }
+            toRemove.forEach(props::remove);
+
+            if (props.size() > 0) {
+                nodeService.addProperties(nodeRef, props);
+            }
             resultRecord = new RecordMeta(record.getId());
         }
 

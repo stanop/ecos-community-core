@@ -120,6 +120,7 @@
             </map>
         </property>
         <property name="order" value="${behavior.order.autoname}"/>
+        <property name="enabled" value="true"/>
     </bean>
 
     <bean id="TitleGenerationBehaviour" class="ru.citeck.ecos.behavior.common.TitleGenerationBehaviour"
@@ -132,6 +133,7 @@
         <property name="templateEngine" value="freemarker"/>
         <property name="nodeVariable" value="node"/>
         <property name="order" value="${behavior.order.title}"/>
+        <property name="enabled" value="true"/>
     </bean>
 
     <bean id="FieldAutoFillBehaviour" class="ru.citeck.ecos.behavior.common.FieldAutoFillBehaviour"

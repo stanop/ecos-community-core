@@ -394,7 +394,7 @@
           class="ru.citeck.ecos.webscripts.icase.CaseLevelsGet"
           parent="webscript">
     </bean>
-    
+
     <bean id="webscript.ru.citeck.doc.export-doc.get" class="ru.citeck.ecos.webscripts.doc.ExportDocWebScript" parent="webscript">
         <property name="createMode"      value="true"/>
         <property name="actionService"   ref="actionService"/>
@@ -439,7 +439,7 @@
           class="ru.citeck.ecos.webscripts.cardlet.CardletsGet"
           parent="webscript">
     </bean>
-    
+
     <bean id="webscript.ru.citeck.image.image-thumbnail.get"
           class="ru.citeck.ecos.webscripts.image.ImageThumbnailGet"
           parent="webscript" />
@@ -455,5 +455,10 @@
     <bean id="webscript.ru.citeck.cache.sync.sync-key.get"
           class="ru.citeck.ecos.cache.sync.SyncKeyGet"
           parent="webscript" />
+
+    <bean id="webscript.ru.citeck.barcode.pdf-content-with-barcode.get"
+          class="ru.citeck.ecos.webscripts.barcode.PDFContentWithBarcodeGet"
+          parent="webscript">
+    </bean>
 
 </beans>

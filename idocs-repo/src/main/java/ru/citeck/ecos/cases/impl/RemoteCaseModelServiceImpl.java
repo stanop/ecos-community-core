@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.lock.LockService;
 import org.alfresco.service.cmr.lock.LockStatus;
@@ -154,38 +155,41 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             return;
         }
         transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
-            ArrayNode arrayNode = objectMapper.createArrayNode();
-            List<NodeRef> forDelete = new ArrayList<>();
+            AuthenticationUtil.runAsSystem(() -> {
+                ArrayNode arrayNode = objectMapper.createArrayNode();
+                List<NodeRef> forDelete = new ArrayList<>();
 
-            StopWatch watch = new StopWatch(RemoteCaseModelServiceImpl.class.getName());
+                StopWatch watch = new StopWatch(RemoteCaseModelServiceImpl.class.getName());
 
-            /* Create json array */
-            runWatch(watch, "Receiving of caseModels for " + documentRef.toString());
-            for (NodeRef caseRef : getCaseModelsByNode(documentRef)) {
-                ObjectNode objectNode = createObjectNodeFromCaseModel(caseRef);
-                if (objectNode != null) {
-                    arrayNode.add(objectNode);
+                /* Create json array */
+                runWatch(watch, "Receiving of caseModels for " + documentRef.toString());
+                for (NodeRef caseRef : getCaseModelsByNode(documentRef)) {
+                    ObjectNode objectNode = createObjectNodeFromCaseModel(caseRef);
+                    if (objectNode != null) {
+                        arrayNode.add(objectNode);
+                    }
+                    forDelete.add(caseRef);
                 }
-                forDelete.add(caseRef);
-            }
-            nodeService.setProperty(documentRef, IdocsModel.PROP_CASE_MODELS_SENT, true);
-            watch.stop();
+                nodeService.setProperty(documentRef, IdocsModel.PROP_CASE_MODELS_SENT, true);
+                watch.stop();
 
-            /* Send request */
-            runWatch(watch, "Post request for saving case models for " + documentRef.toString());
-            postForObject(SAVE_CASE_MODELS_METHOD, arrayNode.toString(), String.class);
-            watch.stop();
+                /* Send request */
+                runWatch(watch, "Post request for saving case models for " + documentRef.toString());
+                postForObject(SAVE_CASE_MODELS_METHOD, arrayNode.toString(), String.class);
+                watch.stop();
 
-            /* Delete nodes */
-            runWatch(watch, "Deletion of case models nodes from alfresco for " + documentRef.toString());
-            for (NodeRef caseNodeRef : forDelete) {
-                nodeService.addAspect(caseNodeRef, ContentModel.ASPECT_TEMPORARY, Collections.emptyMap());
-                nodeService.deleteNode(caseNodeRef);
-            }
-            watch.stop();
+                /* Delete nodes */
+                runWatch(watch, "Deletion of case models nodes from alfresco for " + documentRef.toString());
+                for (NodeRef caseNodeRef : forDelete) {
+                    nodeService.addAspect(caseNodeRef, ContentModel.ASPECT_TEMPORARY, Collections.emptyMap());
+                    nodeService.deleteNode(caseNodeRef);
+                }
+                watch.stop();
 
-            log.debug(watch.prettyPrint());
+                log.debug(watch.prettyPrint());
 
+                return null;
+            });
             return null;
         });
     }
