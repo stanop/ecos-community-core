@@ -1,11 +1,10 @@
 package ru.citeck.ecos.icase.activity.service.eproc;
 
 import org.alfresco.util.Pair;
-import ru.citeck.ecos.icase.activity.dto.ActivityInstance;
-import ru.citeck.ecos.icase.activity.dto.ActivityRef;
-import ru.citeck.ecos.icase.activity.dto.ProcessDefinition;
-import ru.citeck.ecos.icase.activity.dto.ProcessInstance;
+import ru.citeck.ecos.icase.activity.dto.*;
 import ru.citeck.ecos.records2.RecordRef;
+
+import java.util.List;
 
 public interface EProcActivityService {
 
@@ -22,5 +21,9 @@ public interface EProcActivityService {
     void saveState(ProcessInstance processInstance);
 
     ActivityInstance getStateInstance(ActivityRef activityRef);
+
+    SentryDefinition getSentryDefinition(EventRef eventRef);
+
+    List<SentryDefinition> findSentriesBySourceRefAndEventType(RecordRef caseRef, String sourceRef, String eventType);
 
 }

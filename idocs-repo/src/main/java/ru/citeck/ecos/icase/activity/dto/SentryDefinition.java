@@ -12,6 +12,7 @@ import lombok.ToString;
 @ecos.com.fasterxml.jackson210.annotation.JsonIgnoreProperties(ignoreUnknown = true, value = {"parentTriggerDefinition"})
 @ecos.com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true, value = {"parentTriggerDefinition"})
 public class SentryDefinition {
+    private String id;
     private String event;
     private SourceRef sourceRef;
     private EvaluatorDefinition evaluator;

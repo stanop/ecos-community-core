@@ -17,7 +17,7 @@ import java.util.Objects;
 @Slf4j
 @Component
 public class CompareLifecycleProcessVariableValueEvaluator implements
-    RecordEvaluator<Object, Object, CompareLifecycleProcessVariableValueEvaluator.Config> {
+        RecordEvaluator<Object, Object, CompareLifecycleProcessVariableValueEvaluator.Config> {
 
     public static final String TYPE = "compare-process-variable";
 
@@ -58,7 +58,7 @@ public class CompareLifecycleProcessVariableValueEvaluator implements
         Map<String, Object> processVariables = AlfrescoTransactionSupport.getResource(LifeCycleServiceImpl.PROCESS_VARS);
         if (processVariables == null) {
             log.error("Process variables are undefined. " +
-                "Make sure you call this action condition evaluator in lifecycle context.");
+                    "Make sure you call this action condition evaluator in lifecycle context.");
             return false;
         }
 

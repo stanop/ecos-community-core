@@ -27,20 +27,18 @@ import ru.citeck.ecos.model.EcosProcessModel;
 import ru.citeck.ecos.node.EcosTypeService;
 import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.utils.TransactionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class EProcActivityServiceImpl implements EProcActivityService {
 
-    public static final String CMMN_PROCESS_TYPE = "cmmn";
-
-    public static final String EPROC_CASE_STATE_BY_ID_KEY_PREFIX = "eproc-case-state-by-id";
-    public static final String EPROC_TARGET_APP_NAME = "eproc";
+    private static final String CMMN_PROCESS_TYPE = "cmmn";
+    private static final String EPROC_TARGET_APP_NAME = "eproc";
+    private static final String EPROC_SAVE_STATE_TRANSACTION_KEY = EProcActivityServiceImpl.class.getName() + ".save-state";
+    private static final String EPROC_CASE_STATE_BY_ID_KEY_PREFIX = "eproc-case-state-by-id";
 
     private CmmnSchemaParser cmmnSchemaParser;
     private CommandsService commandsService;
@@ -410,10 +408,10 @@ public class EProcActivityServiceImpl implements EProcActivityService {
 
     @Override
     public void saveState(ProcessInstance processInstance) {
-
-        //TODO сделать тут единоразовое сохранение перед коммитом транзакции, вызывать save если только 1 раз.
-
-        saveStateImpl(processInstance);
+        TransactionUtils.processAfterBehaviours(
+                EPROC_SAVE_STATE_TRANSACTION_KEY,
+                processInstance.getCaseRef(),
+                (caseRef) -> saveStateImpl(processInstance));
     }
 
     private void saveStateImpl(ProcessInstance processInstance) {
@@ -474,6 +472,77 @@ public class EProcActivityServiceImpl implements EProcActivityService {
             }
         }
         return null;
+    }
+
+    @Override
+    public SentryDefinition getSentryDefinition(EventRef eventRef) {
+        ProcessInstance processInstance = getFullState(eventRef.getProcessId());
+        ProcessDefinition processDefinition = processInstance.getDefinition();
+
+        return findSentryRecursiveById(processDefinition.getActivityDefinition(), eventRef.getId());
+    }
+
+    private SentryDefinition findSentryRecursiveById(ActivityDefinition definition, String sentryId) {
+        Optional<SentryDefinition> result = getAllSentries(definition).stream()
+                .filter(sentry -> StringUtils.equals(sentry.getId(), sentryId))
+                .findFirst();
+
+        if (result.isPresent()) {
+            return result.get();
+        }
+
+        if (CollectionUtils.isNotEmpty(definition.getActivities())) {
+            for (ActivityDefinition childActivityDefinition : definition.getActivities()) {
+                SentryDefinition sentry = findSentryRecursiveById(childActivityDefinition, sentryId);
+                if (sentry != null) {
+                    return sentry;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public List<SentryDefinition> findSentriesBySourceRefAndEventType(RecordRef caseRef, String sourceRef, String eventType) {
+        ProcessInstance fullState = getFullState(caseRef);
+        ProcessDefinition definition = fullState.getDefinition();
+        return findSentriesBySourceRefAndEventType(definition, sourceRef, eventType);
+    }
+
+    private List<SentryDefinition> findSentriesBySourceRefAndEventType(ProcessDefinition definition,
+                                                                       String sourceRef, String eventType) {
+        ActivityDefinition rootActivityDefinition = definition.getActivityDefinition();
+        return findSentriesRecursiveBySourceRefAndEventType(rootActivityDefinition, sourceRef, eventType);
+    }
+
+    private List<SentryDefinition> findSentriesRecursiveBySourceRefAndEventType(ActivityDefinition definition,
+                                                                                String sourceRef, String eventType) {
+        List<SentryDefinition> result = getAllSentries(definition).stream()
+                .filter(sentry -> StringUtils.equals(sentry.getSourceRef().getRef(), sourceRef))
+                .filter(sentry -> StringUtils.equals(sentry.getEvent(), eventType))
+                .collect(Collectors.toList());
+
+        if (CollectionUtils.isNotEmpty(definition.getActivities())) {
+            for (ActivityDefinition childActivityDefinition : definition.getActivities()) {
+                result.addAll(findSentriesRecursiveBySourceRefAndEventType(childActivityDefinition, sourceRef, eventType));
+            }
+        }
+
+        return result;
+    }
+
+    private List<SentryDefinition> getAllSentries(ActivityDefinition definition) {
+        List<SentryDefinition> result = new ArrayList<>();
+        for (ActivityTransitionDefinition transitionDef : definition.getTransitions()) {
+            TriggerDefinition triggerDef = transitionDef.getTrigger();
+            SentryTriggerDefinition sentryTriggerDef = triggerDef.getData().getAs(SentryTriggerDefinition.class);
+            if (sentryTriggerDef == null) {
+                continue;
+            }
+            result.addAll(sentryTriggerDef.getSentries());
+        }
+        return result;
     }
 
     @Data

@@ -4,7 +4,11 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.icase.activity.dto.ActivityInstance;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
+import ru.citeck.ecos.icase.activity.service.eproc.EProcActivityService;
+import ru.citeck.ecos.icase.activity.service.eproc.EProcUtils;
+import ru.citeck.ecos.icase.activity.service.eproc.parser.CmmnDefinitionConstants;
 import ru.citeck.ecos.icase.commands.CaseCommandsService;
 import ru.citeck.ecos.icase.commands.dto.SetProcessVariableCommand;
 import ru.citeck.ecos.icase.commands.executors.SetProcessVariableCommandExecutor;
@@ -15,14 +19,17 @@ import ru.citeck.ecos.utils.AlfActivityUtils;
 @Component
 public class SetProcessVariableCommandProvider extends AlfEprocCaseCommandsProvider {
 
+    private EProcActivityService eprocActivityService;
     private AlfActivityUtils alfActivityUtils;
     private NodeService nodeService;
 
     @Autowired
     public SetProcessVariableCommandProvider(CaseCommandsService caseCommandsService,
+                                             EProcActivityService eprocActivityService,
                                              AlfActivityUtils alfActivityUtils,
                                              NodeService nodeService) {
         super(caseCommandsService);
+        this.eprocActivityService = eprocActivityService;
         this.alfActivityUtils = alfActivityUtils;
         this.nodeService = nodeService;
     }
@@ -42,7 +49,11 @@ public class SetProcessVariableCommandProvider extends AlfEprocCaseCommandsProvi
 
     @Override
     protected Object provideEprocCommand(ActivityRef activityRef) {
-        //TODO: Add realization for eproc
-        throw new UnsupportedOperationException();
+        ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
+
+        String name = EProcUtils.getAnyAttribute(instance, CmmnDefinitionConstants.ACTION_SET_PROCESS_VAR_NAME);
+        String value = EProcUtils.getAnyAttribute(instance, CmmnDefinitionConstants.ACTION_SET_PROCESS_VAR_VALUE);
+
+        return new SetProcessVariableCommand(name, value);
     }
 }

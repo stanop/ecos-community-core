@@ -40,7 +40,6 @@ public class CmmnSchemaParser {
     public static final String START_COMPLETENESS_LEVELS_SET_KEY = "startCompletenessLevels";
     public static final String STOP_COMPLETENESS_LEVELS_SET_KEY = "endCompletenessLevels";
     public static final String AUTHORIZED_ROLES_SET_KEY = "authorizedRoles";
-    public static final String CONDITION_TYPE_LOCAL_NAME_KEY = "conditionTypeLocalName";
     public static final String USER_ACTION_EVENT_TYPE = "user-action";
 
     private XmlContentDAO<Definitions> xmlContentDAO;
@@ -167,7 +166,13 @@ public class CmmnSchemaParser {
     private ObjectData parseActionDefinitionData(TTask action) {
         ObjectData objectData = parseCommonDefinitionData(action);
         addAttributeIfExists(action, CMMNUtils.QNAME_ACTION_CASE_STATUS, objectData);
+        addAttributeIfExists(CmmnDefinitionConstants.ACTION_TYPE, getActionType(action), objectData);
         return objectData;
+    }
+
+    private String getActionType(TTask action) {
+        QName nodeType = getNodeType(action);
+        return nodeType.getLocalName();
     }
 
     private boolean isUserTask(TTask item) {
@@ -230,7 +235,7 @@ public class CmmnSchemaParser {
         AtomicInteger atomicInteger = triggerDefinitionIdCounter.get();
         if (atomicInteger == null) {
             atomicInteger = new AtomicInteger(0);
-            activityIndexCounter.set(atomicInteger);
+            triggerDefinitionIdCounter.set(atomicInteger);
         }
         return atomicInteger.incrementAndGet();
     }
@@ -266,14 +271,20 @@ public class CmmnSchemaParser {
             }
         }
 
+        data.set(CmmnDefinitionConstants.TITLE, otherAttributes.get(CMMNUtils.QNAME_TITLE));
+
         return data;
     }
 
     private void addAttributeIfExists(TCmmnElement element, javax.xml.namespace.QName qname, ObjectData objectData) {
         Map<javax.xml.namespace.QName, String> otherAttributes = element.getOtherAttributes();
         String value = otherAttributes.get(qname);
+        addAttributeIfExists(qname.getLocalPart(), value, objectData);
+    }
+
+    private void addAttributeIfExists(String name, String value, ObjectData objectData) {
         if (StringUtils.isNotBlank(value)) {
-            objectData.set(qname.getLocalPart(), value);
+            objectData.set(name, value);
         }
     }
 
@@ -407,6 +418,10 @@ public class CmmnSchemaParser {
 
             log.debug("Importing events for " + planItem.getId());
             Map<String, Sentry> stageSentries = getSentryIdToInstanceMap(stage);
+
+            getOrCreateTransitionByState(activityDefinition, ActivityState.NOT_STARTED, ActivityState.STARTED);
+            getOrCreateTransitionByState(activityDefinition, ActivityState.STARTED, ActivityState.COMPLETED);
+
             for (Sentry sentry : getEntrySentries(planItem, stageSentries)) {
                 addEntryTransition(activityDefinition, sentry);
             }
@@ -559,6 +574,7 @@ public class CmmnSchemaParser {
                                      Sentry sentry) {
 
         SentryDefinition sentryDefinition = new SentryDefinition();
+        sentryDefinition.setId(sentry.getId());
         sentryDefinition.setEvent(getEventType(sentry));
         sentryDefinition.setSourceRef(getSourceRef(sentry));
         sentryDefinition.setEvaluator(composeEvaluatorDefinition(sentry));
@@ -612,21 +628,23 @@ public class CmmnSchemaParser {
         return definition;
     }
 
-    private List<Map<String, String>> composeEvaluatorDefinitionData(List<Condition> conditions) {
-        List<Map<String, String>> result = new ArrayList<>();
+    private List<EvaluatorDefinitionData> composeEvaluatorDefinitionData(List<Condition> conditions) {
+        List<EvaluatorDefinitionData> result = new ArrayList<>();
         for (Condition condition : conditions) {
-            Map<String, String> conditionData = new HashMap<>();
+            EvaluatorDefinitionData definitionData = new EvaluatorDefinitionData();
 
             QName type = utils.convertFromXMLQName(condition.getType());
-            conditionData.put(CONDITION_TYPE_LOCAL_NAME_KEY, type.getLocalName());
+            definitionData.setType(type.getLocalName());
 
+            Map<String, String> evaluatorProperties = new HashMap<>(condition.getProperties().size());
             for (ConditionProperty property : condition.getProperties()) {
                 String propertyName = utils.convertFromXMLQName(property.getType()).getLocalName();
                 String propertyValue = property.getValue();
-                conditionData.put(propertyName, propertyValue);
+                evaluatorProperties.put(propertyName, propertyValue);
             }
+            definitionData.setAttributes(evaluatorProperties);
 
-            result.add(conditionData);
+            result.add(definitionData);
         }
         return result;
     }

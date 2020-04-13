@@ -28,6 +28,10 @@ public class EProcUtils {
         return variables.get(key, clazz);
     }
 
+    public static String getAnyAttribute(ActivityInstance instance, String key) {
+        return getAnyAttribute(instance, key, String.class);
+    }
+
     public static <T> T getAnyAttribute(ActivityInstance instance, String key, Class<T> clazz) {
         T result = getInsAttribute(instance, key, clazz);
         if (result == null) {
