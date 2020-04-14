@@ -9,6 +9,7 @@ public interface CmmnDefinitionConstants {
 
     String WORKFLOW_DEFINITION_NAME = "workflowDefinitionName";
     String USE_ACTIVITY_TITLE = "useActivityTitle";
+    String NAME = "name";
     String TITLE = "title";
     String EXPECTED_PERFORM_TIME = "expectedPerformTime";
     String PRIORITY = "priority";
