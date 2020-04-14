@@ -1,5 +1,6 @@
 package ru.citeck.ecos.job;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -11,9 +12,11 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.springframework.util.StopWatch;
 import ru.citeck.ecos.cases.RemoteCaseModelService;
+import ru.citeck.ecos.config.EcosConfigService;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * Send and remove completed cases job
@@ -26,6 +29,7 @@ public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
      */
     private static final Integer MAX_ITEMS_COUNT = 50;
     private static final String MAX_ITEMS_COUNT_PROPERTY = "citeck.remote.case.service.max.items";
+    private static final String THREADS_COUNT_PROPERTY = "completed-cases-job-threads";
 
     /**
      * Store reference
@@ -43,18 +47,25 @@ public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
     private RemoteCaseModelService remoteCaseModelService;
 
     /**
+     * Ecos Config Service
+     */
+    private EcosConfigService ecosConfigService;
+
+    /**
      * Global properties
      */
     private Properties globalProperties;
 
     /**
      * Init job service
+     *
      * @param jobDataMap Job data map
      */
     private void init(JobDataMap jobDataMap) {
         searchService = (SearchService) jobDataMap.get("searchService");
         remoteCaseModelService = (RemoteCaseModelService) jobDataMap.get("remoteCaseModelService");
         globalProperties = (Properties) jobDataMap.get("global-properties");
+        ecosConfigService = (EcosConfigService) jobDataMap.get("ecosConfigService");
         storeRef = StoreRef.STORE_REF_WORKSPACE_SPACESSTORE;
     }
 
@@ -78,11 +89,17 @@ public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
             watch.stop();
 
             List<NodeRef> documents = resultSet.getNodeRefs();
-            for (NodeRef documentRef : documents) {
-                runWatch(watch, "Processing of " + documentRef.toString() + " document");
-                remoteCaseModelService.sendAndRemoveCaseModelsByDocument(documentRef);
-                watch.stop();
-            }
+
+            runWatch(watch, "Documents processing in parallel stream");
+            String threadsCountStr = (String) ecosConfigService.getParamValue(THREADS_COUNT_PROPERTY);
+            int threadsCount = Integer.parseInt(threadsCountStr);
+            ForkJoinPool customThreadPool = new ForkJoinPool(threadsCount);
+            // Use .get() to force wait for threads completion
+            customThreadPool.submit(() ->
+                documents.parallelStream()
+                    .forEach(documentRef -> remoteCaseModelService.sendAndRemoveCaseModelsByDocument(documentRef))
+            ).get();
+            watch.stop();
 
             log.debug(watch.prettyPrint());
             log.info("SendToRemoteCompletedCasesJob stopped");
@@ -93,6 +110,7 @@ public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
 
     /**
      * Get documents by offset
+     *
      * @return Set of documents
      */
     private ResultSet getDocumentsResultSet() {
@@ -100,8 +118,8 @@ public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
         parameters.addStore(storeRef);
         parameters.setLanguage(SearchService.LANGUAGE_LUCENE);
         parameters.setQuery("TYPE:\"idocs:doc\" " +
-                "AND @idocs\\:caseCompleted:true " +
-                "AND -@idocs\\:caseModelsSent:true");
+            "AND @idocs\\:caseCompleted:true " +
+            "AND -@idocs\\:caseModelsSent:true");
         parameters.addSort("@cm:created", true);
         parameters.setMaxItems(getMaxItemsCount());
         return searchService.query(parameters);
@@ -109,6 +127,7 @@ public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
 
     /**
      * Get max items count
+     *
      * @return Max items count
      */
     private Integer getMaxItemsCount() {

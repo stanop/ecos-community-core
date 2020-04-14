@@ -140,6 +140,11 @@ public class CurrencyRateRecordsDAO extends LocalRecordsDAO implements
     public static class CurrencyRateRecord {
         private double rate;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy", timezone = "GMT")
+        @ecos.com.fasterxml.jackson210.annotation.JsonFormat(
+            shape = ecos.com.fasterxml.jackson210.annotation.JsonFormat.Shape.STRING,
+            pattern = "dd.MM.yyyy",
+            timezone = "GMT"
+        )
         private Date date;
         private String syncDate;
         private String baseCurrencyCode;
