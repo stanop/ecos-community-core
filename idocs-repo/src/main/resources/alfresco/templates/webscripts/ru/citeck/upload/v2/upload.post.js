@@ -222,6 +222,7 @@ function main()
             exitUpload(404, "Node specified by updateNodeRef (" + updateNodeRef + ") not found.");
             return;
          }
+         updateNode.name = formdata.fields[1].value;
 
          var workingcopy = updateNode.hasAspect("cm:workingcopy");
          if (!workingcopy && updateNode.isLocked)
@@ -269,7 +270,6 @@ function main()
          }
 
          // Record the file details ready for generating the response
-         updateNode.name = formdata.fields[1].value;
          model.document = updateNode;
       }
       else
@@ -359,6 +359,7 @@ function main()
           * Create a new file.
           */
          var newFile;
+         filename = formdata.fields[1].value;
          if (contentType !== null)
          {
             newFile = destNode.createFile(filename, contentType);

@@ -7,6 +7,7 @@ import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.icase.timer.CaseTimerService;
 import ru.citeck.ecos.model.CaseTimerModel;
 import ru.citeck.ecos.model.CaseTimerModel.ExpressionType;
+import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.service.EcosCoreServices;
 import ru.citeck.ecos.utils.AlfActivityUtils;
@@ -49,7 +50,7 @@ public abstract class Evaluator {
             model.put(variable.getKey(), variable.getValue());
         }
         if (!variables.containsKey(MODEL_DOCUMENT)) {
-            model.put(MODEL_DOCUMENT, alfActivityUtils.getDocumentId(timerRef).toString());
+            model.put(MODEL_DOCUMENT, RecordsUtils.toNodeRef(alfActivityUtils.getDocumentId(timerRef)));
         }
 
         model.put(MODEL_TIMER, timerRef);
