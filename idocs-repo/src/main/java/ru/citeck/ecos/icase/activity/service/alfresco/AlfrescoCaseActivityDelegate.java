@@ -59,7 +59,7 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
 
     @Override
     public void startActivity(ActivityRef activityRef) {
-        NodeRef activityNodeRef = new NodeRef(activityRef.getId());
+        NodeRef activityNodeRef = alfActivityUtils.getActivityNodeRef(activityRef);
         if (!canSetState(activityNodeRef, ActivityState.STARTED)) {
             return;
         }
@@ -77,7 +77,7 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
 
     @Override
     public void stopActivity(ActivityRef activityRef) {
-        NodeRef activityNodeRef = new NodeRef(activityRef.getId());
+        NodeRef activityNodeRef = alfActivityUtils.getActivityNodeRef(activityRef);
         if (!canSetState(activityNodeRef, ActivityState.COMPLETED)) {
             return;
         }
@@ -95,7 +95,7 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
 
     @Override
     public void reset(ActivityRef activityRef) {
-        NodeRef activityNodeRef = new NodeRef(activityRef.getId());
+        NodeRef activityNodeRef = alfActivityUtils.getActivityNodeRef(activityRef);
         resetImpl(activityNodeRef);
     }
 
@@ -105,7 +105,7 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
             return null;
         }
 
-        NodeRef activityNodeRef = new NodeRef(activityRef.getId());
+        NodeRef activityNodeRef = alfActivityUtils.getActivityNodeRef(activityRef);
         if (!nodeService.exists(activityNodeRef)) {
             return null;
         }
@@ -142,7 +142,7 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
         List<CaseActivity> activities = getActivities(activityRef);
         return activities.stream()
                 .filter(caseActivity -> {
-                    NodeRef activityNodeRef = new NodeRef(caseActivity.getActivityRef().getId());
+                    NodeRef activityNodeRef = alfActivityUtils.getActivityNodeRef(caseActivity.getActivityRef());
                     String status = (String) nodeService.getProperty(activityNodeRef, LifeCycleModel.PROP_STATE);
                     return status != null && status.equals(ActivityState.STARTED.getValue());
                 })
@@ -150,10 +150,23 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
     }
 
     @Override
+    public CaseActivity getActivityByName(ActivityRef activityRef, String name, boolean recurse) {
+        List<CaseActivity> activities = getActivities(activityRef, recurse);
+        for (CaseActivity activity : activities) {
+            NodeRef activityNodeRef = alfActivityUtils.getActivityNodeRef(activity.getActivityRef());
+            String actName = (String) nodeService.getProperty(activityNodeRef, ContentModel.PROP_NAME);
+            if (actName.equals(name)) {
+                return activity;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public CaseActivity getActivityByTitle(ActivityRef activityRef, String title, boolean recurse) {
         List<CaseActivity> activities = getActivities(activityRef, recurse);
         for (CaseActivity activity : activities) {
-            NodeRef activityNodeRef = new NodeRef(activity.getActivityRef().getId());
+            NodeRef activityNodeRef = alfActivityUtils.getActivityNodeRef(activity.getActivityRef());
             String actTitle = (String) nodeService.getProperty(activityNodeRef, ContentModel.PROP_TITLE);
             if (actTitle.equals(title)) {
                 return activity;
@@ -197,11 +210,11 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
 
             for (int index = 0; index < activityRefs.size(); index++) {
                 ActivityRef selectedActivity = activityRefs.get(index);
-                NodeRef selectedActivityNodeRef = new NodeRef(selectedActivity.getId());
+                NodeRef selectedActivityNodeRef = alfActivityUtils.getActivityNodeRef(selectedActivity);
                 nodeService.setProperty(selectedActivityNodeRef, ActivityModel.PROP_INDEX, index);
             }
 
-            NodeRef parentNodeRef = new NodeRef(parentRef.getId());
+            NodeRef parentNodeRef = alfActivityUtils.getActivityNodeRef(parentRef);
             HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(parentNodeRef, nodeService));
             onIndexChangedDelegate.get(classes).onChildrenIndexChanged(parentNodeRef);
         }

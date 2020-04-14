@@ -80,6 +80,15 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     }
 
     @Override
+    public CaseActivity getActivityByName(ActivityRef activityRef, String name, boolean recurse) {
+        if (isAlfrescoRef(activityRef)) {
+            return alfrescoDelegate.getActivityByName(activityRef, name, recurse);
+        } else {
+            return eprocDelegate.getActivityByName(activityRef, name, recurse);
+        }
+    }
+
+    @Override
     public CaseActivity getActivityByTitle(ActivityRef activityRef, String title, boolean recurse) {
         if (isAlfrescoRef(activityRef)) {
             return alfrescoDelegate.getActivityByTitle(activityRef, title, recurse);

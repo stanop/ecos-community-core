@@ -22,6 +22,8 @@ public interface CaseActivityService {
 
     List<CaseActivity> getStartedActivities(ActivityRef activityRef);
 
+    CaseActivity getActivityByName(ActivityRef activityRef, String name, boolean recurse);
+
     CaseActivity getActivityByTitle(ActivityRef activityRef, String title, boolean recurse);
 
     void setParent(ActivityRef activityRef, ActivityRef parentRef);

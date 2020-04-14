@@ -98,7 +98,7 @@ public class CmmnSchemaParser {
 
     private ActivityDefinition parseRootActivityDefinition(Case caseItem) {
         ActivityDefinition activityDefinition = newCommonActivityDefinition(caseItem, ActivityType.ROOT);
-        activityDefinition.setData(parseCommonDefinitionData(caseItem));
+        activityDefinition.setData(parseCommonElementData(caseItem));
         activityDefinition.setActivities(parseChildActivityDefinitions(caseItem.getCasePlanModel()));
         return activityDefinition;
     }
@@ -265,7 +265,13 @@ public class CmmnSchemaParser {
         return idToActivityDefinitionCacheMap.get(id);
     }
 
-    private ObjectData parseCommonDefinitionData(TCmmnElement element) {
+    private ObjectData parseCommonDefinitionData(TPlanItemDefinition definition) {
+        ObjectData data = parseCommonElementData(definition);
+        data.set(CmmnDefinitionConstants.NAME, definition.getName());
+        return data;
+    }
+
+    private ObjectData parseCommonElementData(TCmmnElement element) {
         Map<javax.xml.namespace.QName, String> otherAttributes = element.getOtherAttributes();
 
         ObjectData data = new ObjectData();

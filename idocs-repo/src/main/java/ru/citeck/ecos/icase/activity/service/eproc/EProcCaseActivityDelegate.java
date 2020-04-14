@@ -177,6 +177,18 @@ public class EProcCaseActivityDelegate implements CaseActivityDelegate {
     }
 
     @Override
+    public CaseActivity getActivityByName(ActivityRef activityRef, String name, boolean recurse) {
+        ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
+        return getActivitiesImpl(instance, recurse).stream()
+                .filter(childInstance -> {
+                    String instanceName = EProcUtils.getAnyAttribute(instance, CmmnDefinitionConstants.NAME);
+                    return StringUtils.equals(name, instanceName);
+                })
+                .map(childInstance -> toCaseActivity(activityRef.getProcessId(), childInstance))
+                .findFirst().orElse(null);
+    }
+
+    @Override
     public CaseActivity getActivityByTitle(ActivityRef activityRef, String title, boolean recurse) {
         return getActivities(activityRef, recurse).stream()
                 .filter(caseActivity -> StringUtils.equals(caseActivity.getTitle(), title))
