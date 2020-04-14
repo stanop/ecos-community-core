@@ -163,7 +163,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         findProcDefCommand.setEcosTypeRef(key.getEcosType());
         findProcDefCommand.setAlfTypes(key.getAlfTypes());
 
-        CommandResult commandResult = commandsService.executeRemoteSync(findProcDefCommand, EPROC_TARGET_APP_NAME);
+        CommandResult commandResult = commandsService.executeSync(findProcDefCommand, EPROC_TARGET_APP_NAME);
         if (CollectionUtils.isNotEmpty(commandResult.getErrors())) {
             throw new RuntimeException("Exception while find of process definition. " +
                     "For detailed information see logs");
@@ -189,7 +189,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         getProcDefRevCommand.setProcType(CMMN_PROCESS_TYPE);
         getProcDefRevCommand.setProcDefRevId(definitionRevisionId);
 
-        CommandResult commandResult = commandsService.executeRemoteSync(getProcDefRevCommand, EPROC_TARGET_APP_NAME);
+        CommandResult commandResult = commandsService.executeSync(getProcDefRevCommand, EPROC_TARGET_APP_NAME);
         if (CollectionUtils.isNotEmpty(commandResult.getErrors())) {
             throw new RuntimeException("Exception while receiving of process definition revision. " +
                     "For detailed information see logs");
@@ -242,7 +242,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         createProc.setProcDefRevId(definitionRevisionId);
         createProc.setRecordRef(caseRef);
 
-        CommandResult commandResult = commandsService.executeRemoteSync(createProc, EPROC_TARGET_APP_NAME);
+        CommandResult commandResult = commandsService.executeSync(createProc, EPROC_TARGET_APP_NAME);
         if (CollectionUtils.isNotEmpty(commandResult.getErrors())) {
             throw new RuntimeException("Exception while creation of process state. For detailed information see logs");
         }
@@ -320,7 +320,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         getProcStateCommand.setProcType(CMMN_PROCESS_TYPE);
         getProcStateCommand.setProcStateId(stateId);
 
-        CommandResult commandResult = commandsService.executeRemoteSync(getProcStateCommand, EPROC_TARGET_APP_NAME);
+        CommandResult commandResult = commandsService.executeSync(getProcStateCommand, EPROC_TARGET_APP_NAME);
         if (CollectionUtils.isNotEmpty(commandResult.getErrors())) {
             throw new RuntimeException("Exception while receiving of process state. For detailed information see logs");
         }
@@ -440,7 +440,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         }
         updateProcState.setStateData(stateData);
 
-        CommandResult commandResult = commandsService.executeRemoteSync(updateProcState, EPROC_TARGET_APP_NAME);
+        CommandResult commandResult = commandsService.executeSync(updateProcState, EPROC_TARGET_APP_NAME);
         if (CollectionUtils.isNotEmpty(commandResult.getErrors())) {
             throw new RuntimeException("Exception while state updating. For detailed information see logs");
         }
