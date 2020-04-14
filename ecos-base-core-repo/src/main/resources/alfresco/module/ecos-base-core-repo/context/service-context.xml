@@ -444,8 +444,6 @@
 
     <bean id="core.barcode-attribute.type-to-property.mappingRegistry" class="ru.citeck.ecos.spring.registry.MappingRegistry"/>
 
-    <bean id="core.case-document-type.type-children-assocs.mappingRegistry" class="ru.citeck.ecos.spring.registry.MappingRegistry"/>
-
     <bean id="documentToCounterparty.mappingRegistry" class="ru.citeck.ecos.spring.registry.MappingRegistry"/>
 
 </beans>

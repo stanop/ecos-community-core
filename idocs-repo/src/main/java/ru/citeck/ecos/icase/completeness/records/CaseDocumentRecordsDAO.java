@@ -1,19 +1,22 @@
 package ru.citeck.ecos.icase.completeness.records;
 
+import ecos.com.google.common.cache.CacheBuilder;
+import ecos.com.google.common.cache.CacheLoader;
+import ecos.com.google.common.cache.LoadingCache;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.alfresco.model.ContentModel;
+import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.QName;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.icase.completeness.CaseCompletenessService;
-import ru.citeck.ecos.icase.completeness.records.registry.CaseDocumentsAssociation;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
@@ -24,10 +27,12 @@ import ru.citeck.ecos.records2.request.result.RecordsResult;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.v2.LocalRecordsQueryWithMetaDAO;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
-import ru.citeck.ecos.spring.registry.MappingRegistry;
+import ru.citeck.ecos.utils.DictUtils;
 import ru.citeck.ecos.utils.NodeUtils;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Component
@@ -41,24 +46,31 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
 
     private final NodeService nodeService;
     private final NodeUtils nodeUtils;
+    private final DictUtils dictUtils;
     private final CaseCompletenessService caseCompletenessService;
     private final SearchService searchService;
-    private final MappingRegistry<String, List<CaseDocumentsAssociation>> registry;
+
+    private final Map<QName, Map<RecordRef, QName>> assocTypesRegistry = new ConcurrentHashMap<>();
+    private final LoadingCache<QName, Map<RecordRef, QName>> assocTypesByCaseAlfTypeCache;
 
     @Autowired
     public CaseDocumentRecordsDAO(@Qualifier("caseCompletenessService")
                                       CaseCompletenessService caseCompletenessService,
-                                  @Qualifier("core.case-document-type.type-children-assocs.mappingRegistry")
-                                      MappingRegistry<String, List<CaseDocumentsAssociation>> registry,
                                   SearchService searchService,
                                   NodeService nodeService,
-                                  NodeUtils nodeUtils) {
+                                  NodeUtils nodeUtils,
+                                  DictUtils dictUtils) {
         setId(ID);
         this.caseCompletenessService = caseCompletenessService;
         this.searchService = searchService;
-        this.registry = registry;
         this.nodeService = nodeService;
         this.nodeUtils = nodeUtils;
+        this.dictUtils = dictUtils;
+
+        assocTypesByCaseAlfTypeCache = CacheBuilder.newBuilder()
+            .expireAfterAccess(30, TimeUnit.SECONDS)
+            .maximumSize(200)
+            .build(CacheLoader.from(this::getAssocTypesForType));
     }
 
     @Override
@@ -88,7 +100,7 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
             return new RecordsQueryResult<>();
         }
 
-        Map<RecordRef, List<DocInfo>> docsByType = getAllDocsByType(recordRef);
+        Map<RecordRef, List<DocInfo>> docsByType = getAllDocsForCase(recordRef);
 
         List<TypeDocumentsRecord> typeDocumentsList = typesRefs.stream()
             .map(typeRef -> new TypeDocumentsRecord(typeRef, docsByType.getOrDefault(typeRef, Collections.emptyList())
@@ -96,26 +108,6 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
                 .map(DocInfo::getRef)
                 .collect(Collectors.toList())))
             .collect(Collectors.toList());
-
-        NodeRef typeNodeRef = new NodeRef(recordRef.getId());
-        QName caseDocumentType = nodeService.getType(typeNodeRef);
-        List<CaseDocumentsAssociation> caseDocumentsAssociations = registry.get(caseDocumentType.toString());
-        if (CollectionUtils.isNotEmpty(caseDocumentsAssociations)) {
-
-            for (CaseDocumentsAssociation caseDocumentsAssociation : caseDocumentsAssociations) {
-
-                List<RecordRef> assocsRecordRefs = nodeUtils.getAssocTargets(typeNodeRef,
-                    QName.createQName(caseDocumentsAssociation.getChildAssocQName()))
-                    .stream()
-                    .map(nodeRef -> RecordRef.create("", nodeRef.toString()))
-                    .collect(Collectors.toList());
-
-                TypeDocumentsRecord document = new TypeDocumentsRecord(caseDocumentsAssociation.getETypeRef(),
-                    assocsRecordRefs);
-
-                typeDocumentsList.add(document);
-            }
-        }
 
         RecordsQueryResult<TypeDocumentsRecord> typeDocumentsRecords = new RecordsQueryResult<>();
         typeDocumentsRecords.setRecords(typeDocumentsList);
@@ -131,7 +123,7 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
             return new RecordsQueryResult<>();
         }
 
-        Map<RecordRef, List<DocInfo>> docsByType = getAllDocsByType(recordRef);
+        Map<RecordRef, List<DocInfo>> docsByType = getAllDocsForCase(recordRef);
 
         List<TypeDocumentsRecord> documentsByTypes = docsByType.entrySet().stream()
             .map(e -> new TypeDocumentsRecord(e.getKey(), e.getValue().stream()
@@ -144,10 +136,12 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
         return documentsByTypesRecords;
     }
 
-    private Map<RecordRef, List<DocInfo>> getAllDocsByType(RecordRef documentRef) {
+    private Map<RecordRef, List<DocInfo>> getAllDocsForCase(RecordRef caseRecordRef) {
+
+        NodeRef caseRef = new NodeRef(caseRecordRef.getId());
 
         FTSQuery ftsQuery = FTSQuery.createRaw()
-            .parent(new NodeRef(documentRef.getId()))
+            .parent(caseRef)
             .transactional()
             .maxItems(1000);
 
@@ -158,7 +152,7 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
 
         RecordsResult<DocumentTypeMeta> meta = recordsService.getMeta(documentRefs, DocumentTypeMeta.class);
 
-        Map<RecordRef, List<DocInfo>> docsByType = new HashMap<>();
+        Map<RecordRef, Set<DocInfo>> docsByType = new HashMap<>();
 
         for (int i = 0; i < meta.getRecords().size(); i++) {
 
@@ -169,13 +163,77 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
                 long order = docMeta.getCreated() != null ? docMeta.getCreated().getTime() : 0L;
 
                 DocInfo docInfo = new DocInfo(documentRefs.get(i), order);
-                docsByType.computeIfAbsent(docMeta.getType(), t -> new ArrayList<>()).add(docInfo);
+                docsByType.computeIfAbsent(docMeta.getType(), t -> new HashSet<>()).add(docInfo);
             }
         }
 
-        docsByType.forEach((t, docs) -> docs.sort(Comparator.comparingLong(DocInfo::getOrder).reversed()));
+        getAllDocsByAssocsRegistry(caseRef).forEach((type, docs) ->
+            docsByType.computeIfAbsent(type, t -> new HashSet<>()).addAll(docs)
+        );
 
-        return docsByType;
+        Map<RecordRef, List<DocInfo>> orderedDocsByType = new HashMap<>();
+        docsByType.forEach((type, docs) ->
+            orderedDocsByType.computeIfAbsent(type, t -> new ArrayList<>()).addAll(docs)
+        );
+
+        orderedDocsByType.forEach((t, docs) -> docs.sort(Comparator.comparingLong(DocInfo::getOrder).reversed()));
+
+        return orderedDocsByType;
+    }
+
+    private Map<RecordRef, List<DocInfo>> getAllDocsByAssocsRegistry(NodeRef caseRef) {
+
+        QName caseDocumentType = nodeService.getType(caseRef);
+
+        Map<RecordRef, QName> assocsByEcosType = assocTypesByCaseAlfTypeCache.getUnchecked(caseDocumentType);
+        Map<RecordRef, List<DocInfo>> documents = new HashMap<>();
+
+        assocsByEcosType.forEach((ecosTypeRef, assocName) -> {
+
+            List<NodeRef> assocsRecordRefs = nodeUtils.getAssocTargets(caseRef, assocName);
+            if (!assocsRecordRefs.isEmpty()) {
+                documents.put(ecosTypeRef, assocsRecordRefs.stream()
+                    .map(this::nodeRefToDocInfo)
+                    .collect(Collectors.toList())
+                );
+            }
+        });
+
+        return documents;
+    }
+
+    private DocInfo nodeRefToDocInfo(NodeRef nodeRef) {
+
+        Date created = (Date) nodeService.getProperty(nodeRef, ContentModel.PROP_CREATED);
+        long createdMs = created != null ? created.getTime() : 0L;
+
+        return new DocInfo(RecordRef.create("", nodeRef.toString()), createdMs);
+    }
+
+    private Map<RecordRef, QName> getAssocTypesForType(QName typeName) {
+
+        if (typeName == null) {
+            return Collections.emptyMap();
+        }
+
+        ClassDefinition typeDef = dictUtils.getTypeDefinition(typeName);
+
+        List<QName> types = new ArrayList<>();
+
+        while (typeDef != null) {
+            types.add(typeDef.getName());
+            typeDef = typeDef.getParentClassDefinition();
+        }
+
+        Map<RecordRef, QName> assocsByEcosType = new HashMap<>();
+
+        for (int i = types.size() - 1; i >= 0; i--) {
+            Map<RecordRef, QName> forType = assocTypesRegistry.get(types.get(i));
+            if (forType != null) {
+                assocsByEcosType.putAll(forType);
+            }
+        }
+        return assocsByEcosType;
     }
 
     private RecordsQueryResult<CaseDocumentRecord> getDocumentTypes(RecordsQuery recordsQuery) {
@@ -188,7 +246,7 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
         RecordRef recordRef = RecordRef.valueOf(recordRefStr);
 
         if (!NodeRef.isNodeRef(recordRef.getId())) {
-            log.warn("RecordRef id is not nodeRef");
+            log.warn("'" + recordRefStr + "' can't be converted to NodeRef");
             result.setRecords(Collections.emptyList());
             return result;
         }
@@ -202,6 +260,14 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
         result.setRecords(documentRecords);
 
         return result;
+    }
+
+    public void register(CaseAssocToEcosType caseAssocToEcosType) {
+
+        RecordRef typeRef = RecordRef.valueOf(caseAssocToEcosType.getEcosTypeRef());
+
+        assocTypesRegistry.computeIfAbsent(caseAssocToEcosType.getAlfType(), t -> new ConcurrentHashMap<>())
+                          .put(typeRef, caseAssocToEcosType.getAssocName());
     }
 
     @Data
