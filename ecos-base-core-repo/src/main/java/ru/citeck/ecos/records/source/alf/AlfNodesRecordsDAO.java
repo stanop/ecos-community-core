@@ -118,9 +118,18 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
         // if we get "att_add_someAtt" and "someAtt", then ignore "att_add_*"
         attributes.forEach((name, value) -> {
+
             if (name.startsWith(ADD_CMD_PREFIX) || name.startsWith(REMOVE_CMD_PREFIX)) {
-                String actualName = extractActualAttName(name);
-                if (value.isNotNull()) {
+
+                String attrNameWithoutPrefix;
+                if (name.startsWith(ADD_CMD_PREFIX)) {
+                    attrNameWithoutPrefix = name.replaceFirst(ADD_CMD_PREFIX, StringUtils.EMPTY);
+                } else {
+                    attrNameWithoutPrefix = name.replaceFirst(REMOVE_CMD_PREFIX, StringUtils.EMPTY);
+                }
+
+                if (attributes.has(attrNameWithoutPrefix) && value.isNotNull()) {
+                    String actualName = extractActualAttName(name);
                     attsToIgnore.put(name, actualName);
                 }
             }
