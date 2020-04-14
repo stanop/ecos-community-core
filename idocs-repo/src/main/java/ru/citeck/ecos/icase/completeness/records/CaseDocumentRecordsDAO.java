@@ -153,6 +153,7 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
         RecordsResult<DocumentTypeMeta> meta = recordsService.getMeta(documentRefs, DocumentTypeMeta.class);
 
         Map<RecordRef, Set<DocInfo>> docsByType = new HashMap<>();
+        Set<DocInfo> allDocuments = new HashSet<>();
 
         for (int i = 0; i < meta.getRecords().size(); i++) {
 
@@ -163,6 +164,7 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
                 long order = docMeta.getCreated() != null ? docMeta.getCreated().getTime() : 0L;
 
                 DocInfo docInfo = new DocInfo(documentRefs.get(i), order);
+                allDocuments.add(docInfo);
                 docsByType.computeIfAbsent(docMeta.getType(), t -> new HashSet<>()).add(docInfo);
             }
         }
@@ -172,9 +174,10 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
         );
 
         Map<RecordRef, List<DocInfo>> orderedDocsByType = new HashMap<>();
-        docsByType.forEach((type, docs) ->
-            orderedDocsByType.computeIfAbsent(type, t -> new ArrayList<>()).addAll(docs)
-        );
+        docsByType.forEach((type, docs) -> {
+            List<DocInfo> targetList = orderedDocsByType.computeIfAbsent(type, t -> new ArrayList<>());
+            docs.stream().filter(d -> !allDocuments.contains(d)).forEach(targetList::add);
+        });
 
         orderedDocsByType.forEach((t, docs) -> docs.sort(Comparator.comparingLong(DocInfo::getOrder).reversed()));
 
