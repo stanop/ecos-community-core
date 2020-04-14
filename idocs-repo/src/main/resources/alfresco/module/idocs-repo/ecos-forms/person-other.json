@@ -2,7 +2,8 @@
     "id": "person_other",
     "formKey": "alf_cm:person",
     "title": {
-        "en": "Other"
+        "en": "Other",
+        "ru": "Прочее"
     },
     "description": {
         "en": ""

@@ -2,7 +2,8 @@
     "id": "person_contacts",
     "formKey": "alf_cm:person",
     "title": {
-        "en": "Contacts"
+        "en": "Contacts",
+        "ru": "Контакты"
     },
     "description": {
         "en": ""
