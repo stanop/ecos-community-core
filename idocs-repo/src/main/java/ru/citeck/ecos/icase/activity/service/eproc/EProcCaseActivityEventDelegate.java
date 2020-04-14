@@ -1,5 +1,6 @@
 package ru.citeck.ecos.icase.activity.service.eproc;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.icase.activity.dto.*;
@@ -10,7 +11,6 @@ import ru.citeck.ecos.records2.evaluator.RecordEvaluatorService;
 import ru.citeck.ecos.records2.evaluator.evaluators.GroupEvaluator;
 import ru.citeck.ecos.utils.EvaluatorUtils;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,15 +72,24 @@ public class EProcCaseActivityEventDelegate implements CaseActivityEventDelegate
     }
 
     private RecordEvaluatorDto convertEvaluatorDefinition(EvaluatorDefinition definition) {
-        EvaluatorDefinitionData[] definitionDataArray = definition.getData().getAs(EvaluatorDefinitionData[].class);
-        if (definitionDataArray == null || definitionDataArray.length == 0) {
+        if (definition == null || definition.getData() == null) {
             return null;
-        } else if (definitionDataArray.length == 1) {
-            return eprocCaseEvaluatorConverter.convertCondition(definitionDataArray[0]);
+        }
+
+        EvaluatorDefinitionDataHolder dataHolder = definition.getData().getAs(EvaluatorDefinitionDataHolder.class);
+        if (dataHolder == null) {
+            return null;
+        }
+
+        List<EvaluatorDefinitionData> definitionDataList = dataHolder.getData();
+        if (CollectionUtils.isEmpty(definitionDataList)) {
+            return null;
+        } else if (definitionDataList.size() == 1) {
+            return eprocCaseEvaluatorConverter.convertCondition(definitionDataList.get(0));
         } else {
             GroupEvaluator.Config config = new GroupEvaluator.Config();
             config.setJoinBy(GroupEvaluator.JoinType.AND);
-            List<RecordEvaluatorDto> groupedEvaluators = Arrays.stream(definitionDataArray)
+            List<RecordEvaluatorDto> groupedEvaluators = definitionDataList.stream()
                     .map(eprocCaseEvaluatorConverter::convertCondition)
                     .collect(Collectors.toList());
             config.setEvaluators(groupedEvaluators);

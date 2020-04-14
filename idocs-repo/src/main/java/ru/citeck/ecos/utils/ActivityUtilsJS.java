@@ -2,14 +2,27 @@ package ru.citeck.ecos.utils;
 
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.dto.EventRef;
+import ru.citeck.ecos.icase.activity.service.ActivityCommonService;
 
+@Component
 public class ActivityUtilsJS {
 
+    private ActivityCommonService activityCommonService;
+    private AlfActivityUtils alfActivityUtils;
+
+    @Autowired
+    public ActivityUtilsJS(ActivityCommonService activityCommonService, AlfActivityUtils alfActivityUtils) {
+        this.activityCommonService = activityCommonService;
+        this.alfActivityUtils = alfActivityUtils;
+    }
+
     //TODO: algorithm for eproc activities is missed?
-    public static ActivityRef getActivityRef(Object object, AlfActivityUtils alfActivityUtils) {
+    public ActivityRef getActivityRef(Object object) {
         if (object == null) {
             return null;
         }
@@ -20,22 +33,34 @@ public class ActivityUtilsJS {
             return ((CaseActivity) object).getActivityRef();
         }
         if (object instanceof NodeRef) {
-            return alfActivityUtils.composeActivityRef((NodeRef) object);
+            NodeRef nodeRef = (NodeRef) object;
+            if (activityCommonService.isRoot(nodeRef)) {
+                return activityCommonService.composeRootActivityRef(nodeRef);
+            }
+            return alfActivityUtils.composeActivityRef(nodeRef);
         }
         if (object instanceof ScriptNode) {
-            return alfActivityUtils.composeActivityRef(((ScriptNode) object).getNodeRef());
+            NodeRef nodeRef = ((ScriptNode) object).getNodeRef();
+            if (activityCommonService.isRoot(nodeRef)) {
+                return activityCommonService.composeRootActivityRef(nodeRef);
+            }
+            return alfActivityUtils.composeActivityRef(nodeRef);
         }
         if (object instanceof String) {
             if (NodeRef.isNodeRef((String) object)) {
-                return alfActivityUtils.composeActivityRef(new NodeRef((String) object));
+                NodeRef nodeRef = new NodeRef((String) object);
+                if (activityCommonService.isRoot(nodeRef)) {
+                    return activityCommonService.composeRootActivityRef(nodeRef);
+                }
+                return alfActivityUtils.composeActivityRef(nodeRef);
             }
         }
         throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to ActivityRef. " +
-            "Source: " + object.toString());
+                "Source: " + object.toString());
     }
 
     //TODO: algorithm for eproc events is missed?
-    public static EventRef getEventRef(Object object, AlfActivityUtils alfActivityUtils) {
+    public EventRef getEventRef(Object object) {
         if (object == null) {
             return null;
         }
@@ -54,7 +79,7 @@ public class ActivityUtilsJS {
             }
         }
         throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to EventRef. " +
-            "Source: " + object.toString());
+                "Source: " + object.toString());
     }
 
 }

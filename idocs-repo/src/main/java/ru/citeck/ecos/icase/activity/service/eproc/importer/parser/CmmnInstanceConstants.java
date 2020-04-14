@@ -1,4 +1,4 @@
-package ru.citeck.ecos.icase.activity.service.eproc.parser;
+package ru.citeck.ecos.icase.activity.service.eproc.importer.parser;
 
 public interface CmmnInstanceConstants {
 

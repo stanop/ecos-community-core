@@ -23,12 +23,11 @@
     <bean id="caseActivityEventServiceJS" class="ru.citeck.ecos.icase.activity.CaseActivityEventServiceJS"
           parent="baseJavaScriptExtension">
         <property name="extensionName" value="caseActivityEventService"/>
-        <property name="alfActivityUtils" ref="alfActivityUtils"/>
         <property name="serviceRegistry" ref="ServiceRegistry"/>
         <property name="caseActivityEventService" ref="caseActivityEventService"/>
     </bean>
 
-    <util:map id="CaseTask.attributesMappingByWorkflow" map-class="java.util.HashMap">
+    <util:map id="CaseTaskAttributesMappingByWorkflow" map-class="java.util.HashMap">
         <entry key="activiti$print">
             <map>
                 <entry key="icaseTask:performer" value="wfpr:printer"/>
@@ -117,7 +116,7 @@
         </entry>
     </util:map>
 
-    <util:map id="CaseTask.workflowTransmittedVariables" map-class="java.util.HashMap">
+    <util:map id="CaseTaskWorkflowTransmittedVariables" map-class="java.util.HashMap">
         <entry key="activiti$case-perform">
             <list>
                 <value>optionalPerformers</value>
@@ -146,8 +145,8 @@
         <property name="workflowService" ref="WorkflowService"/>
         <property name="caseRoleService" ref="caseRoleService"/>
         <property name="nodeService" ref="nodeService"/>
-        <property name="attributesMappingByWorkflow" ref="CaseTask.attributesMappingByWorkflow"/>
-        <property name="workflowTransmittedVariables" ref="CaseTask.workflowTransmittedVariables"/>
+        <property name="attributesMappingByWorkflow" ref="CaseTaskAttributesMappingByWorkflow"/>
+        <property name="workflowTransmittedVariables" ref="CaseTaskWorkflowTransmittedVariables"/>
     </bean>
 
     <bean id="ru.citeck.ecos.icase.activity.create.ViewCreateVariantsProvider"

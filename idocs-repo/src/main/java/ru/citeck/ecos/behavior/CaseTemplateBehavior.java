@@ -43,7 +43,7 @@ import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseServiceType;
 import ru.citeck.ecos.icase.activity.service.CaseActivityEventService;
-import ru.citeck.ecos.icase.activity.service.eproc.EProcCaseImporter;
+import ru.citeck.ecos.icase.activity.service.eproc.importer.EProcCaseImporter;
 import ru.citeck.ecos.model.ICaseEventModel;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.records2.RecordRef;
@@ -133,10 +133,10 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
 
         final CaseServiceType enabledCaseServiceType = getEnabledCaseServiceType();
 
-        if (enabledCaseServiceType == CaseServiceType.ALFRESCO) {
-            alfrescoCopyFromTemplateImpl(caseNode);
-        } else {
+        if (enabledCaseServiceType == CaseServiceType.EPROC && eProcCaseImporter.eprocCaseCreationAllowed(caseNode)) {
             eprocCopyFromTemplateImpl(caseNode);
+        } else {
+            alfrescoCopyFromTemplateImpl(caseNode);
         }
     }
 

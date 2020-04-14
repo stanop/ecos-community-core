@@ -15,7 +15,7 @@ import ru.citeck.ecos.commons.data.ObjectData;
 public class TriggerDefinition {
     private String id;
     private String type;
-    private ObjectData data;
+    private SentryTriggerDefinition data;
 
     private ActivityTransitionDefinition parentActivityTransitionDefinition;
 }

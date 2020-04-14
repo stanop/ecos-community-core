@@ -9,7 +9,7 @@ import ru.citeck.ecos.icase.activity.dto.ActivityInstance;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcActivityService;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcUtils;
-import ru.citeck.ecos.icase.activity.service.eproc.parser.CmmnDefinitionConstants;
+import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnDefinitionConstants;
 import ru.citeck.ecos.icase.commands.CaseCommandsService;
 import ru.citeck.ecos.icase.commands.dto.SetCaseStatusCommand;
 import ru.citeck.ecos.icase.commands.executors.SetCaseStatusCommandExecutor;

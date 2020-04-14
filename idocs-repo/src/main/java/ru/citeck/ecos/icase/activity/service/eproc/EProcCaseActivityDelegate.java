@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.icase.activity.dto.*;
 import ru.citeck.ecos.icase.activity.service.CaseActivityDelegate;
-import ru.citeck.ecos.icase.activity.service.eproc.parser.CmmnDefinitionConstants;
+import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnDefinitionConstants;
 import ru.citeck.ecos.records2.RecordRef;
 
 import java.util.ArrayList;

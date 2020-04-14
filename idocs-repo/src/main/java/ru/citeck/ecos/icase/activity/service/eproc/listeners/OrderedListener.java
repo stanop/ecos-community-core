@@ -20,7 +20,7 @@ public interface OrderedListener extends Comparable<OrderedListener> {
     default int compareTo(@NotNull OrderedListener another) {
         int result = Integer.compare(this.getOrder(), another.getOrder());
         if (result == 0) {
-            result = StringUtils.compare(this.getClass().getName(), another.getClass().getName());
+            result = this.getClass().getName().compareTo(another.getClass().getName());
         }
         return result;
     }

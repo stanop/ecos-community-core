@@ -1,4 +1,4 @@
-package ru.citeck.ecos.icase.activity.service.eproc.parser;
+package ru.citeck.ecos.icase.activity.service.eproc.importer.parser;
 
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
@@ -63,6 +63,7 @@ public class CmmnSchemaParser {
         this.utils = utils;
     }
 
+    //TODO: maybe better construct cache here and return his with definition as composite object?
     public ProcessDefinition parse(byte[] source) {
         try (ByteArrayInputStream stream = new ByteArrayInputStream(source)) {
             Definitions definitions = xmlContentDAO.read(stream);
@@ -203,12 +204,17 @@ public class CmmnSchemaParser {
 
     private ActivityDefinition newCommonActivityDefinition(TCmmnElement element, ActivityType activityType) {
         ActivityDefinition activityDefinition = new ActivityDefinition();
-        activityDefinition.setId(element.getId());
+        if (activityType == ActivityType.ROOT) {
+            activityDefinition.setId(ActivityRef.ROOT_ID);
+            addActivityDefinitionToIdentityCache(element.getId(), activityDefinition);
+            addActivityDefinitionToIdentityCache(ActivityRef.ROOT_ID, activityDefinition);
+        } else {
+            activityDefinition.setId(element.getId());
+            addActivityDefinitionToIdentityCache(element.getId(), activityDefinition);
+        }
         activityDefinition.setType(activityType);
         activityDefinition.setIndex(getNextIndex());
         activityDefinition.setRepeatable(isRepeatable(element));
-
-        addActivityDefinitionToIdentityCache(activityDefinition);
 
         return activityDefinition;
     }
@@ -240,14 +246,13 @@ public class CmmnSchemaParser {
         return atomicInteger.incrementAndGet();
     }
 
-    private void addActivityDefinitionToIdentityCache(ActivityDefinition activityDefinition) {
+    private void addActivityDefinitionToIdentityCache(String id, ActivityDefinition activityDefinition) {
         Map<String, ActivityDefinition> idToActivityDefinitionCacheMap = idToActivityDefinitionCache.get();
         if (idToActivityDefinitionCacheMap == null) {
             idToActivityDefinitionCacheMap = new HashMap<>();
             idToActivityDefinitionCache.set(idToActivityDefinitionCacheMap);
         }
 
-        String id = activityDefinition.getId();
         idToActivityDefinitionCacheMap.put(id, activityDefinition);
     }
 
@@ -561,13 +566,13 @@ public class CmmnSchemaParser {
     }
 
     private SentryTriggerDefinition getOrCreateSentryTriggerDefinition(TriggerDefinition trigger) {
-        ObjectData data = trigger.getData();
+        SentryTriggerDefinition data = trigger.getData();
         if (data == null) {
             SentryTriggerDefinition sentryTriggerDefinition = new SentryTriggerDefinition();
-            data = new ObjectData(sentryTriggerDefinition);
-            trigger.setData(data);
+            trigger.setData(sentryTriggerDefinition);
+            return sentryTriggerDefinition;
         }
-        return data.getAs(SentryTriggerDefinition.class);
+        return data;
     }
 
     private void addSentryDefinition(TriggerDefinition trigger, SentryTriggerDefinition sentryTriggerDefinition,
@@ -586,7 +591,9 @@ public class CmmnSchemaParser {
             sentryTriggerDefinition.setSentries(sentries);
         }
 
-        sentries.add(sentryDefinition);
+        if (!sentries.contains(sentryDefinition)) {
+            sentries.add(sentryDefinition);
+        }
     }
 
     private String getEventType(Sentry sentry) {
@@ -599,7 +606,17 @@ public class CmmnSchemaParser {
         String sourceId = onPart.getValue().getOtherAttributes().get(CMMNUtils.QNAME_SOURCE_ID);
 
         SourceRef sourceRef = new SourceRef();
-        sourceRef.setRef(sourceId);
+        ActivityDefinition definition = getCachedActivityDefinitionById(sourceId);
+        if (definition != null) {
+            if (definition.getType() == ActivityType.ROOT) {
+                sourceRef.setRef(ActivityRef.ROOT_ID);
+            } else {
+                sourceRef.setRef(sourceId);
+            }
+        } else {
+            log.warn("Can not find sourceRef " + sourceId);
+            sourceRef.setRef(sourceId);
+        }
         return sourceRef;
     }
 
@@ -628,7 +645,7 @@ public class CmmnSchemaParser {
         return definition;
     }
 
-    private List<EvaluatorDefinitionData> composeEvaluatorDefinitionData(List<Condition> conditions) {
+    private EvaluatorDefinitionDataHolder composeEvaluatorDefinitionData(List<Condition> conditions) {
         List<EvaluatorDefinitionData> result = new ArrayList<>();
         for (Condition condition : conditions) {
             EvaluatorDefinitionData definitionData = new EvaluatorDefinitionData();
@@ -646,7 +663,7 @@ public class CmmnSchemaParser {
 
             result.add(definitionData);
         }
-        return result;
+        return new EvaluatorDefinitionDataHolder(result);
     }
 
     private ConditionsList unmarshalConditions(String xml) throws JAXBException {

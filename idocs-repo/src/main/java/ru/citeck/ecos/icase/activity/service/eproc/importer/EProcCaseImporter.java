@@ -1,8 +1,12 @@
-package ru.citeck.ecos.icase.activity.service.eproc;
+package ru.citeck.ecos.icase.activity.service.eproc.importer;
 
+import com.hazelcast.util.ConcurrentHashSet;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.dictionary.TypeDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
+import org.alfresco.service.namespace.QName;
 import org.alfresco.util.Pair;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +19,16 @@ import ru.citeck.ecos.cmmn.service.util.CaseElementImport;
 import ru.citeck.ecos.cmmn.service.util.CaseRolesImport;
 import ru.citeck.ecos.content.dao.xml.XmlContentDAO;
 import ru.citeck.ecos.icase.activity.dto.ProcessDefinition;
-import ru.citeck.ecos.icase.activity.service.eproc.parser.CmmnSchemaParser;
+import ru.citeck.ecos.icase.activity.service.eproc.EProcActivityService;
+import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnSchemaParser;
 import ru.citeck.ecos.icase.element.CaseElementService;
+import ru.citeck.ecos.node.EcosTypeService;
 import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records2.RecordRef;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Set;
 
 @Component
 public class EProcCaseImporter {
@@ -30,27 +37,37 @@ public class EProcCaseImporter {
     private CmmnSchemaParser cmmnSchemaParser;
 
     private NodeService nodeService;
+    private DictionaryService dictionaryService;
     private AuthorityService authorityService;
     private CaseElementService caseElementService;
     private XmlContentDAO<Definitions> xmlContentDAO;
     private CMMNUtils utils;
 
+    private EcosTypeService ecosTypeService;
+
+    private Set<RecordRef> allowedEcosTypes = new ConcurrentHashSet<>();
+    private Set<QName> allowedAlfTypes = new ConcurrentHashSet<>();
+
     @Autowired
     public EProcCaseImporter(EProcActivityService eprocActivityService,
                              CmmnSchemaParser cmmnSchemaParser,
                              NodeService nodeService,
+                             DictionaryService dictionaryService,
                              AuthorityService authorityService,
                              CaseElementService caseElementService,
                              @Qualifier("caseTemplateContentDAO") XmlContentDAO<Definitions> xmlContentDAO,
-                             CMMNUtils utils) {
+                             CMMNUtils utils,
+                             EcosTypeService ecosTypeService) {
 
         this.eprocActivityService = eprocActivityService;
         this.cmmnSchemaParser = cmmnSchemaParser;
         this.nodeService = nodeService;
+        this.dictionaryService = dictionaryService;
         this.authorityService = authorityService;
         this.caseElementService = caseElementService;
         this.xmlContentDAO = xmlContentDAO;
         this.utils = utils;
+        this.ecosTypeService = ecosTypeService;
     }
 
     public void importCase(RecordRef caseRef) {
@@ -91,6 +108,46 @@ public class EProcCaseImporter {
             throw new RuntimeException("Can not find definition bytes for caseRef=" + caseRef);
         }
         return revisionIdAndRawDefinition;
+    }
+
+    public void registerEcosType(RecordRef typeRef) {
+        allowedEcosTypes.add(typeRef);
+    }
+
+    public void registerAlfrescoType(QName typeQName) {
+        allowedAlfTypes.add(typeQName);
+    }
+
+    public boolean eprocCaseCreationAllowed(NodeRef caseRef) {
+        RecordRef ecosType = ecosTypeService.getEcosType(caseRef);
+        if (ecosType != null) {
+            if (allowedEcosTypes.contains(ecosType)) {
+                return true;
+            }
+        }
+
+        QName alfCaseType = nodeService.getType(caseRef);
+        return isAlfrescoTypeEnabled(alfCaseType);
+
+    }
+
+    private boolean isAlfrescoTypeEnabled(QName caseType) {
+        TypeDefinition typeDef = dictionaryService.getType(caseType);
+
+        while (typeDef != null) {
+            if (allowedAlfTypes.contains(typeDef.getName())) {
+                return true;
+            }
+
+            QName parentTypeQName = typeDef.getParentName();
+            if (parentTypeQName == null) {
+                typeDef = null;
+                continue;
+            }
+            typeDef = dictionaryService.getType(parentTypeQName);
+        }
+
+        return false;
     }
 
 }

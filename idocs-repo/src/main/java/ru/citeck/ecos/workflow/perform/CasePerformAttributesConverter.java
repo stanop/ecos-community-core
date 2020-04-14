@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import ru.citeck.ecos.behavior.activity.CaseTaskAttributesConverter;
 import ru.citeck.ecos.icase.activity.dto.ActivityInstance;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcUtils;
-import ru.citeck.ecos.icase.activity.service.eproc.parser.CmmnDefinitionConstants;
+import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnDefinitionConstants;
 import ru.citeck.ecos.model.CasePerformModel;
 import ru.citeck.ecos.model.RouteModel;
 import ru.citeck.ecos.role.CaseRoleService;

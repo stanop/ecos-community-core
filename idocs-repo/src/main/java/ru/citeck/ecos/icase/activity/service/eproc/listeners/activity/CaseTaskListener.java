@@ -18,8 +18,10 @@ import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.behavior.activity.CaseTaskAttributesConverter;
@@ -31,8 +33,8 @@ import ru.citeck.ecos.icase.activity.service.eproc.EProcCaseActivityListenerMana
 import ru.citeck.ecos.icase.activity.service.eproc.EProcUtils;
 import ru.citeck.ecos.icase.activity.service.eproc.listeners.BeforeStartedActivityListener;
 import ru.citeck.ecos.icase.activity.service.eproc.listeners.OnResetActivityListener;
-import ru.citeck.ecos.icase.activity.service.eproc.parser.CmmnDefinitionConstants;
-import ru.citeck.ecos.icase.activity.service.eproc.parser.CmmnInstanceConstants;
+import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnDefinitionConstants;
+import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnInstanceConstants;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.model.EcosProcessModel;
 import ru.citeck.ecos.model.ICaseRoleModel;
@@ -78,9 +80,9 @@ public class CaseTaskListener implements BeforeStartedActivityListener, OnResetA
                             CaseRoleService caseRoleService,
                             NodeService nodeService,
                             @Qualifier("ecosConfigService") EcosConfigService ecosConfigService,
-                            @Qualifier("CaseTask.attributesMappingByWorkflow")
+                            @Value("#{CaseTaskAttributesMappingByWorkflow}")
                                     Map<String, Map<String, String>> attributesMappingByWorkflow,
-                            @Qualifier("CaseTask.workflowTransmittedVariables")
+                            @Value("#{CaseTaskWorkflowTransmittedVariables}")
                                     Map<String, List<String>> workflowTransmittedVariables,
                             List<CaseTaskAttributesConverter> attributesConverters) {
 
@@ -113,6 +115,10 @@ public class CaseTaskListener implements BeforeStartedActivityListener, OnResetA
     @Override
     public void beforeStartedActivity(ActivityRef activityRef) {
         ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
+        if (!EProcUtils.isUserTask(instance.getDefinition())) {
+            return;
+        }
+
         NodeRef caseRef = RecordsUtils.toNodeRef(activityRef.getProcessId());
 
         String workflowDefinitionName = EProcUtils.getAnyAttribute(instance,
@@ -336,6 +342,9 @@ public class CaseTaskListener implements BeforeStartedActivityListener, OnResetA
     @Override
     public void onResetActivity(ActivityRef activityRef) {
         ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
+        if (!EProcUtils.isUserTask(instance.getDefinition())) {
+            return;
+        }
 
         String workflowInstanceId = EProcUtils.getAnyAttribute(instance, CmmnInstanceConstants.WORKFLOW_INSTANCE_ID);
         if (isWorkflowActive(workflowInstanceId)) {
@@ -344,7 +353,7 @@ public class CaseTaskListener implements BeforeStartedActivityListener, OnResetA
         EProcUtils.setAttribute(instance, CmmnInstanceConstants.WORKFLOW_INSTANCE_ID, null);
 
         String rawBpmPackageRef = EProcUtils.getAnyAttribute(instance, CmmnInstanceConstants.BPM_PACKAGE_REF);
-        if (NodeRef.isNodeRef(rawBpmPackageRef)) {
+        if (StringUtils.isNotBlank(rawBpmPackageRef) && NodeRef.isNodeRef(rawBpmPackageRef)) {
             NodeRef bpmPackageRef = new NodeRef(rawBpmPackageRef);
             if (nodeService.exists(bpmPackageRef)) {
                 nodeService.removeProperty(bpmPackageRef, EcosProcessModel.PROP_ACTIVITY_REF);
@@ -354,7 +363,7 @@ public class CaseTaskListener implements BeforeStartedActivityListener, OnResetA
     }
 
     private boolean isWorkflowActive(String id) {
-        if (id == null) {
+        if (StringUtils.isBlank(id)) {
             return false;
         }
         WorkflowInstance wf = workflowService.getWorkflowById(id);

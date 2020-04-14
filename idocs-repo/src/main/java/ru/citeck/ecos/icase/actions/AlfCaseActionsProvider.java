@@ -50,7 +50,7 @@ public class AlfCaseActionsProvider implements CaseActionsProvider {
                                   @Qualifier("repositoryHelper") Repository repositoryHelper) {
 
         this.caseActivityEventService = (CaseActivityEventService) serviceRegistry
-            .getService(CiteckServices.CASE_ACTIVITY_EVENT_SERVICE);
+                .getService(CiteckServices.CASE_ACTIVITY_EVENT_SERVICE);
         this.nodeService = serviceRegistry.getNodeService();
         this.dictionaryService = serviceRegistry.getDictionaryService();
         this.authorityService = serviceRegistry.getAuthorityService();
@@ -107,8 +107,8 @@ public class AlfCaseActionsProvider implements CaseActionsProvider {
 
         return CollectionUtils.filter(events, eventRef -> {
             return checkEventType(eventRef)
-                && checkRoles(eventRef)
-                && checkEventConditions(eventRef, eventSource);
+                    && checkRoles(eventRef)
+                    && checkEventConditions(eventRef, eventSource);
         });
     }
 

@@ -22,7 +22,7 @@ import ru.citeck.ecos.commons.utils.MandatoryParam;
 import ru.citeck.ecos.icase.activity.dto.*;
 import ru.citeck.ecos.icase.activity.service.eproc.commands.*;
 import ru.citeck.ecos.icase.activity.service.eproc.commands.response.*;
-import ru.citeck.ecos.icase.activity.service.eproc.parser.CmmnSchemaParser;
+import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnSchemaParser;
 import ru.citeck.ecos.model.EcosProcessModel;
 import ru.citeck.ecos.node.EcosTypeService;
 import ru.citeck.ecos.records.RecordsUtils;
@@ -71,6 +71,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
                 .build(CacheLoader.from(this::getProcessDefinitionByRevisionIdFromMicroservice));
     }
 
+    //TODO add feature of read this definition from cache
     @Override
     public Pair<String, byte[]> getRawDefinitionForType(RecordRef caseRef) {
         NodeRef caseNodeRef = RecordsUtils.toNodeRef(caseRef);
@@ -168,7 +169,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
                     "For detailed information see logs");
         }
 
-        FindProcDefResp response = commandResult.getCommandAs(FindProcDefResp.class);
+        FindProcDefResp response = commandResult.getResultAs(FindProcDefResp.class);
         if (response == null) {
             return null;
         }
@@ -194,7 +195,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
                     "For detailed information see logs");
         }
 
-        return commandResult.getCommandAs(GetProcDefRevResp.class);
+        return commandResult.getResultAs(GetProcDefRevResp.class);
     }
 
     @Override
@@ -245,7 +246,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         if (CollectionUtils.isNotEmpty(commandResult.getErrors())) {
             throw new RuntimeException("Exception while creation of process state. For detailed information see logs");
         }
-        return commandResult.getCommandAs(CreateProcResp.class);
+        return commandResult.getResultAs(CreateProcResp.class);
     }
 
     private ProcessInstance createProcessInstanceFromDefinition(String procId,
@@ -323,7 +324,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         if (CollectionUtils.isNotEmpty(commandResult.getErrors())) {
             throw new RuntimeException("Exception while receiving of process state. For detailed information see logs");
         }
-        return commandResult.getCommandAs(GetProcStateResp.class);
+        return commandResult.getResultAs(GetProcStateResp.class);
     }
 
     private void setUnSerializableObjectsInProcessInstance(ProcessInstance processInstance,
@@ -395,7 +396,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
             return;
         }
 
-        TransactionSupportUtil.bindResource(caseRef, instance);
+        TransactionSupportUtil.bindResource(key, instance);
     }
 
     private String getProcessStateTransactionKey(RecordRef caseRef) {
@@ -443,7 +444,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         if (CollectionUtils.isNotEmpty(commandResult.getErrors())) {
             throw new RuntimeException("Exception while state updating. For detailed information see logs");
         }
-        return commandResult.getCommandAs(UpdateProcStateResp.class);
+        return commandResult.getResultAs(UpdateProcStateResp.class);
     }
 
     @Override
@@ -534,13 +535,22 @@ public class EProcActivityServiceImpl implements EProcActivityService {
 
     private List<SentryDefinition> getAllSentries(ActivityDefinition definition) {
         List<SentryDefinition> result = new ArrayList<>();
-        for (ActivityTransitionDefinition transitionDef : definition.getTransitions()) {
-            TriggerDefinition triggerDef = transitionDef.getTrigger();
-            SentryTriggerDefinition sentryTriggerDef = triggerDef.getData().getAs(SentryTriggerDefinition.class);
-            if (sentryTriggerDef == null) {
-                continue;
+        if (definition.getTransitions() != null) {
+            for (ActivityTransitionDefinition transitionDef : definition.getTransitions()) {
+                TriggerDefinition triggerDef = transitionDef.getTrigger();
+                if (triggerDef == null) {
+                    continue;
+                }
+                SentryTriggerDefinition sentryTriggerDef = triggerDef.getData();
+                if (sentryTriggerDef == null) {
+                    continue;
+                }
+                List<SentryDefinition> sentries = sentryTriggerDef.getSentries();
+                if (sentries == null) {
+                    continue;
+                }
+                result.addAll(sentries);
             }
-            result.addAll(sentryTriggerDef.getSentries());
         }
         return result;
     }

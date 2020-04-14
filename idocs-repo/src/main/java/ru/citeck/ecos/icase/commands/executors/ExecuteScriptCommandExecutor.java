@@ -83,7 +83,7 @@ public class ExecuteScriptCommandExecutor implements CommandExecutor<ExecuteScri
         NodeRef homeSpaceRef = (NodeRef) nodeService.getProperty(personRef, ContentModel.PROP_HOMEFOLDER);
 
         Map<String, Object> model = scriptService.buildDefaultModel(
-            personRef, getCompanyHome(), homeSpaceRef, null, caseRef, null);
+                personRef, getCompanyHome(), homeSpaceRef, null, caseRef, null);
         model.put("webApplicationContextUrl", UrlUtil.getAlfrescoUrl(sysAdminParams));
 
         return model;
@@ -94,7 +94,7 @@ public class ExecuteScriptCommandExecutor implements CommandExecutor<ExecuteScri
         for (Map.Entry<String, Object> variable : variables.entrySet()) {
             if (model.containsKey(variable.getKey())) {
                 throw new AlfrescoRuntimeException(String.format("Error occurred during reading context variables. " +
-                    "Variable \"%s\" is already defined and you can't override it.", variable.getKey()));
+                        "Variable \"%s\" is already defined and you can't override it.", variable.getKey()));
             }
             model.put(variable.getKey(), variable.getValue());
         }
@@ -102,11 +102,11 @@ public class ExecuteScriptCommandExecutor implements CommandExecutor<ExecuteScri
 
     private NodeRef getCompanyHome() {
         List<NodeRef> refs = searchService.selectNodes(
-            nodeService.getRootNode(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE),
-            companyHomePath,
-            null,
-            namespaceService,
-            false);
+                nodeService.getRootNode(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE),
+                companyHomePath,
+                null,
+                namespaceService,
+                false);
         if (refs.size() != 1) {
             throw new IllegalStateException("Invalid company home path: " + companyHomePath + " - found: " + refs.size());
         }
