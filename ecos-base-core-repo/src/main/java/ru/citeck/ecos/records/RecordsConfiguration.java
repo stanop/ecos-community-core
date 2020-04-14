@@ -37,6 +37,9 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     @Value("${records.configuration.app.name}")
     private String appName;
 
+    @Value("${records.configuration.admin.actions.log.enabled}")
+    private String isAdminActionsLogEnabled;
+
     @Autowired
     private ServiceRegistry serviceRegistry;
     @Autowired
@@ -62,7 +65,11 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     @Bean
     @Override
     protected RecordsResolver createRecordsResolver() {
-        return super.createRecordsResolver();
+        if (Boolean.parseBoolean(isAdminActionsLogEnabled)) {
+            return new AdminActionsLoggingRecordsResolver(super.createRecordsResolver(), serviceRegistry);
+        } else {
+            return super.createRecordsResolver();
+        }
     }
 
     @Override
