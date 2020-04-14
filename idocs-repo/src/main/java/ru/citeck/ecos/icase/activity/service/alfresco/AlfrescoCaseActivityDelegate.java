@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
+import ru.citeck.ecos.icase.activity.dto.ActivityState;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.service.CaseActivityDelegate;
 import ru.citeck.ecos.model.ActivityModel;
@@ -41,7 +42,7 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
     private ClassPolicyDelegate<CaseActivityPolicies.OnCaseActivityResetPolicy> onResetDelegate;
     private ClassPolicyDelegate<CaseActivityPolicies.OnChildrenIndexChangedPolicy> onIndexChangedDelegate;
 
-    private Map<CaseActivity.State, List<CaseActivity.State>> allowedTransitions = new HashMap<>();
+    private Map<ActivityState, List<ActivityState>> allowedTransitions = new HashMap<>();
 
     @PostConstruct
     public void init() {
@@ -52,21 +53,19 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
         onResetDelegate = policyComponent.registerClassPolicy(CaseActivityPolicies.OnCaseActivityResetPolicy.class);
         onIndexChangedDelegate = policyComponent.registerClassPolicy(CaseActivityPolicies.OnChildrenIndexChangedPolicy.class);
 
-        allowedTransitions.put(CaseActivity.State.NOT_STARTED,
-            Collections.singletonList(CaseActivity.State.STARTED));
-        allowedTransitions.put(CaseActivity.State.STARTED,
-            Collections.singletonList(CaseActivity.State.COMPLETED));
+        allowedTransitions.put(ActivityState.NOT_STARTED, Collections.singletonList(ActivityState.STARTED));
+        allowedTransitions.put(ActivityState.STARTED, Collections.singletonList(ActivityState.COMPLETED));
     }
 
     @Override
     public void startActivity(ActivityRef activityRef) {
         NodeRef activityNodeRef = new NodeRef(activityRef.getId());
-        if (!canSetState(activityNodeRef, CaseActivity.State.STARTED)) {
+        if (!canSetState(activityNodeRef, ActivityState.STARTED)) {
             return;
         }
 
         Map<QName, Serializable> props = new HashMap<>();
-        props.put(LifeCycleModel.PROP_STATE, CaseActivity.State.STARTED.getContent());
+        props.put(LifeCycleModel.PROP_STATE, ActivityState.STARTED.getValue());
         props.put(ActivityModel.PROP_ACTUAL_START_DATE, new Date());
         nodeService.addProperties(activityNodeRef, props);
 
@@ -79,12 +78,12 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
     @Override
     public void stopActivity(ActivityRef activityRef) {
         NodeRef activityNodeRef = new NodeRef(activityRef.getId());
-        if (!canSetState(activityNodeRef, CaseActivity.State.COMPLETED)) {
+        if (!canSetState(activityNodeRef, ActivityState.COMPLETED)) {
             return;
         }
 
         Map<QName, Serializable> props = new HashMap<>();
-        props.put(LifeCycleModel.PROP_STATE, CaseActivity.State.COMPLETED.getContent());
+        props.put(LifeCycleModel.PROP_STATE, ActivityState.COMPLETED.getValue());
         props.put(ActivityModel.PROP_ACTUAL_END_DATE, new Date());
         nodeService.addProperties(activityNodeRef, props);
 
@@ -115,10 +114,10 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
 
         caseActivity.setActivityRef(activityRef);
 
-        CaseActivity.State activityState = getActivityState(activityNodeRef);
+        ActivityState activityState = getActivityState(activityNodeRef);
         caseActivity.setState(activityState);
 
-        boolean isActive = CaseActivity.State.STARTED == activityState;
+        boolean isActive = ActivityState.STARTED == activityState;
         caseActivity.setActive(isActive);
 
         String title = (String) nodeService.getProperty(activityNodeRef, ContentModel.PROP_TITLE);
@@ -142,12 +141,12 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
     public List<CaseActivity> getStartedActivities(ActivityRef activityRef) {
         List<CaseActivity> activities = getActivities(activityRef);
         return activities.stream()
-            .filter(caseActivity -> {
-                NodeRef activityNodeRef = new NodeRef(caseActivity.getActivityRef().getId());
-                String status = (String) nodeService.getProperty(activityNodeRef, LifeCycleModel.PROP_STATE);
-                return status != null && status.equals(CaseActivity.State.STARTED.getContent());
-            })
-            .collect(Collectors.toList());
+                .filter(caseActivity -> {
+                    NodeRef activityNodeRef = new NodeRef(caseActivity.getActivityRef().getId());
+                    String status = (String) nodeService.getProperty(activityNodeRef, LifeCycleModel.PROP_STATE);
+                    return status != null && status.equals(ActivityState.STARTED.getValue());
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -175,7 +174,7 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
                 throw new IllegalArgumentException("New parent doesn't have aspect 'hasActivities'");
             }
             nodeService.moveNode(activityNodeRef, newParentNodeRef, ActivityModel.ASSOC_ACTIVITIES,
-                ActivityModel.ASSOC_ACTIVITIES);
+                    ActivityModel.ASSOC_ACTIVITIES);
         }
     }
 
@@ -183,7 +182,8 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
     public void setParentInIndex(ActivityRef activityRef, int newIndex) {
         ActivityRef parentRef = alfActivityUtils.getParentActivityRef(activityRef);
         List<ActivityRef> activityRefs = getActivities(parentRef).stream()
-            .map(CaseActivity::getActivityRef).collect(Collectors.toList());
+                .map(CaseActivity::getActivityRef)
+                .collect(Collectors.toList());
 
         if (newIndex >= activityRefs.size()) {
             newIndex = activityRefs.size() - 1;
@@ -210,7 +210,43 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
     @Override
     public boolean hasActiveChildren(ActivityRef activityRef) {
         return getActivities(activityRef).stream()
-            .anyMatch(activity -> activity.getState() == CaseActivity.State.STARTED);
+                .anyMatch(activity -> activity.getState() == ActivityState.STARTED);
+    }
+
+    private ActivityState getActivityState(NodeRef activityNodeRef) {
+        String rawState = (String) nodeService.getProperty(activityNodeRef, LifeCycleModel.PROP_STATE);
+        if (StringUtils.isNotBlank(rawState)) {
+            return ActivityState.getByValue(rawState);
+        }
+        return ActivityState.NOT_STARTED;
+    }
+
+    private boolean canSetState(NodeRef activityNodeRef, ActivityState state) {
+        if (!nodeService.exists(activityNodeRef)) {
+            return false;
+        }
+
+        ActivityState currentState = getActivityState(activityNodeRef);
+
+        if (isRequiredReset(activityNodeRef, currentState, state)) {
+            resetImpl(activityNodeRef);
+            currentState = getActivityState(activityNodeRef);
+        }
+
+        if (!currentState.equals(state)) {
+            List<ActivityState> transitions = allowedTransitions.get(currentState);
+            return transitions != null && transitions.contains(state);
+        }
+
+        return false;
+    }
+
+    private boolean isRequiredReset(NodeRef activityNodeRef, ActivityState fromState, ActivityState toState) {
+        if (fromState != ActivityState.NOT_STARTED && toState == ActivityState.STARTED) {
+            Boolean repeatable = (Boolean) nodeService.getProperty(activityNodeRef, ActivityModel.PROP_REPEATABLE);
+            return Boolean.TRUE.equals(repeatable);
+        }
+        return false;
     }
 
     private void resetImpl(NodeRef activityNodeRef) {
@@ -226,7 +262,7 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
         Map<QName, Serializable> props = new HashMap<>();
         props.put(ActivityModel.PROP_ACTUAL_START_DATE, null);
         props.put(ActivityModel.PROP_ACTUAL_END_DATE, null);
-        props.put(LifeCycleModel.PROP_STATE, CaseActivity.State.NOT_STARTED.getContent());
+        props.put(LifeCycleModel.PROP_STATE, ActivityState.NOT_STARTED.getValue());
         nodeService.addProperties(activityNodeRef, props);
 
         HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(activityNodeRef, nodeService));
@@ -237,46 +273,10 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
 
     private void resetChildrenActivities(NodeRef activityNodeRef) {
         List<NodeRef> childrenNodeRefs = RepoUtils.getChildrenByAssoc(
-            activityNodeRef, ActivityModel.ASSOC_ACTIVITIES, nodeService);
+                activityNodeRef, ActivityModel.ASSOC_ACTIVITIES, nodeService);
         for (NodeRef nodeRef : childrenNodeRefs) {
             resetActivity(nodeRef);
         }
-    }
-
-    private CaseActivity.State getActivityState(NodeRef activityNodeRef) {
-        String rawState = (String) nodeService.getProperty(activityNodeRef, LifeCycleModel.PROP_STATE);
-        if (StringUtils.isNotBlank(rawState)) {
-            return CaseActivity.State.getByContent(rawState);
-        }
-        return CaseActivity.State.NOT_STARTED;
-    }
-
-    private boolean canSetState(NodeRef activityNodeRef, CaseActivity.State state) {
-        if (!nodeService.exists(activityNodeRef)) {
-            return false;
-        }
-
-        CaseActivity.State currentState = getActivityState(activityNodeRef);
-
-        if (isRequiredReset(activityNodeRef, currentState, state)) {
-            resetImpl(activityNodeRef);
-            currentState = getActivityState(activityNodeRef);
-        }
-
-        if (!currentState.equals(state)) {
-            List<CaseActivity.State> transitions = allowedTransitions.get(currentState);
-            return transitions != null && transitions.contains(state);
-        }
-
-        return false;
-    }
-
-    private boolean isRequiredReset(NodeRef activityNodeRef, CaseActivity.State fromState, CaseActivity.State toState) {
-        if (fromState != CaseActivity.State.NOT_STARTED && toState == CaseActivity.State.STARTED) {
-            Boolean repeatable = (Boolean) nodeService.getProperty(activityNodeRef, ActivityModel.PROP_REPEATABLE);
-            return Boolean.TRUE.equals(repeatable);
-        }
-        return false;
     }
 
     @Autowired

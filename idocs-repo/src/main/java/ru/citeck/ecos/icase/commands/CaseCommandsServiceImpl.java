@@ -10,8 +10,12 @@ import org.springframework.stereotype.Service;
 import ru.citeck.ecos.commands.CommandsService;
 import ru.citeck.ecos.commands.dto.CommandError;
 import ru.citeck.ecos.commands.dto.CommandResult;
+import ru.citeck.ecos.icase.activity.dto.ActivityInstance;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseServiceType;
+import ru.citeck.ecos.icase.activity.service.eproc.EProcActivityService;
+import ru.citeck.ecos.icase.activity.service.eproc.EProcUtils;
+import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnDefinitionConstants;
 import ru.citeck.ecos.icase.commands.providers.CaseCommandsProvider;
 import ru.citeck.ecos.utils.AlfActivityUtils;
 
@@ -24,14 +28,21 @@ public class CaseCommandsServiceImpl implements CaseCommandsService {
 
     private Map<String, CaseCommandsProvider> typeToProviderMap = new ConcurrentHashMap<>();
 
-    @Autowired
+    private EProcActivityService eprocActivityService;
     private CommandsService commandsService;
-
-    @Autowired
     private AlfActivityUtils alfActivityUtils;
+    private NodeService nodeService;
 
     @Autowired
-    private NodeService nodeService;
+    public CaseCommandsServiceImpl(EProcActivityService eprocActivityService,
+                                   CommandsService commandsService,
+                                   AlfActivityUtils alfActivityUtils,
+                                   NodeService nodeService) {
+        this.eprocActivityService = eprocActivityService;
+        this.commandsService = commandsService;
+        this.alfActivityUtils = alfActivityUtils;
+        this.nodeService = nodeService;
+    }
 
     @Override
     public void executeCaseAction(ActivityRef activityRef) {
@@ -39,7 +50,7 @@ public class CaseCommandsServiceImpl implements CaseCommandsService {
         CaseCommandsProvider caseCommandsProvider = typeToProviderMap.get(type);
         if (caseCommandsProvider == null) {
             throw new IllegalStateException("For activityRef=" + activityRef +
-                ", type=" + type + " provider was not found");
+                    ", type=" + type + " provider was not found");
         }
 
         Object commandDto = caseCommandsProvider.provideCommandDto(activityRef);
@@ -47,9 +58,9 @@ public class CaseCommandsServiceImpl implements CaseCommandsService {
         if (CollectionUtils.isNotEmpty(commandResult.getErrors())) {
             CommandError error = commandResult.getErrors().get(0);
             throw new RuntimeException("Exception while processing action '" + activityRef +
-                "', exceptionMessage='" + error.getMessage() +
-                "', exceptionType='" + error.getType() + "'. " +
-                "StackTrace of root exception may be fount in logs");
+                    "', exceptionMessage='" + error.getMessage() +
+                    "', exceptionType='" + error.getType() + "'. " +
+                    "StackTrace of root exception may be fount in logs");
         }
     }
 
@@ -57,8 +68,7 @@ public class CaseCommandsServiceImpl implements CaseCommandsService {
         if (actionActivityRef.getCaseServiceType() == CaseServiceType.ALFRESCO) {
             return getAlfrescoType(actionActivityRef);
         } else {
-            //TODO: Add realization for eproc
-            throw new UnsupportedOperationException();
+            return getEProcActionType(actionActivityRef);
         }
     }
 
@@ -68,10 +78,15 @@ public class CaseCommandsServiceImpl implements CaseCommandsService {
         return type.getLocalName();
     }
 
+    private String getEProcActionType(ActivityRef actionActivityRef) {
+        ActivityInstance instance = eprocActivityService.getStateInstance(actionActivityRef);
+        return EProcUtils.getAnyAttribute(instance, CmmnDefinitionConstants.ACTION_TYPE);
+    }
+
     @Override
     public void register(CaseCommandsProvider caseCommandsProvider) {
         this.typeToProviderMap.put(caseCommandsProvider.getType(), caseCommandsProvider);
         log.info("Registered case commands provider for type " + caseCommandsProvider.getType() +
-            ", class " + caseCommandsProvider.getClass().getName());
+                ", class " + caseCommandsProvider.getClass().getName());
     }
 }

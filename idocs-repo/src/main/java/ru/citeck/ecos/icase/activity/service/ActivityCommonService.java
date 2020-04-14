@@ -7,6 +7,10 @@ import ru.citeck.ecos.records2.RecordRef;
 
 public interface ActivityCommonService {
 
+    boolean isRoot(NodeRef caseRef);
+
+    boolean isRoot(RecordRef caseRef);
+
     CaseServiceType getCaseType(NodeRef caseRef);
 
     CaseServiceType getCaseType(RecordRef caseRef);

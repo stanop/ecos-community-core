@@ -157,8 +157,8 @@ public class AlfrescoCaseActivityEventDelegate implements CaseActivityEventDeleg
                 GroupEvaluator.Config config = new GroupEvaluator.Config();
                 config.setJoinBy(GroupEvaluator.JoinType.AND);
                 List<RecordEvaluatorDto> groupedEvaluators = conditionRefs.stream()
-                    .map(caseEvaluatorConverter::convertCondition)
-                    .collect(Collectors.toList());
+                        .map(caseEvaluatorConverter::convertCondition)
+                        .collect(Collectors.toList());
                 config.setEvaluators(groupedEvaluators);
                 return EvaluatorUtils.createEvaluatorDto("group", config, false);
         }

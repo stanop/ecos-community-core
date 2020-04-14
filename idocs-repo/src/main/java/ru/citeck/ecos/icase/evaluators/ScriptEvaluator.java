@@ -91,7 +91,7 @@ public class ScriptEvaluator implements RecordEvaluator<Object, RecordMeta, Scri
         // the default scripting model provides access to well known objects and searching
         // facilities - it also provides basic create/update/delete/copy/move services
         Map<String, Object> model = scriptService.buildDefaultModel(
-            personRef, getCompanyHome(), homeSpaceRef, null, nodeRef, null);
+                personRef, getCompanyHome(), homeSpaceRef, null, nodeRef, null);
 
         // Add the action to the default model
         model.put("webApplicationContextUrl", UrlUtil.getAlfrescoUrl(sysAdminParams));
@@ -103,8 +103,8 @@ public class ScriptEvaluator implements RecordEvaluator<Object, RecordMeta, Scri
                 model.put(variable.getKey(), variable.getValue());
             } else {
                 throw new AlfrescoRuntimeException(String.format(
-                    "Error occurred during reading context variables. " +
-                        "Variable \"%s\" is already defined and you can't override it.", variable.getKey()));
+                        "Error occurred during reading context variables. " +
+                                "Variable \"%s\" is already defined and you can't override it.", variable.getKey()));
             }
         }
 
@@ -117,11 +117,11 @@ public class ScriptEvaluator implements RecordEvaluator<Object, RecordMeta, Scri
         NodeRef companyHomeRef;
 
         List<NodeRef> refs = searchService.selectNodes(
-            nodeService.getRootNode(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE),
-            companyHomePath,
-            null,
-            namespaceService,
-            false);
+                nodeService.getRootNode(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE),
+                companyHomePath,
+                null,
+                namespaceService,
+                false);
         if (refs.size() != 1) {
             throw new IllegalStateException("Invalid company home path: " + companyHomePath + " - found: " + refs.size());
         }

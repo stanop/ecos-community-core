@@ -5,7 +5,11 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.icase.activity.dto.ActivityInstance;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
+import ru.citeck.ecos.icase.activity.service.eproc.EProcActivityService;
+import ru.citeck.ecos.icase.activity.service.eproc.EProcUtils;
+import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnDefinitionConstants;
 import ru.citeck.ecos.icase.commands.CaseCommandsService;
 import ru.citeck.ecos.icase.commands.dto.SetCaseStatusCommand;
 import ru.citeck.ecos.icase.commands.executors.SetCaseStatusCommandExecutor;
@@ -18,14 +22,17 @@ import ru.citeck.ecos.utils.RepoUtils;
 @Component
 public class SetCaseStatusCommandProvider extends AlfEprocCaseCommandsProvider {
 
+    private EProcActivityService eprocActivityService;
     private AlfActivityUtils alfActivityUtils;
     private NodeService nodeService;
 
     @Autowired
     public SetCaseStatusCommandProvider(CaseCommandsService caseCommandsService,
+                                        EProcActivityService eprocActivityService,
                                         AlfActivityUtils alfActivityUtils,
                                         NodeService nodeService) {
         super(caseCommandsService);
+        this.eprocActivityService = eprocActivityService;
         this.alfActivityUtils = alfActivityUtils;
         this.nodeService = nodeService;
     }
@@ -48,8 +55,13 @@ public class SetCaseStatusCommandProvider extends AlfEprocCaseCommandsProvider {
 
     @Override
     protected Object provideEprocCommand(ActivityRef activityRef) {
-        //TODO: Add realization for eproc
-        throw new UnsupportedOperationException();
+        ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
+
+        RecordRef caseRef = activityRef.getProcessId();
+        String statusName = EProcUtils.getAnyAttribute(instance,
+                CmmnDefinitionConstants.ACTION_SET_STATUS_ACTION_STATUS_NAME);
+
+        return new SetCaseStatusCommand(caseRef, statusName);
     }
 
 }

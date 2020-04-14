@@ -19,7 +19,7 @@ import javax.annotation.PostConstruct;
 
 @Component
 public class UserHasPermissionEvaluator implements
-    RecordEvaluator<Object, RecordMeta, UserHasPermissionEvaluator.Config> {
+        RecordEvaluator<Object, RecordMeta, UserHasPermissionEvaluator.Config> {
 
     public static final String TYPE = "user-has-permission";
 

@@ -88,8 +88,8 @@ public class UserInGroupEvaluator implements RecordEvaluator<Object, Object, Use
 
         String[] splitedGroups = config.groupName.split(",");
         return Arrays.stream(splitedGroups)
-            .map(String::trim)
-            .collect(Collectors.toSet());
+                .map(String::trim)
+                .collect(Collectors.toSet());
     }
 
     @Data

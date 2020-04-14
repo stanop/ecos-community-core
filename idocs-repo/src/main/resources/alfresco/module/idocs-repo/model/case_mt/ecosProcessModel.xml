@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<model name="icaseEproc:icaseEprocModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <description>Case management in iDocs. ECOS process model description</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl"/>
+        <import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
+        <import uri="http://www.citeck.ru/model/lifecycle/1.0" prefix="lc"/>
+        <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm"/>
+        <import uri="http://www.citeck.ru/model/activity/1.0" prefix="activ"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/icaseEproc/1.0" prefix="icaseEproc"/>
+    </namespaces>
+
+    <aspects>
+        <aspect name="icaseEproc:hasProcessId">
+            <properties>
+                <property name="icaseEproc:processId">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="icaseEproc:hasStateId">
+            <properties>
+                <property name="icaseEproc:stateId">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="icaseEproc:hasActivityRef">
+            <properties>
+                <property name="icaseEproc:activityRef">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+    </aspects>
+
+</model>

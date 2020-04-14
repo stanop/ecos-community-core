@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface CaseActivityDelegate {
 
-    void startActivity(ActivityRef activity);
+    void startActivity(ActivityRef activityRef);
 
-    void stopActivity(ActivityRef activity);
+    void stopActivity(ActivityRef activityRef);
 
     void reset(ActivityRef activityRef);
 
