@@ -4,8 +4,9 @@ import ecos.com.google.common.cache.CacheBuilder;
 import ecos.com.google.common.cache.CacheLoader;
 import ecos.com.google.common.cache.LoadingCache;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.dictionary.TypeDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
@@ -23,15 +24,21 @@ import ru.citeck.ecos.icase.activity.dto.*;
 import ru.citeck.ecos.icase.activity.service.eproc.commands.*;
 import ru.citeck.ecos.icase.activity.service.eproc.commands.response.*;
 import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnSchemaParser;
+import ru.citeck.ecos.icase.activity.service.eproc.importer.pojo.OptimizedProcessDefinition;
+import ru.citeck.ecos.icase.activity.service.eproc.importer.pojo.SentrySearchKey;
 import ru.citeck.ecos.model.EcosProcessModel;
 import ru.citeck.ecos.node.EcosTypeService;
 import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.utils.TransactionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class EProcActivityServiceImpl implements EProcActivityService {
 
@@ -47,7 +54,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
     private NodeService nodeService;
 
     private LoadingCache<EcosAlfTypesKey, String> typesToRevisionIdCache;
-    private LoadingCache<String, ProcessDefinition> revisionIdToProcessDefinitionCache;
+    private LoadingCache<String, OptimizedProcessDefinition> revisionIdToProcessDefinitionCache;
 
     @Autowired
     public EProcActivityServiceImpl(CmmnSchemaParser cmmnSchemaParser,
@@ -68,24 +75,27 @@ public class EProcActivityServiceImpl implements EProcActivityService {
 
         this.revisionIdToProcessDefinitionCache = CacheBuilder.newBuilder()
                 .maximumSize(120)
-                .build(CacheLoader.from(this::getProcessDefinitionByRevisionIdFromMicroservice));
+                .build(CacheLoader.from(this::getProcessDefByRevIdFromMicroservice));
     }
 
-    //TODO add feature of read this definition from cache
     @Override
     public Pair<String, byte[]> getRawDefinitionForType(RecordRef caseRef) {
         NodeRef caseNodeRef = RecordsUtils.toNodeRef(caseRef);
-        String processRevisionId = getRevisionIdForNode(caseNodeRef);
+        String procRevId = getRevisionIdForNode(caseNodeRef);
 
-        GetProcDefRevResp result = getProcessDefinitionByRevisionIdFromMicroserviceImpl(processRevisionId);
-        if (result == null) {
+        OptimizedProcessDefinition result = revisionIdToProcessDefinitionCache.getUnchecked(procRevId);
+        if (result == null || result.getRawProcessDefinition() == null) {
             return null;
         }
-        return new Pair<>(processRevisionId, result.getData());
+        return new Pair<>(procRevId, result.getRawProcessDefinition());
     }
 
     @Override
     public ProcessDefinition getFullDefinition(RecordRef caseRef) {
+        return getFullDefinitionImpl(caseRef).getProcessDefinition();
+    }
+
+    private OptimizedProcessDefinition getFullDefinitionImpl(RecordRef caseRef) {
         NodeRef caseNodeRef = RecordsUtils.toNodeRef(caseRef);
 
         String stateId = (String) nodeService.getProperty(caseNodeRef, EcosProcessModel.PROP_STATE_ID);
@@ -96,19 +106,27 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         }
     }
 
-    private ProcessDefinition getFullDefinitionForExisting(String stateId) {
+    private OptimizedProcessDefinition getFullDefinitionForExisting(String stateId) {
         GetProcStateResp processState = getProcessStateFromMicroservice(stateId);
         if (processState == null) {
             throw new IllegalArgumentException("Can not find state for stateId=" + stateId);
         }
 
         String procDefRevId = processState.getProcDefRevId();
-        return revisionIdToProcessDefinitionCache.getUnchecked(procDefRevId);
+        return getOptimizedProcessDefinitionByRevId(procDefRevId);
     }
 
-    private ProcessDefinition getFullDefinitionForNewCase(NodeRef caseNodeRef) {
+    private OptimizedProcessDefinition getFullDefinitionForNewCase(NodeRef caseNodeRef) {
         String processRevisionId = getRevisionIdForNode(caseNodeRef);
-        return revisionIdToProcessDefinitionCache.getUnchecked(processRevisionId);
+        return getOptimizedProcessDefinitionByRevId(processRevisionId);
+    }
+
+    private OptimizedProcessDefinition getOptimizedProcessDefinitionByRevId(String processRevisionId) {
+        OptimizedProcessDefinition result = revisionIdToProcessDefinitionCache.getUnchecked(processRevisionId);
+        if (result == null || result.getProcessDefinition() == null) {
+            throw new IllegalArgumentException("Can not find processDef by procDefRevId=" + processRevisionId);
+        }
+        return result;
     }
 
     private String getRevisionIdForNode(NodeRef caseNodeRef) {
@@ -131,17 +149,13 @@ public class EProcActivityServiceImpl implements EProcActivityService {
 
     private List<QName> getTypeInheritanceListForCase(NodeRef caseNodeRef) {
         QName type = nodeService.getType(caseNodeRef);
-        TypeDefinition typeDef = dictionaryService.getType(type);
 
         List<QName> result = new ArrayList<>();
+
+        ClassDefinition typeDef = dictionaryService.getClass(type);
         while (typeDef != null) {
             result.add(typeDef.getName());
-            QName parentTypeQName = typeDef.getParentName();
-            if (parentTypeQName == null) {
-                typeDef = null;
-                continue;
-            }
-            typeDef = dictionaryService.getType(parentTypeQName);
+            typeDef = typeDef.getParentClassDefinition();
         }
 
         return result;
@@ -176,15 +190,16 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         return response.getProcDefRevId();
     }
 
-    private ProcessDefinition getProcessDefinitionByRevisionIdFromMicroservice(String definitionRevisionId) {
-        GetProcDefRevResp response = getProcessDefinitionByRevisionIdFromMicroserviceImpl(definitionRevisionId);
+    private OptimizedProcessDefinition getProcessDefByRevIdFromMicroservice(String definitionRevisionId) {
+        GetProcDefRevResp response = getProcessDefByRevIdFromMicroserviceImpl(definitionRevisionId);
         if (response == null) {
             return null;
         }
+
         return cmmnSchemaParser.parse(response.getData());
     }
 
-    private GetProcDefRevResp getProcessDefinitionByRevisionIdFromMicroserviceImpl(String definitionRevisionId) {
+    private GetProcDefRevResp getProcessDefByRevIdFromMicroserviceImpl(String definitionRevisionId) {
         GetProcDefRev getProcDefRevCommand = new GetProcDefRev();
         getProcDefRevCommand.setProcType(CMMN_PROCESS_TYPE);
         getProcDefRevCommand.setProcDefRevId(definitionRevisionId);
@@ -208,11 +223,9 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_PROCESS_ID, createProcResp.getProcId());
         nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_STATE_ID, createProcResp.getProcStateId());
 
-        ProcessDefinition definition = getFullDefinitionForNewCase(caseNodeRef);
-        ProcessInstance processInstance = createProcessInstanceFromDefinition(
-                createProcResp.getProcId(),
-                caseRef,
-                definition);
+        OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionForNewCase(caseNodeRef);
+        ProcessInstance processInstance = createProcessInstanceFromDefinition(createProcResp.getProcId(),
+                caseRef, optimizedProcessDefinition.getProcessDefinition());
 
         putInstanceToTransactionScopeByStateId(caseRef, processInstance);
 
@@ -220,17 +233,16 @@ public class EProcActivityServiceImpl implements EProcActivityService {
     }
 
     @Override
-    public ProcessInstance createDefaultState(RecordRef caseRef, String revisionId, ProcessDefinition definition) {
+    public ProcessInstance createDefaultState(RecordRef caseRef, String revisionId,
+                                              OptimizedProcessDefinition optimizedProcessDefinition) {
         NodeRef caseNodeRef = RecordsUtils.toNodeRef(caseRef);
 
         CreateProcResp createProcResp = createProcessInstanceInMicroservice(revisionId, caseRef);
         nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_PROCESS_ID, createProcResp.getProcId());
         nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_STATE_ID, createProcResp.getProcStateId());
 
-        ProcessInstance processInstance = createProcessInstanceFromDefinition(
-                createProcResp.getProcId(),
-                caseRef,
-                definition);
+        ProcessInstance processInstance = createProcessInstanceFromDefinition(createProcResp.getProcId(),
+                caseRef, optimizedProcessDefinition.getProcessDefinition());
 
         putInstanceToTransactionScopeByStateId(caseRef, processInstance);
 
@@ -307,8 +319,8 @@ public class EProcActivityServiceImpl implements EProcActivityService {
             throw new RuntimeException("Can not parse state from microservice for caseRef=" + caseRef);
         }
 
-        ProcessDefinition definition = getFullDefinitionForExisting(stateId);
-        setUnSerializableObjectsInProcessInstance(instance, definition);
+        OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionForExisting(stateId);
+        setUnSerializableObjectsInProcessInstance(instance, optimizedProcessDefinition);
 
         putInstanceToTransactionScopeByStateId(caseRef, instance);
 
@@ -328,20 +340,20 @@ public class EProcActivityServiceImpl implements EProcActivityService {
     }
 
     private void setUnSerializableObjectsInProcessInstance(ProcessInstance processInstance,
-                                                           ProcessDefinition processDefinition) {
+                                                           OptimizedProcessDefinition optimizedProcessDefinition) {
 
-        processInstance.setDefinition(processDefinition);
+        processInstance.setDefinition(optimizedProcessDefinition.getProcessDefinition());
 
-        setUnSerializableObjectsInActivityInstance(null, processInstance.getRootActivity(), processDefinition);
+        setUnSerializableObjectsInActivityInstance(null, processInstance.getRootActivity(), optimizedProcessDefinition);
     }
 
     private void setUnSerializableObjectsInActivityInstance(ActivityInstance parentInstance,
                                                             ActivityInstance activityInstance,
-                                                            ProcessDefinition processDefinition) {
+                                                            OptimizedProcessDefinition optimizedProcessDefinition) {
 
         activityInstance.setParentInstance(parentInstance);
 
-        ActivityDefinition activityDefinition = findDefinitionById(processDefinition, activityInstance.getId());
+        ActivityDefinition activityDefinition = findDefinitionById(optimizedProcessDefinition, activityInstance.getId());
         if (activityDefinition == null) {
             throw new RuntimeException("Can not find definition by id=" + activityInstance.getId());
         }
@@ -349,33 +361,13 @@ public class EProcActivityServiceImpl implements EProcActivityService {
 
         if (activityInstance.getActivities() != null) {
             for (ActivityInstance childInstance : activityInstance.getActivities()) {
-                setUnSerializableObjectsInActivityInstance(activityInstance, childInstance, processDefinition);
+                setUnSerializableObjectsInActivityInstance(activityInstance, childInstance, optimizedProcessDefinition);
             }
         }
     }
 
-    private ActivityDefinition findDefinitionById(ProcessDefinition processDefinition, String id) {
-        ActivityDefinition rootDefinition = processDefinition.getActivityDefinition();
-        return findDefinitionById(rootDefinition, id);
-    }
-
-    private ActivityDefinition findDefinitionById(ActivityDefinition currentDefinition, String id) {
-        if (StringUtils.equals(currentDefinition.getId(), id)) {
-            return currentDefinition;
-        }
-
-        List<ActivityDefinition> childDefinitions = currentDefinition.getActivities();
-        if (CollectionUtils.isEmpty(childDefinitions)) {
-            return null;
-        }
-
-        for (ActivityDefinition childDefinition : childDefinitions) {
-            ActivityDefinition definitionById = findDefinitionById(childDefinition, id);
-            if (definitionById != null) {
-                return definitionById;
-            }
-        }
-        return null;
+    private ActivityDefinition findDefinitionById(OptimizedProcessDefinition optimizedProcessDefinition, String id) {
+        return optimizedProcessDefinition.getIdToActivityCache().get(id);
     }
 
     private ProcessInstance getProcessStateFromTransactionByStateId(RecordRef caseRef) {
@@ -477,82 +469,17 @@ public class EProcActivityServiceImpl implements EProcActivityService {
 
     @Override
     public SentryDefinition getSentryDefinition(EventRef eventRef) {
-        ProcessInstance processInstance = getFullState(eventRef.getProcessId());
-        ProcessDefinition processDefinition = processInstance.getDefinition();
-
-        return findSentryRecursiveById(processDefinition.getActivityDefinition(), eventRef.getId());
-    }
-
-    private SentryDefinition findSentryRecursiveById(ActivityDefinition definition, String sentryId) {
-        Optional<SentryDefinition> result = getAllSentries(definition).stream()
-                .filter(sentry -> StringUtils.equals(sentry.getId(), sentryId))
-                .findFirst();
-
-        if (result.isPresent()) {
-            return result.get();
-        }
-
-        if (CollectionUtils.isNotEmpty(definition.getActivities())) {
-            for (ActivityDefinition childActivityDefinition : definition.getActivities()) {
-                SentryDefinition sentry = findSentryRecursiveById(childActivityDefinition, sentryId);
-                if (sentry != null) {
-                    return sentry;
-                }
-            }
-        }
-
-        return null;
+        OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionImpl(eventRef.getProcessId());
+        return optimizedProcessDefinition.getIdToSentryCache().get(eventRef.getId());
     }
 
     @Override
     public List<SentryDefinition> findSentriesBySourceRefAndEventType(RecordRef caseRef, String sourceRef, String eventType) {
-        ProcessInstance fullState = getFullState(caseRef);
-        ProcessDefinition definition = fullState.getDefinition();
-        return findSentriesBySourceRefAndEventType(definition, sourceRef, eventType);
-    }
-
-    private List<SentryDefinition> findSentriesBySourceRefAndEventType(ProcessDefinition definition,
-                                                                       String sourceRef, String eventType) {
-        ActivityDefinition rootActivityDefinition = definition.getActivityDefinition();
-        return findSentriesRecursiveBySourceRefAndEventType(rootActivityDefinition, sourceRef, eventType);
-    }
-
-    private List<SentryDefinition> findSentriesRecursiveBySourceRefAndEventType(ActivityDefinition definition,
-                                                                                String sourceRef, String eventType) {
-        List<SentryDefinition> result = getAllSentries(definition).stream()
-                .filter(sentry -> StringUtils.equals(sentry.getSourceRef().getRef(), sourceRef))
-                .filter(sentry -> StringUtils.equals(sentry.getEvent(), eventType))
-                .collect(Collectors.toList());
-
-        if (CollectionUtils.isNotEmpty(definition.getActivities())) {
-            for (ActivityDefinition childActivityDefinition : definition.getActivities()) {
-                result.addAll(findSentriesRecursiveBySourceRefAndEventType(childActivityDefinition, sourceRef, eventType));
-            }
-        }
-
-        return result;
-    }
-
-    private List<SentryDefinition> getAllSentries(ActivityDefinition definition) {
-        List<SentryDefinition> result = new ArrayList<>();
-        if (definition.getTransitions() != null) {
-            for (ActivityTransitionDefinition transitionDef : definition.getTransitions()) {
-                TriggerDefinition triggerDef = transitionDef.getTrigger();
-                if (triggerDef == null) {
-                    continue;
-                }
-                SentryTriggerDefinition sentryTriggerDef = triggerDef.getData();
-                if (sentryTriggerDef == null) {
-                    continue;
-                }
-                List<SentryDefinition> sentries = sentryTriggerDef.getSentries();
-                if (sentries == null) {
-                    continue;
-                }
-                result.addAll(sentries);
-            }
-        }
-        return result;
+        OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionImpl(caseRef);
+        SourceRef sourceRefObj = new SourceRef();
+        sourceRefObj.setRef(sourceRef);
+        SentrySearchKey sentrySearchKey = new SentrySearchKey(sourceRefObj, eventType);
+        return optimizedProcessDefinition.getSentrySearchCache().get(sentrySearchKey);
     }
 
     @Data

@@ -1,8 +1,8 @@
 package ru.citeck.ecos.icase.activity.service.eproc.importer;
 
 import com.hazelcast.util.ConcurrentHashSet;
+import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.dictionary.TypeDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
@@ -18,9 +18,9 @@ import ru.citeck.ecos.cmmn.model.Definitions;
 import ru.citeck.ecos.cmmn.service.util.CaseElementImport;
 import ru.citeck.ecos.cmmn.service.util.CaseRolesImport;
 import ru.citeck.ecos.content.dao.xml.XmlContentDAO;
-import ru.citeck.ecos.icase.activity.dto.ProcessDefinition;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcActivityService;
 import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnSchemaParser;
+import ru.citeck.ecos.icase.activity.service.eproc.importer.pojo.OptimizedProcessDefinition;
 import ru.citeck.ecos.icase.element.CaseElementService;
 import ru.citeck.ecos.node.EcosTypeService;
 import ru.citeck.ecos.records.RecordsUtils;
@@ -95,7 +95,7 @@ public class EProcCaseImporter {
             CaseElementImport caseElementImport = new CaseElementImport(caseElementService);
             caseElementImport.importCaseElementTypes(caseNodeRef, caseItem);
 
-            ProcessDefinition processDefinition = cmmnSchemaParser.parse(caseItem);
+            OptimizedProcessDefinition processDefinition = cmmnSchemaParser.parse(caseItem, definitionBytes);
             eprocActivityService.createDefaultState(caseRef, revisionId, processDefinition);
         } catch (IOException e) {
             throw new RuntimeException("Could not parse definition", e);
@@ -132,21 +132,13 @@ public class EProcCaseImporter {
     }
 
     private boolean isAlfrescoTypeEnabled(QName caseType) {
-        TypeDefinition typeDef = dictionaryService.getType(caseType);
-
+        ClassDefinition typeDef = dictionaryService.getClass(caseType);
         while (typeDef != null) {
             if (allowedAlfTypes.contains(typeDef.getName())) {
                 return true;
             }
-
-            QName parentTypeQName = typeDef.getParentName();
-            if (parentTypeQName == null) {
-                typeDef = null;
-                continue;
-            }
-            typeDef = dictionaryService.getType(parentTypeQName);
+            typeDef = typeDef.getParentClassDefinition();
         }
-
         return false;
     }
 

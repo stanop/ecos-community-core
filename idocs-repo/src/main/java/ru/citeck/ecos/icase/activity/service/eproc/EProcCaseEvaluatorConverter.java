@@ -1,28 +1,37 @@
 package ru.citeck.ecos.icase.activity.service.eproc;
 
+import com.google.common.collect.Sets;
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.icase.CasePredicateUtils;
+import ru.citeck.ecos.icase.activity.dto.EvaluatorDefinition;
 import ru.citeck.ecos.icase.activity.dto.EvaluatorDefinitionData;
-import ru.citeck.ecos.icase.evaluators.CompareLifecycleProcessVariableValueEvaluator;
-import ru.citeck.ecos.icase.evaluators.ScriptEvaluator;
-import ru.citeck.ecos.icase.evaluators.UserHasPermissionEvaluator;
-import ru.citeck.ecos.icase.evaluators.UserInGroupEvaluator;
+import ru.citeck.ecos.icase.activity.dto.EvaluatorDefinitionDataHolder;
+import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnDefinitionConstants;
+import ru.citeck.ecos.icase.evaluators.*;
 import ru.citeck.ecos.model.ConditionModel;
 import ru.citeck.ecos.records2.evaluator.RecordEvaluatorDto;
 import ru.citeck.ecos.records2.evaluator.evaluators.AlwaysFalseEvaluator;
+import ru.citeck.ecos.records2.evaluator.evaluators.AlwaysTrueEvaluator;
+import ru.citeck.ecos.records2.evaluator.evaluators.GroupEvaluator;
 import ru.citeck.ecos.records2.evaluator.evaluators.PredicateEvaluator;
 import ru.citeck.ecos.records2.predicate.model.Predicate;
 import ru.citeck.ecos.utils.EvaluatorUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class EProcCaseEvaluatorConverter {
 
@@ -41,12 +50,48 @@ public class EProcCaseEvaluatorConverter {
         mapping.put(ConditionModel.UserInDocument.TYPE.getLocalName(), this::convertUserInDocumentEvaluator);
         mapping.put(ConditionModel.UserInGroup.TYPE.getLocalName(), this::convertUserInGroupEvaluator);
         mapping.put(ConditionModel.UserHasPermission.TYPE.getLocalName(), this::convertUserHasPermissionEvaluator);
+        mapping.put(CmmnDefinitionConstants.COMPLETENESS_TYPE, this::convertCompletenessLevelsEvaluator);
 
         this.converterByTypeMapping = Collections.unmodifiableMap(mapping);
     }
 
 
-    public RecordEvaluatorDto convertCondition(EvaluatorDefinitionData evaluatorDefinitionData) {
+    public RecordEvaluatorDto convertEvaluatorDefinition(EvaluatorDefinition definition) {
+        if (definition == null || definition.getData() == null) {
+            return null;
+        }
+
+        EvaluatorDefinitionDataHolder dataHolder = definition.getData().getAs(EvaluatorDefinitionDataHolder.class);
+        if (dataHolder == null) {
+            return null;
+        }
+
+        List<EvaluatorDefinitionData> definitionDataList = dataHolder.getData();
+        if (CollectionUtils.isEmpty(definitionDataList)) {
+            return null;
+        } else if (definitionDataList.size() == 1) {
+            RecordEvaluatorDto evaluatorDto = convertCondition(definitionDataList.get(0));
+            setInverse(evaluatorDto, definition);
+            return evaluatorDto;
+        } else {
+            GroupEvaluator.Config config = new GroupEvaluator.Config();
+            config.setJoinBy(GroupEvaluator.JoinType.AND);
+            List<RecordEvaluatorDto> groupedEvaluators = definitionDataList.stream()
+                    .map(this::convertCondition)
+                    .collect(Collectors.toList());
+            config.setEvaluators(groupedEvaluators);
+            RecordEvaluatorDto groupEvaluatorDto = EvaluatorUtils.createEvaluatorDto("group", config, false);
+            setInverse(groupEvaluatorDto, definition);
+            return groupEvaluatorDto;
+        }
+    }
+
+    private void setInverse(RecordEvaluatorDto evaluatorDto, EvaluatorDefinition definition) {
+        boolean inverse = BooleanUtils.toBoolean(definition.getInverse());
+        evaluatorDto.setInverse(inverse);
+    }
+
+    private RecordEvaluatorDto convertCondition(EvaluatorDefinitionData evaluatorDefinitionData) {
         String conditionType = evaluatorDefinitionData.getType();
         EvaluatorConverter converter = converterByTypeMapping.get(conditionType);
         if (converter == null) {
@@ -155,6 +200,22 @@ public class EProcCaseEvaluatorConverter {
         config.setPermission(permission);
 
         return EvaluatorUtils.createEvaluatorDto(UserHasPermissionEvaluator.TYPE, config, false);
+    }
+
+    private RecordEvaluatorDto convertCompletenessLevelsEvaluator(EvaluatorDefinitionData evaluatorDefinitionData) {
+        Map<String, String> attributes = evaluatorDefinitionData.getAttributes();
+
+        String rawCompletenessLevels = attributes.get(CmmnDefinitionConstants.COMPLETENESS_LEVELS_SET);
+        if (StringUtils.isBlank(rawCompletenessLevels)) {
+            log.warn("For completeness evaluatorDefinition has not levels. Def=" + evaluatorDefinitionData.toString());
+            return EvaluatorUtils.createEvaluatorDto(AlwaysTrueEvaluator.TYPE, null, false);
+        }
+
+        CompletenessLevelsEvaluator.Config config = new CompletenessLevelsEvaluator.Config();
+        String[] split = rawCompletenessLevels.split(",");
+        config.setCompletenessLevelIdentifiers(Sets.newHashSet(split));
+
+        return EvaluatorUtils.createEvaluatorDto(CompletenessLevelsEvaluator.TYPE, config, false);
     }
 
 
