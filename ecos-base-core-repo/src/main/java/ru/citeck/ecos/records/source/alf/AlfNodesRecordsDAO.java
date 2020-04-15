@@ -19,6 +19,7 @@ import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.commons.data.ObjectData;
+import ru.citeck.ecos.model.EcosTypeModel;
 import ru.citeck.ecos.model.InvariantsModel;
 import ru.citeck.ecos.records.source.alf.file.AlfNodeContentFileHelper;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
@@ -341,17 +342,33 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             if (!StringUtils.isBlank(attrValue)) {
 
                 String typeId = RecordRef.valueOf(attrValue).getId();
+                props.put(EcosTypeModel.PROP_TYPE, typeId);
+
                 int slashIndex = typeId.indexOf(SLASH_DELIMITER);
+
                 if (slashIndex != -1) {
 
                     String firstPartOfTypeId = typeId.substring(0, slashIndex);
-                    props.put(PROP_DOCUMENT_TYPE, WORKSPACE_PREFIX + firstPartOfTypeId);
+                    NodeRef typeRef = new NodeRef(WORKSPACE_PREFIX + firstPartOfTypeId);
 
-                    String secondPartOfRecordId = typeId.substring(slashIndex + 1);
-                    props.put(PROP_DOCUMENT_KIND, WORKSPACE_PREFIX + secondPartOfRecordId);
+                    if (nodeService.exists(typeRef)) {
+
+                        props.put(PROP_DOCUMENT_TYPE, typeRef.toString());
+
+                        String secondPartOfRecordId = typeId.substring(slashIndex + 1);
+                        NodeRef kindRef = new NodeRef(WORKSPACE_PREFIX + secondPartOfRecordId);
+
+                        if (nodeService.exists(kindRef)) {
+                            props.put(PROP_DOCUMENT_KIND, kindRef.toString());
+                        }
+                    }
 
                 } else {
-                    props.put(PROP_DOCUMENT_TYPE, WORKSPACE_PREFIX + typeId);
+
+                    NodeRef typeRef = new NodeRef(WORKSPACE_PREFIX + typeId);
+                    if (nodeService.exists(typeRef)) {
+                        props.put(PROP_DOCUMENT_TYPE, WORKSPACE_PREFIX + typeId);
+                    }
                 }
             }
 

@@ -169,17 +169,17 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
             }
         }
 
-        getAllDocsByAssocsRegistry(caseRef).forEach((type, docs) ->
-            docsByType.computeIfAbsent(type, t -> new HashSet<>()).addAll(docs)
-        );
+        getAllDocsByAssocsRegistry(caseRef).forEach((type, docs) -> {
+            Set<DocInfo> docsSet = docsByType.computeIfAbsent(type, t -> new HashSet<>());
+            docs.stream().filter(d -> !allDocuments.contains(d)).forEach(docsSet::add);
+        });
 
         Map<RecordRef, List<DocInfo>> orderedDocsByType = new HashMap<>();
         docsByType.forEach((type, docs) -> {
-            List<DocInfo> targetList = orderedDocsByType.computeIfAbsent(type, t -> new ArrayList<>());
-            docs.stream().filter(d -> !allDocuments.contains(d)).forEach(targetList::add);
+            List<DocInfo> docsList = orderedDocsByType.computeIfAbsent(type, t -> new ArrayList<>());
+            docsList.addAll(docs);
+            docsList.sort(Comparator.comparingLong(DocInfo::getOrder).reversed());
         });
-
-        orderedDocsByType.forEach((t, docs) -> docs.sort(Comparator.comparingLong(DocInfo::getOrder).reversed()));
 
         return orderedDocsByType;
     }
