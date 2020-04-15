@@ -8,6 +8,8 @@ import ru.citeck.ecos.icase.activity.dto.*;
 import ru.citeck.ecos.icase.activity.service.CaseActivityDelegate;
 import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnDefinitionConstants;
 import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.evaluator.RecordEvaluatorDto;
+import ru.citeck.ecos.records2.evaluator.RecordEvaluatorService;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,6 +22,8 @@ public class EProcCaseActivityDelegate implements CaseActivityDelegate {
 
     private EProcActivityService eprocActivityService;
     private EProcCaseActivityListenerManager listenerManager;
+    private EProcCaseEvaluatorConverter eprocCaseEvaluatorConverter;
+    private RecordEvaluatorService recordEvaluatorService;
 
     @Autowired
     public EProcCaseActivityDelegate(EProcActivityService eprocActivityService,
@@ -33,16 +37,17 @@ public class EProcCaseActivityDelegate implements CaseActivityDelegate {
         ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
 
         boolean isResetPerformed = false;
-        if (needReset(instance, ActivityState.STARTED)) {
+        if (needResetBeforeStart(instance)) {
             resetRecursive(activityRef.getProcessId(), instance);
             isResetPerformed = true;
         }
 
-        if (!isResetPerformed && transitionIsAbsent(instance, ActivityState.STARTED)) {
+        ActivityTransitionDefinition transitionDefinition = getTransitionDefinition(instance, ActivityState.STARTED);
+        if (!isResetPerformed && transitionDefinition == null) {
             return;
         }
 
-        //TODO: transition evaluator
+        checkTransitionCondition(activityRef.getProcessId(), transitionDefinition);
 
         instance.setState(ActivityState.STARTED);
         instance.setActivated(new Date());
@@ -53,9 +58,9 @@ public class EProcCaseActivityDelegate implements CaseActivityDelegate {
         eprocActivityService.saveState(eprocActivityService.getFullState(activityRef.getProcessId()));
     }
 
-    private boolean needReset(ActivityInstance instance, ActivityState toState) {
+    private boolean needResetBeforeStart(ActivityInstance instance) {
         ActivityState fromState = instance.getState();
-        if (fromState != ActivityState.NOT_STARTED && toState == ActivityState.STARTED) {
+        if (fromState != ActivityState.NOT_STARTED) {
             return instance.getDefinition().isRepeatable();
         }
         return false;
@@ -65,11 +70,12 @@ public class EProcCaseActivityDelegate implements CaseActivityDelegate {
     public void stopActivity(ActivityRef activityRef) {
         ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
 
-        if (transitionIsAbsent(instance, ActivityState.COMPLETED)) {
+        ActivityTransitionDefinition transitionDefinition = getTransitionDefinition(instance, ActivityState.COMPLETED);
+        if (transitionDefinition == null) {
             return;
         }
 
-        //TODO: transition evaluator
+        checkTransitionCondition(activityRef.getProcessId(), transitionDefinition);
 
         instance.setState(ActivityState.COMPLETED);
         instance.setTerminated(new Date());
@@ -80,20 +86,32 @@ public class EProcCaseActivityDelegate implements CaseActivityDelegate {
         eprocActivityService.saveState(eprocActivityService.getFullState(activityRef.getProcessId()));
     }
 
-    private boolean transitionIsAbsent(ActivityInstance instance, ActivityState toState) {
+    private ActivityTransitionDefinition getTransitionDefinition(ActivityInstance instance, ActivityState toState) {
         List<ActivityTransitionDefinition> transitions = instance.getDefinition().getTransitions();
         ActivityState fromState = instance.getState();
-        return !transitionExists(transitions, fromState, toState);
+        return getTransitionDefinition(transitions, fromState, toState);
     }
 
-    private boolean transitionExists(List<ActivityTransitionDefinition> transitions,
-                                     ActivityState fromState, ActivityState toState) {
+    private ActivityTransitionDefinition getTransitionDefinition(List<ActivityTransitionDefinition> transitions,
+                                                                 ActivityState fromState, ActivityState toState) {
         if (CollectionUtils.isEmpty(transitions)) {
-            return false;
+            return null;
         }
 
         return transitions.stream()
-                .anyMatch(transition -> transition.getFromState() == fromState && transition.getToState() == toState);
+                .filter(transition -> transition.getFromState() == fromState)
+                .filter(transition -> transition.getToState() == toState)
+                .findFirst().orElse(null);
+    }
+
+    private void checkTransitionCondition(RecordRef caseRef, ActivityTransitionDefinition transitionDefinition) {
+        RecordEvaluatorDto evaluatorDto = eprocCaseEvaluatorConverter
+                .convertEvaluatorDefinition(transitionDefinition.getEvaluator());
+        if (evaluatorDto == null) {
+            return;
+        }
+
+        //TODO
     }
 
     @Override

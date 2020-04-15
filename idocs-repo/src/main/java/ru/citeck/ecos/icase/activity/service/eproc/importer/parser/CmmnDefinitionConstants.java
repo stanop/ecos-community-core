@@ -25,4 +25,8 @@ public interface CmmnDefinitionConstants {
     String ACTION_SCRIPT = "execute-script.script";
     String ACTION_FAIL_MESSAGE = "fail.message";
 
+    //completeness
+    String COMPLETENESS_TYPE = "completenessType";
+    String COMPLETENESS_LEVELS_SET = "completenessLevelsSet";
+
 }
