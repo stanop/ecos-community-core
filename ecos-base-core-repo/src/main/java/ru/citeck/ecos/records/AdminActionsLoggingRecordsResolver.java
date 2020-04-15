@@ -157,10 +157,11 @@ public class AdminActionsLoggingRecordsResolver implements RecordsResolver, Reco
 
     @Override
     public void register(RecordsDAO recordsDAO) {
-        try {
+
+        if (recordsResolver instanceof LocalRemoteResolver) {
             ((LocalRemoteResolver) recordsResolver).register(recordsDAO);
-        } catch (Exception e) {
-            log.error("Error in register method! Exception: " + e.getMessage());
+        } else {
+            log.error("Error in register method! RecordsResolver have not found class for cast.");
         }
     }
 }
