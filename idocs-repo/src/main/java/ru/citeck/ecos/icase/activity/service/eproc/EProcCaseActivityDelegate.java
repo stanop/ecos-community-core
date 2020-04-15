@@ -3,6 +3,7 @@ package ru.citeck.ecos.icase.activity.service.eproc;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.icase.activity.dto.*;
 import ru.citeck.ecos.icase.activity.service.CaseActivityDelegate;
@@ -10,6 +11,8 @@ import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnDefinitio
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.evaluator.RecordEvaluatorDto;
 import ru.citeck.ecos.records2.evaluator.RecordEvaluatorService;
+import ru.citeck.ecos.records2.evaluator.details.EvalDetails;
+import ru.citeck.ecos.records2.evaluator.details.EvalResultCause;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,6 +23,11 @@ import java.util.stream.Collectors;
 @Service
 public class EProcCaseActivityDelegate implements CaseActivityDelegate {
 
+    private static final String CHECK_LIST_EXCEPTION_HEADER_MESSAGE =
+            "eproc.transition-exception.check-lists-not-completed-header.message";
+    private static final String CHECK_LIST_EXCEPTION_DEFAULT_MESSAGE =
+            "eproc.transition-exception.default-transition-denied.message";
+
     private EProcActivityService eprocActivityService;
     private EProcCaseActivityListenerManager listenerManager;
     private EProcCaseEvaluatorConverter eprocCaseEvaluatorConverter;
@@ -27,9 +35,13 @@ public class EProcCaseActivityDelegate implements CaseActivityDelegate {
 
     @Autowired
     public EProcCaseActivityDelegate(EProcActivityService eprocActivityService,
-                                     EProcCaseActivityListenerManager listenerManager) {
+                                     EProcCaseActivityListenerManager listenerManager,
+                                     EProcCaseEvaluatorConverter eprocCaseEvaluatorConverter,
+                                     RecordEvaluatorService recordEvaluatorService) {
         this.eprocActivityService = eprocActivityService;
         this.listenerManager = listenerManager;
+        this.eprocCaseEvaluatorConverter = eprocCaseEvaluatorConverter;
+        this.recordEvaluatorService = recordEvaluatorService;
     }
 
     @Override
@@ -111,7 +123,33 @@ public class EProcCaseActivityDelegate implements CaseActivityDelegate {
             return;
         }
 
-        //TODO
+        EvalDetails evalDetails = recordEvaluatorService.evalWithDetails(caseRef, evaluatorDto);
+        boolean success = evalDetails.getResult();
+        if (success) {
+            return;
+        }
+
+        List<EvalResultCause> causes = evalDetails.getCauses();
+        throw new RuntimeException(getLocalizedExceptionMessage(causes));
+    }
+
+    private String getLocalizedExceptionMessage(List<EvalResultCause> causes) {
+        if (CollectionUtils.isEmpty(causes)) {
+            return getLocalized(CHECK_LIST_EXCEPTION_DEFAULT_MESSAGE);
+        }
+
+        StringBuilder messageBuilder = new StringBuilder();
+        messageBuilder.append(getLocalized(CHECK_LIST_EXCEPTION_HEADER_MESSAGE))
+                .append("\n");
+        for (EvalResultCause cause : causes) {
+            messageBuilder.append(cause.getLocalizedMessage())
+                    .append("\n");
+        }
+        return messageBuilder.toString();
+    }
+
+    private String getLocalized(String key) {
+        return I18NUtil.getMessage(key);
     }
 
     @Override
