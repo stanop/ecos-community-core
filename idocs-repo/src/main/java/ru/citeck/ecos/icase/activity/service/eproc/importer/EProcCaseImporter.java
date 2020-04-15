@@ -1,8 +1,8 @@
 package ru.citeck.ecos.icase.activity.service.eproc.importer;
 
 import com.hazelcast.util.ConcurrentHashSet;
+import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.dictionary.TypeDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
@@ -132,21 +132,13 @@ public class EProcCaseImporter {
     }
 
     private boolean isAlfrescoTypeEnabled(QName caseType) {
-        TypeDefinition typeDef = dictionaryService.getType(caseType);
-
+        ClassDefinition typeDef = dictionaryService.getClass(caseType);
         while (typeDef != null) {
             if (allowedAlfTypes.contains(typeDef.getName())) {
                 return true;
             }
-
-            QName parentTypeQName = typeDef.getParentName();
-            if (parentTypeQName == null) {
-                typeDef = null;
-                continue;
-            }
-            typeDef = dictionaryService.getType(parentTypeQName);
+            typeDef = typeDef.getParentClassDefinition();
         }
-
         return false;
     }
 

@@ -4,8 +4,8 @@ import ecos.com.google.common.cache.CacheBuilder;
 import ecos.com.google.common.cache.CacheLoader;
 import ecos.com.google.common.cache.LoadingCache;
 import lombok.Data;
+import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.dictionary.TypeDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
@@ -47,7 +47,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
     private NodeService nodeService;
 
     private LoadingCache<EcosAlfTypesKey, String> typesToRevisionIdCache;
-    private LoadingCache<String, ProcessDefinition> revisionIdToProcessDefinitionCache;
+    private LoadingCache<String, Pair<ProcessDefinition, GetProcDefRevResp>> revisionIdToProcessDefinitionCache;
 
     @Autowired
     public EProcActivityServiceImpl(CmmnSchemaParser cmmnSchemaParser,
@@ -68,20 +68,19 @@ public class EProcActivityServiceImpl implements EProcActivityService {
 
         this.revisionIdToProcessDefinitionCache = CacheBuilder.newBuilder()
                 .maximumSize(120)
-                .build(CacheLoader.from(this::getProcessDefinitionByRevisionIdFromMicroservice));
+                .build(CacheLoader.from(this::getProcessDefByRevIdFromMicroservice));
     }
 
-    //TODO add feature of read this definition from cache
     @Override
     public Pair<String, byte[]> getRawDefinitionForType(RecordRef caseRef) {
         NodeRef caseNodeRef = RecordsUtils.toNodeRef(caseRef);
-        String processRevisionId = getRevisionIdForNode(caseNodeRef);
+        String procRevId = getRevisionIdForNode(caseNodeRef);
 
-        GetProcDefRevResp result = getProcessDefinitionByRevisionIdFromMicroserviceImpl(processRevisionId);
-        if (result == null) {
+        Pair<ProcessDefinition, GetProcDefRevResp> result = revisionIdToProcessDefinitionCache.getUnchecked(procRevId);
+        if (result == null || result.getSecond() == null) {
             return null;
         }
-        return new Pair<>(processRevisionId, result.getData());
+        return new Pair<>(procRevId, result.getSecond().getData());
     }
 
     @Override
@@ -103,12 +102,17 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         }
 
         String procDefRevId = processState.getProcDefRevId();
-        return revisionIdToProcessDefinitionCache.getUnchecked(procDefRevId);
+        Pair<ProcessDefinition, GetProcDefRevResp> result = revisionIdToProcessDefinitionCache
+                .getUnchecked(procDefRevId);
+        if (result == null || result.getFirst() == null) {
+            throw new IllegalArgumentException("Can not find processDef by procDefRevId=" + procDefRevId);
+        }
+        return result.getFirst();
     }
 
     private ProcessDefinition getFullDefinitionForNewCase(NodeRef caseNodeRef) {
         String processRevisionId = getRevisionIdForNode(caseNodeRef);
-        return revisionIdToProcessDefinitionCache.getUnchecked(processRevisionId);
+        return revisionIdToProcessDefinitionCache.getUnchecked(processRevisionId).getFirst();
     }
 
     private String getRevisionIdForNode(NodeRef caseNodeRef) {
@@ -131,17 +135,13 @@ public class EProcActivityServiceImpl implements EProcActivityService {
 
     private List<QName> getTypeInheritanceListForCase(NodeRef caseNodeRef) {
         QName type = nodeService.getType(caseNodeRef);
-        TypeDefinition typeDef = dictionaryService.getType(type);
 
         List<QName> result = new ArrayList<>();
+
+        ClassDefinition typeDef = dictionaryService.getClass(type);
         while (typeDef != null) {
             result.add(typeDef.getName());
-            QName parentTypeQName = typeDef.getParentName();
-            if (parentTypeQName == null) {
-                typeDef = null;
-                continue;
-            }
-            typeDef = dictionaryService.getType(parentTypeQName);
+            typeDef = typeDef.getParentClassDefinition();
         }
 
         return result;
@@ -176,15 +176,17 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         return response.getProcDefRevId();
     }
 
-    private ProcessDefinition getProcessDefinitionByRevisionIdFromMicroservice(String definitionRevisionId) {
-        GetProcDefRevResp response = getProcessDefinitionByRevisionIdFromMicroserviceImpl(definitionRevisionId);
+    private Pair<ProcessDefinition, GetProcDefRevResp> getProcessDefByRevIdFromMicroservice(String definitionRevisionId) {
+        GetProcDefRevResp response = getProcessDefByRevIdFromMicroserviceImpl(definitionRevisionId);
         if (response == null) {
             return null;
         }
-        return cmmnSchemaParser.parse(response.getData());
+
+        ProcessDefinition processDefinition = cmmnSchemaParser.parse(response.getData());
+        return new Pair<>(processDefinition, response);
     }
 
-    private GetProcDefRevResp getProcessDefinitionByRevisionIdFromMicroserviceImpl(String definitionRevisionId) {
+    private GetProcDefRevResp getProcessDefByRevIdFromMicroserviceImpl(String definitionRevisionId) {
         GetProcDefRev getProcDefRevCommand = new GetProcDefRev();
         getProcDefRevCommand.setProcType(CMMN_PROCESS_TYPE);
         getProcDefRevCommand.setProcDefRevId(definitionRevisionId);
@@ -327,6 +329,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         return commandResult.getResultAs(GetProcStateResp.class);
     }
 
+    //TODO: add caches id to activityDefinition for optimize setuping of definitions to instances
     private void setUnSerializableObjectsInProcessInstance(ProcessInstance processInstance,
                                                            ProcessDefinition processDefinition) {
 
@@ -475,6 +478,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         return null;
     }
 
+    // TODO: add cache for sentries
     @Override
     public SentryDefinition getSentryDefinition(EventRef eventRef) {
         ProcessInstance processInstance = getFullState(eventRef.getProcessId());
@@ -504,6 +508,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         return null;
     }
 
+    // TODO: add cache for sentries search
     @Override
     public List<SentryDefinition> findSentriesBySourceRefAndEventType(RecordRef caseRef, String sourceRef, String eventType) {
         ProcessInstance fullState = getFullState(caseRef);
