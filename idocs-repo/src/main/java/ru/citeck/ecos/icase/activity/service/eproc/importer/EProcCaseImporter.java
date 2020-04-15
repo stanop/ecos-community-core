@@ -18,9 +18,9 @@ import ru.citeck.ecos.cmmn.model.Definitions;
 import ru.citeck.ecos.cmmn.service.util.CaseElementImport;
 import ru.citeck.ecos.cmmn.service.util.CaseRolesImport;
 import ru.citeck.ecos.content.dao.xml.XmlContentDAO;
-import ru.citeck.ecos.icase.activity.dto.ProcessDefinition;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcActivityService;
 import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnSchemaParser;
+import ru.citeck.ecos.icase.activity.service.eproc.importer.pojo.OptimizedProcessDefinition;
 import ru.citeck.ecos.icase.element.CaseElementService;
 import ru.citeck.ecos.node.EcosTypeService;
 import ru.citeck.ecos.records.RecordsUtils;
@@ -95,7 +95,7 @@ public class EProcCaseImporter {
             CaseElementImport caseElementImport = new CaseElementImport(caseElementService);
             caseElementImport.importCaseElementTypes(caseNodeRef, caseItem);
 
-            ProcessDefinition processDefinition = cmmnSchemaParser.parse(caseItem);
+            OptimizedProcessDefinition processDefinition = cmmnSchemaParser.parse(caseItem, definitionBytes);
             eprocActivityService.createDefaultState(caseRef, revisionId, processDefinition);
         } catch (IOException e) {
             throw new RuntimeException("Could not parse definition", e);

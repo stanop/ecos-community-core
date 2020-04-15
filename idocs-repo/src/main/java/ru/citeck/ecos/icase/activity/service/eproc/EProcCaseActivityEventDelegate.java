@@ -1,5 +1,6 @@
 package ru.citeck.ecos.icase.activity.service.eproc;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
@@ -36,6 +37,9 @@ public class EProcCaseActivityEventDelegate implements CaseActivityEventDelegate
     public void fireEvent(ActivityRef activityRef, String eventType) {
         List<SentryDefinition> sentryDefs = eprocActivityService.findSentriesBySourceRefAndEventType(
                 activityRef.getProcessId(), activityRef.getId(), eventType);
+        if (CollectionUtils.isEmpty(sentryDefs)) {
+            return;
+        }
 
         for (SentryDefinition sentryDef : sentryDefs) {
             fireConcreteEventImpl(activityRef.getProcessId(), sentryDef);
