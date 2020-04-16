@@ -702,9 +702,6 @@
             <header key="name" default="true" />
             <header key="metaRecord" default="true" />
             <header key="editable" default="true" />
-            <header key="attributes" default="true" />
-            <header key="columns" default="true" />
-            <header key="actions" default="true" />
         </headers>
     </journal>
 
