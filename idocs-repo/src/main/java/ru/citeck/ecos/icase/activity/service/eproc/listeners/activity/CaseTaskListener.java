@@ -26,15 +26,16 @@ import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.behavior.activity.CaseTaskAttributesConverter;
 import ru.citeck.ecos.config.EcosConfigService;
+import ru.citeck.ecos.icase.activity.dto.ActivityDefinition;
 import ru.citeck.ecos.icase.activity.dto.ActivityInstance;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcActivityService;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcCaseActivityListenerManager;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcUtils;
-import ru.citeck.ecos.icase.activity.service.eproc.listeners.BeforeStartedActivityListener;
-import ru.citeck.ecos.icase.activity.service.eproc.listeners.OnResetActivityListener;
 import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnDefinitionConstants;
 import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnInstanceConstants;
+import ru.citeck.ecos.icase.activity.service.eproc.listeners.BeforeStartedActivityListener;
+import ru.citeck.ecos.icase.activity.service.eproc.listeners.OnResetActivityListener;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.model.EcosProcessModel;
 import ru.citeck.ecos.model.ICaseRoleModel;
@@ -114,10 +115,12 @@ public class CaseTaskListener implements BeforeStartedActivityListener, OnResetA
 
     @Override
     public void beforeStartedActivity(ActivityRef activityRef) {
-        ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
-        if (!EProcUtils.isUserTask(instance.getDefinition())) {
+        ActivityDefinition definition = eprocActivityService.getActivityDefinition(activityRef);
+        if (!EProcUtils.isUserTask(definition)) {
             return;
         }
+
+        ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
 
         NodeRef caseRef = RecordsUtils.toNodeRef(activityRef.getProcessId());
 
@@ -341,10 +344,12 @@ public class CaseTaskListener implements BeforeStartedActivityListener, OnResetA
 
     @Override
     public void onResetActivity(ActivityRef activityRef) {
-        ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
-        if (!EProcUtils.isUserTask(instance.getDefinition())) {
+        ActivityDefinition definition = eprocActivityService.getActivityDefinition(activityRef);
+        if (!EProcUtils.isUserTask(definition)) {
             return;
         }
+
+        ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
 
         String workflowInstanceId = EProcUtils.getAnyAttribute(instance, CmmnInstanceConstants.WORKFLOW_INSTANCE_ID);
         if (isWorkflowActive(workflowInstanceId)) {

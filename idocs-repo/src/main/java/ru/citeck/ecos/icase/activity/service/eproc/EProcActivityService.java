@@ -21,6 +21,8 @@ public interface EProcActivityService {
 
     void saveState(ProcessInstance processInstance);
 
+    ActivityDefinition getActivityDefinition(ActivityRef activityRef);
+
     ActivityInstance getStateInstance(ActivityRef activityRef);
 
     SentryDefinition getSentryDefinition(EventRef eventRef);

@@ -446,10 +446,10 @@ public class EProcActivityServiceImpl implements EProcActivityService {
             return instance.getRootActivity();
         }
 
-        return getStateInstance(instance.getRootActivity(), activityRef.getId());
+        return getStateInstanceRecursively(instance.getRootActivity(), activityRef.getId());
     }
 
-    private ActivityInstance getStateInstance(ActivityInstance instance, String id) {
+    private ActivityInstance getStateInstanceRecursively(ActivityInstance instance, String id) {
         if (StringUtils.equals(instance.getId(), id)) {
             return instance;
         }
@@ -459,12 +459,18 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         }
 
         for (ActivityInstance childInstance : instance.getActivities()) {
-            ActivityInstance stateInstance = getStateInstance(childInstance, id);
+            ActivityInstance stateInstance = getStateInstanceRecursively(childInstance, id);
             if (stateInstance != null) {
                 return stateInstance;
             }
         }
         return null;
+    }
+
+    @Override
+    public ActivityDefinition getActivityDefinition(ActivityRef activityRef) {
+        OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionImpl(activityRef.getProcessId());
+        return optimizedProcessDefinition.getIdToActivityCache().get(activityRef.getId());
     }
 
     @Override

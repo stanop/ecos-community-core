@@ -10,6 +10,22 @@ public class EProcUtils {
         return ActivityRef.of(CaseServiceType.EPROC, caseRef, activityInstance.getId());
     }
 
+    public static String getAnyAttribute(ActivityInstance instance, String key) {
+        return getAnyAttribute(instance, key, String.class);
+    }
+
+    public static <T> T getAnyAttribute(ActivityInstance instance, String key, Class<T> clazz) {
+        T result = getInsAttribute(instance, key, clazz);
+        if (result == null) {
+            result = getDefAttribute(instance.getDefinition(), key, clazz);
+        }
+        return result;
+    }
+
+    public static String getDefAttribute(ActivityDefinition definition, String key) {
+        return getDefAttribute(definition, key, String.class);
+    }
+
     public static <T> T getDefAttribute(ActivityDefinition definition, String key, Class<T> clazz) {
         ObjectData data = definition.getData();
         if (data == null) {
@@ -26,18 +42,6 @@ public class EProcUtils {
         }
 
         return variables.get(key, clazz);
-    }
-
-    public static String getAnyAttribute(ActivityInstance instance, String key) {
-        return getAnyAttribute(instance, key, String.class);
-    }
-
-    public static <T> T getAnyAttribute(ActivityInstance instance, String key, Class<T> clazz) {
-        T result = getInsAttribute(instance, key, clazz);
-        if (result == null) {
-            result = getDefAttribute(instance.getDefinition(), key, clazz);
-        }
-        return result;
     }
 
     public static void setAttribute(ActivityInstance instance, String key, Object value) {

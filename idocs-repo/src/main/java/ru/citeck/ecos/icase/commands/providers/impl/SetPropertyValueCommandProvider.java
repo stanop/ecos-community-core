@@ -6,7 +6,7 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.icase.activity.dto.ActivityInstance;
+import ru.citeck.ecos.icase.activity.dto.ActivityDefinition;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcActivityService;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcUtils;
@@ -60,11 +60,11 @@ public class SetPropertyValueCommandProvider extends AlfEprocCaseCommandsProvide
 
     @Override
     protected Object provideEprocCommand(ActivityRef activityRef) {
-        ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
+        ActivityDefinition definition = eprocActivityService.getActivityDefinition(activityRef);
 
-        String rawName = EProcUtils.getAnyAttribute(instance, CmmnDefinitionConstants.ACTION_SET_PROPERTY_PROP_NAME);
+        String rawName = EProcUtils.getDefAttribute(definition, CmmnDefinitionConstants.ACTION_SET_PROPERTY_PROP_NAME);
         QName name = QName.createQName(rawName, namespaceService);
-        String value = EProcUtils.getAnyAttribute(instance, CmmnDefinitionConstants.ACTION_SET_PROPERTY_PROP_VALUE);
+        String value = EProcUtils.getDefAttribute(definition, CmmnDefinitionConstants.ACTION_SET_PROPERTY_PROP_VALUE);
 
         return new SetPropertyValueCommand(activityRef.getProcessId(), name, value);
     }
