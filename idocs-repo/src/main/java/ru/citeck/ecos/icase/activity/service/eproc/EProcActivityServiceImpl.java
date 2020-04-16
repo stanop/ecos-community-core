@@ -70,24 +70,24 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         this.nodeService = nodeService;
 
         this.typesToRevisionIdCache = CacheBuilder.newBuilder()
-                .maximumSize(100)
+                .maximumSize(250)
                 .build(CacheLoader.from(this::findProcDefRevIdFromMicroservice));
 
         this.revisionIdToProcessDefinitionCache = CacheBuilder.newBuilder()
-                .maximumSize(120)
+                .maximumSize(150)
                 .build(CacheLoader.from(this::getProcessDefByRevIdFromMicroservice));
     }
 
     @Override
-    public Pair<String, byte[]> getRawDefinitionForType(RecordRef caseRef) {
+    public Pair<String, OptimizedProcessDefinition> getOptimizedDefinitionWithRevisionId(RecordRef caseRef) {
         NodeRef caseNodeRef = RecordsUtils.toNodeRef(caseRef);
         String procRevId = getRevisionIdForNode(caseNodeRef);
 
         OptimizedProcessDefinition result = revisionIdToProcessDefinitionCache.getUnchecked(procRevId);
-        if (result == null || result.getRawProcessDefinition() == null) {
+        if (result == null) {
             return null;
         }
-        return new Pair<>(procRevId, result.getRawProcessDefinition());
+        return new Pair<>(procRevId, result);
     }
 
     @Override

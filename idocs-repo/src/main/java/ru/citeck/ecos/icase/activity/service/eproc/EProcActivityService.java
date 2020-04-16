@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface EProcActivityService {
 
-    Pair<String, byte[]> getRawDefinitionForType(RecordRef caseRef);
+    Pair<String, OptimizedProcessDefinition> getOptimizedDefinitionWithRevisionId(RecordRef caseRef);
 
     ProcessDefinition getFullDefinition(RecordRef caseRef);
 

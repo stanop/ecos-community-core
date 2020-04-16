@@ -70,30 +70,33 @@ public class CmmnSchemaParser {
     public OptimizedProcessDefinition parse(byte[] source) {
         try (ByteArrayInputStream stream = new ByteArrayInputStream(source)) {
             Definitions definitions = xmlContentDAO.read(stream);
-            if (definitions == null || CollectionUtils.isEmpty(definitions.getCase())) {
-                return null;
-            }
-            return parse(definitions.getCase().get(0), source);
+            return parse(definitions);
         } catch (IOException e) {
             throw new RuntimeException("Could not parse definition", e);
         }
     }
 
-    public OptimizedProcessDefinition parse(Case caseItem, byte[] bytes) {
+    private OptimizedProcessDefinition parse(Definitions jaxbDefinitions) {
         try {
+            if (jaxbDefinitions == null || CollectionUtils.isEmpty(jaxbDefinitions.getCase())) {
+                return null;
+            }
+
+            Case caseItem = jaxbDefinitions.getCase().get(0);
+
             ProcessDefinition definition = new ProcessDefinition();
             definition.setId(caseItem.getId());
             definition.setRoles(parseRoleDefinitions(caseItem));
             definition.setActivityDefinition(parseRootActivityDefinition(caseItem));
-            return composeOptimized(definition, bytes);
+            return composeOptimized(definition, jaxbDefinitions);
         } finally {
             clearParsingExecutionCache();
         }
     }
 
-    private OptimizedProcessDefinition composeOptimized(ProcessDefinition definition, byte[] rawDefinition) {
+    private OptimizedProcessDefinition composeOptimized(ProcessDefinition definition, Definitions jaxbDefinitions) {
         OptimizedProcessDefinition optimizedProcessDefinition = new OptimizedProcessDefinition();
-        optimizedProcessDefinition.setRawProcessDefinition(rawDefinition);
+        optimizedProcessDefinition.setXmlProcessDefinition(jaxbDefinitions);
         optimizedProcessDefinition.setProcessDefinition(definition);
         optimizedProcessDefinition.setIdToActivityCache(copy(idToActivityCache.get()));
         optimizedProcessDefinition.setIdToSentryCache(copy(idToSentryCache.get()));
@@ -185,6 +188,9 @@ public class CmmnSchemaParser {
 
     private String getActionType(TTask action) {
         QName nodeType = getNodeType(action);
+        if (nodeType == null) {
+            return null;
+        }
         return nodeType.getLocalName();
     }
 
