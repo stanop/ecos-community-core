@@ -12,11 +12,13 @@ public class CreateNodeAction extends NodeActionDefinition {
     private static final String PROP_DESTINATION = "destination";
     private static final String PROP_DESTINATION_ASSOC = "destinationAssoc";
     private static final String PROP_FORM_ID = "formId";
+    private static final String PROP_EVENT_REF = "eventRef";
 
     public CreateNodeAction() {
         setProperty(PROP_NODE_TYPE, null);
         setProperty(PROP_DESTINATION, null);
         setProperty(PROP_DESTINATION_ASSOC, "cm:contains");
+        setProperty(PROP_EVENT_REF, null);
     }
 
     public String getNodeType() {
@@ -50,6 +52,14 @@ public class CreateNodeAction extends NodeActionDefinition {
 
     public String getFormId() {
         return getProperty(PROP_FORM_ID);
+    }
+
+    public void setEventRef(String eventRef) {
+        setProperty(PROP_EVENT_REF, eventRef);
+    }
+
+    public String getEventRef() {
+        return getProperty(PROP_EVENT_REF);
     }
 
     @Override

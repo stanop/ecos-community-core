@@ -1,21 +1,24 @@
 package ru.citeck.ecos.icase.activity.service.eproc;
 
+import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.icase.activity.dto.ActivityRef;
-import ru.citeck.ecos.icase.activity.dto.CaseServiceType;
-import ru.citeck.ecos.icase.activity.dto.EventRef;
-import ru.citeck.ecos.icase.activity.dto.SentryDefinition;
+import ru.citeck.ecos.action.ActionConditionUtils;
+import ru.citeck.ecos.icase.activity.dto.*;
 import ru.citeck.ecos.icase.activity.service.CaseActivityEventDelegate;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.evaluator.RecordEvaluatorDto;
 import ru.citeck.ecos.records2.evaluator.RecordEvaluatorService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class EProcCaseActivityEventDelegate implements CaseActivityEventDelegate {
+
+    public static final String TRANSACTION_EVENT_VARIABLE = "event";
 
     private EProcActivityService eprocActivityService;
     private EProcCaseActivityListenerManager listenerManager;
@@ -54,6 +57,8 @@ public class EProcCaseActivityEventDelegate implements CaseActivityEventDelegate
 
     private void fireConcreteEventImpl(RecordRef caseRef, SentryDefinition sentryDefinition) {
         if (checkConditionsImpl(caseRef, sentryDefinition)) {
+            addScriptSentryToJSContext(caseRef, sentryDefinition);
+
             EventRef eventRef = EventRef.of(CaseServiceType.EPROC, caseRef, sentryDefinition.getId());
             listenerManager.beforeEventFired(eventRef);
             listenerManager.onEventFired(eventRef);
@@ -67,12 +72,66 @@ public class EProcCaseActivityEventDelegate implements CaseActivityEventDelegate
     }
 
     private boolean checkConditionsImpl(RecordRef caseRef, SentryDefinition sentryDefinition) {
+        addScriptSentryToJSContext(caseRef, sentryDefinition);
+
         RecordEvaluatorDto evaluatorDefinition = eprocCaseEvaluatorConverter
                 .convertEvaluatorDefinition(sentryDefinition.getEvaluator());
         if (evaluatorDefinition != null) {
             return recordEvaluatorService.evaluate(caseRef, evaluatorDefinition);
         }
         return true;
+    }
+
+    //TODO: Script sentry is bad. Hardcode.
+    private void addScriptSentryToJSContext(RecordRef caseRef, SentryDefinition sentryDefinition) {
+        ActivityDefinition parentActivityDefinition = sentryDefinition
+                .getParentTriggerDefinition()
+                .getParentActivityTransitionDefinition()
+                .getParentActivityDefinition();
+
+        ActivityRef activityRef = ActivityRef.of(CaseServiceType.EPROC, caseRef, parentActivityDefinition.getId());
+        ActivityInstance activityInstance = eprocActivityService.getStateInstance(activityRef);
+
+        ScriptSentry scriptSentry = new ScriptSentry(activityInstance);
+        ActionConditionUtils.getTransactionVariables().put(TRANSACTION_EVENT_VARIABLE, scriptSentry);
+    }
+
+    @Data
+    private static class ScriptSentry {
+        private final ActivityInstance activityInstance;
+
+        private ScriptActivityInstance parent;
+
+        public ScriptActivityInstance getParent() {
+            if (parent == null) {
+                parent = new ScriptActivityInstance(activityInstance.getParentInstance());
+            }
+            return parent;
+        }
+    }
+
+    @Data
+    private static class ScriptActivityInstance {
+        private final ActivityInstance activityInstance;
+
+        private ScriptActivityInstance parent;
+        private Map<String, Object> properties;
+
+        public ScriptActivityInstance getParent() {
+            if (parent == null) {
+                parent = new ScriptActivityInstance(activityInstance.getParentInstance());
+            }
+            return parent;
+        }
+
+        public Map<String, Object> getProperties() {
+            if (properties == null) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("lc:state", activityInstance.getState().getValue());
+                properties = map;
+            }
+            return properties;
+        }
     }
 
 }

@@ -30,7 +30,6 @@
                 <value>alfresco/module/idocs-repo/model/case_mt/icaseModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/case_mt/icaseRoleModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/case_mt/icaseTaskModel.xml</value>
-                <value>alfresco/module/idocs-repo/model/case_mt/ecosProcessModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/cardletModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/menuConfigModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/idocsModel.xml</value>
@@ -60,6 +59,7 @@
                 <value>alfresco/module/idocs-repo/model/case_mt/requirementModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/case_mt/stagesModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/case_mt/caseTimerModel.xml</value>
+                <value>alfresco/module/idocs-repo/model/case_mt/ecosProcessModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/telegramModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/ecosContentModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/ecosBpmModel.xml</value>
