@@ -38,12 +38,17 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     @Value("${records.configuration.app.name}")
     private String appName;
 
+    @Value("${records.configuration.admin.actions.log.enabled}")
+    private String isAdminActionsLogEnabled;
+
     @Autowired
     private ServiceRegistry serviceRegistry;
     @Autowired
     private EcosEurekaClient ecosEurekaClient;
     @Autowired
     private RecordsProperties properties;
+    @Autowired(required = false)
+    private RecordsResolverWrapper resolverWrapper;
 
     @Autowired
     @Qualifier(EurekaContextConfig.REST_TEMPLATE_ID)
@@ -63,7 +68,12 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     @Bean
     @Override
     protected RecordsResolver createRecordsResolver() {
-        return super.createRecordsResolver();
+        if (Boolean.parseBoolean(isAdminActionsLogEnabled) && resolverWrapper != null) {
+            resolverWrapper.setRecordsResolver(super.createRecordsResolver());
+            return resolverWrapper;
+        } else {
+            return super.createRecordsResolver();
+        }
     }
 
     @Bean
