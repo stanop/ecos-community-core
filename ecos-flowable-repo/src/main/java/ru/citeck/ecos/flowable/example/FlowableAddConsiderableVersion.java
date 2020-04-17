@@ -11,8 +11,8 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-import org.flowable.task.service.delegate.DelegateTask;
 import org.flowable.engine.delegate.TaskListener;
+import org.flowable.task.service.delegate.DelegateTask;
 import org.json.JSONException;
 import ru.citeck.ecos.confirm.ConfirmService;
 import ru.citeck.ecos.providers.ApplicationContextProvider;
@@ -47,8 +47,17 @@ public class FlowableAddConsiderableVersion implements TaskListener {
 
         initServices();
         WorkflowQNameConverter qNameConverter = new WorkflowQNameConverter(namespaceService);
-        NodeRef packageRef = ((ScriptNode) delegateTask
-                .getVariable(qNameConverter.mapQNameToName(WorkflowModel.ASSOC_PACKAGE))).getNodeRef();
+
+        NodeRef packageRef;
+        Object varObj = delegateTask.getVariable(qNameConverter.mapQNameToName(WorkflowModel.ASSOC_PACKAGE));
+        if (varObj instanceof NodeRef) {
+            packageRef = (NodeRef) varObj;
+        } else if (varObj instanceof ScriptNode) {
+            packageRef = ((ScriptNode) varObj).getNodeRef();
+        } else {
+            throw new RuntimeException("Variable type not supported: " + varObj.getClass());
+        }
+
         Set<QName> includeQNames = new HashSet<>();
         includeQNames.add(WorkflowModel.ASSOC_PACKAGE_CONTAINS);
         includeQNames.add(ContentModel.ASSOC_CONTAINS);
