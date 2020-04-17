@@ -46,6 +46,8 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     private EcosEurekaClient ecosEurekaClient;
     @Autowired
     private RecordsProperties properties;
+    @Autowired(required = false)
+    private RecordsResolverWrapper resolverWrapper;
 
     @Autowired
     @Qualifier(EurekaContextConfig.REST_TEMPLATE_ID)
@@ -65,8 +67,9 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     @Bean
     @Override
     protected RecordsResolver createRecordsResolver() {
-        if (Boolean.parseBoolean(isAdminActionsLogEnabled)) {
-            return new AdminActionsLoggingRecordsResolver(super.createRecordsResolver(), serviceRegistry);
+        if (Boolean.parseBoolean(isAdminActionsLogEnabled) && resolverWrapper != null) {
+            resolverWrapper.setRecordsResolver(super.createRecordsResolver());
+            return resolverWrapper;
         } else {
             return super.createRecordsResolver();
         }
