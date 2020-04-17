@@ -55,7 +55,7 @@ public class FlowableAddConsiderableVersion implements TaskListener {
         } else if (varObj instanceof ScriptNode) {
             packageRef = ((ScriptNode) varObj).getNodeRef();
         } else {
-            throw new RuntimeException("Variable type not supported: " + varObj.getClass());
+            throw new RuntimeException("Variable type not supported: " + varObj.getClass() + ". var: " + varObj);
         }
 
         Set<QName> includeQNames = new HashSet<>();
