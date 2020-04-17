@@ -1,5 +1,6 @@
 package ru.citeck.ecos.icase.activity.service.eproc.importer.parser;
 
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.namespace.QName;
@@ -18,6 +19,8 @@ import ru.citeck.ecos.cmmn.model.*;
 import ru.citeck.ecos.commons.data.ObjectData;
 import ru.citeck.ecos.content.dao.xml.XmlContentDAO;
 import ru.citeck.ecos.icase.activity.dto.*;
+import ru.citeck.ecos.icase.activity.service.eproc.importer.pojo.OptimizedProcessDefinition;
+import ru.citeck.ecos.icase.activity.service.eproc.importer.pojo.SentrySearchKey;
 import ru.citeck.ecos.model.ActionModel;
 import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
@@ -37,8 +40,6 @@ import java.util.stream.Collectors;
 @Component
 public class CmmnSchemaParser {
 
-    public static final String START_COMPLETENESS_LEVELS_SET_KEY = "startCompletenessLevels";
-    public static final String STOP_COMPLETENESS_LEVELS_SET_KEY = "endCompletenessLevels";
     public static final String AUTHORIZED_ROLES_SET_KEY = "authorizedRoles";
     public static final String USER_ACTION_EVENT_TYPE = "user-action";
 
@@ -47,11 +48,14 @@ public class CmmnSchemaParser {
     private CMMNUtils utils;
 
     // Parsing execution thread cache
-    private ThreadLocal<Map<String, ActivityDefinition>> idToActivityDefinitionCache = new ThreadLocal<>();
-    private ThreadLocal<AtomicInteger> triggerDefinitionIdCounter = new ThreadLocal<>();
-    private ThreadLocal<AtomicInteger> evaluatorDefinitionIdCounter = new ThreadLocal<>();
+    private ThreadLocal<Map<String, ActivityDefinition>> idToActivityCache = new ThreadLocal<>();
+    private ThreadLocal<Map<String, SentryDefinition>> idToSentryCache = new ThreadLocal<>();
+    private ThreadLocal<Map<SentrySearchKey, List<SentryDefinition>>> searchKeyToSentryCache = new ThreadLocal<>();
+    private ThreadLocal<AtomicInteger> triggerIdCounter = new ThreadLocal<>();
+    private ThreadLocal<AtomicInteger> evaluatorIdCounter = new ThreadLocal<>();
     private ThreadLocal<AtomicInteger> activityIndexCounter = new ThreadLocal<>();
     private ThreadLocal<Map<String, String>> idToVarNameRoleCache = new ThreadLocal<>();
+    private ThreadLocal<Map<String, CompletenessLevels>> idToCompletenessLevelsCache = new ThreadLocal<>();
 
     @Autowired
     public CmmnSchemaParser(@Qualifier("caseTemplateContentDAO") XmlContentDAO<Definitions> xmlContentDAO,
@@ -63,37 +67,46 @@ public class CmmnSchemaParser {
         this.utils = utils;
     }
 
-    //TODO: maybe better construct cache here and return his with definition as composite object?
-    public ProcessDefinition parse(byte[] source) {
+    public OptimizedProcessDefinition parse(byte[] source) {
         try (ByteArrayInputStream stream = new ByteArrayInputStream(source)) {
             Definitions definitions = xmlContentDAO.read(stream);
             if (definitions == null || CollectionUtils.isEmpty(definitions.getCase())) {
                 return null;
             }
-            return parse(definitions.getCase().get(0));
+            return parse(definitions.getCase().get(0), source);
         } catch (IOException e) {
             throw new RuntimeException("Could not parse definition", e);
         }
     }
 
-    public ProcessDefinition parse(Case caseItem) {
+    public OptimizedProcessDefinition parse(Case caseItem, byte[] bytes) {
         try {
             ProcessDefinition definition = new ProcessDefinition();
             definition.setId(caseItem.getId());
             definition.setRoles(parseRoleDefinitions(caseItem));
             definition.setActivityDefinition(parseRootActivityDefinition(caseItem));
-            return definition;
+            return composeOptimized(definition, bytes);
         } finally {
             clearParsingExecutionCache();
         }
     }
 
-    private void clearParsingExecutionCache() {
-        idToActivityDefinitionCache.remove();
-        triggerDefinitionIdCounter.remove();
-        evaluatorDefinitionIdCounter.remove();
-        activityIndexCounter.remove();
-        idToVarNameRoleCache.remove();
+    private OptimizedProcessDefinition composeOptimized(ProcessDefinition definition, byte[] rawDefinition) {
+        OptimizedProcessDefinition optimizedProcessDefinition = new OptimizedProcessDefinition();
+        optimizedProcessDefinition.setRawProcessDefinition(rawDefinition);
+        optimizedProcessDefinition.setProcessDefinition(definition);
+        optimizedProcessDefinition.setIdToActivityCache(copy(idToActivityCache.get()));
+        optimizedProcessDefinition.setIdToSentryCache(copy(idToSentryCache.get()));
+        optimizedProcessDefinition.setSentrySearchCache(copy(searchKeyToSentryCache.get()));
+        return optimizedProcessDefinition;
+    }
+
+    private <K, V> Map<K, V> copy(Map<K, V> source) {
+        if (source == null) {
+            return Collections.emptyMap();
+        } else {
+            return new HashMap<>(source);
+        }
     }
 
     private ActivityDefinition parseRootActivityDefinition(Case caseItem) {
@@ -147,7 +160,6 @@ public class CmmnSchemaParser {
 
     private ObjectData parseStageDefinitionData(Stage stage) {
         ObjectData objectData = parseCommonDefinitionData(stage);
-        addCompletenessLevels(stage, objectData);
         addAttributeIfExists(stage, CMMNUtils.QNAME_CASE_STATUS, objectData);
         return objectData;
     }
@@ -191,7 +203,6 @@ public class CmmnSchemaParser {
     private ObjectData parseTaskDefinitionData(TTask task) {
         ObjectData objectData = parseCommonDefinitionData(task);
         addRoles(task, objectData);
-        addCompletenessLevels(task, objectData);
         return objectData;
     }
 
@@ -216,53 +227,19 @@ public class CmmnSchemaParser {
         activityDefinition.setIndex(getNextIndex());
         activityDefinition.setRepeatable(isRepeatable(element));
 
+        addCompletenessLevelsIfExists(element);
+
         return activityDefinition;
+    }
+
+    private String toValidCompletenessLevelRef(String rawCompletenessLevelRef) {
+        return rawCompletenessLevelRef.replaceAll("workspace-SpacesStore-", "workspace://SpacesStore/");
     }
 
     private boolean isRepeatable(TCmmnElement element) {
         Map<javax.xml.namespace.QName, String> otherAttributes = element.getOtherAttributes();
         javax.xml.namespace.QName qName = utils.convertToXMLQName(ActivityModel.PROP_REPEATABLE);
         return MapUtils.getBoolean(otherAttributes, qName, false);
-    }
-
-    private int getNextIndex() {
-        return getNextAtomicValue(activityIndexCounter);
-    }
-
-    private String getNextTriggerDefinitionId() {
-        return "trgr-" + getNextAtomicValue(triggerDefinitionIdCounter);
-    }
-
-    private String getNextEvaluatorDefinitionId() {
-        return "evltr-" + getNextAtomicValue(evaluatorDefinitionIdCounter);
-    }
-
-    private int getNextAtomicValue(ThreadLocal<AtomicInteger> triggerDefinitionIdCounter) {
-        AtomicInteger atomicInteger = triggerDefinitionIdCounter.get();
-        if (atomicInteger == null) {
-            atomicInteger = new AtomicInteger(0);
-            triggerDefinitionIdCounter.set(atomicInteger);
-        }
-        return atomicInteger.incrementAndGet();
-    }
-
-    private void addActivityDefinitionToIdentityCache(String id, ActivityDefinition activityDefinition) {
-        Map<String, ActivityDefinition> idToActivityDefinitionCacheMap = idToActivityDefinitionCache.get();
-        if (idToActivityDefinitionCacheMap == null) {
-            idToActivityDefinitionCacheMap = new HashMap<>();
-            idToActivityDefinitionCache.set(idToActivityDefinitionCacheMap);
-        }
-
-        idToActivityDefinitionCacheMap.put(id, activityDefinition);
-    }
-
-    private ActivityDefinition getCachedActivityDefinitionById(String id) {
-        Map<String, ActivityDefinition> idToActivityDefinitionCacheMap = idToActivityDefinitionCache.get();
-        if (idToActivityDefinitionCacheMap == null) {
-            return null;
-        }
-
-        return idToActivityDefinitionCacheMap.get(id);
     }
 
     private ObjectData parseCommonDefinitionData(TPlanItemDefinition definition) {
@@ -306,6 +283,32 @@ public class CmmnSchemaParser {
         }
 
         return QName.createQName(rawQName);
+    }
+
+    // Completeness Levels parsing logic area
+    private void addCompletenessLevelsIfExists(TCmmnElement element) {
+        String startCompleteness = parseCompletenessLevels(element, CMMNUtils.QNAME_START_COMPLETNESS_LEVELS);
+        String stopCompleteness = parseCompletenessLevels(element, CMMNUtils.QNAME_STOP_COMPLETNESS_LEVELS);
+
+        if (StringUtils.isNotBlank(startCompleteness) || StringUtils.isNotBlank(stopCompleteness)) {
+            CompletenessLevels levels = new CompletenessLevels();
+            levels.startCompletenessLevels = startCompleteness;
+            levels.stopCompletenessLevels = stopCompleteness;
+            addCompletenessLevelsCache(element.getId(), levels);
+        }
+    }
+
+    private String parseCompletenessLevels(TCmmnElement definition, javax.xml.namespace.QName xmlQName) {
+        String rawCompletenessLevels = definition.getOtherAttributes().get(xmlQName);
+        if (StringUtils.isNotBlank(rawCompletenessLevels)) {
+            String[] splitCompletenessLevels = rawCompletenessLevels.split(",");
+            Set<String> formattedCompletenessLevels = Arrays.stream(splitCompletenessLevels)
+                    .map(this::toValidCompletenessLevelRef)
+                    .map(String::trim)
+                    .collect(Collectors.toSet());
+            return String.join(",", formattedCompletenessLevels);
+        }
+        return null;
     }
 
     // Roles parsing logic area
@@ -367,53 +370,9 @@ public class CmmnSchemaParser {
         return result;
     }
 
-    private void addRoleReferenceToThreadCache(RoleReference roleReference) {
-        Map<String, String> idToVarNameRoleCacheMap = idToVarNameRoleCache.get();
-        if (idToVarNameRoleCacheMap == null) {
-            idToVarNameRoleCacheMap = new HashMap<>();
-            idToVarNameRoleCache.set(idToVarNameRoleCacheMap);
-        }
-
-        idToVarNameRoleCacheMap.put(roleReference.getId(), roleReference.getVarName());
-    }
-
-    private String getRoleVarNameByIdFromThreadCache(String roleId) {
-        Map<String, String> idToVarNameRoleCacheMap = idToVarNameRoleCache.get();
-        if (idToVarNameRoleCacheMap == null) {
-            return null;
-        }
-
-        return idToVarNameRoleCacheMap.get(roleId);
-    }
-
     private String getRoleVarName(Role role) {
         Map<javax.xml.namespace.QName, String> otherAttributes = role.getOtherAttributes();
         return otherAttributes.get(CMMNUtils.QNAME_ROLE_VARNAME);
-    }
-
-    // Completeness Levels parsing logic area
-    private void addCompletenessLevels(TCmmnElement definition, ObjectData objectData) {
-        Set<String> startCompleteness = parseCompletenessLevels(definition, CMMNUtils.QNAME_START_COMPLETNESS_LEVELS);
-        objectData.set(START_COMPLETENESS_LEVELS_SET_KEY, startCompleteness);
-
-        Set<String> stopCompleteness = parseCompletenessLevels(definition, CMMNUtils.QNAME_STOP_COMPLETNESS_LEVELS);
-        objectData.set(STOP_COMPLETENESS_LEVELS_SET_KEY, stopCompleteness);
-    }
-
-    private Set<String> parseCompletenessLevels(TCmmnElement definition, javax.xml.namespace.QName xmlQName) {
-        String rawCompletenessLevels = definition.getOtherAttributes().get(xmlQName);
-        if (StringUtils.isNotBlank(rawCompletenessLevels)) {
-            String[] splitCompletenessLevels = rawCompletenessLevels.split(",");
-            return Arrays.stream(splitCompletenessLevels)
-                    .map(this::toValidCompletenessLevelRef)
-                    .map(String::trim)
-                    .collect(Collectors.toSet());
-        }
-        return null;
-    }
-
-    private String toValidCompletenessLevelRef(String rawCompletenessLevelRef) {
-        return rawCompletenessLevelRef.replaceAll("workspace-SpacesStore-", "workspace://SpacesStore/");
     }
 
     // Transitions parsing logic area
@@ -530,11 +489,7 @@ public class CmmnSchemaParser {
             transition.setToState(toState);
             transition.setParentActivityDefinition(activityDefinition);
 
-            if (toState == ActivityState.STARTED) {
-                //transitionDefinition.setEvaluator(...); // TODO: сделать тут completenessLevel evaluator.
-            } else if (toState == ActivityState.COMPLETED) {
-                //transitionDefinition.setEvaluator(...); // TODO: сделать тут completenessLevel evaluator.
-            }
+            addCompletenessLevelsToTransition(activityDefinition.getId(), transition);
 
             if (activityDefinition.getTransitions() == null) {
                 activityDefinition.setTransitions(new ArrayList<>());
@@ -542,6 +497,43 @@ public class CmmnSchemaParser {
             activityDefinition.getTransitions().add(transition);
         }
         return transition;
+    }
+
+    private void addCompletenessLevelsToTransition(String activityId, ActivityTransitionDefinition transition) {
+        ActivityState toState = transition.getToState();
+        CompletenessLevels completenessLevels = getCompletenessLevelsFromCache(activityId);
+        if (completenessLevels != null) {
+            if (toState == ActivityState.STARTED) {
+                String startCompletenessLevels = completenessLevels.getStartCompletenessLevels();
+                if (StringUtils.isNotBlank(startCompletenessLevels)) {
+                    addCompletenessLevels(transition, startCompletenessLevels);
+                }
+            } else if (toState == ActivityState.COMPLETED) {
+                String stopCompletenessLevels = completenessLevels.getStopCompletenessLevels();
+                if (StringUtils.isNotBlank(stopCompletenessLevels)) {
+                    addCompletenessLevels(transition, stopCompletenessLevels);
+                }
+            }
+        }
+    }
+
+    private void addCompletenessLevels(ActivityTransitionDefinition transition, String completenessLevels) {
+        EvaluatorDefinition evaluator = new EvaluatorDefinition();
+        evaluator.setId(getNextEvaluatorDefinitionId());
+        evaluator.setInverse(false);
+        evaluator.setData(new ObjectData(composeCompletenessLevelsEvaluatorData(completenessLevels)));
+        transition.setEvaluator(evaluator);
+    }
+
+    private EvaluatorDefinitionDataHolder composeCompletenessLevelsEvaluatorData(String completenessLevels) {
+        EvaluatorDefinitionData definitionData = new EvaluatorDefinitionData();
+        definitionData.setType(CmmnDefinitionConstants.COMPLETENESS_TYPE);
+
+        definitionData.setAttributes(Collections.singletonMap(
+                CmmnDefinitionConstants.COMPLETENESS_LEVELS_SET, completenessLevels));
+
+        List<EvaluatorDefinitionData> result = Collections.singletonList(definitionData);
+        return new EvaluatorDefinitionDataHolder(result);
     }
 
     private ActivityTransitionDefinition getTransitionDefinitionByFromAndToState(ActivityDefinition activityDefinition,
@@ -599,6 +591,8 @@ public class CmmnSchemaParser {
 
         if (!sentries.contains(sentryDefinition)) {
             sentries.add(sentryDefinition);
+            addSentryDefinitionToIdentityCache(sentryDefinition);
+            addSentryDefinitionToSearchCache(sentryDefinition);
         }
     }
 
@@ -637,18 +631,14 @@ public class CmmnSchemaParser {
         content = content.replace("<!CDATA[", "").replace("]]>", "");
         try {
             List<Condition> conditions = unmarshalConditions(content).getConditions();
-            return composeGroupEvaluatorDefinition(conditions);
+            EvaluatorDefinition evaluatorDef = new EvaluatorDefinition();
+            evaluatorDef.setId(getNextEvaluatorDefinitionId());
+            evaluatorDef.setInverse(false);
+            evaluatorDef.setData(new ObjectData(composeEvaluatorDefinitionData(conditions)));
+            return evaluatorDef;
         } catch (JAXBException e) {
             throw new RuntimeException("Error of parsing condition of sentry " + sentry.getId(), e);
         }
-    }
-
-    private EvaluatorDefinition composeGroupEvaluatorDefinition(List<Condition> conditions) {
-        EvaluatorDefinition definition = new EvaluatorDefinition();
-        definition.setId(getNextEvaluatorDefinitionId());
-        definition.setInverse(false);
-        definition.setData(new ObjectData(composeEvaluatorDefinitionData(conditions)));
-        return definition;
     }
 
     private EvaluatorDefinitionDataHolder composeEvaluatorDefinitionData(List<Condition> conditions) {
@@ -677,6 +667,104 @@ public class CmmnSchemaParser {
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         StringReader stringReader = new StringReader(xml);
         return (ConditionsList) jaxbUnmarshaller.unmarshal(stringReader);
+    }
+
+    // caches area
+
+    private int getNextIndex() {
+        return getNextAtomicValue(activityIndexCounter);
+    }
+
+    private String getNextTriggerDefinitionId() {
+        return "trgr-" + getNextAtomicValue(triggerIdCounter);
+    }
+
+    private String getNextEvaluatorDefinitionId() {
+        return "evltr-" + getNextAtomicValue(evaluatorIdCounter);
+    }
+
+    private void addActivityDefinitionToIdentityCache(String id, ActivityDefinition activityDefinition) {
+        addToThreadLocalCache(id, activityDefinition, idToActivityCache);
+    }
+
+    private void addSentryDefinitionToIdentityCache(SentryDefinition sentryDefinition) {
+        addToThreadLocalCache(sentryDefinition.getId(), sentryDefinition, idToSentryCache);
+    }
+
+    private void addSentryDefinitionToSearchCache(SentryDefinition sentryDefinition) {
+        Map<SentrySearchKey, List<SentryDefinition>> cache = searchKeyToSentryCache.get();
+        if (cache == null) {
+            cache = new HashMap<>();
+            searchKeyToSentryCache.set(cache);
+        }
+
+        SentrySearchKey key = new SentrySearchKey(sentryDefinition.getSourceRef(), sentryDefinition.getEvent());
+        List<SentryDefinition> sentryDefinitions = cache.computeIfAbsent(key, k -> new ArrayList<>());
+
+        sentryDefinitions.add(sentryDefinition);
+    }
+
+    private ActivityDefinition getCachedActivityDefinitionById(String id) {
+        return getFromThreadLocalCache(id, idToActivityCache);
+    }
+
+    private void addRoleReferenceToThreadCache(RoleReference roleReference) {
+        addToThreadLocalCache(roleReference.getId(), roleReference.getVarName(), idToVarNameRoleCache);
+    }
+
+    private String getRoleVarNameByIdFromThreadCache(String roleId) {
+        return getFromThreadLocalCache(roleId, idToVarNameRoleCache);
+    }
+
+    private void addCompletenessLevelsCache(String id, CompletenessLevels completenessLevels) {
+        addToThreadLocalCache(id, completenessLevels, idToCompletenessLevelsCache);
+    }
+
+    private CompletenessLevels getCompletenessLevelsFromCache(String id) {
+        return getFromThreadLocalCache(id, idToCompletenessLevelsCache);
+    }
+
+    private int getNextAtomicValue(ThreadLocal<AtomicInteger> triggerDefinitionIdCounter) {
+        AtomicInteger atomicInteger = triggerDefinitionIdCounter.get();
+        if (atomicInteger == null) {
+            atomicInteger = new AtomicInteger(0);
+            triggerDefinitionIdCounter.set(atomicInteger);
+        }
+        return atomicInteger.incrementAndGet();
+    }
+
+    private <K, V> void addToThreadLocalCache(K key, V value, ThreadLocal<Map<K, V>> threadLocal) {
+        Map<K, V> cacheMap = threadLocal.get();
+        if (cacheMap == null) {
+            cacheMap = new HashMap<>();
+            threadLocal.set(cacheMap);
+        }
+        cacheMap.put(key, value);
+    }
+
+    private <K, V> V getFromThreadLocalCache(K key, ThreadLocal<Map<K, V>> threadLocal) {
+        Map<K, V> cacheMap = threadLocal.get();
+        if (cacheMap == null) {
+            return null;
+        }
+        return cacheMap.get(key);
+    }
+
+    private void clearParsingExecutionCache() {
+        idToActivityCache.remove();
+        idToSentryCache.remove();
+        searchKeyToSentryCache.remove();
+        triggerIdCounter.remove();
+        evaluatorIdCounter.remove();
+        activityIndexCounter.remove();
+        idToVarNameRoleCache.remove();
+        idToCompletenessLevelsCache.remove();
+    }
+
+    @Data
+    private static class CompletenessLevels {
+        private String startCompletenessLevels;
+        private String stopCompletenessLevels;
     }
 
 }
