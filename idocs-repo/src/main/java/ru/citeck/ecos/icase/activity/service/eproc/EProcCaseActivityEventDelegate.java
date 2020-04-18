@@ -1,6 +1,8 @@
 package ru.citeck.ecos.icase.activity.service.eproc;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -82,7 +84,7 @@ public class EProcCaseActivityEventDelegate implements CaseActivityEventDelegate
         return true;
     }
 
-    //TODO: Script sentry is bad. Hardcode.
+    //TODO: Script sentry is bad. Hardcode. Uses now for support of old functionality in existing processes
     private void addScriptSentryToJSContext(RecordRef caseRef, SentryDefinition sentryDefinition) {
         ActivityDefinition parentActivityDefinition = sentryDefinition
                 .getParentTriggerDefinition()
@@ -97,7 +99,9 @@ public class EProcCaseActivityEventDelegate implements CaseActivityEventDelegate
     }
 
     @Data
-    private static class ScriptSentry {
+    @EqualsAndHashCode(doNotUseGetters = true)
+    @ToString(doNotUseGetters = true)
+    public static class ScriptSentry {
         private final ActivityInstance activityInstance;
 
         private ScriptActivityInstance parent;
@@ -111,7 +115,9 @@ public class EProcCaseActivityEventDelegate implements CaseActivityEventDelegate
     }
 
     @Data
-    private static class ScriptActivityInstance {
+    @EqualsAndHashCode(doNotUseGetters = true)
+    @ToString(doNotUseGetters = true)
+    public static class ScriptActivityInstance {
         private final ActivityInstance activityInstance;
 
         private ScriptActivityInstance parent;

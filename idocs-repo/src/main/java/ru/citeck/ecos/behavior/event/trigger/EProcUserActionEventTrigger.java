@@ -1,19 +1,23 @@
 package ru.citeck.ecos.behavior.event.trigger;
 
 import org.alfresco.repo.node.NodeServicePolicies;
+import org.alfresco.repo.node.NodeUtils;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.behavior.OrderedBehaviour;
+import ru.citeck.ecos.icase.activity.dto.EventRef;
 import ru.citeck.ecos.icase.activity.service.CaseActivityEventService;
 import ru.citeck.ecos.model.EcosProcessModel;
 import ru.citeck.ecos.model.EventModel;
+import ru.citeck.ecos.utils.TransactionUtils;
 
 import javax.annotation.PostConstruct;
 
@@ -49,10 +53,24 @@ public class EProcUserActionEventTrigger implements NodeServicePolicies.OnCreate
 
     @Override
     public void onCreateChildAssociation(ChildAssociationRef childAssociationRef, boolean primary) {
-        NodeRef eventNodeRef = childAssociationRef.getParentRef();
+        NodeRef caseRef = childAssociationRef.getParentRef();
         NodeRef additionalDataRef = childAssociationRef.getChildRef();
-        if (nodeService.exists(eventNodeRef) && nodeService.exists(additionalDataRef)) {
+        if (nodeService.exists(caseRef) && nodeService.exists(additionalDataRef)) {
             ActionConditionUtils.getTransactionVariables().put(ADDITIONAL_DATA_VARIABLE, additionalDataRef);
+            String rawEventRef = (String) nodeService.getProperty(additionalDataRef, EcosProcessModel.PROP_EVENT_REF);
+            if (StringUtils.isBlank(rawEventRef)) {
+                throw new RuntimeException("EventRef is not defined in props of user-action for caseRef=" + caseRef);
+            }
+            EventRef eventRef = EventRef.of(rawEventRef);
+            caseActivityEventService.fireConcreteEvent(eventRef);
+        }
+
+        TransactionUtils.doAfterBehaviours(() -> removeAdditionalData(additionalDataRef));
+    }
+
+    private void removeAdditionalData(NodeRef additionalDataRef) {
+        if (NodeUtils.exists(additionalDataRef, nodeService)) {
+            nodeService.deleteNode(additionalDataRef);
         }
     }
 

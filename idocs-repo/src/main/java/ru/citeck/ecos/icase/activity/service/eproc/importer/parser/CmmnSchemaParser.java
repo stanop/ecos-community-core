@@ -596,6 +596,10 @@ public class CmmnSchemaParser {
     private void addSentryDefinition(TriggerDefinition trigger, SentryTriggerDefinition sentryTriggerDefinition,
                                      Sentry sentry) {
 
+        if (sentryExistsInCache(sentry.getId())) {
+            return;
+        }
+
         SentryDefinition sentryDefinition = new SentryDefinition();
         sentryDefinition.setId(sentry.getId());
         sentryDefinition.setEvent(getEventType(sentry));
@@ -609,11 +613,9 @@ public class CmmnSchemaParser {
             sentryTriggerDefinition.setSentries(sentries);
         }
 
-        if (!sentries.contains(sentryDefinition)) {
-            sentries.add(sentryDefinition);
-            addSentryDefinitionToIdentityCache(sentryDefinition);
-            addSentryDefinitionToSearchCache(sentryDefinition);
-        }
+        sentries.add(sentryDefinition);
+        addSentryDefinitionToIdentityCache(sentryDefinition);
+        addSentryDefinitionToSearchCache(sentryDefinition);
     }
 
     private String getEventType(Sentry sentry) {
@@ -709,6 +711,10 @@ public class CmmnSchemaParser {
 
     private void addSentryDefinitionToIdentityCache(SentryDefinition sentryDefinition) {
         addToThreadLocalCache(sentryDefinition.getId(), sentryDefinition, idToSentryCache);
+    }
+
+    private boolean sentryExistsInCache(String id) {
+        return getFromThreadLocalCache(id, idToSentryCache) != null;
     }
 
     private void addSentryDefinitionToSearchCache(SentryDefinition sentryDefinition) {
