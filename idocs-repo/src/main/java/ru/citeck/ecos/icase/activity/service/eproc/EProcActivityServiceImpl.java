@@ -21,7 +21,7 @@ import ru.citeck.ecos.commands.dto.CommandResult;
 import ru.citeck.ecos.commons.json.Json;
 import ru.citeck.ecos.commons.utils.MandatoryParam;
 import ru.citeck.ecos.icase.activity.dto.*;
-import ru.citeck.ecos.icase.activity.service.eproc.commands.*;
+import ru.citeck.ecos.icase.activity.service.eproc.commands.request.*;
 import ru.citeck.ecos.icase.activity.service.eproc.commands.response.*;
 import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnSchemaParser;
 import ru.citeck.ecos.icase.activity.service.eproc.importer.pojo.OptimizedProcessDefinition;

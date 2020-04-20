@@ -1,4 +1,4 @@
-package ru.citeck.ecos.icase.activity.service.eproc.commands;
+package ru.citeck.ecos.icase.activity.service.eproc.commands.request;
 
 import lombok.Data;
 import ru.citeck.ecos.commands.annotation.CommandType;
