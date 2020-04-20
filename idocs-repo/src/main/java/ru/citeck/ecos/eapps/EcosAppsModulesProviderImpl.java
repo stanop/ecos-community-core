@@ -24,6 +24,8 @@ import ru.citeck.ecos.commons.io.file.mem.EcosMemDir;
 import ru.citeck.ecos.commons.io.file.std.EcosStdFile;
 import ru.citeck.ecos.utils.ResourceResolver;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -90,7 +92,15 @@ public class EcosAppsModulesProviderImpl implements EcosAppsProvider, ModuleType
         try {
             Resource modulesDir = resolver.getResource("classpath:alfresco/" + path);
             if (modulesDir != null && modulesDir.exists()) {
-                return new EcosStdFile(modulesDir.getFile());
+                File file = null;
+                try {
+                    file = modulesDir.getFile();
+                } catch (FileNotFoundException e) {
+                    // module is not a directory (e.g. jar module). do nothing
+                }
+                if (file != null) {
+                    return new EcosStdFile(file);
+                }
             }
         } catch (Exception e) {
             log.error("Directory resolving error. Path: " + path, e);
