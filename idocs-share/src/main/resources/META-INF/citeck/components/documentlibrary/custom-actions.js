@@ -971,7 +971,7 @@ require([
                                 "title": getMsg(props.title)
                             });
                         })
-                    }).then(() => {
+                    }).then(function () {
                         YAHOO.Bubbling.fire("metadataRefresh");
                     });
                 });
