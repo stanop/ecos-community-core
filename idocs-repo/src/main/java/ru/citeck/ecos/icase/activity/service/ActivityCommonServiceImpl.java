@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseServiceType;
+import ru.citeck.ecos.icase.activity.dto.EventRef;
 import ru.citeck.ecos.model.EcosProcessModel;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.records.RecordsUtils;
@@ -58,5 +59,37 @@ public class ActivityCommonServiceImpl implements ActivityCommonService {
     public ActivityRef composeRootActivityRef(RecordRef caseRef) {
         CaseServiceType type = getCaseType(caseRef);
         return ActivityRef.of(type, caseRef, ActivityRef.ROOT_ID);
+    }
+
+    @Override
+    public ActivityRef composeActivityRef(String rawActivityRef) {
+        ActivityRef activityRef = ActivityRef.of(rawActivityRef);
+        if (validActivityRef(activityRef)) {
+            return activityRef;
+        }
+        return null;
+    }
+
+    private boolean validActivityRef(ActivityRef ref) {
+        return ref != null
+                && ref.getCaseServiceType() != null
+                && ref.getProcessId() != null && !ref.getProcessId().equals(RecordRef.EMPTY)
+                && StringUtils.isNotBlank(ref.getId());
+    }
+
+    @Override
+    public EventRef composeEventRef(String rawEventRef) {
+        EventRef eventRef = EventRef.of(rawEventRef);
+        if (validEventRef(eventRef)) {
+            return eventRef;
+        }
+        return null;
+    }
+
+    private boolean validEventRef(EventRef ref) {
+        return ref != null
+                && ref.getCaseServiceType() != null
+                && ref.getProcessId() != null && !ref.getProcessId().equals(RecordRef.EMPTY)
+                && StringUtils.isNotBlank(ref.getId());
     }
 }

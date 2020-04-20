@@ -21,7 +21,6 @@ public class ActivityUtilsJS {
         this.alfActivityUtils = alfActivityUtils;
     }
 
-    //TODO: algorithm for eproc activities is missed?
     public ActivityRef getActivityRef(Object object) {
         if (object == null) {
             return null;
@@ -55,11 +54,17 @@ public class ActivityUtilsJS {
                 return alfActivityUtils.composeActivityRef(nodeRef);
             }
         }
+
+        // Try to stringify and parse result
+        ActivityRef activityRef = activityCommonService.composeActivityRef(object.toString());
+        if (activityRef != null) {
+            return activityRef;
+        }
+
         throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to ActivityRef. " +
                 "Source: " + object.toString());
     }
 
-    //TODO: algorithm for eproc events is missed?
     public EventRef getEventRef(Object object) {
         if (object == null) {
             return null;
@@ -78,6 +83,13 @@ public class ActivityUtilsJS {
                 return alfActivityUtils.composeEventRef(new NodeRef((String) object));
             }
         }
+
+        // Try to stringify and parse result
+        EventRef eventRef = activityCommonService.composeEventRef(object.toString());
+        if (eventRef != null) {
+            return eventRef;
+        }
+
         throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to EventRef. " +
                 "Source: " + object.toString());
     }
