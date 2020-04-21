@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import ru.citeck.ecos.commands.CommandsService;
 import ru.citeck.ecos.commands.dto.CommandError;
 import ru.citeck.ecos.commands.dto.CommandResult;
-import ru.citeck.ecos.icase.activity.dto.ActivityInstance;
+import ru.citeck.ecos.icase.activity.dto.ActivityDefinition;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseServiceType;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcActivityService;
@@ -79,8 +79,8 @@ public class CaseCommandsServiceImpl implements CaseCommandsService {
     }
 
     private String getEProcActionType(ActivityRef actionActivityRef) {
-        ActivityInstance instance = eprocActivityService.getStateInstance(actionActivityRef);
-        return EProcUtils.getAnyAttribute(instance, CmmnDefinitionConstants.ACTION_TYPE);
+        ActivityDefinition definition = eprocActivityService.getActivityDefinition(actionActivityRef);
+        return EProcUtils.getDefAttribute(definition, CmmnDefinitionConstants.ACTION_TYPE);
     }
 
     @Override

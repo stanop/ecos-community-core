@@ -67,6 +67,8 @@ public class ActivityEventTriggeringListener implements
 
         caseActivityEventService.fireEvent(activityRef, ICaseEventModel.CONSTR_ACTIVITY_STOPPED);
 
+        //TODO: micro optimization: check, that parentActivity is stage and only after this request activity instance from service
+        //This will optimize execution because of getStateInstance works recursively, getDefinition works from cache.
         ActivityInstance activityInstance = eprocActivityService.getStateInstance(activityRef);
         ActivityInstance parentInstance = activityInstance.getParentInstance();
         if (parentInstance != null && EProcUtils.isStage(parentInstance.getDefinition())) {

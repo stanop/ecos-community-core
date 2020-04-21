@@ -21,7 +21,6 @@ public class ActivityUtilsJS {
         this.alfActivityUtils = alfActivityUtils;
     }
 
-    //TODO: algorithm for eproc activities is missed?
     public ActivityRef getActivityRef(Object object) {
         if (object == null) {
             return null;
@@ -46,20 +45,24 @@ public class ActivityUtilsJS {
             }
             return alfActivityUtils.composeActivityRef(nodeRef);
         }
-        if (object instanceof String) {
-            if (NodeRef.isNodeRef((String) object)) {
-                NodeRef nodeRef = new NodeRef((String) object);
-                if (activityCommonService.isRoot(nodeRef)) {
-                    return activityCommonService.composeRootActivityRef(nodeRef);
-                }
-                return alfActivityUtils.composeActivityRef(nodeRef);
-            }
+
+        ActivityRef activityRef = activityCommonService.composeActivityRef(object.toString());
+        if (activityRef != null) {
+            return activityRef;
         }
+
+        if (NodeRef.isNodeRef(object.toString())) {
+            NodeRef nodeRef = new NodeRef(object.toString());
+            if (activityCommonService.isRoot(nodeRef)) {
+                return activityCommonService.composeRootActivityRef(nodeRef);
+            }
+            return alfActivityUtils.composeActivityRef(nodeRef);
+        }
+
         throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to ActivityRef. " +
                 "Source: " + object.toString());
     }
 
-    //TODO: algorithm for eproc events is missed?
     public EventRef getEventRef(Object object) {
         if (object == null) {
             return null;
@@ -73,11 +76,16 @@ public class ActivityUtilsJS {
         if (object instanceof ScriptNode) {
             return alfActivityUtils.composeEventRef(((ScriptNode) object).getNodeRef());
         }
-        if (object instanceof String) {
-            if (NodeRef.isNodeRef((String) object)) {
-                return alfActivityUtils.composeEventRef(new NodeRef((String) object));
-            }
+
+        EventRef eventRef = activityCommonService.composeEventRef(object.toString());
+        if (eventRef != null) {
+            return eventRef;
         }
+
+        if (NodeRef.isNodeRef(object.toString())) {
+            return alfActivityUtils.composeEventRef(new NodeRef(object.toString()));
+        }
+
         throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to EventRef. " +
                 "Source: " + object.toString());
     }

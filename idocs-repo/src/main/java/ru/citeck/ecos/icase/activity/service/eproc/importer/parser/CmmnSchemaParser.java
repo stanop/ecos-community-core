@@ -1,5 +1,6 @@
 package ru.citeck.ecos.icase.activity.service.eproc.importer.parser;
 
+import com.google.common.collect.Sets;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
@@ -23,6 +24,7 @@ import ru.citeck.ecos.icase.activity.service.eproc.importer.pojo.OptimizedProces
 import ru.citeck.ecos.icase.activity.service.eproc.importer.pojo.SentrySearchKey;
 import ru.citeck.ecos.model.ActionModel;
 import ru.citeck.ecos.model.ActivityModel;
+import ru.citeck.ecos.model.ICaseEventModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
 
 import javax.xml.bind.JAXBContext;
@@ -40,8 +42,7 @@ import java.util.stream.Collectors;
 @Component
 public class CmmnSchemaParser {
 
-    public static final String AUTHORIZED_ROLES_SET_KEY = "authorizedRoles";
-    public static final String USER_ACTION_EVENT_TYPE = "user-action";
+    private static final String USER_ACTION_EVENT_NAME = "user-action";
 
     private XmlContentDAO<Definitions> xmlContentDAO;
     private DictionaryService dictionaryService;
@@ -56,6 +57,8 @@ public class CmmnSchemaParser {
     private ThreadLocal<AtomicInteger> activityIndexCounter = new ThreadLocal<>();
     private ThreadLocal<Map<String, String>> idToVarNameRoleCache = new ThreadLocal<>();
     private ThreadLocal<Map<String, CompletenessLevels>> idToCompletenessLevelsCache = new ThreadLocal<>();
+    private ThreadLocal<Map<String, TUserEventListener>> idToUserEventListenerCache = new ThreadLocal<>();
+    private ThreadLocal<Map<String, Set<ActivityDefinition>>> roleVarNameToTaskDefinitionCache = new ThreadLocal<>();
 
     @Autowired
     public CmmnSchemaParser(@Qualifier("caseTemplateContentDAO") XmlContentDAO<Definitions> xmlContentDAO,
@@ -70,34 +73,38 @@ public class CmmnSchemaParser {
     public OptimizedProcessDefinition parse(byte[] source) {
         try (ByteArrayInputStream stream = new ByteArrayInputStream(source)) {
             Definitions definitions = xmlContentDAO.read(stream);
-            if (definitions == null || CollectionUtils.isEmpty(definitions.getCase())) {
-                return null;
-            }
-            return parse(definitions.getCase().get(0), source);
+            return parse(definitions);
         } catch (IOException e) {
             throw new RuntimeException("Could not parse definition", e);
         }
     }
 
-    public OptimizedProcessDefinition parse(Case caseItem, byte[] bytes) {
+    private OptimizedProcessDefinition parse(Definitions jaxbDefinitions) {
         try {
+            if (jaxbDefinitions == null || CollectionUtils.isEmpty(jaxbDefinitions.getCase())) {
+                return null;
+            }
+
+            Case caseItem = jaxbDefinitions.getCase().get(0);
+
             ProcessDefinition definition = new ProcessDefinition();
             definition.setId(caseItem.getId());
             definition.setRoles(parseRoleDefinitions(caseItem));
             definition.setActivityDefinition(parseRootActivityDefinition(caseItem));
-            return composeOptimized(definition, bytes);
+            return composeOptimized(definition, jaxbDefinitions);
         } finally {
             clearParsingExecutionCache();
         }
     }
 
-    private OptimizedProcessDefinition composeOptimized(ProcessDefinition definition, byte[] rawDefinition) {
+    private OptimizedProcessDefinition composeOptimized(ProcessDefinition definition, Definitions jaxbDefinitions) {
         OptimizedProcessDefinition optimizedProcessDefinition = new OptimizedProcessDefinition();
-        optimizedProcessDefinition.setRawProcessDefinition(rawDefinition);
+        optimizedProcessDefinition.setXmlProcessDefinition(jaxbDefinitions);
         optimizedProcessDefinition.setProcessDefinition(definition);
         optimizedProcessDefinition.setIdToActivityCache(copy(idToActivityCache.get()));
         optimizedProcessDefinition.setIdToSentryCache(copy(idToSentryCache.get()));
         optimizedProcessDefinition.setSentrySearchCache(copy(searchKeyToSentryCache.get()));
+        optimizedProcessDefinition.setRoleVarNameToTaskDefinitionCache(copy(roleVarNameToTaskDefinitionCache.get()));
         return optimizedProcessDefinition;
     }
 
@@ -134,10 +141,12 @@ public class CmmnSchemaParser {
                 } else {
                     log.warn("Could not parse unknown task: " + ReflectionToStringBuilder.toString(planItemDefinition));
                 }
-            } else if (utils.isStage(jaxbPlanItemDefinition)) {
-                result.add(parseStage((Stage) planItemDefinition));
             } else if (utils.isTimer(jaxbPlanItemDefinition)) {
                 result.add(parseTimer((TTimerEventListener) planItemDefinition));
+            } else if (utils.isUserEventListener(jaxbPlanItemDefinition)) {
+                result.add(parseUserAction((TUserEventListener) planItemDefinition));
+            } else if (utils.isStage(jaxbPlanItemDefinition)) {
+                result.add(parseStage((Stage) planItemDefinition));
             } else {
                 log.warn("Could not parse unknown item: " + ReflectionToStringBuilder.toString(planItemDefinition));
             }
@@ -185,6 +194,9 @@ public class CmmnSchemaParser {
 
     private String getActionType(TTask action) {
         QName nodeType = getNodeType(action);
+        if (nodeType == null) {
+            return null;
+        }
         return nodeType.getLocalName();
     }
 
@@ -197,6 +209,11 @@ public class CmmnSchemaParser {
         ActivityDefinition activityDefinition = newCommonActivityDefinition(task, ActivityType.USER_TASK);
         activityDefinition.setData(parseTaskDefinitionData(task));
         activityDefinition.setActivities(Collections.emptyList());
+
+        String[] roleVarNames = activityDefinition.getData().get(
+                CmmnDefinitionConstants.TASK_ROLE_VAR_NAMES_SET_KEY, String[].class);
+        addRoleVarNameToTaskDefinitionCache(roleVarNames, activityDefinition);
+
         return activityDefinition;
     }
 
@@ -204,6 +221,32 @@ public class CmmnSchemaParser {
         ObjectData objectData = parseCommonDefinitionData(task);
         addRoles(task, objectData);
         return objectData;
+    }
+
+    private ActivityDefinition parseUserAction(TUserEventListener userEventListener) {
+        ActivityDefinition definition = newCommonActivityDefinition(userEventListener, ActivityType.USER_EVENT_LISTENER);
+        definition.setRepeatable(true);
+        definition.setData(parseUserActionData(userEventListener));
+        definition.setActivities(Collections.emptyList());
+        return definition;
+    }
+
+    private ObjectData parseUserActionData(TUserEventListener userEventListener) {
+        ObjectData objectData = parseCommonDefinitionData(userEventListener);
+        addUserActionAuthorizedRoles(userEventListener, objectData);
+        return objectData;
+    }
+
+    private void addUserActionAuthorizedRoles(TUserEventListener userEventListener, ObjectData objectData) {
+        List<Object> authorizedRoles = userEventListener.getAuthorizedRoleRefs();
+
+        Set<String> authorizedRoleVarNames = new HashSet<>(authorizedRoles.size());
+        for (Object role : authorizedRoles) {
+            String roleVarName = getRoleVarName((Role) role);
+            authorizedRoleVarNames.add(roleVarName.trim());
+        }
+
+        objectData.set(CmmnDefinitionConstants.AUTHORIZED_ROLE_VAR_NAMES_SET, authorizedRoleVarNames);
     }
 
     private ActivityDefinition parseTimer(TTimerEventListener timer) {
@@ -393,10 +436,10 @@ public class CmmnSchemaParser {
             getOrCreateTransitionByState(activityDefinition, ActivityState.STARTED, ActivityState.COMPLETED);
 
             for (Sentry sentry : getEntrySentries(planItem, stageSentries)) {
-                addEntryTransition(activityDefinition, sentry);
+                addTransitionImpl(activityDefinition, sentry, ActivityState.NOT_STARTED, ActivityState.STARTED);
             }
             for (Sentry sentry : getExitSentries(planItem, stageSentries)) {
-                addExitTransition(activityDefinition, sentry);
+                addTransitionImpl(activityDefinition, sentry, ActivityState.STARTED, ActivityState.COMPLETED);
             }
         }
     }
@@ -423,17 +466,44 @@ public class CmmnSchemaParser {
         return stageSentries;
     }
 
-    private void addEntryTransition(ActivityDefinition activityDefinition, Sentry sentry) {
-        ActivityTransitionDefinition transition = getOrCreateTransitionByState(activityDefinition,
-                ActivityState.NOT_STARTED, ActivityState.STARTED);
-        TriggerDefinition trigger = getOrCreateTriggerDefinition(transition);
-        SentryTriggerDefinition sentryTriggerDefinition = getOrCreateSentryTriggerDefinition(trigger);
-        addSentryDefinition(trigger, sentryTriggerDefinition, sentry);
-
-        if (USER_ACTION_EVENT_TYPE.equalsIgnoreCase(getEventType(sentry))) {
-            addUserActionAdditionalAttributes(activityDefinition, sentry);
-            addUserActionAuthorizedRoles(activityDefinition, sentry);
+    private boolean isUserEventListenerSentry(Sentry sentry) {
+        Map<javax.xml.namespace.QName, String> otherAttributes = sentry.getOtherAttributes();
+        if (MapUtils.isEmpty(otherAttributes)) {
+            return false;
         }
+
+        return USER_ACTION_EVENT_NAME.equals(otherAttributes.get(CMMNUtils.QNAME_ORIGINAL_EVENT));
+    }
+
+    private ActivityDefinition findUserEventListenerDefinition(Sentry sentry) {
+        TUserEventListener userEventListenerElement = searchUserEventListenerFromSentry(sentry);
+        if (userEventListenerElement == null) {
+            throw new RuntimeException("UserEventListener not found for sentry with id=" + sentry.getId() + ". " +
+                    "Sentry will not be parsed");
+        }
+
+        ActivityDefinition userEventDefinition = getCachedActivityDefinitionById(userEventListenerElement.getId());
+        if (userEventDefinition == null) {
+            throw new RuntimeException("ActivityDefinition for userEventListener not found in cache. " +
+                    "SentryId=" + sentry.getId());
+        }
+
+        return userEventDefinition;
+    }
+
+    private TUserEventListener searchUserEventListenerFromSentry(Sentry sentry) {
+        TPlanItemOnPart sentryOnPart = (TPlanItemOnPart) getOnPart(sentry);
+        Object rawUserEventListenerPlanItem = sentryOnPart.getSourceRef();
+        if (rawUserEventListenerPlanItem == null || !rawUserEventListenerPlanItem.getClass().equals(TPlanItem.class)) {
+            return null;
+        }
+
+        TPlanItem userEventListenerPlanItem = (TPlanItem) rawUserEventListenerPlanItem;
+        Object userEventListenerElement = userEventListenerPlanItem.getDefinitionRef();
+        if (userEventListenerElement != null && userEventListenerElement.getClass().equals(TUserEventListener.class)) {
+            return (TUserEventListener) userEventListenerElement;
+        }
+        return null;
     }
 
     private void addUserActionAdditionalAttributes(ActivityDefinition activityDefinition, Sentry sentry) {
@@ -447,32 +517,49 @@ public class CmmnSchemaParser {
         }
     }
 
-    private void addUserActionAuthorizedRoles(ActivityDefinition activityDefinition, Sentry sentry) {
-        TPlanItemOnPart planItemOnPart = (TPlanItemOnPart) sentry.getOnPart().get(0).getValue();
-
-        Object sourceRef = planItemOnPart.getSourceRef();
-        if (sourceRef == null) {
-            return;
-        }
-
-        Object definitionRef = ((TPlanItem) sourceRef).getDefinitionRef();
-        if (definitionRef != null && definitionRef.getClass().equals(TUserEventListener.class)) {
-            TUserEventListener userEventListener = (TUserEventListener) definitionRef;
-            List<Object> authorizedRoles = userEventListener.getAuthorizedRoleRefs();
-
-            Set<String> authorizedRoleVarNames = new HashSet<>(authorizedRoles.size());
-            for (Object role : authorizedRoles) {
-                String roleVarName = getRoleVarName((Role) role);
-                authorizedRoleVarNames.add(roleVarName.trim());
+    private void addUserActionTitle(ActivityDefinition activityDefinition, Sentry sentry) {
+        Map<javax.xml.namespace.QName, String> otherAttributes = getOnPart(sentry).getOtherAttributes();
+        if (MapUtils.isNotEmpty(otherAttributes)) {
+            String title = otherAttributes.get(CMMNUtils.QNAME_TITLE);
+            if (title != null) {
+                activityDefinition.getData().set(CmmnDefinitionConstants.TITLE, title);
             }
-
-            activityDefinition.getData().set(AUTHORIZED_ROLES_SET_KEY, authorizedRoleVarNames);
         }
     }
 
-    private void addExitTransition(ActivityDefinition activityDefinition, Sentry sentry) {
-        ActivityTransitionDefinition transition = getOrCreateTransitionByState(activityDefinition,
-                ActivityState.STARTED, ActivityState.COMPLETED);
+    private void addTransitionImpl(ActivityDefinition activityDefinition, Sentry sentry,
+                                   ActivityState fromState, ActivityState toState) {
+
+        if (isUserEventListenerSentry(sentry)) {
+            ActivityDefinition userEventDefinition = findUserEventListenerDefinition(sentry);
+
+            addUserActionAdditionalAttributes(userEventDefinition, sentry);
+            addUserActionTitle(userEventDefinition, sentry);
+
+            addSentryTransitionImpl(userEventDefinition, sentry, ActivityState.NOT_STARTED, ActivityState.STARTED);
+
+            ActivityTransitionDefinition transition = getOrCreateTransitionByState(
+                    activityDefinition, fromState, toState);
+            TriggerDefinition trigger = getOrCreateTriggerDefinition(transition);
+            SentryTriggerDefinition sentryTriggerDefinition = getOrCreateSentryTriggerDefinition(trigger);
+
+            String userEventListenerSentryId = sentry.getId() + "-uel";
+            addSentryDefinitionImpl(
+                    userEventListenerSentryId,
+                    ICaseEventModel.CONSTR_ACTIVITY_STARTED,
+                    getSourceRef(userEventDefinition),
+                    null,
+                    trigger,
+                    sentryTriggerDefinition);
+        } else {
+            addSentryTransitionImpl(activityDefinition, sentry, fromState, toState);
+        }
+    }
+
+    private void addSentryTransitionImpl(ActivityDefinition activityDefinition, Sentry sentry,
+                                         ActivityState fromState, ActivityState toState) {
+        ActivityTransitionDefinition transition = getOrCreateTransitionByState(
+                activityDefinition, fromState, toState);
         TriggerDefinition trigger = getOrCreateTriggerDefinition(transition);
         SentryTriggerDefinition sentryTriggerDefinition = getOrCreateSentryTriggerDefinition(trigger);
         addSentryDefinition(trigger, sentryTriggerDefinition, sentry);
@@ -575,13 +662,29 @@ public class CmmnSchemaParser {
 
     private void addSentryDefinition(TriggerDefinition trigger, SentryTriggerDefinition sentryTriggerDefinition,
                                      Sentry sentry) {
+        addSentryDefinitionImpl(
+                sentry.getId(),
+                getEventType(sentry),
+                getSourceRef(sentry),
+                composeEvaluatorDefinition(sentry),
+                trigger,
+                sentryTriggerDefinition);
+    }
+
+    private void addSentryDefinitionImpl(String sentryId, String eventType, SourceRef sourceRef,
+                                         EvaluatorDefinition evaluatorDefinition, TriggerDefinition parentTrigger,
+                                         SentryTriggerDefinition sentryTriggerDefinition) {
+
+        if (sentryExistsInCache(sentryId)) {
+            return;
+        }
 
         SentryDefinition sentryDefinition = new SentryDefinition();
-        sentryDefinition.setId(sentry.getId());
-        sentryDefinition.setEvent(getEventType(sentry));
-        sentryDefinition.setSourceRef(getSourceRef(sentry));
-        sentryDefinition.setEvaluator(composeEvaluatorDefinition(sentry));
-        sentryDefinition.setParentTriggerDefinition(trigger);
+        sentryDefinition.setId(sentryId);
+        sentryDefinition.setEvent(eventType);
+        sentryDefinition.setSourceRef(sourceRef);
+        sentryDefinition.setEvaluator(evaluatorDefinition);
+        sentryDefinition.setParentTriggerDefinition(parentTrigger);
 
         List<SentryDefinition> sentries = sentryTriggerDefinition.getSentries();
         if (sentries == null) {
@@ -589,11 +692,9 @@ public class CmmnSchemaParser {
             sentryTriggerDefinition.setSentries(sentries);
         }
 
-        if (!sentries.contains(sentryDefinition)) {
-            sentries.add(sentryDefinition);
-            addSentryDefinitionToIdentityCache(sentryDefinition);
-            addSentryDefinitionToSearchCache(sentryDefinition);
-        }
+        sentries.add(sentryDefinition);
+        addSentryDefinitionToIdentityCache(sentryDefinition);
+        addSentryDefinitionToSearchCache(sentryDefinition);
     }
 
     private String getEventType(Sentry sentry) {
@@ -601,23 +702,23 @@ public class CmmnSchemaParser {
     }
 
     private SourceRef getSourceRef(Sentry sentry) {
-        List<JAXBElement<? extends TOnPart>> onParts = sentry.getOnPart();
-        JAXBElement<? extends TOnPart> onPart = onParts.get(0);
-        String sourceId = onPart.getValue().getOtherAttributes().get(CMMNUtils.QNAME_SOURCE_ID);
+        String sourceId = getOnPart(sentry).getOtherAttributes().get(CMMNUtils.QNAME_SOURCE_ID);
 
-        SourceRef sourceRef = new SourceRef();
         ActivityDefinition definition = getCachedActivityDefinitionById(sourceId);
         if (definition != null) {
-            if (definition.getType() == ActivityType.ROOT) {
-                sourceRef.setRef(ActivityRef.ROOT_ID);
-            } else {
-                sourceRef.setRef(sourceId);
-            }
+            return getSourceRef(definition);
         } else {
             log.warn("Can not find sourceRef " + sourceId);
-            sourceRef.setRef(sourceId);
+            return new SourceRef(sourceId, null);
         }
-        return sourceRef;
+    }
+
+    private SourceRef getSourceRef(ActivityDefinition sourceDefinition) {
+        if (sourceDefinition.getType() == ActivityType.ROOT) {
+            return new SourceRef(ActivityRef.ROOT_ID, null);
+        } else {
+            return new SourceRef(sourceDefinition.getId(), null);
+        }
     }
 
     private EvaluatorDefinition composeEvaluatorDefinition(Sentry sentry) {
@@ -669,6 +770,13 @@ public class CmmnSchemaParser {
         return (ConditionsList) jaxbUnmarshaller.unmarshal(stringReader);
     }
 
+    // parser utility area
+
+    private TOnPart getOnPart(Sentry sentry) {
+        List<JAXBElement<? extends TOnPart>> onParts = sentry.getOnPart();
+        return onParts.get(0).getValue();
+    }
+
     // caches area
 
     private int getNextIndex() {
@@ -691,6 +799,10 @@ public class CmmnSchemaParser {
         addToThreadLocalCache(sentryDefinition.getId(), sentryDefinition, idToSentryCache);
     }
 
+    private boolean sentryExistsInCache(String id) {
+        return getFromThreadLocalCache(id, idToSentryCache) != null;
+    }
+
     private void addSentryDefinitionToSearchCache(SentryDefinition sentryDefinition) {
         Map<SentrySearchKey, List<SentryDefinition>> cache = searchKeyToSentryCache.get();
         if (cache == null) {
@@ -702,6 +814,21 @@ public class CmmnSchemaParser {
         List<SentryDefinition> sentryDefinitions = cache.computeIfAbsent(key, k -> new ArrayList<>());
 
         sentryDefinitions.add(sentryDefinition);
+    }
+
+    private void addRoleVarNameToTaskDefinitionCache(String[] roleVarNames, ActivityDefinition activityDefinition) {
+        if (roleVarNames == null) {
+            return;
+        }
+
+        for (String roleVarName : roleVarNames) {
+            Set<ActivityDefinition> cache = getFromThreadLocalCache(roleVarName, roleVarNameToTaskDefinitionCache);
+            if (cache != null) {
+                cache.add(activityDefinition);
+            } else {
+                addToThreadLocalCache(roleVarName, Sets.newHashSet(activityDefinition), roleVarNameToTaskDefinitionCache);
+            }
+        }
     }
 
     private ActivityDefinition getCachedActivityDefinitionById(String id) {
@@ -759,6 +886,7 @@ public class CmmnSchemaParser {
         activityIndexCounter.remove();
         idToVarNameRoleCache.remove();
         idToCompletenessLevelsCache.remove();
+        idToUserEventListenerCache.remove();
     }
 
     @Data

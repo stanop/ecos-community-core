@@ -21,8 +21,8 @@ import ru.citeck.ecos.commands.dto.CommandResult;
 import ru.citeck.ecos.commons.json.Json;
 import ru.citeck.ecos.commons.utils.MandatoryParam;
 import ru.citeck.ecos.icase.activity.dto.*;
-import ru.citeck.ecos.icase.activity.service.eproc.commands.*;
-import ru.citeck.ecos.icase.activity.service.eproc.commands.response.*;
+import ru.citeck.ecos.icase.activity.service.eproc.commands.dto.request.*;
+import ru.citeck.ecos.icase.activity.service.eproc.commands.dto.response.*;
 import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnSchemaParser;
 import ru.citeck.ecos.icase.activity.service.eproc.importer.pojo.OptimizedProcessDefinition;
 import ru.citeck.ecos.icase.activity.service.eproc.importer.pojo.SentrySearchKey;
@@ -70,24 +70,24 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         this.nodeService = nodeService;
 
         this.typesToRevisionIdCache = CacheBuilder.newBuilder()
-                .maximumSize(100)
+                .maximumSize(250)
                 .build(CacheLoader.from(this::findProcDefRevIdFromMicroservice));
 
         this.revisionIdToProcessDefinitionCache = CacheBuilder.newBuilder()
-                .maximumSize(120)
+                .maximumSize(150)
                 .build(CacheLoader.from(this::getProcessDefByRevIdFromMicroservice));
     }
 
     @Override
-    public Pair<String, byte[]> getRawDefinitionForType(RecordRef caseRef) {
+    public Pair<String, OptimizedProcessDefinition> getOptimizedDefinitionWithRevisionId(RecordRef caseRef) {
         NodeRef caseNodeRef = RecordsUtils.toNodeRef(caseRef);
         String procRevId = getRevisionIdForNode(caseNodeRef);
 
         OptimizedProcessDefinition result = revisionIdToProcessDefinitionCache.getUnchecked(procRevId);
-        if (result == null || result.getRawProcessDefinition() == null) {
+        if (result == null) {
             return null;
         }
-        return new Pair<>(procRevId, result.getRawProcessDefinition());
+        return new Pair<>(procRevId, result);
     }
 
     @Override
@@ -446,10 +446,10 @@ public class EProcActivityServiceImpl implements EProcActivityService {
             return instance.getRootActivity();
         }
 
-        return getStateInstance(instance.getRootActivity(), activityRef.getId());
+        return getStateInstanceRecursively(instance.getRootActivity(), activityRef.getId());
     }
 
-    private ActivityInstance getStateInstance(ActivityInstance instance, String id) {
+    private ActivityInstance getStateInstanceRecursively(ActivityInstance instance, String id) {
         if (StringUtils.equals(instance.getId(), id)) {
             return instance;
         }
@@ -459,12 +459,18 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         }
 
         for (ActivityInstance childInstance : instance.getActivities()) {
-            ActivityInstance stateInstance = getStateInstance(childInstance, id);
+            ActivityInstance stateInstance = getStateInstanceRecursively(childInstance, id);
             if (stateInstance != null) {
                 return stateInstance;
             }
         }
         return null;
+    }
+
+    @Override
+    public ActivityDefinition getActivityDefinition(ActivityRef activityRef) {
+        OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionImpl(activityRef.getProcessId());
+        return optimizedProcessDefinition.getIdToActivityCache().get(activityRef.getId());
     }
 
     @Override

@@ -4,7 +4,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.icase.activity.dto.ActivityInstance;
+import ru.citeck.ecos.icase.activity.dto.ActivityDefinition;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcActivityService;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcUtils;
@@ -48,9 +48,9 @@ public class FailCommandProvider extends AlfEprocCaseCommandsProvider {
 
     @Override
     protected Object provideEprocCommand(ActivityRef activityRef) {
-        ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
+        ActivityDefinition definition = eprocActivityService.getActivityDefinition(activityRef);
 
-        String msg = EProcUtils.getAnyAttribute(instance, CmmnDefinitionConstants.ACTION_FAIL_MESSAGE);
+        String msg = EProcUtils.getDefAttribute(definition, CmmnDefinitionConstants.ACTION_FAIL_MESSAGE);
 
         return new FailCommand(msg);
     }

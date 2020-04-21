@@ -4,7 +4,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.icase.activity.dto.ActivityInstance;
+import ru.citeck.ecos.icase.activity.dto.ActivityDefinition;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcActivityService;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcUtils;
@@ -53,10 +53,10 @@ public class SendWorkflowSignalCommandProvider extends AlfEprocCaseCommandsProvi
 
     @Override
     protected Object provideEprocCommand(ActivityRef activityRef) {
-        ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
+        ActivityDefinition definition = eprocActivityService.getActivityDefinition(activityRef);
 
         RecordRef caseRef = activityRef.getProcessId();
-        String signal = EProcUtils.getAnyAttribute(instance, CmmnDefinitionConstants.ACTION_SEND_WORKFLOW_SIGNAL_NAME);
+        String signal = EProcUtils.getDefAttribute(definition, CmmnDefinitionConstants.ACTION_SEND_WORKFLOW_SIGNAL_NAME);
 
         return new SendWorkflowSignalCommand(caseRef, signal);
     }

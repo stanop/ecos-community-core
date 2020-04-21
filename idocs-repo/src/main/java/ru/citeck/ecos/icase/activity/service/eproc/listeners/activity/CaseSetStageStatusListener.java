@@ -7,13 +7,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.icase.CaseStatusService;
-import ru.citeck.ecos.icase.activity.dto.ActivityInstance;
+import ru.citeck.ecos.icase.activity.dto.ActivityDefinition;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcActivityService;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcCaseActivityListenerManager;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcUtils;
-import ru.citeck.ecos.icase.activity.service.eproc.listeners.BeforeStartedActivityListener;
 import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnDefinitionConstants;
+import ru.citeck.ecos.icase.activity.service.eproc.listeners.BeforeStartedActivityListener;
 import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.records.RecordsUtils;
 
@@ -46,19 +46,19 @@ public class CaseSetStageStatusListener implements BeforeStartedActivityListener
 
     @Override
     public void beforeStartedActivity(ActivityRef activityRef) {
-        ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
-        if (!EProcUtils.isStage(instance.getDefinition())) {
+        ActivityDefinition definition = eprocActivityService.getActivityDefinition(activityRef);
+        if (!EProcUtils.isStage(definition)) {
             return;
         }
 
         NodeRef documentNodeRef = RecordsUtils.toNodeRef(activityRef.getProcessId());
 
-        String documentStatus = EProcUtils.getAnyAttribute(instance, CmmnDefinitionConstants.DOCUMENT_STATUS);
+        String documentStatus = EProcUtils.getDefAttribute(definition, CmmnDefinitionConstants.DOCUMENT_STATUS);
         if (StringUtils.isNotEmpty(documentStatus)) {
             nodeService.setProperty(documentNodeRef, IdocsModel.PROP_DOCUMENT_STATUS, documentStatus);
         }
 
-        String statusName = EProcUtils.getAnyAttribute(instance, CmmnDefinitionConstants.CASE_STATUS);
+        String statusName = EProcUtils.getDefAttribute(definition, CmmnDefinitionConstants.CASE_STATUS);
         if (StringUtils.isNotEmpty(statusName)) {
             NodeRef caseStatusRef = caseStatusService.getStatusByName(statusName);
             if (caseStatusRef != null) {

@@ -1,4 +1,4 @@
-package ru.citeck.ecos.icase.activity.service.eproc.commands.response;
+package ru.citeck.ecos.icase.activity.service.eproc.commands.dto.response;
 
 import lombok.Data;
 

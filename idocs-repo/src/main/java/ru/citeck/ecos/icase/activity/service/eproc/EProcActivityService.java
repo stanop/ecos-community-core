@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface EProcActivityService {
 
-    Pair<String, byte[]> getRawDefinitionForType(RecordRef caseRef);
+    Pair<String, OptimizedProcessDefinition> getOptimizedDefinitionWithRevisionId(RecordRef caseRef);
 
     ProcessDefinition getFullDefinition(RecordRef caseRef);
 
@@ -20,6 +20,8 @@ public interface EProcActivityService {
     ProcessInstance getFullState(RecordRef caseRef);
 
     void saveState(ProcessInstance processInstance);
+
+    ActivityDefinition getActivityDefinition(ActivityRef activityRef);
 
     ActivityInstance getStateInstance(ActivityRef activityRef);
 

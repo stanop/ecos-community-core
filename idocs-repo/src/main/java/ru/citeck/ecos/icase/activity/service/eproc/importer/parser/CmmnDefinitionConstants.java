@@ -29,4 +29,11 @@ public interface CmmnDefinitionConstants {
     String COMPLETENESS_TYPE = "completenessType";
     String COMPLETENESS_LEVELS_SET = "completenessLevelsSet";
 
+    //user-actions
+    String AUTHORIZED_ROLE_VAR_NAMES_SET = "authorizedRoleVarNamesSet";
+    String ADDITIONAL_DATA_TYPE = "additionalDataType";
+    String CONFIRMATION_MESSAGE = "confirmationMessage";
+    String SUCCESS_MESSAGE = "successMessage";
+    String SUCCESS_MESSAGE_SPAN_CLASS = "successMessageSpanClass";
+
 }

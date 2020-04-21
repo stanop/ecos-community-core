@@ -4,7 +4,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.icase.activity.dto.ActivityInstance;
+import ru.citeck.ecos.icase.activity.dto.ActivityDefinition;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcActivityService;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcUtils;
@@ -49,10 +49,10 @@ public class SetProcessVariableCommandProvider extends AlfEprocCaseCommandsProvi
 
     @Override
     protected Object provideEprocCommand(ActivityRef activityRef) {
-        ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
+        ActivityDefinition definition = eprocActivityService.getActivityDefinition(activityRef);
 
-        String name = EProcUtils.getAnyAttribute(instance, CmmnDefinitionConstants.ACTION_SET_PROCESS_VAR_NAME);
-        String value = EProcUtils.getAnyAttribute(instance, CmmnDefinitionConstants.ACTION_SET_PROCESS_VAR_VALUE);
+        String name = EProcUtils.getDefAttribute(definition, CmmnDefinitionConstants.ACTION_SET_PROCESS_VAR_NAME);
+        String value = EProcUtils.getDefAttribute(definition, CmmnDefinitionConstants.ACTION_SET_PROCESS_VAR_VALUE);
 
         return new SetProcessVariableCommand(name, value);
     }
