@@ -36,4 +36,9 @@ public interface CmmnDefinitionConstants {
     String SUCCESS_MESSAGE = "successMessage";
     String SUCCESS_MESSAGE_SPAN_CLASS = "successMessageSpanClass";
 
+    //timers
+    String TIMER_EXPRESSION = "timerExpression";
+    String EXPRESSION_TYPE = "expressionType";
+    String DATE_PRECISION = "datePrecision";
+
 }

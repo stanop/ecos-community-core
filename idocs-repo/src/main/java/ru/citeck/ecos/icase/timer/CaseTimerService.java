@@ -1,32 +1,20 @@
 package ru.citeck.ecos.icase.timer;
 
-import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.util.ISO8601DateFormat;
-import org.apache.commons.lang.time.DateUtils;
-import org.joda.time.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.service.CaseActivityEventService;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
-import ru.citeck.ecos.icase.timer.evaluator.Evaluator;
 import ru.citeck.ecos.model.CaseTimerModel;
-import ru.citeck.ecos.model.CaseTimerModel.DatePrecision;
-import ru.citeck.ecos.model.CaseTimerModel.ExpressionType;
 import ru.citeck.ecos.model.ICaseEventModel;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.utils.AlfActivityUtils;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author Pavel Simonov
@@ -34,40 +22,32 @@ import java.util.regex.Pattern;
 @Service
 public class CaseTimerService {
 
-    private static final Pattern REPEAT_PATTERN = Pattern.compile("^R([0-9]*)/(.*)");
-
-    private Map<ExpressionType, Evaluator> evaluators = new HashMap<>();
-    private Map<DatePrecision, Integer> calendarCodeByPrecision = new HashMap<>();
-
     private NodeService nodeService;
     private CaseActivityService caseActivityService;
     private CaseActivityEventService caseActivityEventService;
     private AlfActivityUtils alfActivityUtils;
+    private CaseTimerEvaluatorService evaluatorService;
+
 
     @Autowired
-    public CaseTimerService(ServiceRegistry serviceRegistry) {
+    public CaseTimerService(ServiceRegistry serviceRegistry,
+                            CaseTimerEvaluatorService evaluatorService) {
         this.nodeService = serviceRegistry.getNodeService();
         this.caseActivityService = (CaseActivityService) serviceRegistry
-            .getService(CiteckServices.CASE_ACTIVITY_SERVICE);
+                .getService(CiteckServices.CASE_ACTIVITY_SERVICE);
         this.caseActivityEventService = (CaseActivityEventService) serviceRegistry
-            .getService(CiteckServices.CASE_ACTIVITY_EVENT_SERVICE);
+                .getService(CiteckServices.CASE_ACTIVITY_EVENT_SERVICE);
         this.alfActivityUtils = (AlfActivityUtils) serviceRegistry.getService(CiteckServices.ALF_ACTIVITY_UTILS);
-
-        this.calendarCodeByPrecision.put(DatePrecision.MONTH, Calendar.MONTH);
-        this.calendarCodeByPrecision.put(DatePrecision.DAY, Calendar.DATE);
-        this.calendarCodeByPrecision.put(DatePrecision.HOUR, Calendar.HOUR);
-        this.calendarCodeByPrecision.put(DatePrecision.MINUTE, Calendar.MINUTE);
-        this.calendarCodeByPrecision.put(DatePrecision.SECOND, Calendar.SECOND);
+        this.evaluatorService = evaluatorService;
     }
 
     public boolean startTimer(NodeRef timerRef) {
-        return startTimer(timerRef, getCurrentDate(timerRef), 0);
+        return startTimer(timerRef, evaluatorService.getFromDate(timerRef), 0);
     }
 
     private boolean startTimer(NodeRef timerRef, Date fromDate, int repeatCounter) {
-
-        String computed = evaluateExpression(timerRef, fromDate, repeatCounter);
-        Date occurDate = getNextOccurDate(computed, fromDate, repeatCounter);
+        String computed = evaluatorService.evaluateExpression(timerRef, fromDate, repeatCounter);
+        Date occurDate = evaluatorService.getNextOccurDate(computed, fromDate, repeatCounter);
 
         if (occurDate != null) {
             nodeService.setProperty(timerRef, CaseTimerModel.PROP_OCCUR_DATE, occurDate);
@@ -107,9 +87,9 @@ public class CaseTimerService {
     }
 
     public boolean isTimerValid(NodeRef timerRef) {
-        Date fromDate = getCurrentDate(timerRef);
-        String expressionResult = evaluateExpression(timerRef, fromDate, 0);
-        Date occurDate = getNextOccurDate(expressionResult, fromDate, 0);
+        Date fromDate = evaluatorService.getFromDate(timerRef);
+        String expressionResult = evaluatorService.evaluateExpression(timerRef, fromDate, 0);
+        Date occurDate = evaluatorService.getNextOccurDate(expressionResult, fromDate, 0);
         return occurDate != null;
     }
 
@@ -121,67 +101,5 @@ public class CaseTimerService {
     public boolean isOccurred(NodeRef timerRef) {
         Date occurDate = (Date) nodeService.getProperty(timerRef, CaseTimerModel.PROP_OCCUR_DATE);
         return occurDate != null && occurDate.getTime() <= System.currentTimeMillis();
-    }
-
-    private Date getNextOccurDate(String dateExpression, Date fromDate, int repeatCounter) {
-
-        if (dateExpression != null) {
-
-            int repeatCount = 1;
-            String computed = dateExpression;
-
-            Matcher matcher = REPEAT_PATTERN.matcher(computed);
-            if (matcher.matches()) {
-                computed = matcher.group(2);
-                String count = matcher.group(1);
-                repeatCount = count.isEmpty() ? -1 : Integer.parseInt(count);
-            }
-
-            if (repeatCount == -1 || repeatCounter < repeatCount) {
-
-                char c = computed.charAt(0);
-
-                if (c == 'P' || c == 'p') {
-                    String fromDateISO = ISO8601DateFormat.format(fromDate);
-                    Interval interval = Interval.parse(String.format("%s/%s", fromDateISO, computed));
-                    return interval.getEnd().toDate();
-                } else {
-                    return ISO8601DateFormat.parse(computed);
-                }
-            }
-        }
-        return null;
-    }
-
-    private String evaluateExpression(NodeRef timerRef, Date fromDate, int repeatCounter) {
-        ExpressionType type = getExpressionType(timerRef);
-        Evaluator evaluator = evaluators.get(type);
-        if (evaluator == null) {
-            throw new IllegalStateException("Expression type " + type + " is not registered!");
-        }
-        try {
-            return evaluator.evaluate(timerRef, fromDate, repeatCounter);
-        } catch (Exception e) {
-            throw new AlfrescoRuntimeException("Timer evaluation failed. TimeRef: " + timerRef, e);
-        }
-    }
-
-    private Date getCurrentDate(NodeRef timerRef) {
-        DatePrecision precision = getDatePrecision(timerRef);
-        return DateUtils.truncate(new Date(), calendarCodeByPrecision.get(precision));
-    }
-
-    private DatePrecision getDatePrecision(NodeRef timerRef) {
-        String precision = (String) nodeService.getProperty(timerRef, CaseTimerModel.PROP_DATE_PRECISION);
-        return precision != null ? DatePrecision.valueOf(precision) : DatePrecision.DAY;
-    }
-
-    private ExpressionType getExpressionType(NodeRef timerRef) {
-        String type = (String) nodeService.getProperty(timerRef, CaseTimerModel.PROP_EXPRESSION_TYPE);
-        return type != null ? ExpressionType.valueOf(type) : ExpressionType.EXPRESSION;
-    }
-
-    public void registerEvaluator(CaseTimerModel.ExpressionType type, Evaluator evaluator) {
-        evaluators.put(type, evaluator);
     }
 }
