@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.extensions.surf.util.I18NUtil;
+import org.springframework.extensions.surf.util.URLEncoder;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.action.node.CreateNodeAction;
 import ru.citeck.ecos.action.node.NodeActionDefinition;
@@ -138,7 +139,8 @@ public class EProcCaseActionsProvider implements CaseActionsProvider {
                                                             SentryDefinition sentry) {
 
         RequestAction result = new RequestAction();
-        result.setUrl(String.format(FIRE_EVENT_URL_TEMPLATE, composeEventRef(caseNodeRef, sentry)));
+        EventRef eventRef = composeEventRef(caseNodeRef, sentry);
+        result.setUrl(String.format(FIRE_EVENT_URL_TEMPLATE, URLEncoder.encode(eventRef.toString())));
         result.setConfirmationMessage(getMessage(userActionDef, CmmnDefinitionConstants.CONFIRMATION_MESSAGE));
         result.setSuccessMessage(getMessage(userActionDef, CmmnDefinitionConstants.SUCCESS_MESSAGE));
         String spanClass = EProcUtils.getDefAttribute(userActionDef, CmmnDefinitionConstants.SUCCESS_MESSAGE_SPAN_CLASS);

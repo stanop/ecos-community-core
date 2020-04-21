@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.icase.activity.dto.*;
 import ru.citeck.ecos.icase.activity.service.CaseActivityEventDelegate;
+import ru.citeck.ecos.model.ICaseEventModel;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.evaluator.RecordEvaluatorDto;
 import ru.citeck.ecos.records2.evaluator.RecordEvaluatorService;
@@ -86,12 +87,30 @@ public class EProcCaseActivityEventDelegate implements CaseActivityEventDelegate
 
     //TODO: Script sentry is bad. Hardcode. Uses now for support of old functionality in existing processes
     private void addScriptSentryToJSContext(RecordRef caseRef, SentryDefinition sentryDefinition) {
-        ActivityDefinition parentActivityDefinition = sentryDefinition
+        ActivityDefinition userActionEventDefinition = sentryDefinition
                 .getParentTriggerDefinition()
                 .getParentActivityTransitionDefinition()
                 .getParentActivityDefinition();
 
-        ActivityRef activityRef = ActivityRef.of(CaseServiceType.EPROC, caseRef, parentActivityDefinition.getId());
+        SentryDefinition actualSentry = sentryDefinition;
+
+        List<SentryDefinition> sentries = eprocActivityService.findSentriesBySourceRefAndEventType(caseRef,
+                userActionEventDefinition.getId(), ICaseEventModel.CONSTR_ACTIVITY_STARTED);
+        if (CollectionUtils.isEmpty(sentries)) {
+            sentries = eprocActivityService.findSentriesBySourceRefAndEventType(caseRef,
+                    userActionEventDefinition.getId(), ICaseEventModel.CONSTR_ACTIVITY_STOPPED);
+        }
+
+        if (CollectionUtils.isNotEmpty(sentries)) {
+            actualSentry = sentries.get(0);
+        }
+
+        ActivityDefinition actualActivityDefinition = actualSentry
+                .getParentTriggerDefinition()
+                .getParentActivityTransitionDefinition()
+                .getParentActivityDefinition();
+
+        ActivityRef activityRef = ActivityRef.of(CaseServiceType.EPROC, caseRef, actualActivityDefinition.getId());
         ActivityInstance activityInstance = eprocActivityService.getStateInstance(activityRef);
 
         ScriptSentry scriptSentry = new ScriptSentry(activityInstance);
@@ -108,7 +127,7 @@ public class EProcCaseActivityEventDelegate implements CaseActivityEventDelegate
 
         public ScriptActivityInstance getParent() {
             if (parent == null) {
-                parent = new ScriptActivityInstance(activityInstance.getParentInstance());
+                parent = new ScriptActivityInstance(activityInstance);
             }
             return parent;
         }

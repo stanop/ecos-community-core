@@ -45,20 +45,18 @@ public class ActivityUtilsJS {
             }
             return alfActivityUtils.composeActivityRef(nodeRef);
         }
-        if (object instanceof String) {
-            if (NodeRef.isNodeRef((String) object)) {
-                NodeRef nodeRef = new NodeRef((String) object);
-                if (activityCommonService.isRoot(nodeRef)) {
-                    return activityCommonService.composeRootActivityRef(nodeRef);
-                }
-                return alfActivityUtils.composeActivityRef(nodeRef);
-            }
-        }
 
-        // Try to stringify and parse result
         ActivityRef activityRef = activityCommonService.composeActivityRef(object.toString());
         if (activityRef != null) {
             return activityRef;
+        }
+
+        if (NodeRef.isNodeRef(object.toString())) {
+            NodeRef nodeRef = new NodeRef(object.toString());
+            if (activityCommonService.isRoot(nodeRef)) {
+                return activityCommonService.composeRootActivityRef(nodeRef);
+            }
+            return alfActivityUtils.composeActivityRef(nodeRef);
         }
 
         throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to ActivityRef. " +
@@ -78,16 +76,14 @@ public class ActivityUtilsJS {
         if (object instanceof ScriptNode) {
             return alfActivityUtils.composeEventRef(((ScriptNode) object).getNodeRef());
         }
-        if (object instanceof String) {
-            if (NodeRef.isNodeRef((String) object)) {
-                return alfActivityUtils.composeEventRef(new NodeRef((String) object));
-            }
-        }
 
-        // Try to stringify and parse result
         EventRef eventRef = activityCommonService.composeEventRef(object.toString());
         if (eventRef != null) {
             return eventRef;
+        }
+
+        if (NodeRef.isNodeRef(object.toString())) {
+            return alfActivityUtils.composeEventRef(new NodeRef(object.toString()));
         }
 
         throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to EventRef. " +

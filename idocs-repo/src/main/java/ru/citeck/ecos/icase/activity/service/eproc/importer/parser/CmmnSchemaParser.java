@@ -24,6 +24,7 @@ import ru.citeck.ecos.icase.activity.service.eproc.importer.pojo.OptimizedProces
 import ru.citeck.ecos.icase.activity.service.eproc.importer.pojo.SentrySearchKey;
 import ru.citeck.ecos.model.ActionModel;
 import ru.citeck.ecos.model.ActivityModel;
+import ru.citeck.ecos.model.ICaseEventModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
 
 import javax.xml.bind.JAXBContext;
@@ -543,10 +544,9 @@ public class CmmnSchemaParser {
             SentryTriggerDefinition sentryTriggerDefinition = getOrCreateSentryTriggerDefinition(trigger);
 
             String userEventListenerSentryId = sentry.getId() + "-uel";
-            String eventType = toState == ActivityState.STARTED ? "activity-started" : "activity-stopped";
             addSentryDefinitionImpl(
                     userEventListenerSentryId,
-                    eventType,
+                    ICaseEventModel.CONSTR_ACTIVITY_STARTED,
                     getSourceRef(userEventDefinition),
                     null,
                     trigger,
