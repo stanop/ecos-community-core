@@ -20,7 +20,6 @@ package ru.citeck.ecos.journals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import ecos.com.google.common.cache.CacheBuilder;
 import ecos.com.google.common.cache.CacheLoader;
 import ecos.com.google.common.cache.LoadingCache;
@@ -39,6 +38,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.commons.data.ObjectData;
+import ru.citeck.ecos.commons.utils.MandatoryParam;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.invariants.Feature;
 import ru.citeck.ecos.invariants.InvariantDefinition;
@@ -52,7 +52,6 @@ import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.processor.TemplateExpressionEvaluator;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
-import ru.citeck.ecos.commons.utils.MandatoryParam;
 import ru.citeck.ecos.search.SearchCriteria;
 import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
 import ru.citeck.ecos.utils.*;
@@ -93,36 +92,20 @@ class JournalServiceImpl implements JournalService {
         criterionInvariantsProviders = Collections.synchronizedList(new ArrayList<>());
 
         journalTypeByJournalIdOrRef = CacheBuilder.newBuilder()
-                .expireAfterWrite(60, TimeUnit.SECONDS)
-                .build(CacheLoader.from(this::getJournalTypeByIdOrNodeRefImpl));
+            .expireAfterWrite(60, TimeUnit.SECONDS)
+            .build(CacheLoader.from(this::getJournalTypeByIdOrNodeRefImpl));
 
         uiTypeByJournal = CacheBuilder.newBuilder()
-                .expireAfterWrite(60, TimeUnit.SECONDS)
-                .build(CacheLoader.from(this::getUITypeImpl));
+            .expireAfterWrite(60, TimeUnit.SECONDS)
+            .build(CacheLoader.from(this::getUITypeImpl));
     }
 
-    @Override
-    public void deployJournalTypes(InputStream inputStream) {
-        Journals data = parseXML(inputStream);
-        
-        NamespacePrefixResolver prefixResolver = 
-                new NamespacePrefixResolverMapImpl(
-                        getPrefixToUriMap(data.getImports().getImport()));
-        
-        for(Journal journal : data.getJournal()) {
-            searchCriteriaSettingsRegistry.cleanFieldNameCache(journal.getId());
-            this.journalTypes.put(journal.getId(), new JournalTypeImpl(journal, prefixResolver, serviceRegistry,
-                    searchCriteriaSettingsRegistry));
-            Map<String, String> options = journalTypes.get(journal.getId()).getOptions();
-            String nodeType = options.get("type");
-            if (nodeType != null) {
-                searchCriteriaSettingsRegistry.registerJournalNodeType(journal.getId(), nodeType);
-            }
-            String staticQuery = options.get("staticQuery");
-            if (staticQuery != null) {
-                searchCriteriaSettingsRegistry.registerJournalStaticQuery(journal.getId(), staticQuery);
-            }
+    private static Map<String, String> getPrefixToUriMap(List<Import> namespaces) {
+        Map<String, String> prefixToUriMap = new HashMap<>(namespaces.size());
+        for (Import namespace : namespaces) {
+            prefixToUriMap.put(namespace.getPrefix(), namespace.getUri());
         }
+        return prefixToUriMap;
     }
 
     @Override
@@ -152,39 +135,28 @@ class JournalServiceImpl implements JournalService {
         return result.getTotalCount();
     }
 
-    private String buildJournalQuery(NodeRef journalRef) {
-        List<NodeRef> criteriaRefs = RepoUtils.getChildrenByAssoc(
-                journalRef, JournalsModel.ASSOC_SEARCH_CRITERIA, nodeService);
-        if (CollectionUtils.isEmpty(criteriaRefs)) {
-            return "{}";
-        }
-        SearchCriteria searchCriteria = new SearchCriteria(namespaceService);
-        criteriaRefs.forEach(nodeRef -> {
-            Map<QName, Serializable> props = nodeService.getProperties(nodeRef);
-            QName fieldQName = (QName) props.get(JournalsModel.PROP_FIELD_QNAME);
-            String predicate = (String) props.get(JournalsModel.PROP_PREDICATE);
-            String criterionValue = (String) props.get(JournalsModel.PROP_CRITERION_VALUE);
-            if (fieldQName == null || predicate == null || criterionValue == null) {
-                return;
+    @Override
+    public void deployJournalTypes(InputStream inputStream) {
+        Journals data = parseXML(inputStream);
+
+        NamespacePrefixResolver prefixResolver =
+            new NamespacePrefixResolverMapImpl(
+                getPrefixToUriMap(data.getImports().getImport()));
+
+        for (Journal journal : data.getJournal()) {
+            searchCriteriaSettingsRegistry.cleanFieldNameCache(journal.getId());
+            this.journalTypes.put(journal.getId(), new JournalTypeImpl(journal, prefixResolver, serviceRegistry,
+                searchCriteriaSettingsRegistry));
+            Map<String, String> options = journalTypes.get(journal.getId()).getOptions();
+            String nodeType = options.get("type");
+            if (nodeType != null) {
+                searchCriteriaSettingsRegistry.registerJournalNodeType(journal.getId(), nodeType);
             }
-            String field = fieldQName.toPrefixString(namespaceService);
-            String criterion = "";
-            if (StringUtils.isNotEmpty(criterionValue)) {
-                Map<String, Object> model = new HashMap<>();
-                /* this replacement is used to fix template strings like this one:
-                 * <#list (people.getContainerGroups(person)![]) as group>#{group.nodeRef},</#list>#{person.nodeRef} */
-                criterionValue = criterionValue.replace("#{", "${");
-                criterion = (String) expressionEvaluator.evaluate(criterionValue, model);
+            String staticQuery = options.get("staticQuery");
+            if (staticQuery != null) {
+                searchCriteriaSettingsRegistry.registerJournalStaticQuery(journal.getId(), staticQuery);
             }
-            searchCriteria.addCriteriaTriplet(field, predicate, criterion);
-        });
-        String criteria;
-        try {
-            criteria = objectMapper.writeValueAsString(searchCriteria);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Json processing error.", e);
         }
-        return criteria;
     }
 
     @Override
@@ -221,23 +193,50 @@ class JournalServiceImpl implements JournalService {
         return invariants;
     }
 
+    private String buildJournalQuery(NodeRef journalRef) {
+        List<NodeRef> criteriaRefs = RepoUtils.getChildrenByAssoc(
+            journalRef, JournalsModel.ASSOC_SEARCH_CRITERIA, nodeService);
+        if (CollectionUtils.isEmpty(criteriaRefs)) {
+            return "{}";
+        }
+        SearchCriteria searchCriteria = new SearchCriteria(namespaceService);
+        criteriaRefs.forEach(nodeRef -> {
+            Map<QName, Serializable> props = nodeService.getProperties(nodeRef);
+            QName fieldQName = (QName) props.get(JournalsModel.PROP_FIELD_QNAME);
+            String predicate = (String) props.get(JournalsModel.PROP_PREDICATE);
+            String criterionValue = (String) props.get(JournalsModel.PROP_CRITERION_VALUE);
+            if (fieldQName == null || predicate == null || criterionValue == null) {
+                return;
+            }
+            String field = fieldQName.toPrefixString(namespaceService);
+            String criterion = "";
+            if (StringUtils.isNotEmpty(criterionValue)) {
+                Map<String, Object> model = new HashMap<>();
+                /* this replacement is used to fix template strings like this one:
+                 * <#list (people.getContainerGroups(person)![]) as group>#{group.nodeRef},</#list>#{person.nodeRef} */
+                criterionValue = criterionValue.replace("#{", "${");
+                criterion = (String) expressionEvaluator.evaluate(criterionValue, model);
+            }
+            searchCriteria.addCriteriaTriplet(field, predicate, criterion);
+        });
+        String criteria;
+        try {
+            criteria = objectMapper.writeValueAsString(searchCriteria);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Json processing error.", e);
+        }
+        return criteria;
+    }
+
     protected Journals parseXML(InputStream inputStream) {
         try {
             Unmarshaller jaxbUnmarshaller = XMLUtils.createUnmarshaller(Journals.class,
-                                                                        INVARIANTS_SCHEMA_LOCATION,
-                                                                        JOURNALS_SCHEMA_LOCATION);
+                INVARIANTS_SCHEMA_LOCATION,
+                JOURNALS_SCHEMA_LOCATION);
             return (Journals) jaxbUnmarshaller.unmarshal(inputStream);
         } catch (Exception e) {
             throw new IllegalArgumentException("Can not parse journals file", e);
         }
-    }
-    
-    private static Map<String, String> getPrefixToUriMap(List<Import> namespaces) {
-        Map<String, String> prefixToUriMap = new HashMap<>(namespaces.size());
-        for(Import namespace : namespaces) {
-            prefixToUriMap.put(namespace.getPrefix(), namespace.getUri());
-        }
-        return prefixToUriMap;
     }
 
     @Override
@@ -271,8 +270,8 @@ class JournalServiceImpl implements JournalService {
     @Override
     public NodeRef getJournalRef(String id) {
         List<ChildAssociationRef> associationRefs = nodeService.getChildAssocs(journalsRoot.getNodeRef(),
-                                                                               ContentModel.ASSOC_CONTAINS,
-                                                                               RegexQNamePattern.MATCH_ALL);
+            ContentModel.ASSOC_CONTAINS,
+            RegexQNamePattern.MATCH_ALL);
         for (ChildAssociationRef associationRef : associationRefs) {
             NodeRef journalRef = associationRef.getChildRef();
             String journalID = (String) nodeService.getProperty(journalRef, JournalsModel.PROP_JOURNAL_TYPE);
@@ -313,12 +312,12 @@ class JournalServiceImpl implements JournalService {
         }
         JournalType journalType = needJournalType(journalId);
         return new RecordsQueryResult<>(
-                recordsDAO.getRecordsWithData(journalType, query, language, pageInfo, debug),
-                meta -> {
-                    ObjectData attributes = meta.getAttributes();
-                    attributes.set("id", meta.getId().toString());
-                    return attributes;
-                }
+            recordsDAO.getRecordsWithData(journalType, query, language, pageInfo, debug),
+            meta -> {
+                ObjectData attributes = meta.getAttributes();
+                attributes.set("id", meta.getId().toString());
+                return attributes;
+            }
         );
     }
 
@@ -353,7 +352,7 @@ class JournalServiceImpl implements JournalService {
             if (NodeRef.isNodeRef(journalIdOrRef)) {
 
                 journalId = AuthenticationUtil.runAsSystem(() ->
-                        nodeUtils.getProperty(new NodeRef(journalIdOrRef), JournalsModel.PROP_JOURNAL_TYPE)
+                    nodeUtils.getProperty(new NodeRef(journalIdOrRef), JournalsModel.PROP_JOURNAL_TYPE)
                 );
             } else {
                 journalId = journalIdOrRef;

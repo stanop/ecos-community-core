@@ -49,9 +49,9 @@ public class CachingEcosConfigService implements EcosConfigService {
 
     public CachingEcosConfigService() {
         configRefByKey = CacheBuilder.newBuilder()
-                .expireAfterAccess(30, TimeUnit.SECONDS)
-                .maximumSize(200)
-                .build(CacheLoader.from(this::findConfigRef));
+            .expireAfterAccess(30, TimeUnit.SECONDS)
+            .maximumSize(200)
+            .build(CacheLoader.from(this::findConfigRef));
     }
 
 
@@ -106,10 +106,10 @@ public class CachingEcosConfigService implements EcosConfigService {
 
         QName assocQName = QName.createQName(configNamespace, configKey);
         ChildAssociationRef configRefAssoc = nodeService.createNode(getConfigRoot(),
-                ContentModel.ASSOC_CONTAINS,
-                assocQName,
-                configTypeQName,
-                properties);
+            ContentModel.ASSOC_CONTAINS,
+            assocQName,
+            configTypeQName,
+            properties);
 
         configRefByKey.invalidate(configKey);
 
@@ -142,10 +142,10 @@ public class CachingEcosConfigService implements EcosConfigService {
         return AuthenticationUtil.runAsSystem(() -> {
             try {
                 return FTSQuery.create()
-                        .type(configTypeQName).and()
-                        .exact(configKeyQName, key)
-                        .transactional()
-                        .queryOne(searchService);
+                    .type(configTypeQName).and()
+                    .exact(configKeyQName, key)
+                    .transactional()
+                    .queryOne(searchService);
             } catch (Exception e) {
                 if (RetryingTransactionHelper.extractRetryCause(e) != null) {
                     throw e;
@@ -185,7 +185,7 @@ public class CachingEcosConfigService implements EcosConfigService {
         } else {
             NodeRef rootNode = nodeService.getRootNode(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
             List<NodeRef> nodeRefs = this.searchService.selectNodes(
-                    rootNode, configRoot, null, namespaceService, false);
+                rootNode, configRoot, null, namespaceService, false);
             if (CollectionUtils.isEmpty(nodeRefs)) {
                 throw new IllegalArgumentException("Can not be founded nodes for path: " + configRoot);
             }
