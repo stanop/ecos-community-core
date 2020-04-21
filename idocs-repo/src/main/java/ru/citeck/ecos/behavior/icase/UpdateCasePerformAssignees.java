@@ -4,10 +4,6 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.impl.ServiceImpl;
 import org.activiti.engine.impl.interceptor.CommandExecutor;
 import org.alfresco.repo.policy.Behaviour;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.stereotype.Component;
-import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
@@ -16,12 +12,23 @@ import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
-import ru.citeck.ecos.icase.activity.dto.ActivityRef;
-import ru.citeck.ecos.icase.activity.dto.CaseActivity;
+import org.alfresco.util.Pair;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Component;
+import ru.citeck.ecos.behavior.JavaBehaviour;
+import ru.citeck.ecos.icase.activity.dto.*;
+import ru.citeck.ecos.icase.activity.service.ActivityCommonService;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
+import ru.citeck.ecos.icase.activity.service.eproc.EProcActivityService;
+import ru.citeck.ecos.icase.activity.service.eproc.EProcUtils;
+import ru.citeck.ecos.icase.activity.service.eproc.importer.parser.CmmnInstanceConstants;
+import ru.citeck.ecos.icase.activity.service.eproc.importer.pojo.OptimizedProcessDefinition;
 import ru.citeck.ecos.model.CasePerformModel;
 import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
+import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.role.CaseRolePolicies;
 import ru.citeck.ecos.service.AlfrescoServices;
 import ru.citeck.ecos.service.CiteckServices;
@@ -31,6 +38,7 @@ import ru.citeck.ecos.workflow.perform.CasePerformUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Pavel Simonov
@@ -38,7 +46,7 @@ import java.util.*;
 @Component
 @DependsOn("idocs.dictionaryBootstrap")
 public class UpdateCasePerformAssignees implements CaseRolePolicies.OnRoleAssigneesChangedPolicy,
-                                                   CaseRolePolicies.OnCaseRolesAssigneesChangedPolicy {
+        CaseRolePolicies.OnCaseRolesAssigneesChangedPolicy {
 
     private static final String UPDATE_BY_ROLE_KEY = UpdateCasePerformAssignees.class + ".update-by-role";
 
@@ -49,15 +57,21 @@ public class UpdateCasePerformAssignees implements CaseRolePolicies.OnRoleAssign
     private PolicyComponent policyComponent;
     private CaseActivityService caseActivityService;
     private AlfActivityUtils alfActivityUtils;
+    private ActivityCommonService activityCommonService;
+    private EProcActivityService eprocActivityService;
 
     @Autowired
-    public UpdateCasePerformAssignees(ServiceRegistry serviceRegistry) {
+    public UpdateCasePerformAssignees(ServiceRegistry serviceRegistry,
+                                      ActivityCommonService activityCommonService,
+                                      EProcActivityService eprocActivityService) {
         this.serviceRegistry = serviceRegistry;
         this.nodeService = serviceRegistry.getNodeService();
         this.runtimeService = (RuntimeService) serviceRegistry.getService(AlfrescoServices.ACTIVITI_RUNTIME_SERVICE);
         this.policyComponent = (PolicyComponent) serviceRegistry.getService(AlfrescoServices.POLICY_COMPONENT);
         this.caseActivityService = (CaseActivityService) serviceRegistry.getService(CiteckServices.CASE_ACTIVITY_SERVICE);
         this.alfActivityUtils = (AlfActivityUtils) serviceRegistry.getService(CiteckServices.ALF_ACTIVITY_UTILS);
+        this.activityCommonService = activityCommonService;
+        this.eprocActivityService = eprocActivityService;
     }
 
     @PostConstruct
@@ -83,12 +97,12 @@ public class UpdateCasePerformAssignees implements CaseRolePolicies.OnRoleAssign
     @Override
     public void onCaseRolesAssigneesChanged(NodeRef caseRef) {
         AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
-            updateTasks();
+            updateTasks(caseRef);
             return null;
         });
     }
 
-    private void updateTasks() {
+    private void updateTasks(NodeRef caseRef) {
 
         Map<NodeRef, RoleState> byRole = TransactionalResourceHelper.getMap(UPDATE_BY_ROLE_KEY);
 
@@ -99,15 +113,15 @@ public class UpdateCasePerformAssignees implements CaseRolePolicies.OnRoleAssign
             }
             Set<NodeRef> added = entry.getValue().added;
             Set<NodeRef> removed = entry.getValue().removed;
-            updateTask(roleRef, added, removed);
+            updateTask(caseRef, roleRef, added, removed);
         }
 
         byRole.clear();
     }
 
-    private void updateTask(NodeRef roleRef, Set<NodeRef> added, Set<NodeRef> removed) {
+    private void updateTask(NodeRef caseRef, NodeRef roleRef, Set<NodeRef> added, Set<NodeRef> removed) {
 
-        Set<String> activeWorkflows = getActiveWorkflows(roleRef);
+        Set<String> activeWorkflows = getActiveWorkflows(caseRef, roleRef);
 
         CommandExecutor commandExecutor = getCommandExecutor();
         if (commandExecutor != null) {
@@ -119,7 +133,7 @@ public class UpdateCasePerformAssignees implements CaseRolePolicies.OnRoleAssign
                 Set<NodeRef> toRemove = new HashSet<>(removed);
 
                 Map<NodeRef, Map<String, Map<NodeRef, NodeRef>>> reassignmentByRole =
-                                        TransactionalResourceHelper.getMap(CasePerformUtils.REASSIGNMENT_KEY);
+                        TransactionalResourceHelper.getMap(CasePerformUtils.REASSIGNMENT_KEY);
 
                 Map<String, Map<NodeRef, NodeRef>> reassignmentByWorkflow = reassignmentByRole.get(roleRef);
                 if (reassignmentByWorkflow != null) {
@@ -139,8 +153,23 @@ public class UpdateCasePerformAssignees implements CaseRolePolicies.OnRoleAssign
         }
     }
 
-    private Set<String> getActiveWorkflows(NodeRef roleRef) {
+    private CommandExecutor getCommandExecutor() {
+        if (runtimeService instanceof ServiceImpl) {
+            return ((ServiceImpl) runtimeService).getCommandExecutor();
+        }
+        return null;
+    }
 
+    private Set<String> getActiveWorkflows(NodeRef caseRef, NodeRef roleRef) {
+        CaseServiceType caseType = activityCommonService.getCaseType(caseRef);
+        if (caseType == CaseServiceType.ALFRESCO) {
+            return getAlfActiveWorkflows(roleRef);
+        } else {
+            return getEProcActiveWorkflows(caseRef, roleRef);
+        }
+    }
+
+    private Set<String> getAlfActiveWorkflows(NodeRef roleRef) {
         List<AssociationRef> caseTaskRefs = nodeService.getSourceAssocs(roleRef, CasePerformModel.ASSOC_PERFORMERS_ROLES);
         Set<String> activeWorkflows = new HashSet<>();
 
@@ -156,13 +185,6 @@ public class UpdateCasePerformAssignees implements CaseRolePolicies.OnRoleAssign
         return activeWorkflows;
     }
 
-    private CommandExecutor getCommandExecutor() {
-        if (runtimeService instanceof ServiceImpl) {
-            return ((ServiceImpl) runtimeService).getCommandExecutor();
-        }
-        return null;
-    }
-
     private String getActiveWorkflowID(NodeRef taskRef) {
         QName type = nodeService.getType(taskRef);
         if (!CasePerformModel.TYPE_PERFORM_CASE_TASK.equals(type)) {
@@ -174,6 +196,51 @@ public class UpdateCasePerformAssignees implements CaseRolePolicies.OnRoleAssign
             return (String) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID);
         }
         return null;
+    }
+
+    private Set<String> getEProcActiveWorkflows(NodeRef caseNodeRef, NodeRef roleRef) {
+        RecordRef caseRef = RecordRef.valueOf(caseNodeRef.toString());
+        Set<ActivityDefinition> taskDefinitions = getTaskDefinitionsByRole(caseRef, roleRef);
+        Set<ActivityInstance> taskInstances = getTaskInstancesByDefinitions(caseRef, taskDefinitions);
+
+        Set<String> activeWorkflows = new HashSet<>();
+
+        for (ActivityInstance taskInstance : taskInstances) {
+            if (taskInstance.getState() == ActivityState.STARTED) {
+                String workflowId = EProcUtils.getAnyAttribute(taskInstance, CmmnInstanceConstants.WORKFLOW_INSTANCE_ID);
+                if (StringUtils.isNotBlank(workflowId)) {
+                    activeWorkflows.add(workflowId);
+                }
+            }
+        }
+
+        return activeWorkflows;
+    }
+
+    private Set<ActivityDefinition> getTaskDefinitionsByRole(RecordRef caseRef, NodeRef roleRef) {
+        Pair<String, OptimizedProcessDefinition> optimizedDefinitionWithRevisionId =
+                eprocActivityService.getOptimizedDefinitionWithRevisionId(caseRef);
+        OptimizedProcessDefinition optimizedProcessDefinition = optimizedDefinitionWithRevisionId.getSecond();
+
+        String varName = (String) nodeService.getProperty(roleRef, ICaseRoleModel.PROP_VARNAME);
+
+        Map<String, Set<ActivityDefinition>> cache = optimizedProcessDefinition.getRoleVarNameToTaskDefinitionCache();
+        if (cache == null) {
+            return Collections.emptySet();
+        }
+
+        return cache.get(varName);
+    }
+
+    private Set<ActivityInstance> getTaskInstancesByDefinitions(RecordRef caseRef, Set<ActivityDefinition> taskDefinitions) {
+        if (taskDefinitions == null) {
+            return Collections.emptySet();
+        }
+
+        return taskDefinitions.stream()
+                .map(definition -> ActivityRef.of(CaseServiceType.EPROC, caseRef, definition.getId()))
+                .map(activityRef -> eprocActivityService.getStateInstance(activityRef))
+                .collect(Collectors.toSet());
     }
 
     private static class RoleState {

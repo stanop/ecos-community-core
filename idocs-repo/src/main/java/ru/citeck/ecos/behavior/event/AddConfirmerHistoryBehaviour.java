@@ -107,7 +107,7 @@ public class AddConfirmerHistoryBehaviour implements
         ActivityDefinition activityDefinition = sentry.getParentTriggerDefinition()
                 .getParentActivityTransitionDefinition()
                 .getParentActivityDefinition();
-        return activityDefinition.getType() == ActivityType.USER_ACTION;
+        return activityDefinition.getType() == ActivityType.USER_EVENT_LISTENER;
     }
 
     private void addHistoryEvent(NodeRef additionalDataRef, NodeRef caseRef) {

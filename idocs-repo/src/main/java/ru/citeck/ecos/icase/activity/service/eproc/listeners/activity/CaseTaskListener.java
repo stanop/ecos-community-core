@@ -195,7 +195,7 @@ public class CaseTaskListener implements BeforeStartedActivityListener, OnResetA
     private Date getWorkflowDueDate(ActivityInstance instance) {
         Date workflowDueDate = null;
 
-        Date startDate = EProcUtils.getAnyAttribute(instance, CmmnInstanceConstants.ACTUAL_START_DATE, Date.class);
+        Date startDate = instance.getActivated();
         if (startDate != null) {
             Integer expectedPerformTime = EProcUtils.getAnyAttribute(instance,
                     CmmnDefinitionConstants.EXPECTED_PERFORM_TIME, Integer.class);

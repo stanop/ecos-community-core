@@ -77,7 +77,7 @@ public class EProcCaseActionsProvider implements CaseActionsProvider {
             if (StringUtils.isBlank(additionalDataType)) {
                 actions.add(composeCreateRequestAction(caseNodeRef, userActionDef, sentryDefinition));
             } else {
-                actions.add(composeCreateNodeAction(caseNodeRef, userActionDef, additionalDataType));
+                actions.add(composeCreateNodeAction(caseNodeRef, userActionDef, additionalDataType, sentryDefinition));
             }
         }
         return actions;
@@ -149,13 +149,8 @@ public class EProcCaseActionsProvider implements CaseActionsProvider {
         return result;
     }
 
-    private Object composeEventRef(NodeRef caseNodeRef, SentryDefinition sentry) {
-        RecordRef caseRef = RecordRef.valueOf(caseNodeRef.toString());
-        return EventRef.of(CaseServiceType.EPROC, caseRef, sentry.getId());
-    }
-
     private NodeActionDefinition composeCreateNodeAction(NodeRef caseNodeRef, ActivityDefinition userActionDef,
-                                                         String additionalDataType) {
+                                                         String additionalDataType, SentryDefinition sentryDefinition) {
 
         CreateNodeAction result = new CreateNodeAction();
         result.setNodeType(additionalDataType);
@@ -163,7 +158,13 @@ public class EProcCaseActionsProvider implements CaseActionsProvider {
         String destinationAssoc = EcosProcessModel.ASSOC_ADDITIONAL_EVENT_DATA_ITEMS.toPrefixString(namespaceService);
         result.setDestinationAssoc(destinationAssoc);
         result.setTitle(EProcUtils.getDefAttribute(userActionDef, CmmnDefinitionConstants.TITLE));
+        result.setEventRef(composeEventRef(caseNodeRef, sentryDefinition).toString());
         return result;
+    }
+
+    private EventRef composeEventRef(NodeRef caseNodeRef, SentryDefinition sentry) {
+        RecordRef caseRef = RecordRef.valueOf(caseNodeRef.toString());
+        return EventRef.of(CaseServiceType.EPROC, caseRef, sentry.getId());
     }
 
     private String getMessage(ActivityDefinition userActionDef, String messageKey) {

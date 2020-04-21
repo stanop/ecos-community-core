@@ -11,7 +11,7 @@ public enum ActivityType {
     USER_TASK("userTask"),
     PROCESS_TASK("processTask"),
     ACTION("action"),
-    USER_ACTION("user-action"),
+    USER_EVENT_LISTENER("userEventListener"),
     TIMER("timer");
 
 

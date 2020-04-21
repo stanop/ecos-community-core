@@ -18,7 +18,6 @@ public class CreateNodeAction extends NodeActionDefinition {
         setProperty(PROP_NODE_TYPE, null);
         setProperty(PROP_DESTINATION, null);
         setProperty(PROP_DESTINATION_ASSOC, "cm:contains");
-        setProperty(PROP_EVENT_REF, null);
     }
 
     public String getNodeType() {

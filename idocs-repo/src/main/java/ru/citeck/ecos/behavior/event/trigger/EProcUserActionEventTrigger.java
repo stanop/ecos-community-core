@@ -16,7 +16,7 @@ import ru.citeck.ecos.behavior.OrderedBehaviour;
 import ru.citeck.ecos.icase.activity.dto.EventRef;
 import ru.citeck.ecos.icase.activity.service.CaseActivityEventService;
 import ru.citeck.ecos.model.EcosProcessModel;
-import ru.citeck.ecos.model.EventModel;
+import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.utils.TransactionUtils;
 
 import javax.annotation.PostConstruct;
@@ -45,7 +45,7 @@ public class EProcUserActionEventTrigger implements NodeServicePolicies.OnCreate
     @PostConstruct
     public void init() {
         policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnCreateChildAssociationPolicy.QNAME,
-                EventModel.TYPE_USER_ACTION,
+                ICaseModel.ASPECT_CASE,
                 EcosProcessModel.ASSOC_ADDITIONAL_EVENT_DATA_ITEMS,
                 new OrderedBehaviour(this, "onCreateChildAssociation",
                         Behaviour.NotificationFrequency.TRANSACTION_COMMIT, ORDER));
