@@ -7,4 +7,7 @@ public interface CmmnInstanceConstants {
 
     String PLANNED_END_DATE = "plannedEndDate";
 
+    // timers
+    String TIMER_ID = "timerId";
+
 }
