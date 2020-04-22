@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
@@ -617,7 +618,12 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     }
                     return null;
                 case ATT_DOCUMENT:
-                    return documentRef;
+                    Object docObject = attributes.get("document");
+                    if (docObject instanceof ScriptNode) {
+                        return ((ScriptNode)docObject).getNodeRef();
+                    } else {
+                        return documentRef;
+                    }
                 case ATT_DOC_ECOS_TYPE:
                     if (documentNodeRef != null) {
                         return ecosTypeService.getEcosType(documentNodeRef);
