@@ -46,7 +46,7 @@
                 });
             } else {
                 require([
-                    'js/citeck/modules/header/index'
+                    'ecosui!header-legacy'
                 ], function(ShareHeader) {
                     ShareHeader.render('share-header', {
                         userName: "${((user.name)!"")?js_string}",
@@ -62,7 +62,7 @@
             }
 
             require([
-                'ecosui!slide-menu'
+                'ecosui!slide-menu-legacy'
             ], function(SlideMenu) {
                 SlideMenu.render('slide-menu');
             });
