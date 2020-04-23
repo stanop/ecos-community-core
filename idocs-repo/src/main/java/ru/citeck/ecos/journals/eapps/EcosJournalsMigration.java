@@ -25,10 +25,8 @@ import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.utils.NodeUtils;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -46,7 +44,9 @@ public class EcosJournalsMigration implements ModuleMigration {
     @Autowired
     public EcosJournalsMigration(ServiceRegistry serviceRegistry,
                                  JournalService journalService,
-                                 JournalColumnService journalColumnService, JournalMetaService journalMetaService, NodeUtils nodeUtils) {
+                                 JournalColumnService journalColumnService,
+                                 JournalMetaService journalMetaService,
+                                 NodeUtils nodeUtils) {
         this.journalService = journalService;
         this.journalColumnService = journalColumnService;
         this.journalMetaService = journalMetaService;
@@ -57,9 +57,6 @@ public class EcosJournalsMigration implements ModuleMigration {
     @Override
     public List<ComputedModule> getModulesSince(long time) {
 
-        if (time > 0) {
-            return Collections.emptyList();
-        }
         Date receivedDate = new Date(time);
 
         List<NodeRef> journalsNodeRefs = FTSQuery.create().type(JournalsModel.TYPE_JOURNAL)
@@ -90,10 +87,8 @@ public class EcosJournalsMigration implements ModuleMigration {
     private JournalModule getJournalModule(NodeRef journalNodeRef) {
 
         JournalType journalType = journalService.getJournalType(journalNodeRef);
-        String type = MapUtils.getString(journalType.getOptions(), "type");
-        JournalMeta journalMeta = journalMetaService.getJournalMeta(journalType, type, journalNodeRef);
-
-        Set<JournalTypeColumn> columns =
+        JournalMeta journalMeta = journalMetaService.getJournalMeta(journalType, journalNodeRef);
+        List<JournalTypeColumn> columns =
             journalColumnService.getJournalTypeColumns(journalType, journalMeta.getMetaRecord());
 
         return JournalModule.builder()

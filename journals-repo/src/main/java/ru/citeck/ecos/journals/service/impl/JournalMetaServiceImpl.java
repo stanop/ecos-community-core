@@ -12,7 +12,8 @@ import org.alfresco.service.cmr.repository.TemplateService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.commons.json.Json;
@@ -36,6 +37,7 @@ import ru.citeck.ecos.server.utils.Utils;
 import ru.citeck.ecos.utils.NodeUtils;
 import ru.citeck.ecos.utils.RepoUtils;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -106,7 +108,8 @@ public class JournalMetaServiceImpl implements JournalMetaService {
     }
 
     @Override
-    public JournalMeta getJournalMeta(JournalType journal, String type, NodeRef journalNodeRef) {
+    public JournalMeta getJournalMeta(JournalType journal, @Nullable NodeRef journalNodeRef) {
+
         if (journalNodeRef == null) {
             journalNodeRef = journalRefById.getUnchecked(journal.getId());
         }
@@ -117,38 +120,40 @@ public class JournalMetaServiceImpl implements JournalMetaService {
         meta.setActions(journal.getActions());
         meta.setGroupActions(this.getGroupActions(journal));
 
-        if (org.apache.commons.lang.StringUtils.isNotBlank(journal.getGroupBy())) {
+        if (StringUtils.isNotBlank(journal.getGroupBy())) {
             meta.setGroupBy(Json.getMapper().read(journal.getGroupBy()));
         }
 
-        if (org.apache.commons.lang.StringUtils.isNotBlank(journal.getPredicate())) {
+        if (StringUtils.isNotBlank(journal.getPredicate())) {
             meta.setPredicate(Json.getMapper().read(journal.getPredicate()));
         }
         meta.setCreateVariants(createVariantsGet.getVariantsByJournalRef(journalData.getNodeRef(), true));
 
         fillMetaFromRepo(meta, journalData);
 
-        if (meta.getPredicate() == null && org.apache.commons.lang.StringUtils.isNotBlank(type)) {
+        Map<String, String> options = journal.getOptions();
+
+        String type = MapUtils.getString(options, "type");
+        if (meta.getPredicate() == null && StringUtils.isNotBlank(type)) {
             Predicate predicate = ValuePredicate.equal("TYPE", type);
             meta.setPredicate(Json.getMapper().convert(predicate, JsonNode.class));
         }
 
-        Map<String, String> options = journal.getOptions();
         if (options == null) {
             options = Collections.emptyMap();
         }
 
         String metaRecord = options.get("metaRecord");
 
-        if (org.apache.commons.lang.StringUtils.isNotBlank(metaRecord)) {
+        if (StringUtils.isNotBlank(metaRecord)) {
 
             meta.setMetaRecord(metaRecord);
 
-        } else if (org.apache.commons.lang.StringUtils.isNotBlank(journal.getDataSource())) {
+        } else if (StringUtils.isNotBlank(journal.getDataSource())) {
 
             meta.setMetaRecord(journal.getDataSource() + "@");
 
-        } else if (org.apache.commons.lang.StringUtils.isNotBlank(type)) {
+        } else if (StringUtils.isNotBlank(type)) {
 
             meta.setMetaRecord(String.format(META_RECORD_TEMPLATE, type));
         }

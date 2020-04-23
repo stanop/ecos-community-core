@@ -15,8 +15,8 @@ import ru.citeck.ecos.journals.service.JournalColumnService;
 import ru.citeck.ecos.journals.service.JournalMetaService;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class JournalConfigGet extends AbstractWebScript {
 
@@ -56,12 +56,9 @@ public class JournalConfigGet extends AbstractWebScript {
             sourceId = "";
         }
 
-        Map<String, String> options = journalType.getOptions();
-        String type = MapUtils.getString(options, "type");
+        JournalMeta journalMeta = journalMetaService.getJournalMeta(journalType, journalRef);
 
-        JournalMeta journalMeta = journalMetaService.getJournalMeta(journalType, type, journalRef);
-
-        Set<JournalTypeColumn> columns =
+        List<JournalTypeColumn> columns =
             journalColumnService.getJournalTypeColumns(journalType, journalMeta.getMetaRecord());
 
         Response response = new Response();
@@ -94,7 +91,7 @@ public class JournalConfigGet extends AbstractWebScript {
         String id;
         String sourceId;
         JournalMeta meta;
-        Set<JournalTypeColumn> columns;
+        List<JournalTypeColumn> columns;
         Map<String, String> params;
     }
 }

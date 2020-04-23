@@ -51,9 +51,9 @@ public class JournalTypeColumnServiceImpl implements JournalColumnService {
     }
 
     @Override
-    public Set<JournalTypeColumn> getJournalTypeColumns(JournalType journalType, String metaRef) {
+    public List<JournalTypeColumn> getJournalTypeColumns(JournalType journalType, String metaRef) {
 
-        Set<JournalTypeColumn> columns = new HashSet<>();
+        List<JournalTypeColumn> columns = new ArrayList<>();
         List<String> attributes = journalType.getAttributes();
         Map<String, JournalMetaAttributeInfo> columnInfo = getAttributesInfo(metaRef, attributes);
 
