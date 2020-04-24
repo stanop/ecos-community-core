@@ -1,6 +1,6 @@
 package ru.citeck.ecos.icase.activity;
 
-import com.google.common.collect.Iterables;
+import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.cases.RemoteRestoreCaseModelService;
@@ -11,13 +11,18 @@ import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.utils.ActivityUtilsJS;
+import ru.citeck.ecos.utils.AlfActivityUtils;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
+import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
+@Deprecated
+public class CaseActivityServiceJSOld extends AlfrescoScopableProcessorExtension {
 
     private ActivityUtilsJS activityUtilsJS;
+    private AlfActivityUtils alfActivityUtils;
     private CaseActivityService caseActivityService;
     private CreateVariantsProvider createVariantsProvider;
     private RemoteRestoreCaseModelService remoteRestoreCaseModelService;
@@ -42,34 +47,44 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
         caseActivityService.stopActivity(activityRef);
     }
 
-    public CaseActivity[] getStartedActivities(Object ref) {
+    public ScriptNode[] getStartedActivities(Object ref) {
         ActivityRef activityRef = activityUtilsJS.getActivityRef(ref);
         List<CaseActivity> activities = caseActivityService.getStartedActivities(activityRef);
-        return Iterables.toArray(activities, CaseActivity.class);
+        List<NodeRef> nodeRefs = activities.stream()
+                .map(activity -> alfActivityUtils.getActivityNodeRef(activity.getActivityRef()))
+                .collect(Collectors.toList());
+        return JavaScriptImplUtils.wrapNodes(nodeRefs, this);
     }
 
-    public CaseActivity[] getActivities(Object ref) {
+    public ScriptNode[] getActivities(Object ref) {
         ActivityRef activityRef = activityUtilsJS.getActivityRef(ref);
         List<CaseActivity> activities = caseActivityService.getActivities(activityRef);
-        return Iterables.toArray(activities, CaseActivity.class);
+        List<NodeRef> activityNodeRefs = activities.stream()
+                .map(activity -> alfActivityUtils.getActivityNodeRef(activity.getActivityRef()))
+                .collect(Collectors.toList());
+        return JavaScriptImplUtils.wrapNodes(activityNodeRefs, this);
     }
 
-    public CaseActivity getActivityByName(Object ref, String title) {
+    public ScriptNode getActivityByName(Object ref, String title) {
         return getActivityByName(ref, title, false);
     }
 
-    public CaseActivity getActivityByName(Object ref, String name, boolean recurse) {
+    public ScriptNode getActivityByName(Object ref, String name, boolean recurse) {
         ActivityRef activityRef = activityUtilsJS.getActivityRef(ref);
-        return caseActivityService.getActivityByName(activityRef, name, recurse);
+        CaseActivity caseActivity = caseActivityService.getActivityByName(activityRef, name, recurse);
+        NodeRef activityNodeRef = alfActivityUtils.getActivityNodeRef(caseActivity.getActivityRef());
+        return JavaScriptImplUtils.wrapNode(activityNodeRef, this);
     }
 
-    public CaseActivity getActivityByTitle(Object ref, String title) {
+    public ScriptNode getActivityByTitle(Object ref, String title) {
         return getActivityByTitle(ref, title, false);
     }
 
-    public CaseActivity getActivityByTitle(Object ref, String title, boolean recurse) {
+    public ScriptNode getActivityByTitle(Object ref, String title, boolean recurse) {
         ActivityRef activityRef = activityUtilsJS.getActivityRef(ref);
-        return caseActivityService.getActivityByTitle(activityRef, title, recurse);
+        CaseActivity caseActivity = caseActivityService.getActivityByTitle(activityRef, title, recurse);
+        NodeRef activityNodeRef = alfActivityUtils.getActivityNodeRef(caseActivity.getActivityRef());
+        return JavaScriptImplUtils.wrapNode(activityNodeRef, this);
     }
 
     public void reset(Object ref) {
@@ -123,6 +138,10 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
         this.activityUtilsJS = activityUtilsJS;
     }
 
+    public void setAlfActivityUtils(AlfActivityUtils alfActivityUtils) {
+        this.alfActivityUtils = alfActivityUtils;
+    }
+
     public void setCaseActivityService(CaseActivityService caseActivityService) {
         this.caseActivityService = caseActivityService;
     }
@@ -134,6 +153,4 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
     public void setCreateVariantsProvider(MenuCreateVariantsProvider createVariantsProvider) {
         this.createVariantsProvider = createVariantsProvider;
     }
-
-
 }

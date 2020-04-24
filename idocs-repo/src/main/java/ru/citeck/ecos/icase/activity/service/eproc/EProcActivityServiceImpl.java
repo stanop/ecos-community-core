@@ -5,6 +5,7 @@ import ecos.com.google.common.cache.CacheLoader;
 import ecos.com.google.common.cache.LoadingCache;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.alfresco.repo.policy.BehaviourFilter;
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -15,6 +16,7 @@ import org.alfresco.util.transaction.TransactionSupportUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.commands.CommandsService;
 import ru.citeck.ecos.commands.dto.CommandResult;
@@ -52,6 +54,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
     private EcosTypeService ecosTypeService;
     private DictionaryService dictionaryService;
     private NodeService nodeService;
+    private BehaviourFilter behaviourFilter;
 
     private LoadingCache<EcosAlfTypesKey, String> typesToRevisionIdCache;
     private LoadingCache<String, OptimizedProcessDefinition> revisionIdToProcessDefinitionCache;
@@ -61,13 +64,15 @@ public class EProcActivityServiceImpl implements EProcActivityService {
                                     CommandsService commandsService,
                                     EcosTypeService ecosTypeService,
                                     DictionaryService dictionaryService,
-                                    NodeService nodeService) {
+                                    NodeService nodeService,
+                                    @Qualifier("policyBehaviourFilter") BehaviourFilter behaviourFilter) {
 
         this.commandsService = commandsService;
         this.ecosTypeService = ecosTypeService;
         this.cmmnSchemaParser = cmmnSchemaParser;
         this.dictionaryService = dictionaryService;
         this.nodeService = nodeService;
+        this.behaviourFilter = behaviourFilter;
 
         this.typesToRevisionIdCache = CacheBuilder.newBuilder()
                 .maximumSize(250)
@@ -419,7 +424,12 @@ public class EProcActivityServiceImpl implements EProcActivityService {
             throw new RuntimeException("Error while state saving");
         }
 
-        nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_STATE_ID, result.getProcStateId());
+        try {
+            behaviourFilter.disableBehaviour(caseNodeRef);
+            nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_STATE_ID, result.getProcStateId());
+        } finally {
+            behaviourFilter.enableBehaviour(caseNodeRef);
+        }
     }
 
     private UpdateProcStateResp updateStateInMicroservice(String prevStateId, ProcessInstance processInstance) {

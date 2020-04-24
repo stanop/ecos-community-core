@@ -432,8 +432,9 @@ public class CmmnSchemaParser {
             log.debug("Importing events for " + planItem.getId());
             Map<String, Sentry> stageSentries = getSentryIdToInstanceMap(stage);
 
-            getOrCreateTransitionByState(activityDefinition, ActivityState.NOT_STARTED, ActivityState.STARTED);
-            getOrCreateTransitionByState(activityDefinition, ActivityState.STARTED, ActivityState.COMPLETED);
+            getOrCreateTransitionByState(activityDefinition, ActivityState.NOT_STARTED, ActivityState.STARTED, false);
+            getOrCreateTransitionByState(activityDefinition, ActivityState.NOT_STARTED, ActivityState.STARTED, true);
+            getOrCreateTransitionByState(activityDefinition, ActivityState.STARTED, ActivityState.COMPLETED, false);
 
             for (Sentry sentry : getEntrySentries(planItem, stageSentries)) {
                 addTransitionImpl(activityDefinition, sentry, ActivityState.NOT_STARTED, ActivityState.STARTED);
@@ -539,7 +540,7 @@ public class CmmnSchemaParser {
             addSentryTransitionImpl(userEventDefinition, sentry, ActivityState.NOT_STARTED, ActivityState.STARTED);
 
             ActivityTransitionDefinition transition = getOrCreateTransitionByState(
-                    activityDefinition, fromState, toState);
+                    activityDefinition, fromState, toState, isRestartSentry(sentry));
             TriggerDefinition trigger = getOrCreateTriggerDefinition(transition);
             SentryTriggerDefinition sentryTriggerDefinition = getOrCreateSentryTriggerDefinition(trigger);
 
@@ -559,22 +560,30 @@ public class CmmnSchemaParser {
     private void addSentryTransitionImpl(ActivityDefinition activityDefinition, Sentry sentry,
                                          ActivityState fromState, ActivityState toState) {
         ActivityTransitionDefinition transition = getOrCreateTransitionByState(
-                activityDefinition, fromState, toState);
+                activityDefinition, fromState, toState, isRestartSentry(sentry));
         TriggerDefinition trigger = getOrCreateTriggerDefinition(transition);
         SentryTriggerDefinition sentryTriggerDefinition = getOrCreateSentryTriggerDefinition(trigger);
         addSentryDefinition(trigger, sentryTriggerDefinition, sentry);
     }
 
+    private boolean isRestartSentry(Sentry sentry) {
+        TOnPart onPart = getOnPart(sentry);
+        String isRestartEvent = onPart.getOtherAttributes().get(CMMNUtils.QNAME_IS_RESTART_EVENT);
+        return Boolean.parseBoolean(isRestartEvent);
+    }
+
     private ActivityTransitionDefinition getOrCreateTransitionByState(ActivityDefinition activityDefinition,
                                                                       ActivityState fromState,
-                                                                      ActivityState toState) {
+                                                                      ActivityState toState,
+                                                                      boolean isRestart) {
         ActivityTransitionDefinition transition = getTransitionDefinitionByFromAndToState(
-                activityDefinition, fromState, toState);
+                activityDefinition, fromState, toState, isRestart);
         if (transition == null) {
             transition = new ActivityTransitionDefinition();
             transition.setFromState(fromState);
             transition.setToState(toState);
             transition.setParentActivityDefinition(activityDefinition);
+            transition.setRestartRequired(isRestart);
 
             addCompletenessLevelsToTransition(activityDefinition.getId(), transition);
 
@@ -584,6 +593,23 @@ public class CmmnSchemaParser {
             activityDefinition.getTransitions().add(transition);
         }
         return transition;
+    }
+
+    private ActivityTransitionDefinition getTransitionDefinitionByFromAndToState(ActivityDefinition activityDefinition,
+                                                                                 ActivityState fromState,
+                                                                                 ActivityState toState,
+                                                                                 boolean isRestart) {
+
+        List<ActivityTransitionDefinition> transitions = activityDefinition.getTransitions();
+        if (CollectionUtils.isNotEmpty(transitions)) {
+            return transitions.stream()
+                    .filter(transition -> transition.getFromState() == fromState)
+                    .filter(transition -> transition.getToState() == toState)
+                    .filter(transition -> transition.isRestartRequired() == isRestart)
+                    .findFirst()
+                    .orElse(null);
+        }
+        return null;
     }
 
     private void addCompletenessLevelsToTransition(String activityId, ActivityTransitionDefinition transition) {
@@ -621,21 +647,6 @@ public class CmmnSchemaParser {
 
         List<EvaluatorDefinitionData> result = Collections.singletonList(definitionData);
         return new EvaluatorDefinitionDataHolder(result);
-    }
-
-    private ActivityTransitionDefinition getTransitionDefinitionByFromAndToState(ActivityDefinition activityDefinition,
-                                                                                 ActivityState fromState,
-                                                                                 ActivityState toState) {
-
-        List<ActivityTransitionDefinition> transitions = activityDefinition.getTransitions();
-        if (CollectionUtils.isNotEmpty(transitions)) {
-            return transitions.stream()
-                    .filter(transition -> transition.getFromState() == fromState)
-                    .filter(transition -> transition.getToState() == toState)
-                    .findFirst()
-                    .orElse(null);
-        }
-        return null;
     }
 
     private TriggerDefinition getOrCreateTriggerDefinition(ActivityTransitionDefinition transition) {
