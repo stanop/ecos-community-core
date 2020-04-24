@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import ru.citeck.ecos.commons.json.Json;
 import ru.citeck.ecos.journals.JournalBatchEdit;
 import ru.citeck.ecos.journals.JournalGroupAction;
+import ru.citeck.ecos.journals.JournalService;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.journals.domain.JournalMeta;
 import ru.citeck.ecos.journals.domain.JournalRepoData;
@@ -51,6 +52,7 @@ public class JournalMetaServiceImpl implements JournalMetaService {
     private LoadingCache<String, NodeRef> journalRefById;
     private LoadingCache<NodeRef, JournalRepoData> repoDataByJournalRef;
 
+    private JournalService journalService;
     private NodeUtils nodeUtils;
     private NodeService nodeService;
     private SearchService searchService;
@@ -108,30 +110,37 @@ public class JournalMetaServiceImpl implements JournalMetaService {
     }
 
     @Override
-    public JournalMeta getJournalMeta(JournalType journal, @Nullable NodeRef journalNodeRef) {
+    public JournalMeta getJournalMeta(String journalId) {
 
+        NodeRef journalNodeRef = NodeRef.isNodeRef(journalId) ? new NodeRef(journalId) : null;
         if (journalNodeRef == null) {
-            journalNodeRef = journalRefById.getUnchecked(journal.getId());
+            journalNodeRef = journalRefById.getUnchecked(journalId);
         }
+        return this.getJournalMeta(journalNodeRef);
+    }
+
+    @Override
+    public JournalMeta getJournalMeta(NodeRef journalNodeRef) {
+        JournalType journalType = journalService.getJournalType(journalNodeRef);
 
         JournalRepoData journalData = repoDataByJournalRef.getUnchecked(journalNodeRef);
         JournalMeta meta = new JournalMeta();
 
-        meta.setActions(journal.getActions());
-        meta.setGroupActions(this.getGroupActions(journal));
+        meta.setActions(journalType.getActions());
+        meta.setGroupActions(this.getGroupActions(journalType));
 
-        if (StringUtils.isNotBlank(journal.getGroupBy())) {
-            meta.setGroupBy(Json.getMapper().read(journal.getGroupBy()));
+        if (StringUtils.isNotBlank(journalType.getGroupBy())) {
+            meta.setGroupBy(Json.getMapper().read(journalType.getGroupBy()));
         }
 
-        if (StringUtils.isNotBlank(journal.getPredicate())) {
-            meta.setPredicate(Json.getMapper().read(journal.getPredicate()));
+        if (StringUtils.isNotBlank(journalType.getPredicate())) {
+            meta.setPredicate(Json.getMapper().read(journalType.getPredicate()));
         }
         meta.setCreateVariants(createVariantsGet.getVariantsByJournalRef(journalData.getNodeRef(), true));
 
         fillMetaFromRepo(meta, journalData);
 
-        Map<String, String> options = journal.getOptions();
+        Map<String, String> options = journalType.getOptions();
 
         String type = MapUtils.getString(options, "type");
         if (meta.getPredicate() == null && StringUtils.isNotBlank(type)) {
@@ -149,9 +158,9 @@ public class JournalMetaServiceImpl implements JournalMetaService {
 
             meta.setMetaRecord(metaRecord);
 
-        } else if (StringUtils.isNotBlank(journal.getDataSource())) {
+        } else if (StringUtils.isNotBlank(journalType.getDataSource())) {
 
-            meta.setMetaRecord(journal.getDataSource() + "@");
+            meta.setMetaRecord(journalType.getDataSource() + "@");
 
         } else if (StringUtils.isNotBlank(type)) {
 

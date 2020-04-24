@@ -86,8 +86,8 @@ public class EcosJournalsMigration implements ModuleMigration {
 
     private JournalModule getJournalModule(NodeRef journalNodeRef) {
 
+        JournalMeta journalMeta = journalMetaService.getJournalMeta(journalNodeRef);
         JournalType journalType = journalService.getJournalType(journalNodeRef);
-        JournalMeta journalMeta = journalMetaService.getJournalMeta(journalType, journalNodeRef);
         List<JournalTypeColumn> columns =
             journalColumnService.getJournalTypeColumns(journalType, journalMeta.getMetaRecord());
 

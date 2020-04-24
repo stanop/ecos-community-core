@@ -45,7 +45,6 @@ public class JournalConfigGet extends AbstractWebScript {
         }
 
         JournalType journalType = journalService.getJournalType(journalId);
-        NodeRef journalRef = NodeRef.isNodeRef(journalId) ? new NodeRef(journalId) : null;
 
         if (journalType == null) {
             throw new WebScriptException(Status.STATUS_NOT_FOUND, "Journal with id '" + journalId + "' is not found!");
@@ -56,7 +55,7 @@ public class JournalConfigGet extends AbstractWebScript {
             sourceId = "";
         }
 
-        JournalMeta journalMeta = journalMetaService.getJournalMeta(journalType, journalRef);
+        JournalMeta journalMeta = journalMetaService.getJournalMeta(journalId);
 
         List<JournalTypeColumn> columns =
             journalColumnService.getJournalTypeColumns(journalType, journalMeta.getMetaRecord());

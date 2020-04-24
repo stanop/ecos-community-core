@@ -8,5 +8,7 @@ import javax.annotation.Nullable;
 
 public interface JournalMetaService {
 
-    JournalMeta getJournalMeta(JournalType journal, @Nullable NodeRef journalNodeRef);
+    JournalMeta getJournalMeta(String journalId);
+
+    JournalMeta getJournalMeta(NodeRef journalNodeRef);
 }
