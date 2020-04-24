@@ -16,6 +16,7 @@ public class ActivityTransitionDefinition {
     private ActivityState toState;
     private TriggerDefinition trigger;
     private EvaluatorDefinition evaluator;
+    private boolean restartRequired;
 
     private ActivityDefinition parentActivityDefinition;
 }

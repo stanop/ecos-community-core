@@ -10,12 +10,21 @@
     <bean id="caseActivityService" name="CaseActivityService"
           class="ru.citeck.ecos.icase.activity.service.CaseActivityServiceImpl"/>
 
-    <bean id="caseActivityServiceJS" name="CaseActivityServiceJS" class="ru.citeck.ecos.icase.activity.CaseActivityServiceJS"
+    <bean id="caseActivityServiceJS" class="ru.citeck.ecos.icase.activity.CaseActivityServiceJSOld"
           parent="baseJavaScriptExtension">
         <property name="caseActivityService" ref="caseActivityService"/>
         <property name="alfActivityUtils" ref="alfActivityUtils"/>
         <property name="createVariantsProvider" ref="ru.citeck.ecos.icase.activity.create.menu.MenuCreateVariantsProvider"/>
         <property name="extensionName" value="caseActivityService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="remoteRestoreCaseModelService" ref="remoteRestoreCaseModelService"/>
+    </bean>
+
+    <bean id="CaseActivityServiceJS" class="ru.citeck.ecos.icase.activity.CaseActivityServiceJS"
+          parent="baseJavaScriptExtension">
+        <property name="caseActivityService" ref="caseActivityService"/>
+        <property name="createVariantsProvider" ref="ru.citeck.ecos.icase.activity.create.menu.MenuCreateVariantsProvider"/>
+        <property name="extensionName" value="CaseActivityService"/>
         <property name="serviceRegistry" ref="ServiceRegistry"/>
         <property name="remoteRestoreCaseModelService" ref="remoteRestoreCaseModelService"/>
     </bean>

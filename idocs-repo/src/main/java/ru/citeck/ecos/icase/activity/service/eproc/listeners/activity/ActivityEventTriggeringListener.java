@@ -5,6 +5,7 @@ import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.icase.activity.dto.ActivityDefinition;
 import ru.citeck.ecos.icase.activity.dto.ActivityInstance;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.service.CaseActivityEventService;
@@ -54,7 +55,25 @@ public class ActivityEventTriggeringListener implements
 
     @Override
     public void onStartedActivity(ActivityRef activityRef) {
+        TransactionData data = getTransactionData();
+        boolean isDataOwner = false;
+        if (!data.hasOwner) {
+            data.hasOwner = isDataOwner = true;
+        }
+
         caseActivityEventService.fireEvent(activityRef, ICaseEventModel.CONSTR_ACTIVITY_STARTED);
+
+        ActivityDefinition activityDefinition = eprocActivityService.getActivityDefinition(activityRef);
+        if (EProcUtils.isStage(activityDefinition)) {
+            ActivityInstance activityInstance = eprocActivityService.getStateInstance(activityRef);
+            data.stagesToTryComplete.add(activityInstance);
+        }
+
+        if (isDataOwner) {
+            RecordRef caseRef = activityRef.getProcessId();
+            tryToFireStageChildrenStoppedEvents(data, caseRef);
+            data.hasOwner = false;
+        }
     }
 
     @Override

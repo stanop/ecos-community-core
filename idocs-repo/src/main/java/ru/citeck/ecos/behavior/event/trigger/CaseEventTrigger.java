@@ -1,11 +1,13 @@
 package ru.citeck.ecos.behavior.event.trigger;
 
 import org.alfresco.repo.node.NodeServicePolicies;
+import org.alfresco.repo.node.NodeUtils;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
@@ -29,6 +31,7 @@ import java.util.Map;
 @DependsOn("idocs.dictionaryBootstrap")
 public class CaseEventTrigger implements NodeServicePolicies.OnUpdatePropertiesPolicy {
 
+    private NodeService nodeService;
     private PolicyComponent policyComponent;
     private ActivityCommonService activityCommonService;
     private CaseActivityEventService caseActivityEventService;
@@ -37,11 +40,12 @@ public class CaseEventTrigger implements NodeServicePolicies.OnUpdatePropertiesP
 
     @Autowired
     public CaseEventTrigger(ServiceRegistry serviceRegistry) {
+        this.nodeService = serviceRegistry.getNodeService();
         this.policyComponent = serviceRegistry.getPolicyComponent();
         this.activityCommonService = (ActivityCommonService) serviceRegistry
-            .getService(CiteckServices.ACTIVITY_COMMON_SERVICE);
+                .getService(CiteckServices.ACTIVITY_COMMON_SERVICE);
         this.caseActivityEventService = (CaseActivityEventService) serviceRegistry
-            .getService(CiteckServices.CASE_ACTIVITY_EVENT_SERVICE);
+                .getService(CiteckServices.CASE_ACTIVITY_EVENT_SERVICE);
     }
 
     @PostConstruct
@@ -56,7 +60,9 @@ public class CaseEventTrigger implements NodeServicePolicies.OnUpdatePropertiesP
 
     @Override
     public void onUpdateProperties(NodeRef caseRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
-        ActivityRef rootActivityRef = activityCommonService.composeRootActivityRef(caseRef);
-        caseActivityEventService.fireEvent(rootActivityRef, ICaseEventModel.CONSTR_CASE_PROPERTIES_CHANGED);
+        if (NodeUtils.exists(caseRef, nodeService)) {
+            ActivityRef rootActivityRef = activityCommonService.composeRootActivityRef(caseRef);
+            caseActivityEventService.fireEvent(rootActivityRef, ICaseEventModel.CONSTR_CASE_PROPERTIES_CHANGED);
+        }
     }
 }

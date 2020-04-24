@@ -44,26 +44,52 @@ public class EProcCaseActivityDelegate implements CaseActivityDelegate {
         this.recordEvaluatorService = recordEvaluatorService;
     }
 
+    public void doTransition(ActivityRef activityRef, ActivityTransitionDefinition transitionDefinition) {
+        ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
+        RecordRef caseRef = activityRef.getProcessId();
+        switch (transitionDefinition.getToState()) {
+            case STARTED:
+                if (transitionDefinition.isRestartRequired()) {
+                    resetRecursive(caseRef, instance);
+                }
+                startActivityImpl(instance, caseRef, transitionDefinition);
+                break;
+            case COMPLETED:
+                stopActivityImpl(instance, caseRef, transitionDefinition);
+                break;
+        }
+    }
+
     @Override
     public void startActivity(ActivityRef activityRef) {
         ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
-
-        boolean isResetPerformed = false;
-        if (needResetBeforeStart(instance)) {
-            resetRecursive(activityRef.getProcessId(), instance);
-            isResetPerformed = true;
-        }
-
         ActivityTransitionDefinition transitionDefinition = getTransitionDefinition(instance, ActivityState.STARTED);
-        if (!isResetPerformed && transitionDefinition == null) {
+        if (transitionDefinition == null) {
             return;
         }
 
-        checkTransitionCondition(activityRef.getProcessId(), transitionDefinition);
+        startActivityImpl(instance, activityRef.getProcessId(), transitionDefinition);
+    }
+
+    private void startActivityImpl(ActivityInstance instance, RecordRef caseRef,
+                                   ActivityTransitionDefinition transitionDefinition) {
+
+        boolean isResetPerformed = false;
+        if (needResetBeforeStart(instance)) {
+            resetRecursive(caseRef, instance);
+            isResetPerformed = true;
+        }
+
+        if (!isResetPerformed && transitionIsNotAllowed(instance, transitionDefinition)) {
+            return;
+        }
+
+        checkTransitionCondition(caseRef, transitionDefinition);
 
         instance.setState(ActivityState.STARTED);
         instance.setActivated(new Date());
 
+        ActivityRef activityRef = ActivityRef.of(CaseServiceType.EPROC, caseRef, instance.getId());
         listenerManager.beforeStartedActivity(activityRef);
         listenerManager.onStartedActivity(activityRef);
 
@@ -81,21 +107,35 @@ public class EProcCaseActivityDelegate implements CaseActivityDelegate {
     @Override
     public void stopActivity(ActivityRef activityRef) {
         ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
-
         ActivityTransitionDefinition transitionDefinition = getTransitionDefinition(instance, ActivityState.COMPLETED);
         if (transitionDefinition == null) {
             return;
         }
 
-        checkTransitionCondition(activityRef.getProcessId(), transitionDefinition);
+        stopActivityImpl(instance, activityRef.getProcessId(), transitionDefinition);
+    }
+
+    private void stopActivityImpl(ActivityInstance instance, RecordRef caseRef,
+                                  ActivityTransitionDefinition transitionDefinition) {
+
+        if (transitionIsNotAllowed(instance, transitionDefinition)) {
+            return;
+        }
+
+        checkTransitionCondition(caseRef, transitionDefinition);
 
         instance.setState(ActivityState.COMPLETED);
         instance.setTerminated(new Date());
 
+        ActivityRef activityRef = ActivityRef.of(CaseServiceType.EPROC, caseRef, instance.getId());
         listenerManager.beforeStoppedActivity(activityRef);
         listenerManager.onStoppedActivity(activityRef);
 
-        eprocActivityService.saveState(eprocActivityService.getFullState(activityRef.getProcessId()));
+        eprocActivityService.saveState(eprocActivityService.getFullState(caseRef));
+    }
+
+    private boolean transitionIsNotAllowed(ActivityInstance instance, ActivityTransitionDefinition transitionDefinition) {
+        return transitionDefinition.getFromState() != instance.getState();
     }
 
     private ActivityTransitionDefinition getTransitionDefinition(ActivityInstance instance, ActivityState toState) {
@@ -237,7 +277,7 @@ public class EProcCaseActivityDelegate implements CaseActivityDelegate {
         ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
         return getActivitiesImpl(instance, recurse).stream()
                 .filter(childInstance -> {
-                    String instanceName = EProcUtils.getAnyAttribute(instance, CmmnDefinitionConstants.NAME);
+                    String instanceName = EProcUtils.getAnyAttribute(childInstance, CmmnDefinitionConstants.NAME);
                     return StringUtils.equals(name, instanceName);
                 })
                 .map(childInstance -> toCaseActivity(activityRef.getProcessId(), childInstance))
