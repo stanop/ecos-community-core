@@ -51,7 +51,7 @@ define(["dojo/_base/declare", "dijit/MenuItem", "js/citeck/_citeck.lib",
               method: 'POST',
               mode: 'no-cors',
               credentials: 'include'
-            }).then(() => {
+            }).then(function() {
               window.location.reload();
             });
           })
