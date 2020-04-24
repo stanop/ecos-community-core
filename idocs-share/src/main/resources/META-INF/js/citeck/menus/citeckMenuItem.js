@@ -1,4 +1,4 @@
-define(["dojo/_base/declare", "dijit/MenuItem", "js/citeck/_citeck.lib", 
+define(["dojo/_base/declare", "dijit/MenuItem", "js/citeck/_citeck.lib",
         "alfresco/menus/_AlfMenuItemMixin", "alfresco/core/Core", "dojo/dom-class"],
         function(declare, MenuItem, _citecklib, _AlfMenuItemMixin, AlfCore, domClass) {
 
@@ -25,12 +25,41 @@ define(["dojo/_base/declare", "dijit/MenuItem", "js/citeck/_citeck.lib",
         if (!this.inheriteClickEvent) return false;
       }
 
-      if (this.targetUrl) {
-        this.alfPublish("ALF_NAVIGATE_TO_PAGE", { url: this.targetUrl, type: this.targetUrlType, target: this.targetUrlLocation});
-      } else if (this.publishTopic) {
-        this.alfPublish(this.publishTopic, this.publishPayload ? this.publishPayload : {});
+      var self = this;
+      var defaultHandler = function () {
+        if (self.targetUrl) {
+          self.alfPublish("ALF_NAVIGATE_TO_PAGE", { url: self.targetUrl, type: self.targetUrlType, target: self.targetUrlLocation});
+        } else if (self.publishTopic) {
+          self.alfPublish(self.publishTopic, self.publishPayload ? self.publishPayload : {});
+        } else {
+          self.alfLog("error", "An AlfMenuItem was clicked but did not define a 'targetUrl' or 'publishTopic' or 'clickEvent' attribute", event);
+        }
+      };
+
+      if (this.actionType === "logout") {
+        fetch("/eis.json", { credentials: 'include' })
+          .then(function(r) { return r.json(); })
+          .then(function(config) {
+            var EIS_LOGOUT_URL_DEFAULT_VALUE = 'LOGOUT_URL';
+            var logoutUrl = config.logoutUrl;
+
+            if (logoutUrl === EIS_LOGOUT_URL_DEFAULT_VALUE) {
+              return defaultHandler();
+            }
+
+            fetch(logoutUrl, {
+              method: 'POST',
+              mode: 'no-cors',
+              credentials: 'include'
+            }).then(() => {
+              window.location.reload();
+            });
+          })
+          .catch(function() {
+            return defaultHandler();
+          });
       } else {
-        this.alfLog("error", "An AlfMenuItem was clicked but did not define a 'targetUrl' or 'publishTopic' or 'clickEvent' attribute", event);
+        defaultHandler();
       }
     },
 
