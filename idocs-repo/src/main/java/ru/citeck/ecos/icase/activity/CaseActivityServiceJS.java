@@ -1,7 +1,7 @@
 package ru.citeck.ecos.icase.activity;
 
+import com.google.common.collect.Iterables;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.cases.RemoteRestoreCaseModelService;
 import ru.citeck.ecos.icase.activity.create.dto.ActivityCreateVariant;
@@ -13,7 +13,6 @@ import ru.citeck.ecos.icase.activity.service.CaseActivityService;
 import ru.citeck.ecos.utils.ActivityUtilsJS;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 
-import java.lang.reflect.Array;
 import java.util.List;
 
 public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
@@ -46,13 +45,13 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
     public CaseActivity[] getStartedActivities(Object ref) {
         ActivityRef activityRef = activityUtilsJS.getActivityRef(ref);
         List<CaseActivity> activities = caseActivityService.getStartedActivities(activityRef);
-        return toArray(activities, CaseActivity.class);
+        return Iterables.toArray(activities, CaseActivity.class);
     }
 
     public CaseActivity[] getActivities(Object ref) {
         ActivityRef activityRef = activityUtilsJS.getActivityRef(ref);
         List<CaseActivity> activities = caseActivityService.getActivities(activityRef);
-        return toArray(activities, CaseActivity.class);
+        return Iterables.toArray(activities, CaseActivity.class);
     }
 
     public CaseActivity getActivityByName(Object ref, String title) {
@@ -117,18 +116,6 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
             throw new IllegalArgumentException("Can not convert from " + newIndex.getClass() + " to Integer");
         }
         return index;
-    }
-
-    private <T> T[] toArray(List<T> list, Class<T> clazz) {
-        if (CollectionUtils.isEmpty(list)) {
-            @SuppressWarnings("unchecked")
-            T[] empty = (T[]) Array.newInstance(clazz, 0);
-            return empty;
-        }
-
-        @SuppressWarnings("unchecked")
-        T[] array = (T[]) Array.newInstance(clazz, list.size());
-        return list.toArray(array);
     }
 
     @Autowired
