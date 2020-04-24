@@ -1290,7 +1290,7 @@
                                                                 "defaultValue": "",
                                                                 "encrypted": false,
                                                                 "validate": {
-                                                                    "required": true,
+                                                                    "required": false,
                                                                     "customMessage": "",
                                                                     "json": "",
                                                                     "custom": "",
@@ -1536,7 +1536,7 @@
                                                                 "defaultValue": "",
                                                                 "encrypted": false,
                                                                 "validate": {
-                                                                    "required": true,
+                                                                    "required": false,
                                                                     "customMessage": "",
                                                                     "json": "",
                                                                     "custom": "",
