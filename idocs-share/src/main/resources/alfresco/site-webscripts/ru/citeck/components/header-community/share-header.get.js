@@ -445,25 +445,27 @@ userMenuItems.push(
         }
     });
 
-if (!context.externalAuthentication) {
-    var logoutItemConfig = {
+var logoutItemConfig = {
+    id: "HEADER_USER_MENU_LOGOUT",
+    name: "js/citeck/header/citeckMenuItem",
+    config: {
         id: "HEADER_USER_MENU_LOGOUT",
-        name: "js/citeck/header/citeckMenuItem",
-        config: {
-            id: "HEADER_USER_MENU_LOGOUT",
-            label: "header.logout.label",
-            iconImage: "/share/res/components/images/header/logout.png"
-        }
-    };
+        label: "header.logout.label",
+        iconImage: "/share/res/components/images/header/logout.png",
+        actionType: "logout"
+    }
+};
 
+if (!context.externalAuthentication) {
     // Alfresco community version doesn't have LogoutService so we should check
     if (model.jsonModel.services && model.jsonModel.services.indexOf("alfresco/services/LogoutService") > -1) {
         logoutItemConfig.config.publishTopic = "ALF_DOLOGOUT";
     } else {
         logoutItemConfig.config.targetUrl = "dologout";
     }
-    userMenuItems.push(logoutItemConfig);
 }
+
+userMenuItems.push(logoutItemConfig);
 
 var HEADER_USER_MENU = {
     id: "HEADER_USER_MENU",
