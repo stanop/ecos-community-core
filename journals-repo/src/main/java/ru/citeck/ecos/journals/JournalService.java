@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface JournalService {
-    
+
     String JOURNALS_CONTAINER = "journals";
 
     void deployJournalTypes(InputStream inputStream);
