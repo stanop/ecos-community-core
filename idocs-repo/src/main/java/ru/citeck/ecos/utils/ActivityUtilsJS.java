@@ -1,7 +1,9 @@
 package ru.citeck.ecos.utils;
 
 import org.alfresco.repo.jscript.ScriptNode;
+import org.alfresco.repo.node.NodeUtils;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
@@ -14,11 +16,15 @@ public class ActivityUtilsJS {
 
     private ActivityCommonService activityCommonService;
     private AlfActivityUtils alfActivityUtils;
+    private NodeService nodeService;
 
     @Autowired
-    public ActivityUtilsJS(ActivityCommonService activityCommonService, AlfActivityUtils alfActivityUtils) {
+    public ActivityUtilsJS(ActivityCommonService activityCommonService,
+                           AlfActivityUtils alfActivityUtils,
+                           NodeService nodeService) {
         this.activityCommonService = activityCommonService;
         this.alfActivityUtils = alfActivityUtils;
+        this.nodeService = nodeService;
     }
 
     public ActivityRef getActivityRef(Object object) {
@@ -33,17 +39,11 @@ public class ActivityUtilsJS {
         }
         if (object instanceof NodeRef) {
             NodeRef nodeRef = (NodeRef) object;
-            if (activityCommonService.isRoot(nodeRef)) {
-                return activityCommonService.composeRootActivityRef(nodeRef);
-            }
-            return alfActivityUtils.composeActivityRef(nodeRef);
+            return getActivityRefFromNodeRef(nodeRef);
         }
         if (object instanceof ScriptNode) {
             NodeRef nodeRef = ((ScriptNode) object).getNodeRef();
-            if (activityCommonService.isRoot(nodeRef)) {
-                return activityCommonService.composeRootActivityRef(nodeRef);
-            }
-            return alfActivityUtils.composeActivityRef(nodeRef);
+            return getActivityRefFromNodeRef(nodeRef);
         }
 
         ActivityRef activityRef = activityCommonService.composeActivityRef(object.toString());
@@ -53,14 +53,22 @@ public class ActivityUtilsJS {
 
         if (NodeRef.isNodeRef(object.toString())) {
             NodeRef nodeRef = new NodeRef(object.toString());
-            if (activityCommonService.isRoot(nodeRef)) {
-                return activityCommonService.composeRootActivityRef(nodeRef);
-            }
-            return alfActivityUtils.composeActivityRef(nodeRef);
+            return getActivityRefFromNodeRef(nodeRef);
         }
 
         throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to ActivityRef. " +
                 "Source: " + object.toString());
+    }
+
+    private ActivityRef getActivityRefFromNodeRef(NodeRef nodeRef) {
+        if (!NodeUtils.exists(nodeRef, nodeService)) {
+            return null;
+        }
+
+        if (activityCommonService.isRoot(nodeRef)) {
+            return activityCommonService.composeRootActivityRef(nodeRef);
+        }
+        return alfActivityUtils.composeActivityRef(nodeRef);
     }
 
     public EventRef getEventRef(Object object) {

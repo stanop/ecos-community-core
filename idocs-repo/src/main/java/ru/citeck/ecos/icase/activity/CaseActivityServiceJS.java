@@ -104,6 +104,16 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
         return createVariantsProvider.getCreateVariants();
     }
 
+    public CaseActivity getActivity(Object ref) {
+        ActivityRef activityRef = activityUtilsJS.getActivityRef(ref);
+        return caseActivityService.getActivity(activityRef);
+    }
+
+    public CaseActivity getParentActivity(Object ref) {
+        ActivityRef childActivityRef = activityUtilsJS.getActivityRef(ref);
+        return caseActivityService.getParentActivity(childActivityRef);
+    }
+
     private int getInt(Object newIndex) {
         int index;
         if (newIndex instanceof Integer) {

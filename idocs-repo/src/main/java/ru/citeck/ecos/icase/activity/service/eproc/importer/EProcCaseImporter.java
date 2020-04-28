@@ -1,6 +1,7 @@
 package ru.citeck.ecos.icase.activity.service.eproc.importer;
 
 import com.hazelcast.util.ConcurrentHashSet;
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -14,17 +15,20 @@ import org.springframework.stereotype.Component;
 import ru.citeck.ecos.cmmn.CMMNUtils;
 import ru.citeck.ecos.cmmn.model.Case;
 import ru.citeck.ecos.cmmn.model.Definitions;
+import ru.citeck.ecos.cmmn.model.Stage;
 import ru.citeck.ecos.cmmn.service.util.CaseElementImport;
 import ru.citeck.ecos.cmmn.service.util.CaseRolesImport;
 import ru.citeck.ecos.icase.activity.service.eproc.EProcActivityService;
 import ru.citeck.ecos.icase.activity.service.eproc.importer.pojo.OptimizedProcessDefinition;
 import ru.citeck.ecos.icase.element.CaseElementService;
+import ru.citeck.ecos.model.RequirementModel;
 import ru.citeck.ecos.node.EcosTypeService;
 import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records2.RecordRef;
 
 import java.util.Set;
 
+@Slf4j
 @Component
 public class EProcCaseImporter {
 
@@ -95,7 +99,24 @@ public class EProcCaseImporter {
         CaseElementImport caseElementImport = new CaseElementImport(caseElementService);
         caseElementImport.importCaseElementTypes(caseNodeRef, caseItem);
 
+        importCaseCompletenessLevels(caseNodeRef, caseItem.getCasePlanModel());
+
         eprocActivityService.createDefaultState(caseRef, revisionId, optimizedProcessDefinition);
+    }
+
+    private void importCaseCompletenessLevels(NodeRef caseNodeRef, Stage casePlanModel) {
+        if (casePlanModel.getOtherAttributes().get(CMMNUtils.QNAME_COMPLETNESS_LEVELS) != null) {
+            String completnessLevelsString = casePlanModel.getOtherAttributes().get(CMMNUtils.QNAME_COMPLETNESS_LEVELS);
+            String[] completnessLevelsArray = completnessLevelsString.split(",");
+            for (String comletnessLevel : completnessLevelsArray) {
+                NodeRef nodeRef = utils.extractNodeRefFromCmmnId(comletnessLevel);
+                if (!nodeService.exists(nodeRef)) {
+                    log.error("Completness level with nodeRef = " + nodeRef + " doesn't exists! CaseRef=" + caseNodeRef);
+                    continue;
+                }
+                nodeService.createAssociation(caseNodeRef, nodeRef, RequirementModel.ASSOC_COMPLETENESS_LEVELS);
+            }
+        }
     }
 
     public void registerEcosType(RecordRef typeRef) {

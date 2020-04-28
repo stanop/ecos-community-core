@@ -34,6 +34,14 @@
             </properties>
         </aspect>
 
+        <aspect name="icaseEproc:hasDefinitionRevisionId">
+            <properties>
+                <property name="icaseEproc:definitionRevisionId">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
         <aspect name="icaseEproc:hasActivityRef">
             <properties>
                 <property name="icaseEproc:activityRef">

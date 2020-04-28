@@ -220,6 +220,16 @@ public class EProcCaseActivityDelegate implements CaseActivityDelegate {
     }
 
     @Override
+    public CaseActivity getParentActivity(ActivityRef childActivityRef) {
+        ActivityInstance childInstance = eprocActivityService.getStateInstance(childActivityRef);
+        ActivityInstance parentInstance = childInstance.getParentInstance();
+        if (parentInstance == null) {
+            return null;
+        }
+        return toCaseActivity(childActivityRef.getProcessId(), parentInstance);
+    }
+
+    @Override
     public List<CaseActivity> getActivities(ActivityRef activityRef) {
         return getActivities(activityRef, false);
     }
@@ -242,11 +252,14 @@ public class EProcCaseActivityDelegate implements CaseActivityDelegate {
     private CaseActivity toCaseActivity(ActivityRef activityRef, ActivityInstance instance) {
         CaseActivity result = new CaseActivity();
         result.setActivityRef(activityRef);
+        result.setActivityType(instance.getDefinition().getType());
         result.setTitle(EProcUtils.getAnyAttribute(instance, CmmnDefinitionConstants.TITLE));
         result.setState(instance.getState());
         result.setActive(instance.getState() == ActivityState.STARTED);
         result.setRepeatable(instance.getDefinition().isRepeatable());
         result.setIndex(instance.getDefinition().getIndex());
+        result.setStartDate(instance.getActivated());
+        result.setCompleteDate(instance.getTerminated());
         return result;
     }
 
