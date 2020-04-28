@@ -18,10 +18,10 @@
  */
 package ru.citeck.ecos.search;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import ecos.com.fasterxml.jackson210.core.JsonGenerator;
+import ecos.com.fasterxml.jackson210.databind.SerializerProvider;
+import ecos.com.fasterxml.jackson210.databind.annotation.JsonSerialize;
+import ecos.com.fasterxml.jackson210.databind.ser.std.StdSerializer;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
@@ -125,7 +125,7 @@ public class SearchCriteria {
         sort.put(field, SortOrder.forName(order).toBoolean());
         return this;
     }
-    
+
     public SearchCriteria addSort(String field, SortOrder order) {
     	sort.put(field, order.toBoolean());
         return this;
