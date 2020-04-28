@@ -105,8 +105,19 @@ JournalsList
 
         var journals = (this.journals() || []).slice();
         var uiservJournals = this.uiservJournals() || [];
+        var journalsId = _.map(journals, function(j) { return j.resolve('type.id', ''); });
 
-        for (var journal of uiservJournals) {
+        for (var i = 0; i < uiservJournals.length; i++) {
+
+            var journal = uiservJournals[i];
+            if (journal) {
+                var id = journal.resolve('type.id', '');
+                var journalIdx = journalsId.indexOf(id);
+                if (journalIdx >= 0) {
+                    journals[journalIdx] = journal;
+                    continue;
+                }
+            }
             journals.push(journal);
         }
 
@@ -2200,7 +2211,7 @@ JournalsWidget
                         var atts = self.resolve('currentSettings.visibleAttributes', []);
                         var attributes = {};
                         for (var i = 0; i < atts.length; i++) {
-                            let att = atts[i];
+                            var att = atts[i];
                             attributes[att.name()] = att.name() + "[]";
                         }
                         body.attributes = attributes;
