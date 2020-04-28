@@ -53,6 +53,15 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     }
 
     @Override
+    public CaseActivity getParentActivity(ActivityRef childActivityRef) {
+        if (isAlfrescoRef(childActivityRef)) {
+            return alfrescoDelegate.getParentActivity(childActivityRef);
+        } else {
+            return eprocDelegate.getParentActivity(childActivityRef);
+        }
+    }
+
+    @Override
     public List<CaseActivity> getActivities(ActivityRef activityRef) {
         if (isAlfrescoRef(activityRef)) {
             return alfrescoDelegate.getActivities(activityRef);

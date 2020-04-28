@@ -16,6 +16,8 @@ public interface CaseActivityDelegate {
 
     CaseActivity getActivity(ActivityRef activityRef);
 
+    CaseActivity getParentActivity(ActivityRef childActivityRef);
+
     List<CaseActivity> getActivities(ActivityRef activityRef);
 
     List<CaseActivity> getActivities(ActivityRef activityRef, boolean recurse);

@@ -13,10 +13,11 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.dto.ActivityState;
+import ru.citeck.ecos.icase.activity.dto.ActivityType;
 import ru.citeck.ecos.icase.activity.dto.CaseActivity;
+import ru.citeck.ecos.icase.activity.service.ActivityCommonService;
 import ru.citeck.ecos.icase.activity.service.CaseActivityDelegate;
-import ru.citeck.ecos.model.ActivityModel;
-import ru.citeck.ecos.model.LifeCycleModel;
+import ru.citeck.ecos.model.*;
 import ru.citeck.ecos.utils.AlfActivityUtils;
 import ru.citeck.ecos.utils.DictionaryUtils;
 import ru.citeck.ecos.utils.RepoUtils;
@@ -34,6 +35,7 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
     private PolicyComponent policyComponent;
     private NodeService nodeService;
     private AlfActivityUtils alfActivityUtils;
+    private ActivityCommonService activityCommonService;
 
     private ClassPolicyDelegate<CaseActivityPolicies.BeforeCaseActivityStartedPolicy> beforeStartedDelegate;
     private ClassPolicyDelegate<CaseActivityPolicies.OnCaseActivityStartedPolicy> onStartedDelegate;
@@ -114,6 +116,8 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
 
         caseActivity.setActivityRef(activityRef);
 
+        caseActivity.setActivityType(getActivityType(activityNodeRef));
+
         ActivityState activityState = getActivityState(activityNodeRef);
         caseActivity.setState(activityState);
 
@@ -123,7 +127,39 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
         String title = (String) nodeService.getProperty(activityNodeRef, ContentModel.PROP_TITLE);
         caseActivity.setTitle(title);
 
+        caseActivity.setStartDate((Date) nodeService.getProperty(activityNodeRef, ActivityModel.PROP_ACTUAL_START_DATE));
+        caseActivity.setCompleteDate((Date) nodeService.getProperty(activityNodeRef, ActivityModel.PROP_ACTUAL_END_DATE));
+
         return caseActivity;
+    }
+
+    @Override
+    public CaseActivity getParentActivity(ActivityRef childActivityRef) {
+        ActivityRef parentActivityRef = alfActivityUtils.getParentActivityRef(childActivityRef);
+        if (parentActivityRef == null) {
+            return null;
+        }
+        return getActivity(parentActivityRef);
+    }
+
+    private ActivityType getActivityType(NodeRef activityNodeRef) {
+        QName type = nodeService.getType(activityNodeRef);
+        if (dictionaryService.isSubClass(type, ActionModel.TYPE_ACTION)) {
+            return ActivityType.ACTION;
+        }
+        if (dictionaryService.isSubClass(type, StagesModel.TYPE_STAGE)) {
+            return ActivityType.STAGE;
+        }
+        if (dictionaryService.isSubClass(type, ICaseTaskModel.TYPE_TASK)) {
+            return ActivityType.USER_TASK;
+        }
+        if (dictionaryService.isSubClass(type, CaseTimerModel.TYPE_TIMER)) {
+            return ActivityType.TIMER;
+        }
+        if (activityCommonService.isRoot(activityNodeRef)) {
+            return ActivityType.ROOT;
+        }
+        return null;
     }
 
     @Override
@@ -310,5 +346,10 @@ public class AlfrescoCaseActivityDelegate implements CaseActivityDelegate {
     @Autowired
     public void setAlfActivityUtils(AlfActivityUtils alfActivityUtils) {
         this.alfActivityUtils = alfActivityUtils;
+    }
+
+    @Autowired
+    public void setActivityCommonService(ActivityCommonService activityCommonService) {
+        this.activityCommonService = activityCommonService;
     }
 }

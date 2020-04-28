@@ -41,7 +41,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Service
+@Service("eprocActivityService")
 public class EProcActivityServiceImpl implements EProcActivityService {
 
     private static final String CMMN_PROCESS_TYPE = "cmmn";
@@ -103,30 +103,35 @@ public class EProcActivityServiceImpl implements EProcActivityService {
     private OptimizedProcessDefinition getFullDefinitionImpl(RecordRef caseRef) {
         NodeRef caseNodeRef = RecordsUtils.toNodeRef(caseRef);
 
+        String defRevId = (String) nodeService.getProperty(caseNodeRef, EcosProcessModel.PROP_DEFINITION_REVISION_ID);
+        if (StringUtils.isNotBlank(defRevId)) {
+            return getFullDefinitionByRevisionId(defRevId);
+        }
+
         String stateId = (String) nodeService.getProperty(caseNodeRef, EcosProcessModel.PROP_STATE_ID);
         if (StringUtils.isNotBlank(stateId)) {
-            return getFullDefinitionForExisting(stateId);
-        } else {
-            return getFullDefinitionForNewCase(caseNodeRef);
+            return getFullDefinitionForExistingByStateId(stateId);
         }
+
+        return getFullDefinitionForNewCase(caseNodeRef);
     }
 
-    private OptimizedProcessDefinition getFullDefinitionForExisting(String stateId) {
+    private OptimizedProcessDefinition getFullDefinitionForExistingByStateId(String stateId) {
         GetProcStateResp processState = getProcessStateFromMicroservice(stateId);
         if (processState == null) {
             throw new IllegalArgumentException("Can not find state for stateId=" + stateId);
         }
 
         String procDefRevId = processState.getProcDefRevId();
-        return getOptimizedProcessDefinitionByRevId(procDefRevId);
+        return getFullDefinitionByRevisionId(procDefRevId);
     }
 
     private OptimizedProcessDefinition getFullDefinitionForNewCase(NodeRef caseNodeRef) {
         String processRevisionId = getRevisionIdForNode(caseNodeRef);
-        return getOptimizedProcessDefinitionByRevId(processRevisionId);
+        return getFullDefinitionByRevisionId(processRevisionId);
     }
 
-    private OptimizedProcessDefinition getOptimizedProcessDefinitionByRevId(String processRevisionId) {
+    private OptimizedProcessDefinition getFullDefinitionByRevisionId(String processRevisionId) {
         OptimizedProcessDefinition result = revisionIdToProcessDefinitionCache.getUnchecked(processRevisionId);
         if (result == null || result.getProcessDefinition() == null) {
             throw new IllegalArgumentException("Can not find processDef by procDefRevId=" + processRevisionId);
@@ -227,6 +232,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         CreateProcResp createProcResp = createProcessInstanceInMicroservice(definitionRevisionId, caseRef);
         nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_PROCESS_ID, createProcResp.getProcId());
         nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_STATE_ID, createProcResp.getProcStateId());
+        nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_DEFINITION_REVISION_ID, definitionRevisionId);
 
         OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionForNewCase(caseNodeRef);
         ProcessInstance processInstance = createProcessInstanceFromDefinition(createProcResp.getProcId(),
@@ -245,6 +251,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         CreateProcResp createProcResp = createProcessInstanceInMicroservice(revisionId, caseRef);
         nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_PROCESS_ID, createProcResp.getProcId());
         nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_STATE_ID, createProcResp.getProcStateId());
+        nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_DEFINITION_REVISION_ID, revisionId);
 
         ProcessInstance processInstance = createProcessInstanceFromDefinition(createProcResp.getProcId(),
                 caseRef, optimizedProcessDefinition.getProcessDefinition());
@@ -324,7 +331,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
             throw new RuntimeException("Can not parse state from microservice for caseRef=" + caseRef);
         }
 
-        OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionForExisting(stateId);
+        OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionImpl(caseRef);
         setUnSerializableObjectsInProcessInstance(instance, optimizedProcessDefinition);
 
         putInstanceToTransactionScopeByStateId(caseRef, instance);

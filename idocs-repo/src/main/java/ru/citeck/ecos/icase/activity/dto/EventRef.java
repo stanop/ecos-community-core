@@ -30,6 +30,7 @@ public class EventRef {
     @Getter private String id;
 
     @JsonCreator
+    @ecos.com.fasterxml.jackson210.annotation.JsonCreator
     public static EventRef of(String eventRef) {
         if (StringUtils.isBlank(eventRef)) {
             return EMPTY;
@@ -77,12 +78,14 @@ public class EventRef {
     }
 
     @JsonIgnore
+    @ecos.com.fasterxml.jackson210.annotation.JsonIgnore
     public boolean isRoot() {
         return ROOT_ID.equalsIgnoreCase(id);
     }
 
     @Override
     @JsonValue
+    @ecos.com.fasterxml.jackson210.annotation.JsonValue
     public String toString() {
         return (caseServiceType != null ? (caseServiceType.getShortName() + SERVICE_TYPE_DELIMITER) : "")
             + (StringUtils.isNotBlank(processId.toString()) ? (processId.toString() + PROCESS_ID_DELIMITER) : "")
