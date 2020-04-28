@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Component
+//@Component
 public class EcosJournalsMigration implements ModuleMigration {
 
     private static final int BATCH_SIZE = 100;
