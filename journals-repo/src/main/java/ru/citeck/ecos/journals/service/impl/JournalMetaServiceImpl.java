@@ -38,7 +38,6 @@ import ru.citeck.ecos.server.utils.Utils;
 import ru.citeck.ecos.utils.NodeUtils;
 import ru.citeck.ecos.utils.RepoUtils;
 
-import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -68,6 +67,7 @@ public class JournalMetaServiceImpl implements JournalMetaService {
     public JournalMetaServiceImpl(ServiceRegistry serviceRegistry,
                                   QueryLangService queryLangService,
                                   NodeUtils nodeUtils,
+                                  JournalService journalService,
                                   CreateVariantsGet createVariantsGet) {
         this.nodeService = serviceRegistry.getNodeService();
         this.searchService = serviceRegistry.getSearchService();
@@ -77,6 +77,7 @@ public class JournalMetaServiceImpl implements JournalMetaService {
         this.templateService = serviceRegistry.getTemplateService();
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.createVariantsGet = createVariantsGet;
+        this.journalService = journalService;
 
         journalRefById = CacheBuilder.newBuilder()
             .expireAfterWrite(600, TimeUnit.SECONDS)
