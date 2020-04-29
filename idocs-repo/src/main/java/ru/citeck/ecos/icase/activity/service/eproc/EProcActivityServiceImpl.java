@@ -314,7 +314,8 @@ public class EProcActivityServiceImpl implements EProcActivityService {
     public ProcessInstance getFullState(RecordRef caseRef) {
         NodeRef caseNodeRef = RecordsUtils.toNodeRef(caseRef);
         String stateId = (String) nodeService.getProperty(caseNodeRef, EcosProcessModel.PROP_STATE_ID);
-        if (StringUtils.isBlank(stateId)) {
+        String procId = (String) nodeService.getProperty(caseNodeRef, EcosProcessModel.PROP_PROCESS_ID);
+        if (StringUtils.isBlank(stateId) || StringUtils.isBlank(procId)) {
             return null;
         }
 
@@ -323,16 +324,24 @@ public class EProcActivityServiceImpl implements EProcActivityService {
             return transactionProcessInstance;
         }
 
+        OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionImpl(caseRef);
+
         GetProcStateResp processState = getProcessStateFromMicroservice(stateId);
         byte[] stateData = processState.getStateData();
 
-        ProcessInstance instance = Json.getMapper().read(stateData, ProcessInstance.class);
-        if (instance == null) {
-            throw new RuntimeException("Can not parse state from microservice for caseRef=" + caseRef);
-        }
+        ProcessInstance instance;
+        if (stateData == null || stateData.length == 0) {
+            ProcessDefinition processDefinition = optimizedProcessDefinition.getProcessDefinition();
+            instance = createProcessInstanceFromDefinition(procId, caseRef, processDefinition);
+        } else {
+            instance = Json.getMapper().read(stateData, ProcessInstance.class);
 
-        OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionImpl(caseRef);
-        setUnSerializableObjectsInProcessInstance(instance, optimizedProcessDefinition);
+            if (instance == null) {
+                throw new RuntimeException("Can not parse state from microservice for caseRef=" + caseRef);
+            }
+
+            setUnSerializableObjectsInProcessInstance(instance, optimizedProcessDefinition);
+        }
 
         putInstanceToTransactionScopeByStateId(caseRef, instance);
 

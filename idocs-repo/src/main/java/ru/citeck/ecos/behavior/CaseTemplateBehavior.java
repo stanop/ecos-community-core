@@ -177,7 +177,6 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
                 log.info(stopWatch.prettyPrint());
 
             }, getExceptionConsumer(caseNode));
-
         }, getExceptionConsumer(caseNode));
     }
 
@@ -191,14 +190,17 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
             eProcCaseImporter.importCase(caseRef);
             stopWatch.stop();
 
-            startWatch(stopWatch, "fire '" + ICaseEventModel.CONSTR_CASE_CREATED + "' event. caseRef: " + caseNode);
-            ActivityRef activityRef = ActivityRef.of(CaseServiceType.EPROC, caseRef, ActivityRef.ROOT_ID);
-            caseActivityEventService.fireEvent(activityRef, ICaseEventModel.CONSTR_CASE_CREATED);
-            stopWatch.stop();
+            //TODO do it in same transaction after global roles has been kicked
+            TransactionUtils.doAfterCommit(() -> {
+                startWatch(stopWatch, "fire '" + ICaseEventModel.CONSTR_CASE_CREATED + "' event. caseRef: " + caseNode);
+                ActivityRef activityRef = ActivityRef.of(CaseServiceType.EPROC, caseRef, ActivityRef.ROOT_ID);
+                caseActivityEventService.fireEvent(activityRef, ICaseEventModel.CONSTR_CASE_CREATED);
+                stopWatch.stop();
 
-            itemsUpdateState.endUpdate(CaseTemplateBehavior.class, caseNode, true, false);
+                itemsUpdateState.endUpdate(CaseTemplateBehavior.class, caseNode, true, false);
 
-            log.info(stopWatch.prettyPrint());
+                log.info(stopWatch.prettyPrint());
+            }, getExceptionConsumer(caseNode));
         }, getExceptionConsumer(caseNode));
     }
 
