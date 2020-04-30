@@ -52,7 +52,7 @@ public class SetPropertyValueCommandProvider extends AlfEprocCaseCommandsProvide
         RecordRef caseRef = activityRef.getProcessId();
 
         NodeRef activityNodeRef = alfActivityUtils.getActivityNodeRef(activityRef);
-        QName property = (QName) nodeService.getProperty(activityNodeRef, ActionModel.SetPropertyValue.PROP_PROPERTY);
+        String property = ((QName) nodeService.getProperty(activityNodeRef, ActionModel.SetPropertyValue.PROP_PROPERTY)).toString();
         Serializable value = nodeService.getProperty(activityNodeRef, ActionModel.SetPropertyValue.PROP_VALUE);
 
         return new SetPropertyValueCommand(caseRef, property, value);
@@ -62,8 +62,7 @@ public class SetPropertyValueCommandProvider extends AlfEprocCaseCommandsProvide
     protected Object provideEprocCommand(ActivityRef activityRef) {
         ActivityDefinition definition = eprocActivityService.getActivityDefinition(activityRef);
 
-        String rawName = EProcUtils.getDefAttribute(definition, CmmnDefinitionConstants.ACTION_SET_PROPERTY_PROP_NAME);
-        QName name = QName.createQName(rawName, namespaceService);
+        String name = EProcUtils.getDefAttribute(definition, CmmnDefinitionConstants.ACTION_SET_PROPERTY_PROP_NAME);
         String value = EProcUtils.getDefAttribute(definition, CmmnDefinitionConstants.ACTION_SET_PROPERTY_PROP_VALUE);
 
         return new SetPropertyValueCommand(activityRef.getProcessId(), name, value);
