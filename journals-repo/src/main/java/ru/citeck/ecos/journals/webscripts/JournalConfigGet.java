@@ -1,8 +1,6 @@
 package ru.citeck.ecos.journals.webscripts;
 
 import lombok.Data;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
@@ -54,6 +52,8 @@ public class JournalConfigGet extends AbstractWebScript {
         if (sourceId == null) {
             sourceId = "";
         }
+
+        journalId = journalType.getId();
 
         JournalMeta journalMeta = journalMetaService.getJournalMeta(journalId);
 
