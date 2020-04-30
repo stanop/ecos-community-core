@@ -99,30 +99,8 @@ JournalsList
     .property('documentNodeRef', s)
     .property('title', s)
     .property('journals', [ Journal ])
-    .property('uiservJournals', [ Journal ])
     .property('default', Journal)
-    .computed('allJournals', function() {
-
-        var journals = (this.journals() || []).slice();
-        var uiservJournals = this.uiservJournals() || [];
-        var journalsId = _.map(journals, function(j) { return j.resolve('type.id', ''); });
-
-        for (var i = 0; i < uiservJournals.length; i++) {
-
-            var journal = uiservJournals[i];
-            if (journal) {
-                var id = journal.resolve('type.id', '');
-                var journalIdx = journalsId.indexOf(id);
-                if (journalIdx >= 0) {
-                    journals[journalIdx] = journal;
-                    continue;
-                }
-            }
-            journals.push(journal);
-        }
-
-        return journals;
-    })
+    .computed('allJournals', function() { return this.journals(); })
     .computed('scope', function() {
         return this.id() ? this.id().replace(journalsListIdRegexp, '$1') : '';
     })
@@ -1927,43 +1905,6 @@ JournalsWidget
 /*********************************************************/
 
 JournalsList
-    .load('uiservJournals', function (viewModel) {
-
-        var fromCache = uiservListJournalsCache[this.id()];
-
-        if (fromCache) {
-            fromCache.then(function (res) {
-                viewModel.model({ uiservJournals: res });
-            });
-        } else {
-            uiservListJournalsCache[this.id()] = Citeck.Records.query({
-                    sourceId: 'uiserv/journal_v0',
-                    language: 'list-id',
-                    query: {
-                        listId: this.id()
-                    }
-                },
-                {
-                    title: 'title'
-                })
-                .then(function (res) { return res.records; })
-                .catch(function () { return []; })
-                .then(function (records) {
-                    var result = [];
-                    for (var i = 0; i < records.length; i++) {
-                        var rec = records[i];
-                        var id = rec.id.replace("uiserv/journal_v0@", '');
-                        result.push({
-                            "nodeRef": id,
-                            "title": rec.title,
-                            "type": id
-                        });
-                    }
-                    viewModel.model({ uiservJournals: result });
-                    return result;
-                });
-        }
-    })
     .load('*', koutils.simpleLoad({
         url: Alfresco.constants.PROXY_URI + "api/journals/list?journalsList={id}&nodeRef={documentNodeRef}"
     }))
@@ -1981,54 +1922,34 @@ JournalType
     .load('gqlschema', koutils.simpleLoad({
         url: Alfresco.constants.PROXY_URI + "api/journals/gql-schema?journalId={id}",
         resultsMap: { gqlschema: 'schema' }
-    }));
+    }))
+
+    .load('*', koutils.simpleLoad({
+        url: Alfresco.constants.PROXY_URI + "api/journals/types/{id}",
+        resultsMap: function(data) {
+            return mapObject = {
+                attributes: data.attributes,
+                options: data.settings,
+                groupActions: data.groupActions,
+                datasource: data.datasource,
+                formInfo: {
+                    type: data.settings ? data.settings.type : "",
+                    formId: data.settings ? data.settings.formId : ""
+                }
+            };
+        },
+        postprocessing: function(model) { model["journal"] = this; }
+    }))
+    ;
 
 Journal
-    .load('*', function (viewModel) {
-
-        var self = this;
-
-        Citeck.Records.get("uiserv/journal_v0@" + viewModel.nodeRef())
-            .load(".json")
-            .catch(function () { return {}; })
-            .then(function (resp) {
-
-                var postprocessing = function(model) {
-
-                    model = Object.assign({}, model);
-
-                    for (var c in model.createVariants) {
-                        model.createVariants[c]["journal"] = self;
-                    }
-                    if (model.type && model.type.id) {
-                        model.type = {
-                            id: model.type.id,
-                            attributes: model.type.attributes,
-                            options: model.type.settings,
-                            groupActions: model.type.groupActions,
-                            datasource: model.type.datasource,
-                            formInfo: {
-                                type: model.type.settings ? model.type.settings.type : "",
-                                formId: model.type.settings ? model.type.settings.formId : ""
-                            },
-                            journal: self
-                        };
-                    }
-                    return model;
-                }
-
-                if (resp.nodeRef) {
-                    viewModel.model(postprocessing(resp));
-                } else {
-                    koutils.simpleLoad({
-                        url: Alfresco.constants.PROXY_URI + "api/journals/journals-config?nodeRef={nodeRef}",
-                        postprocessing: postprocessing
-                    })(viewModel);
-                }
-        });
-    });
-
-var uiservListJournalsCache = {};
+    .load('*', koutils.simpleLoad({
+        url: Alfresco.constants.PROXY_URI + "api/journals/journals-config?nodeRef={nodeRef}",
+        postprocessing: function(model) {
+            for (var c in model.createVariants) { model.createVariants[c]["journal"] = this; }
+        }
+    }))
+    ;
 
 Filter
     .load('*', koutils.simpleLoad({
@@ -2148,11 +2069,7 @@ JournalsWidget
                         if (key === "id") {
                             record['nodeRef'] = item;
                         } else {
-                            if (item && item.name) {
-                                record.attributes[item.name] = item ? item.val : [];
-                            } else {
-                                record.attributes[key] = item ? item : [];
-                            }
+                            record.attributes[item.name] = item ? item.val : [];
                         }
                     }
                     return record;
@@ -2174,7 +2091,6 @@ JournalsWidget
             };
 
             var journalType = this.journal().type();
-            var isUiservJournal = !!journalType.options()["__uiserv__"];
             var datasource = journalType.datasource ? journalType.datasource() || "" : "";
 
             if (datasource.indexOf('/') >= 0) {
@@ -2198,28 +2114,12 @@ JournalsWidget
                         query.query = recordsQuery.query;
                     }
 
-                    var body = {
-                        query: query
-                    }
-                    var schema = "{}";
-                    if (!isUiservJournal) {
-                        schema = journalType.gqlschema();
-                    }
-                    if (schema !== "{}") {
-                        body.schema = schema;
-                    } else {
-                        var atts = self.resolve('currentSettings.visibleAttributes', []);
-                        var attributes = {};
-                        for (var i = 0; i < atts.length; i++) {
-                            var att = atts[i];
-                            attributes[att.name()] = att.name() + "[]";
-                        }
-                        body.attributes = attributes;
-                    }
-
                     Alfresco.util.Ajax.jsonPost({
                         url: '/share/api/records/query',
-                        dataObj: body,
+                        dataObj: {
+                            query: query,
+                            schema: journalType.gqlschema()
+                        },
                         successCallback: {
                             scope: this,
                             fn: function(response) {
@@ -2240,7 +2140,7 @@ JournalsWidget
                     });
                 };
 
-                if (!isUiservJournal && !journalType.gqlschema.loaded()) {
+                if (!journalType.gqlschema.loaded()) {
                     koutils.subscribeOnce(journalType.gqlschema, queryImpl, this);
                     journalType.gqlschema()
                 } else {
