@@ -14,11 +14,11 @@ public interface HistoryRemoteService {
     /**
      * Get all history records
      *
-     * @param startRecord - First record to show
-     * @param limit - Results limit (records count)
+     * @param page - Page to show
+     * @param limit - Results limit
      * @return List of maps
      */
-    List<Map> getAllHistoryRecords(Integer startRecord, Integer limit);
+    List<Map> getAllHistoryRecords(Integer page, Integer limit);
 
     /**
      * Get history records
