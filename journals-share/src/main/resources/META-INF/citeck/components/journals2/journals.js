@@ -1969,6 +1969,20 @@ JournalsList
     }))
     ;
 
+var journalTypeModelPostProcessing = function (model) {
+    return {
+        id: model.id,
+        attributes: model.attributes,
+        options: model.settings,
+        groupActions: model.groupActions,
+        datasource: model.datasource,
+        formInfo: {
+            type: model.settings ? model.settings.type : "",
+            formId: model.settings ? model.settings.formId : ""
+        }
+    }
+};
+
 JournalType
     .load('filters', koutils.simpleLoad({
         url: Alfresco.constants.PROXY_URI + "api/journals/filters?journalType={id}",
@@ -1981,7 +1995,25 @@ JournalType
     .load('gqlschema', koutils.simpleLoad({
         url: Alfresco.constants.PROXY_URI + "api/journals/gql-schema?journalId={id}",
         resultsMap: { gqlschema: 'schema' }
-    }));
+    }))
+    .load('*', function (viewModel) {
+        Citeck.Records.get("uiserv/journal_v0@" + this.id())
+            .load(".json")
+            .catch(function () { return {}; })
+            .then(function (resp) {
+                if (resp && resp.type && resp.type.id) {
+                    var model = journalTypeModelPostProcessing(resp.type);
+                    model.journal = resp.nodeRef;
+                    viewModel.model(model);
+                } else {
+                    koutils.simpleLoad({
+                        url: Alfresco.constants.PROXY_URI + "api/journals/types/{id}",
+                        resultsMap: journalTypeModelPostProcessing,
+                        postprocessing: function(model) { model["journal"] = this; }
+                    })(viewModel);
+                }
+            });
+    });
 
 Journal
     .load('*', function (viewModel) {
@@ -2001,29 +2033,38 @@ Journal
                         model.createVariants[c]["journal"] = self;
                     }
                     if (model.type && model.type.id) {
-                        model.type = {
-                            id: model.type.id,
-                            attributes: model.type.attributes,
-                            options: model.type.settings,
-                            groupActions: model.type.groupActions,
-                            datasource: model.type.datasource,
-                            formInfo: {
-                                type: model.type.settings ? model.type.settings.type : "",
-                                formId: model.type.settings ? model.type.settings.formId : ""
-                            },
-                            journal: self
-                        };
+                        model.type = journalTypeModelPostProcessing(model.type);
+                        model.type.journal = self;
                     }
                     return model;
                 }
 
-                if (resp.nodeRef) {
+                if (resp && resp.nodeRef) {
                     viewModel.model(postprocessing(resp));
                 } else {
-                    koutils.simpleLoad({
-                        url: Alfresco.constants.PROXY_URI + "api/journals/journals-config?nodeRef={nodeRef}",
-                        postprocessing: postprocessing
-                    })(viewModel);
+                    var nodeRef = self.nodeRef();
+
+                    var loadImpl = function (nodeRef) {
+                        koutils.simpleLoad({
+                            url: Alfresco.constants.PROXY_URI + "api/journals/journals-config?nodeRef=" + nodeRef,
+                            postprocessing: postprocessing
+                        })(viewModel);
+                    };
+
+                    if (nodeRef && nodeRef.indexOf("workspace://") === -1) {
+                        Citeck.Records.query({
+                            query: 'TYPE:"journal:journal" AND =journal:journalType:"' + nodeRef + '"',
+                            language: 'fts-alfresco'
+                        }).then(function (resp) {
+                            if (resp && resp.records && resp.records.length) {
+                                loadImpl(resp.records[0]);
+                            } else {
+                                throw new Error("Journal nodeRef can't be received for id: '" + nodeRef + "'");
+                            }
+                        });
+                    } else {
+                        loadImpl(nodeRef);
+                    }
                 }
         });
     });
