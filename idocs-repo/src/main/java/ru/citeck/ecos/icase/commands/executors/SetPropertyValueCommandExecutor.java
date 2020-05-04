@@ -37,7 +37,7 @@ public class SetPropertyValueCommandExecutor implements CommandExecutor<SetPrope
     @Override
     public Object execute(SetPropertyValueCommand command) {
         NodeRef caseRef = RecordsUtils.toNodeRef(command.getCaseRef());
-        QName propertyQName = command.getPropertyQName();
+        QName propertyQName = QName.createQName(command.getPropertyQName());
         Serializable propertyValue = command.getPropertyValue();
         nodeService.setProperty(caseRef, propertyQName, propertyValue);
         return null;
