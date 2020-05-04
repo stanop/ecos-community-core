@@ -70,6 +70,12 @@
         </dependency>
 
         <dependency>
+            <groupId>ru.citeck.ecos</groupId>
+            <artifactId>ecos-snakeyaml</artifactId>
+            <version>${ecos.snakeyaml.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>io.github.microutils</groupId>
             <artifactId>kotlin-logging</artifactId>
             <version>${kotlin.logging.version}</version>
