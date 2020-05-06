@@ -1,10 +1,9 @@
 package ru.citeck.ecos.journals.webscripts;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import ecos.com.fasterxml.jackson210.databind.JsonNode;
+import ecos.com.fasterxml.jackson210.databind.node.JsonNodeFactory;
+import ecos.com.fasterxml.jackson210.databind.node.ObjectNode;
+import ecos.com.fasterxml.jackson210.databind.node.TextNode;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -63,8 +62,6 @@ public class JournalConfigGet extends AbstractWebScript {
 
     private static final String META_RECORD_TEMPLATE = AlfDictionaryRecords.ID + "@%s";
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-
     private LoadingCache<String, JournalRef> journalRefById;
     private LoadingCache<JournalRef, JournalRepoData> repoDataByJournalRef;
 
@@ -101,7 +98,7 @@ public class JournalConfigGet extends AbstractWebScript {
         String journalId = req.getParameter(PARAM_JOURNAL);
         Response response = executeImpl(journalId);
 
-        objectMapper.writeValue(res.getWriter(), response);
+        Json.getMapper().write(res.getWriter(), response);
         res.setStatus(Status.STATUS_OK);
     }
 
@@ -190,11 +187,7 @@ public class JournalConfigGet extends AbstractWebScript {
                 String value = v.trim();
 
                 if (value.startsWith("{") || value.startsWith("[")) {
-                    try {
-                        params.put(k, objectMapper.readTree(value));
-                    } catch (IOException e) {
-                        logger.error("Invalid JSON value: " + value, e);
-                    }
+                    params.put(k, Json.getMapper().read(value));
                 } else {
                     params.put(k, TextNode.valueOf(value));
                 }
@@ -257,20 +250,12 @@ public class JournalConfigGet extends AbstractWebScript {
         meta.setActions(journal.getActions());
         meta.setGroupActions(getGroupActions(journal));
 
-        try {
-            if (StringUtils.isNotBlank(journal.getGroupBy())) {
-                meta.setGroupBy(objectMapper.readTree(journal.getGroupBy()));
-            }
-        } catch (IOException e) {
-            logger.error("GroupBy is invalid: " + journal.getGroupBy(), e);
+        if (StringUtils.isNotBlank(journal.getGroupBy())) {
+            meta.setGroupBy(Json.getMapper().read(journal.getGroupBy()));
         }
 
         if (StringUtils.isNotBlank(journal.getPredicate())) {
-            try {
-                meta.setPredicate(objectMapper.readTree(journal.getPredicate()));
-            } catch (IOException e) {
-                logger.error("Predicate is invalid: " + journal.getPredicate(), e);
-            }
+            meta.setPredicate(Json.getMapper().read(journal.getPredicate()));
         }
         meta.setCreateVariants(createVariantsGet.getVariantsByJournalRef(journalData.getNodeRef(), true));
 
@@ -335,7 +320,7 @@ public class JournalConfigGet extends AbstractWebScript {
 
         if (meta.getPredicate() == null) {
 
-            JsonNode criteriaJson = objectMapper.valueToTree(criteria);
+            JsonNode criteriaJson = Json.getMapper().toJson(criteria);
             try {
                 Object convertedQuery = queryLangService.convertLang(criteriaJson,
                         CriteriaAlfNodesSearch.LANGUAGE,
@@ -346,13 +331,6 @@ public class JournalConfigGet extends AbstractWebScript {
                 logger.error("Language conversion error. criteria: " + criteriaJson, e);
             }
         }
-    }
-
-    private ObjectNode optionsToNode(Map<String, String> options) {
-        if (options == null || options.isEmpty()) {
-            return JsonNodeFactory.instance.objectNode();
-        }
-        return objectMapper.convertValue(options, ObjectNode.class);
     }
 
     private List<GroupAction> getGroupActions(JournalType type) {
