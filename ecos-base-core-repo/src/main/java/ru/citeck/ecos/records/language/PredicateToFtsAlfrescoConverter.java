@@ -5,12 +5,15 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.model.EcosTypeModel;
+import ru.citeck.ecos.node.EcosTypeService;
 import ru.citeck.ecos.records2.predicate.PredicateService;
 import ru.citeck.ecos.records2.predicate.model.*;
 import ru.citeck.ecos.records2.querylang.QueryLangConverter;
@@ -52,7 +55,9 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter<Predi
     private static final String CM_MODIFIER_ATTRIBUTE = "cm:modifier";
 
     private final DictUtils dictUtils;
+    private final NodeService nodeService;
     private final SearchService searchService;
+    private final EcosTypeService ecosTypeService;
     private final NamespaceService namespaceService;
     private final AssociationIndexPropertyRegistry associationIndexPropertyRegistry;
 
@@ -61,10 +66,14 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter<Predi
                                            SearchService searchService,
                                            QueryLangService queryLangService,
                                            ServiceRegistry serviceRegistry,
-                                           AssociationIndexPropertyRegistry associationIndexPropertyRegistry) {
+                                           AssociationIndexPropertyRegistry associationIndexPropertyRegistry,
+                                           NodeService nodeService,
+                                           EcosTypeService ecosTypeService) {
 
         this.dictUtils = dictUtils;
+        this.nodeService = nodeService;
         this.searchService = searchService;
+        this.ecosTypeService = ecosTypeService;
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.associationIndexPropertyRegistry = associationIndexPropertyRegistry;
 
@@ -287,29 +296,38 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter<Predi
 
     private void handleETypeAttribute(FTSQuery query, String value) {
 
-        RecordRef recordRef = RecordRef.valueOf(value);
-        String recordId = recordRef.getId();
+        RecordRef typeRef = RecordRef.valueOf(value);
+        String typeRecId = typeRef.getId();
 
         String documentTypeValue;
         String documentKindValue = null;
 
-        int slashIndex = recordId.indexOf(SLASH_DELIMITER);
+        int slashIndex = typeRecId.indexOf(SLASH_DELIMITER);
         if (slashIndex != -1) {
-            String firstPartOfRecordId = recordId.substring(0, slashIndex);
+            String firstPartOfRecordId = typeRecId.substring(0, slashIndex);
             documentTypeValue = WORKSPACE_PREFIX + firstPartOfRecordId;
 
-            String secondPartOfRecordId = recordId.substring(slashIndex + 1);
+            String secondPartOfRecordId = typeRecId.substring(slashIndex + 1);
             documentKindValue = WORKSPACE_PREFIX + secondPartOfRecordId;
         } else {
-            documentTypeValue = WORKSPACE_PREFIX + recordId;
+            documentTypeValue = WORKSPACE_PREFIX + typeRecId;
         }
 
         query.open();
-        query.value(PROP_DOCUMENT_TYPE, documentTypeValue);
-        if (StringUtils.isNotEmpty(documentKindValue)) {
-            query.and();
-            query.value(PROP_DOCUMENT_KIND, documentKindValue);
+        if (nodeService.exists(new NodeRef(documentTypeValue))) {
+            query.value(PROP_DOCUMENT_TYPE, documentTypeValue);
+            if (StringUtils.isNotEmpty(documentKindValue) && nodeService.exists(new NodeRef(documentKindValue))) {
+                query.and();
+                query.value(PROP_DOCUMENT_KIND, documentKindValue);
+            }
         }
+
+        query.or().value(EcosTypeModel.PROP_TYPE, typeRecId);
+
+        ecosTypeService.getDescendantTypes(typeRef).forEach(type ->
+            query.or().value(EcosTypeModel.PROP_TYPE, type.getId())
+        );
+
         query.close();
     }
 

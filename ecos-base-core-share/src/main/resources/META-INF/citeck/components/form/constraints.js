@@ -448,7 +448,8 @@ require([
         var recordRef = config.recordRef,
             fallback = config.fallback,
             forceNewForm = config.forceNewForm,
-            formKey = config.formKey;
+            formKey = config.formKey,
+            formId = config.formId;
 
         var showForm = function(recordRef) {
 
@@ -459,7 +460,9 @@ require([
                     onSubmit: config.onSubmit,
                     options: config.options
                 };
-                if (formKey) {
+                if (formId) {
+                    params.formId = config.formId;
+                } else if (formKey) {
                     params.formKey = config.formKey
                 }
 
@@ -485,15 +488,19 @@ require([
 
         Promise.all([isFormsEnabled, isShouldDisplayFormsForUser]).then(function (values) {
             if (values.includes(true)) {
-                require(['ecosui!ecos-form-utils'], function(utils) {
-                    utils.default.hasForm(recordRef, formKey).then(function (result) {
-                        if (result) {
-                            showForm(recordRef);
-                        } else {
-                            showForm(null);
-                        }
+                if (formId) {
+                    showForm(recordRef);
+                } else {
+                    require(['ecosui!ecos-form-utils'], function(utils) {
+                        utils.default.hasForm(recordRef, formKey).then(function (result) {
+                            if (result) {
+                                showForm(recordRef);
+                            } else {
+                                showForm(null);
+                            }
+                        });
                     });
-                });
+                }
             } else {
                 showForm(null);
             }
@@ -561,14 +568,13 @@ require([
             createAttributes["_parent"] = destination;
         }
 
-        Citeck.forms.editRecord({
+        var config = {
             recordRef: recordRef || 'dict@' + type,
             attributes: createAttributes,
-            formKey: formKey,
             options: options,
             forceNewForm: formKey || !type,
             fallback: fallback,
-            onSubmit: function(record, form) {
+            onSubmit: function (record, form) {
 
                 if (record.id && record.id.indexOf('workspace://SpacesStore/') === 0
                     && form.options.formMode === 'CREATE') {
@@ -578,7 +584,15 @@ require([
                     }
                 }
             }
-        });
+        }
+
+        if (formKey && formKey.indexOf("uiserv/eform@") !== -1) {
+            config.formId = formKey;
+        } else {
+            config.formKey = formKey;
+        }
+
+        Citeck.forms.editRecord(config);
     };
 
     var confirmIdx = 0;

@@ -21,6 +21,7 @@ import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.commons.data.ObjectData;
 import ru.citeck.ecos.model.EcosTypeModel;
 import ru.citeck.ecos.model.InvariantsModel;
+import ru.citeck.ecos.node.EcosTypeService;
 import ru.citeck.ecos.records.source.alf.file.AlfNodeContentFileHelper;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
 import ru.citeck.ecos.records.source.alf.search.AlfNodesSearch;
@@ -76,6 +77,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     private NodeUtils nodeUtils;
     private NodeService nodeService;
     private SearchService searchService;
+    private EcosTypeService ecosTypeService;
     private NamespaceService namespaceService;
     private DictionaryService dictionaryService;
     private GroupActionService groupActionService;
@@ -138,7 +140,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         });
 
         handleContentAttribute(attributes);
-        handleETypeAttribute(attributes, props);
+        RecordRef ecosTypeRef = handleETypeAttribute(attributes, props);
 
         Iterator<String> names = attributes.fieldNames();
         while (names.hasNext()) {
@@ -276,7 +278,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             }
 
             QName type = getNodeType(record);
-            NodeRef parent = getParent(record, type);
+            NodeRef parent = getParent(record, type, ecosTypeRef);
             QName parentAssoc = getParentAssoc(record, parent);
 
             String name = (String) props.get(ContentModel.PROP_NAME);
@@ -333,7 +335,9 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         return resultRecord;
     }
 
-    private void handleETypeAttribute(ObjectData attributes, Map<QName, Serializable> props) {
+    private RecordRef handleETypeAttribute(ObjectData attributes, Map<QName, Serializable> props) {
+
+        RecordRef etype = RecordRef.EMPTY;
 
         DataValue attributeFieldValue = attributes.get(ETYPE_ATTRIBUTE_NAME);
         if (!attributeFieldValue.isNull()) {
@@ -341,7 +345,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             String attrValue = attributeFieldValue.asText();
             if (!StringUtils.isBlank(attrValue)) {
 
-                String typeId = RecordRef.valueOf(attrValue).getId();
+                etype = RecordRef.valueOf(attrValue);
+                String typeId = etype.getId();
                 props.put(EcosTypeModel.PROP_TYPE, typeId);
 
                 int slashIndex = typeId.indexOf(SLASH_DELIMITER);
@@ -374,6 +379,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
             attributes.remove(ETYPE_ATTRIBUTE_NAME);
         }
+
+        return etype;
     }
 
     private void handleContentAttribute(ObjectData attributes) {
@@ -434,7 +441,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         return typeQName;
     }
 
-    private NodeRef getParent(RecordMeta record, QName type) {
+    private NodeRef getParent(RecordMeta record, QName type, RecordRef ecosType) {
 
         String parent = record.getAttribute(RecordConstants.ATT_PARENT, "");
         if (!parent.isEmpty()) {
@@ -442,6 +449,10 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 return new NodeRef(parent);
             }
             return getByPath(parent);
+        }
+
+        if (RecordRef.isNotEmpty(ecosType)) {
+            return ecosTypeService.getRootForType(ecosType);
         }
 
         NodeRef parentRef = defaultParentByType.get(type);
@@ -596,6 +607,11 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     @Autowired
     public void setEcosPermissionService(EcosPermissionService ecosPermissionService) {
         this.ecosPermissionService = ecosPermissionService;
+    }
+
+    @Autowired
+    public void setEcosTypeService(EcosTypeService ecosTypeService) {
+        this.ecosTypeService = ecosTypeService;
     }
 
     @Autowired

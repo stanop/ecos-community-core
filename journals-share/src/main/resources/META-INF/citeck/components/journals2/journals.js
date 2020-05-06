@@ -179,6 +179,7 @@ CreateVariant
         var redirectionMethod = options["createVariantRedirectionMethod"] || "card";
 
         var createParams = Citeck.forms.parseCreateArguments(this.createArguments());
+        var formKey = this.formId() || this.formKey();
 
         Citeck.forms.createRecord(this.recordRef(), this.type(), this.destination(), function() {
 
@@ -190,7 +191,7 @@ CreateVariant
             } else {
                 window.location = self.link();
             }
-        }, redirectionMethod, this.formKey(), this.attributes(), { params: createParams });
+        }, redirectionMethod, formKey, this.attributes(), { params: createParams });
     })
 
     .computed('link', function () {
@@ -2218,7 +2219,7 @@ JournalsWidget
             var isUiservJournal = !!journalType.options()["__uiserv__"];
             var datasource = journalType.datasource ? journalType.datasource() || "" : "";
 
-            if (datasource.indexOf('/') >= 0) {
+            if (isUiservJournal || datasource.indexOf('/') >= 0) {
 
                 var queryImpl = function () {
 

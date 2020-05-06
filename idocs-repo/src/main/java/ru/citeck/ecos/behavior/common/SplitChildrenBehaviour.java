@@ -1,11 +1,12 @@
 package ru.citeck.ecos.behavior.common;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import ecos.com.google.common.cache.CacheBuilder;
+import ecos.com.google.common.cache.CacheLoader;
+import ecos.com.google.common.cache.LoadingCache;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies.OnCreateChildAssociationPolicy;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
+import org.apache.commons.lang.StringUtils;
 import ru.citeck.ecos.behavior.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
@@ -49,22 +50,30 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
 
     private QName containerType = ContentModel.TYPE_FOLDER;
     private QName childAssocType = ContentModel.ASSOC_CONTAINS;
+    private QName rootType = null;
 
     private LoadingCache<Pair<NodeRef, String>, Optional<NodeRef>> containersCache;
 
     public void init() {
 
+        if (rootType == null) {
+            rootType = containerType;
+        }
+
         containersCache = CacheBuilder.newBuilder()
                                       .maximumSize(400)
                                       .build(CacheLoader.from(this::queryContainerByName));
 
-        ParameterCheck.mandatoryString("node", node);
+        if (StringUtils.isBlank(node) && rootType.getNamespaceURI().contains("www.alfresco.org")) {
+            throw new IllegalArgumentException("You should specify node or use " +
+                "custom root type. node: " + node + " Root type: " + rootType);
+        }
         ParameterCheck.mandatory("splitBehaviour", splitBehaviour);
 
         splitBehaviour.init(serviceRegistry);
 
         this.policyComponent.bindAssociationBehaviour(
-                OnCreateChildAssociationPolicy.QNAME, containerType, childAssocType,
+                OnCreateChildAssociationPolicy.QNAME, rootType, childAssocType,
                 new OrderedBehaviour(this, "onCreateChildAssociation",
                                      NotificationFrequency.TRANSACTION_COMMIT, order)
         );
@@ -77,22 +86,33 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
             return;
         }
 
+        AuthenticationUtil.runAsSystem(() -> {
+            onNodeCreated(childAssociationRef);
+            return null;
+        });
+    }
+
+    private void onNodeCreated(final ChildAssociationRef childAssociationRef) {
+
         final NodeRef parent = childAssociationRef.getParentRef();
         final NodeRef child = childAssociationRef.getChildRef();
 
-        AuthenticationUtil.runAsSystem(() -> {
+        if (!nodeService.exists(child) || !nodeService.exists(parent)
+                || containerType.equals(nodeService.getType(child))) {
+            return;
+        }
 
-            if (parent.equals(getNodeRef()) && nodeService.exists(child)
-                    && !containerType.equals(nodeService.getType(child))) {
+        if ((node != null || nodeRef != null) && !parent.equals(getNodeRef())) {
+            return;
+        }
 
-                NodeRef actualParent = nodeService.getPrimaryParent(child).getParentRef();
+        NodeRef actualParent = nodeService.getPrimaryParent(child).getParentRef();
 
-                if (parent.equals(actualParent)) {
-                    moveChild(childAssociationRef);
-                }
-            }
-            return null;
-        });
+        if (!parent.equals(actualParent)) {
+            return;
+        }
+
+        moveChild(childAssociationRef);
     }
 
     private void moveChild(ChildAssociationRef assocRef) {
@@ -204,6 +224,10 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
         this.splitBehaviour = splitBehaviour;
     }
 
+    public void setRootType(QName rootType) {
+        this.rootType = rootType;
+    }
+
     public void setContainerType(QName containerType) {
         this.containerType = containerType;
     }
@@ -298,6 +322,36 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
         }
 
         public void setDepth(Depth depth) {
+            this.depth = depth;
+        }
+    }
+
+    public static class UuidSplit implements SplitBehaviour {
+
+        private int depth = 4;
+
+        @Override
+        public void init(ServiceRegistry serviceRegistry) {
+        }
+
+        @Override
+        public List<String> getPath(NodeRef parent, NodeRef node) {
+
+            String id = node.getId();
+            List<String> result = new ArrayList<>();
+
+            for (int i = 0; i < depth; i++) {
+                result.add(String.valueOf(id.charAt(i)));
+            }
+
+            return result;
+        }
+
+        @Override
+        public void onSuccess(NodeRef parent, NodeRef node) {
+        }
+
+        public void setDepth(int depth) {
             this.depth = depth;
         }
     }
