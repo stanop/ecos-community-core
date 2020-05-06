@@ -57,7 +57,7 @@ public class CommandsServiceFactoryConfig extends CommandsServiceFactory {
         CommandsProperties props = new CommandsProperties();
         props.setAppInstanceId(instanceConfig.getInstanceId());
         props.setAppName(instanceConfig.getAppname());
-        props.setRabbitChannelsCount(Integer.valueOf(properties.getProperty(RABBIT_MQ_CHANNELS_COUNT, "2")));
+        props.setRabbitChannelsCount(Integer.valueOf(properties.getProperty(RABBIT_MQ_CHANNELS_COUNT, "4")));
         return props;
     }
 
