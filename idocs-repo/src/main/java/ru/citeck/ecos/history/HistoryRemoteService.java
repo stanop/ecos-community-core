@@ -18,7 +18,7 @@ public interface HistoryRemoteService {
      * @param limit - Results limit
      * @return List of maps
      */
-    List<Map> getAllHistoryRecords(Integer page, Integer limit);
+    List<Map> getAllHistoryRecords(int page, int limit);
 
     /**
      * Get history records

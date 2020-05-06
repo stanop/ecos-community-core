@@ -131,7 +131,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
      * @return List of maps
      */
     @Override
-    public List<Map> getAllHistoryRecords(Integer page, Integer limit) {
+    public List<Map> getAllHistoryRecords(int page, int limit) {
         String url = String.format(GET_ALL_RECORDS, page, limit);
         return restTemplate.getForObject(properties.getProperty(HISTORY_SERVICE_HOST) + url, List.class);
     }
