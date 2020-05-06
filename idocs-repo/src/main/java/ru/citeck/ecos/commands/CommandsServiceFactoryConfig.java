@@ -21,6 +21,7 @@ import ru.citeck.ecos.commands.rabbit.RabbitCommandsService;
 import ru.citeck.ecos.commands.remote.RemoteCommandsService;
 import ru.citeck.ecos.commands.transaction.TransactionManager;
 import ru.citeck.ecos.eureka.EurekaAlfInstanceConfig;
+import ru.citeck.ecos.props.EcosPropertiesService;
 
 import java.util.Properties;
 import java.util.concurrent.Callable;
@@ -31,14 +32,17 @@ import java.util.concurrent.Callable;
 public class CommandsServiceFactoryConfig extends CommandsServiceFactory {
 
     private static final String RABBIT_MQ_HOST = "rabbitmq.server.host";
-    private static final String RABBIT_MQ_PORT= "rabbitmq.server.port";
-    private static final String RABBIT_MQ_USERNAME= "rabbitmq.server.username";
+    private static final String RABBIT_MQ_PORT = "rabbitmq.server.port";
+    private static final String RABBIT_MQ_USERNAME = "rabbitmq.server.username";
     private static final String RABBIT_MQ_PASSWORD = "rabbitmq.server.password";
-    private static final String RABBIT_MQ_CHANNELS_COUNT = "commands.rabbitmq.channelsCount";
+    private static final String CONCURRENT_COMMAND_CONSUMERS = "commands.concurrentCommandConsumers";
 
     @Autowired
     @Qualifier("global-properties")
     private Properties properties;
+
+    @Autowired
+    private EcosPropertiesService ecosPropertiesService;
 
     private RetryingTransactionHelper retryHelper;
 
@@ -57,7 +61,10 @@ public class CommandsServiceFactoryConfig extends CommandsServiceFactory {
         CommandsProperties props = new CommandsProperties();
         props.setAppInstanceId(instanceConfig.getInstanceId());
         props.setAppName(instanceConfig.getAppname());
-        props.setRabbitChannelsCount(Integer.valueOf(properties.getProperty(RABBIT_MQ_CHANNELS_COUNT, "4")));
+
+        int concurrentCommandConsumers = ecosPropertiesService.getInt(CONCURRENT_COMMAND_CONSUMERS, 4);
+        props.setConcurrentCommandConsumers(concurrentCommandConsumers);
+
         return props;
     }
 
