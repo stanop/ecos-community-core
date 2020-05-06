@@ -34,6 +34,7 @@ public class CommandsServiceFactoryConfig extends CommandsServiceFactory {
     private static final String RABBIT_MQ_PORT= "rabbitmq.server.port";
     private static final String RABBIT_MQ_USERNAME= "rabbitmq.server.username";
     private static final String RABBIT_MQ_PASSWORD = "rabbitmq.server.password";
+    private static final String RABBIT_MQ_CHANNELS_COUNT = "commands.rabbitmq.channelsCount";
 
     @Autowired
     @Qualifier("global-properties")
@@ -50,17 +51,19 @@ public class CommandsServiceFactoryConfig extends CommandsServiceFactory {
         return super.createCommandsService();
     }
 
-    @Bean
+    @Bean(name = "commandsProperties")
     @Override
     public CommandsProperties createProperties() {
         CommandsProperties props = new CommandsProperties();
         props.setAppInstanceId(instanceConfig.getInstanceId());
         props.setAppName(instanceConfig.getAppname());
+        props.setRabbitChannelsCount(Integer.valueOf(properties.getProperty(RABBIT_MQ_CHANNELS_COUNT, "2")));
         return props;
     }
 
     @Bean
     @Override
+    @DependsOn("commandsProperties")
     public RemoteCommandsService createRemoteCommandsService() {
 
         String host = properties.getProperty(RABBIT_MQ_HOST);
