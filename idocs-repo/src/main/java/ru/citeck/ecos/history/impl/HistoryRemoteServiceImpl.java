@@ -84,6 +84,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     /**
      * Path constants
      */
+    private static final String GET_ALL_RECORDS = "/history_records/all_records/page/%d/limit/%d";
     private static final String GET_BY_DOCUMENT_ID_PATH = "/history_records/by_document_id/";
     private static final String DELETE_BY_DOCUMENT_ID_PATH = "/history_records/by_document_id/";
     private static final String INSERT_RECORD_PATH = "/history_records/insert_record";
@@ -121,6 +122,19 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
 
     @Autowired(required = false)
     private JmsTemplate jmsTemplate;
+
+    /**
+     * Get all history records
+     *
+     * @param page - Page to show
+     * @param limit - Results limit
+     * @return List of maps
+     */
+    @Override
+    public List<Map> getAllHistoryRecords(int page, int limit) {
+        String url = String.format(GET_ALL_RECORDS, page, limit);
+        return restTemplate.getForObject(properties.getProperty(HISTORY_SERVICE_HOST) + url, List.class);
+    }
 
     /**
      * Get history records

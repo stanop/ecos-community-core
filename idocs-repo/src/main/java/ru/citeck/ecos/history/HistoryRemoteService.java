@@ -12,6 +12,15 @@ import java.util.Map;
 public interface HistoryRemoteService {
 
     /**
+     * Get all history records
+     *
+     * @param page - Page to show
+     * @param limit - Results limit
+     * @return List of maps
+     */
+    List<Map> getAllHistoryRecords(int page, int limit);
+
+    /**
      * Get history records
      *
      * @param documentUuid Document uuid
