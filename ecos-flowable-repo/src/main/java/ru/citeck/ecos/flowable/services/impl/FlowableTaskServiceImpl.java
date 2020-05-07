@@ -41,6 +41,8 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
     private static final String VAR_PACKAGE = "bpm_package";
     private static final String OUTCOME_FIELD = "outcome";
 
+    public static final String VAR_ORIGINAL_TASK_FORM_KEY = "originalTaskFormKey";
+
     private TaskService taskService;
 
     @Autowired
@@ -170,8 +172,12 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
         if (taskExists(taskId)) {
             key = taskService.createTaskQuery().taskId(taskId).singleResult().getFormKey();
         } else {
-            Object keyObj = flowableHistoryService.getHistoricTaskVariables(taskId).get("taskFormKey");
-            if (keyObj != null) {
+            Map<String, Object> variables = flowableHistoryService.getHistoricTaskVariables(taskId);
+            Object keyObj = variables.get("taskFormKey");
+            if ("bpm:workflowTask".equals(keyObj)) {
+                keyObj = variables.get(VAR_ORIGINAL_TASK_FORM_KEY);
+            }
+            if (keyObj instanceof String) {
                 key = (String) keyObj;
             }
         }
