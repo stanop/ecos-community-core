@@ -1,12 +1,12 @@
 package ru.citeck.ecos.commands;
 
+import com.rabbitmq.client.ConnectionFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.ServiceRegistry;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import com.rabbitmq.client.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEvent;
@@ -55,7 +55,7 @@ public class CommandsServiceFactoryConfig extends CommandsServiceFactory {
         return super.createCommandsService();
     }
 
-    @Bean(name = "commandsProperties")
+    @Bean
     @Override
     public CommandsProperties createProperties() {
         CommandsProperties props = new CommandsProperties();
@@ -70,7 +70,6 @@ public class CommandsServiceFactoryConfig extends CommandsServiceFactory {
 
     @Bean
     @Override
-    @DependsOn("commandsProperties")
     public RemoteCommandsService createRemoteCommandsService() {
 
         String host = properties.getProperty(RABBIT_MQ_HOST);
