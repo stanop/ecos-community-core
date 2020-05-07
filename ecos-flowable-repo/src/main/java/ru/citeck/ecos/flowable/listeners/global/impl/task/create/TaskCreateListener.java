@@ -12,6 +12,7 @@ import org.flowable.engine.form.FormData;
 import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import ru.citeck.ecos.flowable.converters.FlowablePropertyConverter;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCreateTaskListener;
+import ru.citeck.ecos.flowable.services.impl.FlowableTaskServiceImpl;
 
 /**
  * Task create listener
@@ -48,6 +49,7 @@ public class TaskCreateListener implements GlobalCreateTaskListener {
         propertyConverter.setDefaultTaskProperties(delegateTask);
 
         String taskFormKey = getFormKey(delegateTask);
+        delegateTask.setVariableLocal(FlowableTaskServiceImpl.VAR_ORIGINAL_TASK_FORM_KEY, taskFormKey);
         TypeDefinition typeDefinition = propertyConverter.getFactory().getTaskTypeDefinition(taskFormKey, false);
         taskFormKey = typeDefinition.getName().toPrefixString();
         delegateTask.setVariableLocal(ActivitiConstants.PROP_TASK_FORM_KEY, taskFormKey);
