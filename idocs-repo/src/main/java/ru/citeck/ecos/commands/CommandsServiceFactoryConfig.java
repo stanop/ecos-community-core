@@ -21,7 +21,6 @@ import ru.citeck.ecos.commands.rabbit.RabbitCommandsService;
 import ru.citeck.ecos.commands.remote.RemoteCommandsService;
 import ru.citeck.ecos.commands.transaction.TransactionManager;
 import ru.citeck.ecos.eureka.EurekaAlfInstanceConfig;
-import ru.citeck.ecos.props.EcosPropertiesService;
 
 import java.util.Properties;
 import java.util.concurrent.Callable;
@@ -41,9 +40,6 @@ public class CommandsServiceFactoryConfig extends CommandsServiceFactory {
     @Qualifier("global-properties")
     private Properties properties;
 
-    @Autowired
-    private EcosPropertiesService ecosPropertiesService;
-
     private RetryingTransactionHelper retryHelper;
 
     @Autowired
@@ -62,7 +58,7 @@ public class CommandsServiceFactoryConfig extends CommandsServiceFactory {
         props.setAppInstanceId(instanceConfig.getInstanceId());
         props.setAppName(instanceConfig.getAppname());
 
-        int concurrentCommandConsumers = ecosPropertiesService.getInt(CONCURRENT_COMMAND_CONSUMERS, 4);
+        int concurrentCommandConsumers = Integer.parseInt(properties.getProperty(CONCURRENT_COMMAND_CONSUMERS, "4"));
         props.setConcurrentCommandConsumers(concurrentCommandConsumers);
 
         return props;
