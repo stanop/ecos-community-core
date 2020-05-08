@@ -194,7 +194,10 @@ public class AlfNodeContentFileHelper {
         writer.putContent(reader);
 
         Serializable fileName = nodeService.getProperty(tempFile, ContentModel.PROP_NAME);
-        nodeService.setProperty(node, ContentModel.PROP_NAME, fileName);
+        String currentName = (String) nodeService.getProperty(node, ContentModel.PROP_NAME);
+        if (StringUtils.isBlank(currentName)) {
+            nodeService.setProperty(node, ContentModel.PROP_NAME, fileName);
+        }
 
         if (log.isDebugEnabled()) {
             log.debug(String.format("Copy content from <%s> to <%s>, fileName: <%s>", tempFile.toString(),
