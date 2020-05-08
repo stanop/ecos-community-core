@@ -19,7 +19,7 @@
                         query: {
                             query: {
                                 nodeRef: '${nodeRef}',
-                                events: 'node.created,node.updated,assoc.updated,task.complete,user.action,status.changed,esign.signed,approval.cancelled,role.changed'
+                                events: Alfresco.util.message('dochist.events.types')
                             },
                             sourceId: 'history',
                             language: 'document'
@@ -48,7 +48,7 @@
                         text: Alfresco.util.message('dochist.header.version')
                     },
                     {
-                        dataField: 'event:initiator',             
+                        dataField: 'event:initiator',
                         formatter: 'UserNameLinkFormatter',
                         text: Alfresco.util.message('dochist.header.person')
                     },
