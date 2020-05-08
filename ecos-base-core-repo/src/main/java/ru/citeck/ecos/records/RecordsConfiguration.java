@@ -16,6 +16,7 @@ import ru.citeck.ecos.eureka.EcosEurekaClient;
 import ru.citeck.ecos.eureka.EurekaContextConfig;
 import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.records2.RecordsProperties;
+import ru.citeck.ecos.records2.evaluator.RecordEvaluatorService;
 import ru.citeck.ecos.records2.predicate.PredicateService;
 import ru.citeck.ecos.records2.querylang.QueryLangService;
 import ru.citeck.ecos.records2.QueryContext;
@@ -73,6 +74,12 @@ public class RecordsConfiguration extends RecordsServiceFactory {
         } else {
             return super.createRecordsResolver();
         }
+    }
+
+    @Bean
+    @Override
+    protected RecordEvaluatorService createRecordEvaluatorService() {
+        return super.createRecordEvaluatorService();
     }
 
     @Override

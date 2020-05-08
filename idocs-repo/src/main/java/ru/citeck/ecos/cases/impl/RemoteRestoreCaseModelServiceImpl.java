@@ -288,10 +288,6 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
             fillAdditionalSetPropertyValueInfo((SetPropertyValueDto) caseModelDto, caseModelRef);
             return;
         }
-        if (caseModelDto instanceof StartWorkflowDto) {
-            fillAdditionalStartWorkflowInfo((StartWorkflowDto) caseModelDto, caseModelRef);
-            return;
-        }
         if (caseModelDto instanceof SetCaseStatusDto) {
             fillAdditionalSetCaseStatusInfo((SetCaseStatusDto) caseModelDto, caseModelRef);
             return;
@@ -590,15 +586,6 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
     }
 
     /**
-     * Fill additional info start workflow info
-     * @param caseModelDto Case model data transfer object
-     * @param caseModelRef Case model node reference
-     */
-    private void fillAdditionalStartWorkflowInfo(StartWorkflowDto caseModelDto, NodeRef caseModelRef) {
-        nodeService.setProperty(caseModelRef, ActionModel.StartWorkflow.PROP_WORKFLOW_NAME, caseModelDto.getWorkflowName());
-    }
-
-    /**
      * Fill additional info set case status info
      * @param caseModelDto Case model data transfer object
      * @param caseModelRef Case model node reference
@@ -607,7 +594,7 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
         if (caseModelDto.getCaseStatus() != null) {
             NodeRef statusNodeRef = new NodeRef(WORKSPACE_PREFIX + caseModelDto.getCaseStatus().getNodeUUID());
             if (nodeService.exists(statusNodeRef)) {
-                nodeService.createAssociation(caseModelRef, statusNodeRef, ActionModel.SetCaseStatus.PROP_STATUS);
+                nodeService.createAssociation(caseModelRef, statusNodeRef, ActionModel.SetCaseStatus.ASSOC_STATUS);
             }
         }
     }
@@ -742,9 +729,6 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
         }
         if (caseModelDto instanceof SetPropertyValueDto) {
             return ActionModel.SetPropertyValue.TYPE;
-        }
-        if (caseModelDto instanceof StartWorkflowDto) {
-            return ActionModel.StartWorkflow.TYPE;
         }
         if (caseModelDto instanceof SetCaseStatusDto) {
             return ActionModel.SetCaseStatus.TYPE;

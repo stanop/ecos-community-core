@@ -3,21 +3,17 @@ package ru.citeck.ecos.behavior.activity;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.action.Action;
-import org.alfresco.service.cmr.action.ActionService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.action.ActionDAO;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
-import ru.citeck.ecos.icase.activity.service.alfresco.CaseActivityPolicies;
 import ru.citeck.ecos.icase.activity.dto.ActivityRef;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
+import ru.citeck.ecos.icase.activity.service.alfresco.CaseActivityPolicies;
+import ru.citeck.ecos.icase.commands.CaseCommandsService;
 import ru.citeck.ecos.model.ActionModel;
-import ru.citeck.ecos.records.RecordsUtils;
-import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.utils.AlfActivityUtils;
 
@@ -30,22 +26,19 @@ import javax.annotation.PostConstruct;
 @DependsOn("idocs.dictionaryBootstrap")
 public class CaseActionBehavior implements CaseActivityPolicies.BeforeCaseActivityStartedPolicy {
 
+    private CaseCommandsService caseCommandsService;
     private CaseActivityService caseActivityService;
     private AlfActivityUtils alfActivityUtils;
     private PolicyComponent policyComponent;
     private NodeService nodeService;
 
-    private ActionService actionService;
-    private ActionDAO actionDAO;
-
     @Autowired
     public CaseActionBehavior(ServiceRegistry serviceRegistry) {
+        this.caseCommandsService = (CaseCommandsService) serviceRegistry.getService(CiteckServices.CASE_COMMANDS_SERVICE);
         this.caseActivityService = (CaseActivityService) serviceRegistry.getService(CiteckServices.CASE_ACTIVITY_SERVICE);
         this.alfActivityUtils = (AlfActivityUtils) serviceRegistry.getService(CiteckServices.ALF_ACTIVITY_UTILS);
         this.policyComponent = serviceRegistry.getPolicyComponent();
         this.nodeService = serviceRegistry.getNodeService();
-        this.actionService = serviceRegistry.getActionService();
-        this.actionDAO = (ActionDAO) serviceRegistry.getService(CiteckServices.ACTION_DAO);
     }
 
     @PostConstruct
@@ -63,14 +56,8 @@ public class CaseActionBehavior implements CaseActivityPolicies.BeforeCaseActivi
             return;
         }
 
-        Action action = actionDAO.readAction(actionRef);
-
         ActivityRef actionActivityRef = alfActivityUtils.composeActivityRef(actionRef);
-
-        RecordRef documentRef = actionActivityRef.getProcessId();
-        NodeRef documentNodeRef = RecordsUtils.toNodeRef(documentRef);
-        actionService.executeAction(action, documentNodeRef);
-
+        caseCommandsService.executeCaseAction(actionActivityRef);
         caseActivityService.stopActivity(actionActivityRef);
     }
 }

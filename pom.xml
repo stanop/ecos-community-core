@@ -4,8 +4,9 @@
 
     <groupId>ru.citeck.ecos.community</groupId>
     <artifactId>ecos-community-core</artifactId>
-    <version>3.23.5</version>
+    <version>3.24.0</version>
     <packaging>pom</packaging>
+
     <name>ecos-community</name>
     <description>ecos-community</description>
 
@@ -67,11 +68,11 @@
         <flowable.version>6.4.1</flowable.version>
 
         <ecos.flowable.version>1.5.0</ecos.flowable.version>
-        <ecos.records.version>1.20.5</ecos.records.version>
+        <ecos.records.version>1.21.0</ecos.records.version>
         <ecos.apps.lib.version>2.1.0</ecos.apps.lib.version>
         <ecos.jackson.version>2.10.2.3</ecos.jackson.version>
         <ecos.commons.version>1.4.2</ecos.commons.version>
-        <ecos.commands.version>1.2.0</ecos.commands.version>
+        <ecos.commands.version>1.3.0</ecos.commands.version>
         <ecos.meta-repo.version>1.1.0</ecos.meta-repo.version>
 
         <spring.retry.version>1.2.4.RELEASE</spring.retry.version>

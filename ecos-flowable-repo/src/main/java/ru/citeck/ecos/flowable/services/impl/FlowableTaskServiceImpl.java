@@ -109,14 +109,19 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
     }
 
     public Map<String, Object> getVariables(String taskId) {
+
         WorkflowTask task = workflowService.getTaskById(FlowableConstants.ENGINE_PREFIX + taskId);
 
         Map<String, Object> propsFromWorkflowService = new HashMap<>();
 
-        task.getProperties().forEach((qName, serializable) -> {
-            String newKey = qName.toPrefixString(namespaceService).replaceAll(":", "_");
-            propsFromWorkflowService.put(newKey, serializable);
-        });
+        if (task != null) {
+            task.getProperties().forEach((qName, serializable) -> {
+                String newKey = qName.toPrefixString(namespaceService).replaceAll(":", "_");
+                propsFromWorkflowService.put(newKey, serializable);
+            });
+        } else {
+            log.warn("Task " + taskId + " is null");
+        }
 
         Map<String, Object> propsFromFlowable;
 
@@ -151,6 +156,9 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
     private NodeRef getPackageFromMirrorTask(String taskId) {
         NodeRef taskMirror = workflowMirrorService.getTaskMirror(FlowableConstants.ENGINE_PREFIX + taskId);
+        if (taskMirror == null) {
+            return null;
+        }
         return RepoUtils.getFirstTargetAssoc(taskMirror, WorkflowModel.ASSOC_PACKAGE, nodeService);
     }
 

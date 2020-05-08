@@ -1,11 +1,7 @@
 package ru.citeck.ecos.records.workflow;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
@@ -19,12 +15,10 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.document.CounterpartyResolver;
 import ru.citeck.ecos.document.sum.DocSumService;
-import ru.citeck.ecos.records2.predicate.model.ComposedPredicate;
 import ru.citeck.ecos.node.EcosTypeService;
 import ru.citeck.ecos.records.RecordConstants;
 import ru.citeck.ecos.records.models.AuthorityDTO;
@@ -36,6 +30,7 @@ import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
 import ru.citeck.ecos.records2.graphql.meta.value.InnerMetaValue;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.records2.predicate.model.ComposedPredicate;
 import ru.citeck.ecos.records2.request.delete.RecordsDelResult;
 import ru.citeck.ecos.records2.request.delete.RecordsDeletion;
 import ru.citeck.ecos.records2.request.mutation.RecordsMutResult;
@@ -617,7 +612,13 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     }
                     return null;
                 case ATT_DOCUMENT:
-                    return documentRef;
+                    Object docObject = attributes.get("document");
+                    if (docObject instanceof ScriptNode) {
+                        NodeRef docNodeRef = ((ScriptNode) docObject).getNodeRef();
+                        return RecordRef.valueOf(String.valueOf(docNodeRef));
+                    } else {
+                        return documentRef;
+                    }
                 case ATT_DOC_ECOS_TYPE:
                     if (documentNodeRef != null) {
                         return ecosTypeService.getEcosType(documentNodeRef);

@@ -1,6 +1,7 @@
 package ru.citeck.ecos.icase.activity;
 
 import ru.citeck.ecos.behavior.activity.CaseTaskBehavior;
+import ru.citeck.ecos.icase.activity.service.eproc.listeners.activity.CaseTaskListener;
 
 import java.util.List;
 import java.util.Map;
@@ -11,21 +12,36 @@ import java.util.Map;
 public class CaseTaskAttributesMappingRegistrar {
 
     private CaseTaskBehavior caseTaskBehavior;
+    private CaseTaskListener caseTaskListener;
 
     private Map<String, Map<String, String>> attributesMappingByWorkflow;
     private Map<String, List<String>> workflowTransmittedVariables;
 
     public void init() {
         if(attributesMappingByWorkflow != null) {
-            caseTaskBehavior.registerAttributesMapping(attributesMappingByWorkflow);
+            if (caseTaskBehavior != null) {
+                caseTaskBehavior.registerAttributesMapping(attributesMappingByWorkflow);
+            }
+            if (caseTaskListener != null) {
+                caseTaskListener.registerAttributesMapping(attributesMappingByWorkflow);
+            }
         }
         if(workflowTransmittedVariables != null) {
-            caseTaskBehavior.registerWorkflowTransmittedVariables(workflowTransmittedVariables);
+            if (caseTaskBehavior != null) {
+                caseTaskBehavior.registerWorkflowTransmittedVariables(workflowTransmittedVariables);
+            }
+            if (caseTaskListener != null) {
+                caseTaskListener.registerWorkflowTransmittedVariables(workflowTransmittedVariables);
+            }
         }
     }
 
     public void setCaseTaskBehavior(CaseTaskBehavior caseTaskBehavior) {
         this.caseTaskBehavior = caseTaskBehavior;
+    }
+
+    public void setCaseTaskListener(CaseTaskListener caseTaskListener) {
+        this.caseTaskListener = caseTaskListener;
     }
 
     public void setAttributesMappingByWorkflow(Map<String, Map<String, String>> attributesMappingByWorkflow) {

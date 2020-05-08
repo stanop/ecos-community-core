@@ -100,6 +100,7 @@ JournalsList
     .property('title', s)
     .property('journals', [ Journal ])
     .property('default', Journal)
+    .computed('allJournals', function() { return this.journals(); })
     .computed('scope', function() {
         return this.id() ? this.id().replace(journalsListIdRegexp, '$1') : '';
     })
@@ -1472,7 +1473,7 @@ JournalsWidget
     .computed('fullscreenLink', function() {
         var self = this;
         var newJournalsPageEnable = this.newJournalsPageEnable();
-        
+
         var journalsList = this.journalsList(),
             journalId = this.journalId(),
             filterId = this.filterId(),
@@ -2165,7 +2166,7 @@ JournalsWidget
         load.call(this);
     })
     ;
-    
+
 Record
     // TODO define load method - to load selected records
     .load('doclib', function(record) {

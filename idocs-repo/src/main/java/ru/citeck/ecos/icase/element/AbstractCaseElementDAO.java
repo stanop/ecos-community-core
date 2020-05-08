@@ -46,7 +46,6 @@ public abstract class AbstractCaseElementDAO<ConfigType extends ElementConfigDto
 	protected NodeService nodeService;
 	protected DictionaryService dictionaryService;
 	protected CopyService copyService;
-	protected ActionService actionService;
 	protected CaseElementServiceImpl caseElementService;
 	protected PolicyComponent policyComponent;
 
@@ -61,10 +60,6 @@ public abstract class AbstractCaseElementDAO<ConfigType extends ElementConfigDto
 	public void setCopyService(CopyService copyService) {
 		this.copyService = copyService;
 	}
-
-    public void setActionService(ActionService actionService) {
-        this.actionService = actionService;
-    }
 
     public void setCaseElementService(CaseElementServiceImpl caseElementService) {
         this.caseElementService = caseElementService;

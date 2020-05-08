@@ -19,6 +19,7 @@ import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.commons.data.ObjectData;
+import ru.citeck.ecos.model.EcosTypeModel;
 import ru.citeck.ecos.model.InvariantsModel;
 import ru.citeck.ecos.records.source.alf.file.AlfNodeContentFileHelper;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
@@ -101,6 +102,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     }
 
     private RecordMeta processSingleRecord(RecordMeta record) {
+
         RecordMeta resultRecord;
         Map<QName, Serializable> props = new HashMap<>();
         Map<QName, DataValue> contentProps = new HashMap<>();
@@ -199,20 +201,21 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 if (DataTypeDefinition.CONTENT.equals(typeName)) {
                     contentProps.put(fieldName, fieldValue);
                 } else {
-                    if (!fieldValue.isNull()) {
 
-                        Object converted = fieldValue.asJavaObj();
+                    Object converted = fieldValue.asJavaObj();
 
+                    if (converted != null) {
                         if (!DataTypeDefinition.TEXT.equals(typeName)
-                            && converted instanceof String
-                            && ((String) converted).isEmpty()) {
+                                && converted instanceof String
+                                && ((String) converted).isEmpty()) {
                             converted = null;
                         }
                         if (!(converted instanceof Serializable)) {
                             converted = null;
                         }
-                        props.put(fieldName, (Serializable) converted);
                     }
+
+                    props.put(fieldName, (Serializable) converted);
                 }
             } else {
                 AssociationDefinition assocDef = dictionaryService.getAssociation(fieldName);
@@ -236,6 +239,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                         } else if (fieldValue.isArray()) {
                             refsStream = StreamSupport.stream(fieldValue.spliterator(), false)
                                 .map(DataValue::asText);
+                        } else if (fieldValue.isNull()) {
+                            refsStream = Stream.empty();
                         }
                         if (refsStream != null) {
                             Set<NodeRef> targetRefs = refsStream
@@ -301,7 +306,19 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
         } else {
 
-            nodeService.addProperties(nodeRef, props);
+            Map<QName, Serializable> currentProps = nodeService.getProperties(nodeRef);
+
+            List<QName> toRemove = new ArrayList<>();
+            for (Map.Entry<QName, Serializable> keyValue : props.entrySet()) {
+                if (keyValue.getValue() == null && currentProps.get(keyValue.getKey()) == null) {
+                    toRemove.add(keyValue.getKey());
+                }
+            }
+            toRemove.forEach(props::remove);
+
+            if (props.size() > 0) {
+                nodeService.addProperties(nodeRef, props);
+            }
             resultRecord = new RecordMeta(record.getId());
         }
 
@@ -325,17 +342,33 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             if (!StringUtils.isBlank(attrValue)) {
 
                 String typeId = RecordRef.valueOf(attrValue).getId();
+                props.put(EcosTypeModel.PROP_TYPE, typeId);
+
                 int slashIndex = typeId.indexOf(SLASH_DELIMITER);
+
                 if (slashIndex != -1) {
 
                     String firstPartOfTypeId = typeId.substring(0, slashIndex);
-                    props.put(PROP_DOCUMENT_TYPE, WORKSPACE_PREFIX + firstPartOfTypeId);
+                    NodeRef typeRef = new NodeRef(WORKSPACE_PREFIX + firstPartOfTypeId);
 
-                    String secondPartOfRecordId = typeId.substring(slashIndex + 1);
-                    props.put(PROP_DOCUMENT_KIND, WORKSPACE_PREFIX + secondPartOfRecordId);
+                    if (nodeService.exists(typeRef)) {
+
+                        props.put(PROP_DOCUMENT_TYPE, typeRef.toString());
+
+                        String secondPartOfRecordId = typeId.substring(slashIndex + 1);
+                        NodeRef kindRef = new NodeRef(WORKSPACE_PREFIX + secondPartOfRecordId);
+
+                        if (nodeService.exists(kindRef)) {
+                            props.put(PROP_DOCUMENT_KIND, kindRef.toString());
+                        }
+                    }
 
                 } else {
-                    props.put(PROP_DOCUMENT_TYPE, WORKSPACE_PREFIX + typeId);
+
+                    NodeRef typeRef = new NodeRef(WORKSPACE_PREFIX + typeId);
+                    if (nodeService.exists(typeRef)) {
+                        props.put(PROP_DOCUMENT_TYPE, WORKSPACE_PREFIX + typeId);
+                    }
                 }
             }
 

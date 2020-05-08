@@ -103,11 +103,11 @@
             <div id="yui-main">
                 <div class="yui-b" id="alf-content">
                     <div id="${toolbarId}" class="toolbar flat-button icon-buttons" data-bind="css: { hidden: journal() == null }">
-                        <span id="${id}-sidebar-toggle" class="sidebar-toggle" title="" 
+                        <span id="${id}-sidebar-toggle" class="sidebar-toggle" title=""
                               data-bind="yuiButton: { type: 'push'}">
                             <span class="first-child">
                                 <button data-bind="click: toggleSidebar"></button>
-                            </span>          
+                            </span>
                         </span>
 
                         <#if (additionalMenuItem?? && additionalMenuItem?seq_contains("showSelectMenuItem"))>
@@ -219,12 +219,12 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div id="${id}-search" class="form-container">
                         <form id="${id}-search-form" data-bind="submit: applyCriteria">
                             <!-- search criteria -->
                             <div id="${toolbarId}-filter" class="toolbar-menu" data-bind="if: journal() && _filter(), visible: currentMenu() == 'filter'">
-                                
+
                                 <!-- ko if: filterVisibility -->
                                     <div id="${id}-criteria-buttons" class="criteria-buttons flat-button icon-buttons" data-bind="if: journal() != null">
 
@@ -268,7 +268,7 @@
                                         </div>
                                     </div>
 
-                                
+
                                     <!-- ko component: { name: "filter-criteria", params: {
                                         journalType: resolve("journal.type", null),
                                         filter: _filter,
@@ -293,7 +293,7 @@
                             </div>
                         </form>
                     </div>
-                    
+
                     <!-- other settings -->
                     <div id="${toolbarId}-settings" class="toolbar-menu" data-bind="if: journal() && _settings(), visible: currentMenu() == 'settings'">
 
@@ -357,7 +357,7 @@
                     <h2 data-bind="text: title"></h2>
                 </div>
                 <div class="items-list" data-bind="with: journalsList">
-                    <ul data-bind="foreach: journals">
+                    <ul data-bind="foreach: allJournals">
                         <li data-bind="
                             click: $root.journal.bind($root, $data),
                             css: { selected: $root.journal() == $data }

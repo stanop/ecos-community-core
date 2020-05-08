@@ -3,6 +3,7 @@ package ru.citeck.ecos.barcode;
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
@@ -23,6 +24,7 @@ import java.util.Hashtable;
  * It's very required to bring here new logic to interact and handle barcodes.
  * <p>
  */
+@Slf4j
 @Service
 public class BarcodeService {
 
@@ -56,7 +58,8 @@ public class BarcodeService {
         }
 
         if (StringUtils.isEmpty(barcodePropertyValue)) {
-            throw new BarcodeInputException("Not possible get property with value to generate barcode with nodeRef");
+            log.warn("Property for barcode is empty. NodeRef: " + nodeRef + " prop: " + propertyQName);
+            return "";
         }
 
         return getBarcodeAsBase64FromContent(barcodePropertyValue, width, height, format);
@@ -86,9 +89,10 @@ public class BarcodeService {
 
         String base64;
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            MatrixToImageWriter.writeToStream(matrix, PNG_IMAGE_FORMAT, out);
 
+            MatrixToImageWriter.writeToStream(matrix, PNG_IMAGE_FORMAT, out);
             base64 = DatatypeConverter.printBase64Binary(out.toByteArray());
+
         } catch (IOException e) {
             throw new RuntimeException("Error encode barcode", e);
         }

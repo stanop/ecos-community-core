@@ -32,7 +32,10 @@ import org.alfresco.service.cmr.repository.NodeRef;
  * Fail Action Executer
  *
  * @author Alexey Moiseyev
+ * @deprecated use {@link ru.citeck.ecos.icase.commands.executors.FailCommandExecutor}
  */
+//TODO remove if unused
+@Deprecated
 public class FailActionExecuter extends ActionExecuterAbstractBase {
 
     /**

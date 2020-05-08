@@ -36,7 +36,11 @@ import org.alfresco.service.namespace.QName;
  * Is user in document property evaluator
  *
  * @author Alexey Moiseyev
+ *
+ * @deprecated <br/>
+ * see mapping at {@link ru.citeck.ecos.icase.activity.service.alfresco.CaseEvaluatorConverter}
  */
+@Deprecated
 public class UserInDocumentEvaluator extends ComparePropertyValueEvaluator {
 
     /**

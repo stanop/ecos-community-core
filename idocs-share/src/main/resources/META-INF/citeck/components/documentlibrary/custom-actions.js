@@ -951,12 +951,29 @@ require([
             } else if (actionType === "REDIRECT") {
                 window.open(Alfresco.constants[props.context] + props.url, "_self");
             } else if (actionType === "CREATE_NODE") {
-                Citeck.forms.dialog(props.nodeType, props.formId, function() {
-                    YAHOO.Bubbling.fire("metadataRefresh");
-                }, {
-                    "destination": props.destination,
-                    "destinationAssoc": props.destinationAssoc,
-                    "title": this.msg(props.title) || props.title
+
+                var self = this;
+                var getMsg = function (key) {
+                    return self.msg(key) || key
+                };
+
+                require(['ecosui!record-actions'], function(actions) {
+
+                    actions.createUserActionNode(props, function () {
+
+                        require(['components/form/form'], function () {
+
+                            Citeck.forms.dialog(props.nodeType, props.formId, function() {
+                                YAHOO.Bubbling.fire("metadataRefresh");
+                            }, {
+                                "destination": props.destination,
+                                "destinationAssoc": props.destinationAssoc,
+                                "title": getMsg(props.title)
+                            });
+                        })
+                    }).then(function () {
+                        YAHOO.Bubbling.fire("metadataRefresh");
+                    });
                 });
             }
         }

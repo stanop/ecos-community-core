@@ -16,8 +16,6 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.alfresco.service.transaction.TransactionService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
@@ -26,7 +24,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.citeck.ecos.cases.RemoteCaseModelService;
 import ru.citeck.ecos.dto.*;
-import ru.citeck.ecos.job.SendAndRemoveCompletedCasesJob;
 import ru.citeck.ecos.model.*;
 
 import java.io.IOException;
@@ -592,9 +589,6 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         if (SetPropertyValueDto.DTO_TYPE.equals(dtoType)) {
             fillAdditionalSetPropertyValueInfo(caseModelRef, objectNode);
         }
-        if (StartWorkflowDto.DTO_TYPE.equals(dtoType)) {
-            fillAdditionalStartWorkflowInfo(caseModelRef, objectNode);
-        }
         if (SetCaseStatusDto.DTO_TYPE.equals(dtoType)) {
             fillAdditionalSetCaseStatusInfo(caseModelRef, objectNode);
         }
@@ -679,21 +673,12 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
     }
 
     /**
-     * Fill additional info start workflow info
-     * @param caseModelRef Case model node reference
-     * @param objectNode Object node
-     */
-    private void fillAdditionalStartWorkflowInfo(NodeRef caseModelRef, ObjectNode objectNode) {
-        objectNode.put("workflowName", (String) nodeService.getProperty(caseModelRef, ActionModel.StartWorkflow.PROP_WORKFLOW_NAME));
-    }
-
-    /**
      * Fill additional info set case status info
      * @param caseModelRef Case model node reference
      * @param objectNode Object node
      */
     private void fillAdditionalSetCaseStatusInfo(NodeRef caseModelRef, ObjectNode objectNode) {
-        List<AssociationRef> assocs = nodeService.getTargetAssocs(caseModelRef, ActionModel.SetCaseStatus.PROP_STATUS);
+        List<AssociationRef> assocs = nodeService.getTargetAssocs(caseModelRef, ActionModel.SetCaseStatus.ASSOC_STATUS);
         if (!CollectionUtils.isEmpty(assocs)) {
             NodeRef statusRef = assocs.get(0).getTargetRef();
             if (statusRef != null) {
@@ -828,9 +813,6 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         }
         if (dictionaryService.isSubClass(nodeType, ActionModel.SetPropertyValue.TYPE)) {
             return SetPropertyValueDto.DTO_TYPE;
-        }
-        if (dictionaryService.isSubClass(nodeType, ActionModel.StartWorkflow.TYPE)) {
-            return StartWorkflowDto.DTO_TYPE;
         }
         if (dictionaryService.isSubClass(nodeType, ActionModel.SetCaseStatus.TYPE)) {
             return SetCaseStatusDto.DTO_TYPE;

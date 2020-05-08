@@ -10,11 +10,14 @@ import org.springframework.stereotype.Service;
 import ru.citeck.ecos.cmmn.CMMNUtils;
 import ru.citeck.ecos.cmmn.model.Case;
 import ru.citeck.ecos.cmmn.model.Definitions;
+import ru.citeck.ecos.cmmn.service.util.CaseElementImport;
 import ru.citeck.ecos.cmmn.service.util.CasePlanModelImport;
 import ru.citeck.ecos.cmmn.service.util.CaseRolesImport;
+import ru.citeck.ecos.icase.element.CaseElementService;
 import ru.citeck.ecos.service.EcosCoreServices;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
 
 @Service("caseXmlService")
 @DependsOn("idocs.dictionaryBootstrap")
@@ -25,6 +28,7 @@ public class CaseXmlService {
     private NodeService nodeService;
     private AuthorityService authorityService;
     private CaseTemplateRegistry caseTemplateRegistry;
+    private CaseElementService caseElementService;
 
     @Autowired
     private CMMNUtils utils;
@@ -39,7 +43,10 @@ public class CaseXmlService {
         if (caseRef != null) {
             CaseRolesImport caseRolesImport = new CaseRolesImport(nodeService, authorityService, utils);
             CasePlanModelImport casePlanModelImport = new CasePlanModelImport(serviceRegistry, utils);
+            CaseElementImport caseElementImport = new CaseElementImport(caseElementService);
+
             Map<String, NodeRef> rolesRef = caseRolesImport.importRoles(caseRef, caseItem.getCaseRoles());
+            caseElementImport.importCaseElementTypes(caseRef, caseItem);
             casePlanModelImport.importCasePlan(caseRef, caseItem, rolesRef);
         }
     }
@@ -50,5 +57,6 @@ public class CaseXmlService {
         this.nodeService = serviceRegistry.getNodeService();
         this.authorityService = serviceRegistry.getAuthorityService();
         this.caseTemplateRegistry = EcosCoreServices.getCaseTemplateRegistry(serviceRegistry);
+        this.caseElementService = EcosCoreServices.getCaseElementService(serviceRegistry);
     }
 }

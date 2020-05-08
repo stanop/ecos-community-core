@@ -91,6 +91,7 @@
             <!--</mandatory-aspects>-->
         </type>
 
+        <!--Deprecated-->
         <type name="action:start-workflow">
             <parent>action:action</parent>
             <properties>

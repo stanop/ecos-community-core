@@ -1,12 +1,12 @@
 package ru.citeck.ecos.commands;
 
+import com.rabbitmq.client.ConnectionFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.ServiceRegistry;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import com.rabbitmq.client.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEvent;
@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.extensions.surf.util.AbstractLifecycleBean;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.commands.context.CommandCtxController;
+import ru.citeck.ecos.commands.context.CommandCtxManager;
 import ru.citeck.ecos.commands.rabbit.RabbitCommandsService;
 import ru.citeck.ecos.commands.remote.RemoteCommandsService;
 import ru.citeck.ecos.commands.transaction.TransactionManager;
@@ -29,9 +31,10 @@ import java.util.concurrent.Callable;
 public class CommandsServiceFactoryConfig extends CommandsServiceFactory {
 
     private static final String RABBIT_MQ_HOST = "rabbitmq.server.host";
-    private static final String RABBIT_MQ_PORT= "rabbitmq.server.port";
-    private static final String RABBIT_MQ_USERNAME= "rabbitmq.server.username";
+    private static final String RABBIT_MQ_PORT = "rabbitmq.server.port";
+    private static final String RABBIT_MQ_USERNAME = "rabbitmq.server.username";
     private static final String RABBIT_MQ_PASSWORD = "rabbitmq.server.password";
+    private static final String CONCURRENT_COMMAND_CONSUMERS = "commands.concurrentCommandConsumers";
 
     @Autowired
     @Qualifier("global-properties")
@@ -54,6 +57,10 @@ public class CommandsServiceFactoryConfig extends CommandsServiceFactory {
         CommandsProperties props = new CommandsProperties();
         props.setAppInstanceId(instanceConfig.getInstanceId());
         props.setAppName(instanceConfig.getAppname());
+
+        int concurrentCommandConsumers = Integer.parseInt(properties.getProperty(CONCURRENT_COMMAND_CONSUMERS, "4"));
+        props.setConcurrentCommandConsumers(concurrentCommandConsumers);
+
         return props;
     }
 
@@ -83,8 +90,46 @@ public class CommandsServiceFactoryConfig extends CommandsServiceFactory {
         return new TransactionManager() {
             @Override
             public <T> T doInTransaction(@NotNull Callable<T> callable) {
-                return retryHelper.doInTransaction(() ->
-                    AuthenticationUtil.runAsSystem(callable::call), false, false);
+                return retryHelper.doInTransaction(() -> {
+                    CommandCtxManager commandCtxManager = getCommandCtxManager();
+                    String currentUser = commandCtxManager.getCurrentUser();
+                    return AuthenticationUtil.runAs(callable::call, currentUser);
+                }, false, false);
+            }
+        };
+    }
+
+    @NotNull
+    @Override
+    protected CommandCtxController createCommandCtxController() {
+        return new CommandCtxController() {
+            @NotNull
+            @Override
+            public String setCurrentUser(@NotNull String username) {
+                if (StringUtils.isEmpty(username)) {
+                    username = AuthenticationUtil.getSystemUserName();
+                }
+                AuthenticationUtil.setRunAsUser(username);
+                return AuthenticationUtil.getRunAsUser();
+            }
+
+            @NotNull
+            @Override
+            public String getCurrentUser() {
+                String user = AuthenticationUtil.getRunAsUser();
+                return user == null ? AuthenticationUtil.getSystemUserName() : user;
+            }
+
+            @NotNull
+            @Override
+            public String setCurrentTenant(@NotNull String tenant) {
+                return tenant;
+            }
+
+            @NotNull
+            @Override
+            public String getCurrentTenant() {
+                return "";
             }
         };
     }

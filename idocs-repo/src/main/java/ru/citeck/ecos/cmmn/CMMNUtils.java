@@ -86,7 +86,7 @@ public class CMMNUtils implements ContentValueConverter {
     private static final QName QNAME_TASK_AUTHORITIES = new QName(NAMESPACE, "taskAuthorities");
     private static final QName QNAME_TASK_ROLES = new QName(NAMESPACE, "taskRoles");
 
-    private static final QName QNAME_ROLE_VARNAME = new QName(NAMESPACE, "roleVarName");
+    public static final QName QNAME_ROLE_VARNAME = new QName(NAMESPACE, "roleVarName");
     private static final QName QNAME_ROLE_REFERENSE = new QName(NAMESPACE, "isReferenceRole");
     private static final QName QNAME_ROLE_SCRIPT = new QName(NAMESPACE, "roleScript");
 
@@ -136,7 +136,7 @@ public class CMMNUtils implements ContentValueConverter {
 
         mapping = new HashMap<>();
         mapping.put(QNAME_CASE_STATUS, StagesModel.ASSOC_CASE_STATUS);
-        mapping.put(QNAME_ACTION_CASE_STATUS, ActionModel.SetCaseStatus.PROP_STATUS);
+        mapping.put(QNAME_ACTION_CASE_STATUS, ActionModel.SetCaseStatus.ASSOC_STATUS);
         STATUS_ASSOCS_MAPPING = Collections.unmodifiableMap(mapping);
     }
 
@@ -181,7 +181,7 @@ public class CMMNUtils implements ContentValueConverter {
                 value = convertCmmnIdToNodeRefString(value);
                 if (!NodeRef.isNodeRef(value)) {
                     log.error(String.format("Property '%s' has type '%s' but value isn't a NodeRef. value = '%s'",
-                                                                    dataType, propertyName.getPrefixString(), value));
+                            dataType, propertyName.getPrefixString(), value));
                     return null;
                 }
             }
@@ -199,7 +199,7 @@ public class CMMNUtils implements ContentValueConverter {
             return Boolean.valueOf(value);
         }
         log.error(String.format("Type '%s' isn't supported by CaseImportService. Property = '%s' value = '%s'",
-                                                                dataType, propertyName.toPrefixString(), value));
+                dataType, propertyName.toPrefixString(), value));
         return null;
     }
 
@@ -213,7 +213,7 @@ public class CMMNUtils implements ContentValueConverter {
         org.alfresco.service.namespace.QName dataType = property.getDataType().getName();
 
         if (dataType.equals(DataTypeDefinition.CATEGORY) || dataType.equals(DataTypeDefinition.NODE_REF)) {
-            return extractIdFromNodeRef((NodeRef)value);
+            return extractIdFromNodeRef((NodeRef) value);
         }
 
         return value.toString();
@@ -280,6 +280,10 @@ public class CMMNUtils implements ContentValueConverter {
 
     public boolean isTimer(JAXBElement<? extends TPlanItemDefinition> element) {
         return element.getValue().getClass().equals(TTimerEventListener.class);
+    }
+
+    public boolean isUserEventListener(JAXBElement<? extends TPlanItemDefinition> element) {
+        return element.getValue().getClass().equals(TUserEventListener.class);
     }
 
     public QName convertToXMLQName(org.alfresco.service.namespace.QName alfrescoQName) {

@@ -30,6 +30,7 @@ public class ActivityRef {
     @Getter private String id;
 
     @JsonCreator
+    @ecos.com.fasterxml.jackson210.annotation.JsonCreator
     public static ActivityRef of(String activityRef) {
         if (StringUtils.isBlank(activityRef)) {
             return EMPTY;
@@ -77,12 +78,14 @@ public class ActivityRef {
     }
 
     @JsonIgnore
+    @ecos.com.fasterxml.jackson210.annotation.JsonIgnore
     public boolean isRoot() {
         return ROOT_ID.equalsIgnoreCase(id);
     }
 
     @Override
     @JsonValue
+    @ecos.com.fasterxml.jackson210.annotation.JsonValue
     public String toString() {
         return (caseServiceType != null ? (caseServiceType.getShortName() + SERVICE_TYPE_DELIMITER) : "")
             + (StringUtils.isNotBlank(processId.toString()) ? (processId.toString() + PROCESS_ID_DELIMITER) : "")

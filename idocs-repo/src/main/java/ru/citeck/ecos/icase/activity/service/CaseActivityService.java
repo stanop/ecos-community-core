@@ -16,11 +16,15 @@ public interface CaseActivityService {
 
     CaseActivity getActivity(ActivityRef activityRef);
 
+    CaseActivity getParentActivity(ActivityRef childActivityRef);
+
     List<CaseActivity> getActivities(ActivityRef activityRef);
 
     List<CaseActivity> getActivities(ActivityRef activityRef, boolean recurse);
 
     List<CaseActivity> getStartedActivities(ActivityRef activityRef);
+
+    CaseActivity getActivityByName(ActivityRef activityRef, String name, boolean recurse);
 
     CaseActivity getActivityByTitle(ActivityRef activityRef, String title, boolean recurse);
 
