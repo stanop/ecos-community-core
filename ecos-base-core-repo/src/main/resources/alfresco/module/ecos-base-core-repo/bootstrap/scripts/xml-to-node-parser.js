@@ -212,7 +212,24 @@ var parser = {
 
             for each(var assocData in assocsData) {
 
-                if (assocData.cm_authority.length() > 0) {
+                if (assocData.cm_user.length() > 0) {
+                    if (assocData.cm_user.username.length() == 0 || assocData.assocType.length() == 0) {
+                        logger.error(parser.parserScriptName
+                            + " fillAssocs() - cm_user: (name) or (assocType) parameter is empty. Method aborted.");
+                        return;
+                    }
+
+                    var userNode = this.searchUserByUserName(assocData.cm_user);
+                    if (!userNode) {
+                        logger.error(this.parserScriptName + " cannot find user by username: "
+                            + assocData.cm_user.username);
+                        return;
+                    }
+
+                    if (!this.isAssocExists(node, userNode, assocData.assocType)) {
+                        node.createAssociation(userNode, assocData.assocType);
+                    }
+                } else if (assocData.cm_authority.length() > 0) {
                     if (assocData.cm_authority.name.length() == 0 || assocData.assocType.length() == 0) {
                         logger.error(parser.parserScriptName
                             + " fillAssocs() - cm_authority: (name) or (assocType) parameter is empty. Method aborted.");
@@ -311,6 +328,10 @@ var parser = {
                 }
             }
             return null;
+        },
+        searchUserByUserName: function(userObj) {
+            var username = userObj.username;
+            return people.getPerson(username);
         },
         createGroup: function (groupObj) {
             var groupName = groupObj.name;
