@@ -126,7 +126,7 @@ public class EProcCaseEvaluatorConverter {
         Map<String, String> props = evaluatorDefinitionData.getAttributes();
 
         String rawProperty = props.get(ConditionModel.ComparePropertyValue.PROP_PROPERTY.getLocalName());
-        QName property = QName.createQName(rawProperty, namespaceService);
+        QName property = QName.resolveToQName(namespaceService, rawProperty);
 
         String rawOperation = props.get(ConditionModel.ComparePropertyValue.PROP_OPERATION.getLocalName());
         CasePredicateUtils.Operation operation = CasePredicateUtils.Operation.valueOf(rawOperation);
@@ -159,7 +159,7 @@ public class EProcCaseEvaluatorConverter {
             return EvaluatorUtils.createEvaluatorDto(AlwaysFalseEvaluator.TYPE, null, false);
         }
 
-        QName property = QName.createQName(rawProperty, namespaceService);
+        QName property = QName.resolveToQName(namespaceService, rawProperty);
         String propertyName = property.toPrefixString(namespaceService);
 
         String username = props.get(ConditionModel.UserInDocument.PROP_USERNAME.getLocalName());
