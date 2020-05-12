@@ -2,6 +2,7 @@ package ru.citeck.ecos.icase.commands.executors;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +21,15 @@ public class SetPropertyValueCommandExecutor implements CommandExecutor<SetPrope
     public static final String TYPE = "set-property-value";
 
     private CommandsService commandsService;
+    private NamespaceService namespaceService;
     private NodeService nodeService;
 
     @Autowired
-    public SetPropertyValueCommandExecutor(CommandsService commandsService, NodeService nodeService) {
+    public SetPropertyValueCommandExecutor(CommandsService commandsService,
+                                           NamespaceService namespaceService,
+                                           NodeService nodeService) {
         this.commandsService = commandsService;
+        this.namespaceService = namespaceService;
         this.nodeService = nodeService;
     }
 
@@ -37,7 +42,7 @@ public class SetPropertyValueCommandExecutor implements CommandExecutor<SetPrope
     @Override
     public Object execute(SetPropertyValueCommand command) {
         NodeRef caseRef = RecordsUtils.toNodeRef(command.getCaseRef());
-        QName propertyQName = QName.createQName(command.getPropertyQName());
+        QName propertyQName = QName.resolveToQName(namespaceService, command.getPropertyQName());
         Serializable propertyValue = command.getPropertyValue();
         nodeService.setProperty(caseRef, propertyQName, propertyValue);
         return null;

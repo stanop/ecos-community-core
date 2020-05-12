@@ -115,7 +115,7 @@ public class CaseEvaluatorConverter {
             return EvaluatorUtils.createEvaluatorDto(AlwaysFalseEvaluator.TYPE, null, false);
         }
 
-        QName property = QName.createQName(rawProperty, namespaceService);
+        QName property = QName.resolveToQName(namespaceService, rawProperty);
         String propertyName = property.toPrefixString(namespaceService);
 
         String username = (String) props.get(ConditionModel.UserInDocument.PROP_USERNAME);
