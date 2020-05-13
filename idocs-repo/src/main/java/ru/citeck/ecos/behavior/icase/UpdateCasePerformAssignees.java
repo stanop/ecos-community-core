@@ -240,6 +240,7 @@ public class UpdateCasePerformAssignees implements CaseRolePolicies.OnRoleAssign
         return taskDefinitions.stream()
                 .map(definition -> ActivityRef.of(CaseServiceType.EPROC, caseRef, definition.getId()))
                 .map(activityRef -> eprocActivityService.getStateInstance(activityRef))
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
 
