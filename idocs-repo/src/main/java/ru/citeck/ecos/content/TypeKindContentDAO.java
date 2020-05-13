@@ -1,17 +1,25 @@
 package ru.citeck.ecos.content;
 
+import lombok.Data;
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.collections.MapUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.model.ClassificationModel;
+import ru.citeck.ecos.model.EcosTypeModel;
+import ru.citeck.ecos.node.EcosTypeService;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.RecordsService;
 
 import java.io.Serializable;
 import java.util.*;
 
 /**
  * TypeKind config registry helps to search configs by EcoS type and kind
- * @param <T> type of parsed content data
  *
+ * @param <T> type of parsed content data
  * @author Pavel Simonov
  */
 public class TypeKindContentDAO<T> extends RepoContentDAOImpl<T> {
@@ -19,6 +27,13 @@ public class TypeKindContentDAO<T> extends RepoContentDAOImpl<T> {
     private QName typeField = ClassificationModel.PROP_DOCUMENT_APPLIES_TO_TYPE;
     private QName kindField = ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND;
     private QName classField = null;
+
+    @Autowired
+    @Qualifier("ecosTypeService")
+    private EcosTypeService ecosTypeService;
+
+    @Autowired
+    private RecordsService recordsService;
 
     /**
      * Get configs by EcoS type kind
@@ -46,29 +61,44 @@ public class TypeKindContentDAO<T> extends RepoContentDAOImpl<T> {
     }
 
     /**
-     *  Get configs by EcoS type kind or class of node
-     *  Keys to search in order of priority:
-     *  1) EcoS type and EcoS kind
-     *  2) EcoS type and EcoS kind is empty
-     *  3) Alfresco type
-     *  4) Alfresco aspect
-     * */
+     * Get configs by EcoS type kind or class of node
+     * Keys to search in order of priority:
+     * 1) EcoS type and EcoS kind
+     * 2) EcoS type and EcoS kind is empty
+     * 3) Alfresco type
+     * 4) Alfresco aspect
+     */
     public List<ContentData<T>> getContentDataByNodeTKC(NodeRef nodeRef) {
 
         List<ContentData<T>> configs = Collections.emptyList();
 
-        NodeRef type = (NodeRef) nodeService.getProperty(nodeRef, ClassificationModel.PROP_DOCUMENT_TYPE);
-        //case type/kind
-        if (type != null) {
-            NodeRef kind = (NodeRef) nodeService.getProperty(nodeRef, ClassificationModel.PROP_DOCUMENT_KIND);
-            configs = getContentDataByTypeKind(type, kind);
+        //  ecos type
+        RecordRef ecosTypeRef = ecosTypeService.getEcosType(nodeRef);
+        while (RecordRef.isNotEmpty(ecosTypeRef)) {
+            Map<QName, Serializable> keys = Collections.singletonMap(EcosTypeModel.PROP_TYPE, ecosTypeRef);
+            if (MapUtils.isEmpty(keys)) {
+                EcosTypeDto dto = recordsService.getMeta(ecosTypeRef, EcosTypeDto.class);
+                ecosTypeRef = dto.getParentRef();
+            } else {
+                configs = getContentData(keys);
+                ecosTypeRef = RecordRef.EMPTY;
+            }
         }
-        //alfresco type
+
+        NodeRef type = (NodeRef) nodeService.getProperty(nodeRef, ClassificationModel.PROP_DOCUMENT_TYPE);
+        //  case type/kind
+        if (configs.isEmpty()) {
+            if (type != null) {
+                NodeRef kind = (NodeRef) nodeService.getProperty(nodeRef, ClassificationModel.PROP_DOCUMENT_KIND);
+                configs = getContentDataByTypeKind(type, kind);
+            }
+        }
+        //  alfresco type
         if (configs.isEmpty()) {
             QName nodeType = nodeService.getType(nodeRef);
             configs = getContentDataByClassName(nodeType, true);
         }
-        //aspects
+        //  aspects
         if (configs.isEmpty()) {
             Set<QName> aspects = nodeService.getAspects(nodeRef);
             for (QName aspect : aspects) {
@@ -81,6 +111,7 @@ public class TypeKindContentDAO<T> extends RepoContentDAOImpl<T> {
 
     /**
      * Get config by alfresco class
+     *
      * @param className alfresco type or aspect name
      */
     public List<ContentData<T>> getContentDataByClassName(QName className, boolean includeParents) {
@@ -117,5 +148,10 @@ public class TypeKindContentDAO<T> extends RepoContentDAOImpl<T> {
 
     public void setClassField(QName classField) {
         this.classField = classField;
+    }
+
+    @Data
+    public class EcosTypeDto {
+        private RecordRef parentRef;
     }
 }
