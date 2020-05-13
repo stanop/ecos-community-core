@@ -4,6 +4,7 @@ import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.repo.workflow.BPMEngineRegistry;
 import org.alfresco.repo.workflow.WorkflowComponent;
+import org.alfresco.repo.workflow.activiti.ActivitiConstants;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -12,16 +13,20 @@ import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.*;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
+import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.RuntimeService;
 import org.flowable.common.engine.api.FlowableIllegalArgumentException;
 import org.flowable.engine.history.HistoricProcessInstance;
+import org.flowable.engine.impl.persistence.entity.ExecutionEntity;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.DeploymentBuilder;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.engine.runtime.ProcessInstanceBuilder;
+import org.flowable.image.ProcessDiagramGenerator;
+import org.flowable.image.impl.DefaultProcessDiagramGenerator;
 import org.flowable.task.api.Task;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -623,13 +628,26 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
      */
     @Override
     public InputStream getWorkflowImage(String workflowInstanceId) {
-        ProcessDefinition processDefinition = flowableProcessDefinitionService
-                .getProcessDefinitionByProcessInstanceId(getLocalValue(workflowInstanceId));
-        if (processDefinition != null) {
-            return flowableProcessDefinitionService.getProcessDefinitionImage(processDefinition.getId());
-        } else {
-            return null;
+
+        String localInstanceId = getLocalValue(workflowInstanceId);
+
+        ExecutionEntity pi = (ExecutionEntity) runtimeService.createProcessInstanceQuery()
+            .processInstanceId(localInstanceId).singleResult();
+
+        // If the process is finished, there is no diagram available
+        if (pi != null) {
+            // Fetch the bpmn model
+            BpmnModel model = repositoryService.getBpmnModel(pi.getProcessDefinitionId());
+
+            if (model != null && model.getLocationMap().size() > 0) {
+
+                ProcessDiagramGenerator generator = new DefaultProcessDiagramGenerator();
+                return generator.generateDiagram(model,
+                    ActivitiConstants.PROCESS_INSTANCE_IMAGE_FORMAT,
+                    runtimeService.getActiveActivityIds(localInstanceId), true);
+            }
         }
+        return null;
     }
 
     /**
