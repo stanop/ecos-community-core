@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ru.citeck.ecos.commons.data.ObjectData;
 import ru.citeck.ecos.model.EcosTypeModel;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
@@ -60,6 +61,10 @@ public class EcosTypeService {
         this.nodeUtils = nodeUtils;
     }
 
+    public void register(QName nodeType, Function<AlfNodeInfo, RecordRef> evaluator) {
+        evaluators.register(nodeType, evaluator);
+    }
+
     public RecordRef getEcosType(NodeRef nodeRef) {
         return evaluators.eval(nodeRef);
     }
@@ -78,6 +83,17 @@ public class EcosTypeService {
 
     public NodeRef getRootForType(RecordRef typeRef) {
         return AuthenticationUtil.runAsSystem(() -> getRootForTypeImpl(typeRef));
+    }
+
+    //TODO: get from cache
+    public <T> T getEcosTypeConfig(RecordRef configRef, Class<T> configClass) {
+        EcosTypeConfig typeConfig = recordsService.getMeta(configRef, EcosTypeConfig.class);
+        return typeConfig.getData().getAs(configClass);
+    }
+
+    public <T> T getEcosTypeConfig(NodeRef documentRef, Class<T> configClass) {
+        RecordRef ecosType = getEcosType(documentRef);
+        return getEcosTypeConfig(ecosType, configClass);
     }
 
     private NodeRef getRootForTypeImpl(RecordRef typeRef) {
@@ -120,23 +136,6 @@ public class EcosTypeService {
         props.put(EcosTypeModel.PROP_TENANT, currentTenant);
 
         return findOrCreateFolder(tenantFolder, typeRef.getId(), props, false, props);
-    }
-
-    private String getValidName(String name) {
-        //todo: add transliteration
-        return name.replaceAll("[^a-zA-Z-_0-9]", "_").trim();
-    }
-
-    private boolean isAllMatch(Map<QName, Serializable> baseProps, Map<QName, Serializable> expectedProps) {
-        if (baseProps == null) {
-            return false;
-        }
-        if (expectedProps == null || expectedProps.isEmpty()) {
-            return true;
-        }
-        return expectedProps.entrySet()
-            .stream()
-            .allMatch(it -> Objects.equals(it.getValue(), baseProps.get(it.getKey())));
     }
 
     private NodeRef findOrCreateFolder(NodeRef parent,
@@ -201,13 +200,33 @@ public class EcosTypeService {
         return result;
     }
 
-    public void register(QName nodeType, Function<AlfNodeInfo, RecordRef> evaluator) {
-        evaluators.register(nodeType, evaluator);
+    private String getValidName(String name) {
+        //todo: add transliteration
+        return name.replaceAll("[^a-zA-Z-_0-9]", "_").trim();
+    }
+
+    private boolean isAllMatch(Map<QName, Serializable> baseProps, Map<QName, Serializable> expectedProps) {
+        if (baseProps == null) {
+            return false;
+        }
+        if (expectedProps == null || expectedProps.isEmpty()) {
+            return true;
+        }
+        return expectedProps.entrySet()
+            .stream()
+            .allMatch(it -> Objects.equals(it.getValue(), baseProps.get(it.getKey())));
     }
 
     @Data
     public static final class DescendantTypesMeta {
         @MetaAtt("children[]?id")
         private List<RecordRef> children;
+    }
+
+
+    @Data
+    private static final class EcosTypeConfig {
+        @MetaAtt("config")
+        ObjectData data;
     }
 }
