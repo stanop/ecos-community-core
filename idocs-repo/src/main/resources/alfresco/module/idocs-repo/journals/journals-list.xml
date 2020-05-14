@@ -705,4 +705,25 @@
         </headers>
     </journal>
 
+    <journal id="history_all">
+        <datasource>history</datasource>
+        <headers>
+            <header key="historyEventId" default="true" />
+            <header key="username" default="true" />
+            <header key="documentId" default="true" />
+            <header key="creationTime" default="true" />
+            <header key="version" default="true" />
+            <header key="comments" default="true" />
+            <header key="eventType" default="true" />
+            <header key="taskRole" default="true" />
+            <header key="taskOutcome" default="true" />
+            <header key="taskOutcome" default="true" />
+            <header key="taskType" default="true" />
+            <header key="taskAttachments" default="true" />
+            <header key="taskInstanceId" default="true" />
+            <header key="taskPooledActors" default="true" />
+            <header key="taskTitle" default="true" />
+        </headers>
+    </journal>
+
 </journals>

@@ -84,6 +84,31 @@ public class DocumentHistoryGet extends AbstractWebScript {
         }
     }
 
+    public List<ObjectNode> getAllHistoryEvents(int page, int limit, String filter, String events, String taskTypes) {
+        Set<String> includeEvents = split(events);
+        Set<String> includeTypes = split(taskTypes);
+        Criteria filterCriteria = null;
+
+        if (StringUtils.isNotBlank(filter)) {
+            filterCriteria = filterRegistry.getMapping().get(filter);
+            if (filterCriteria == null) {
+                throw new WebScriptException(Status.STATUS_BAD_REQUEST, "Filter with id: " + filter + " not found");
+            }
+        }
+
+        /* Load data */
+        List<Map> historyRecordMaps = Collections.emptyList();
+        if (isEnabledRemoteHistoryService()) {
+            historyRecordMaps = historyRemoteService.getAllHistoryRecords(page, limit);
+        }
+
+        if (filterCriteria != null) {
+            historyRecordMaps = filterCriteria.meetCriteria(historyRecordMaps);
+        }
+
+        return formatHistoryNodes(historyRecordMaps, includeEvents, includeTypes);
+    }
+
     public List<ObjectNode> getHistoryEvents(String nodeRef, String filter, String events, String taskTypes) {
 
         NodeRef documentRef = new NodeRef(nodeRef);
