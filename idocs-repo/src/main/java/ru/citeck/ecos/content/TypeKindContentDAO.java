@@ -4,7 +4,6 @@ import lombok.Data;
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
-import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.model.ClassificationModel;
@@ -74,24 +73,20 @@ public class TypeKindContentDAO<T> extends RepoContentDAOImpl<T> {
 
         //  ecos type
         RecordRef ecosTypeRef = ecosTypeService.getEcosType(nodeRef);
-        while (RecordRef.isNotEmpty(ecosTypeRef)) {
+        while (RecordRef.isEmpty(ecosTypeRef)) {
+            EcosTypeDto dto = recordsService.getMeta(ecosTypeRef, EcosTypeDto.class);
+            ecosTypeRef = dto.getParentRef();
+        }
+        if (RecordRef.isNotEmpty(ecosTypeRef)) {
             Map<QName, Serializable> keys = Collections.singletonMap(EcosTypeModel.PROP_TYPE, ecosTypeRef);
-            if (MapUtils.isEmpty(keys)) {
-                EcosTypeDto dto = recordsService.getMeta(ecosTypeRef, EcosTypeDto.class);
-                ecosTypeRef = dto.getParentRef();
-            } else {
-                configs = getContentData(keys);
-                ecosTypeRef = RecordRef.EMPTY;
-            }
+            configs = getContentData(keys);
         }
 
         NodeRef type = (NodeRef) nodeService.getProperty(nodeRef, ClassificationModel.PROP_DOCUMENT_TYPE);
-        //  case type/kind
-        if (configs.isEmpty()) {
-            if (type != null) {
-                NodeRef kind = (NodeRef) nodeService.getProperty(nodeRef, ClassificationModel.PROP_DOCUMENT_KIND);
-                configs = getContentDataByTypeKind(type, kind);
-            }
+        //case type/kind
+        if (configs.isEmpty() && type != null) {
+            NodeRef kind = (NodeRef) nodeService.getProperty(nodeRef, ClassificationModel.PROP_DOCUMENT_KIND);
+            configs = getContentDataByTypeKind(type, kind);
         }
         //  alfresco type
         if (configs.isEmpty()) {
