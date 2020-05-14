@@ -1,5 +1,7 @@
 package ru.citeck.ecos.records.source.alf.file;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Component;
 import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.commons.json.Json;
 import ru.citeck.ecos.model.ClassificationModel;
+import ru.citeck.ecos.model.EcosTypeModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
@@ -93,7 +96,12 @@ public class AlfNodeContentFileHelper {
                             "Current files count: <%s>. The first file will be written.", prop, jsonNode.size()));
                 }
 
-                saveFileToContentPropFromEform(jsonNode.get(0), prop, nodeRef);
+                String tempRefStr = jsonNode.get(0).get(MODEL_DATA).get(MODEL_NODE_REF).asText();
+                if (StringUtils.isBlank(tempRefStr) || !NodeRef.isNodeRef(tempRefStr)) {
+                    throw new AlfrescoRuntimeException("NodeRef of content file incorrect");
+                }
+
+                saveFileToContentPropFromEform(new NodeRef(tempRefStr), prop, nodeRef);
             }
         }
     }
@@ -126,123 +134,211 @@ public class AlfNodeContentFileHelper {
         processAssocFilesContent(assoc, jsonNodes, nodeRef, true);
     }
 
-    public void processAssocFilesContent(QName assoc, DataValue jsonNodes, NodeRef nodeRef, Boolean isChild) {
+    public void processAssocFilesContent(QName assoc, DataValue jsonNodes, NodeRef baseNodeRef, Boolean isChild) {
+
         AssociationDefinition assocDef = dictionaryService.getAssociation(assoc);
-        QName assocName = assocDef.getName();
-        QName targetName = assocDef.getTargetClass().getName();
+        QName assocType = assocDef.getName();
+        QName assocTargetType = assocDef.getTargetClass().getName();
 
         List<NodeRef> currentFiles = isChild
-                ? RepoUtils.getChildrenByAssoc(nodeRef, assocName, nodeService)
-                : RepoUtils.getTargetAssoc(nodeRef, assocName, nodeService);
-        Set<NodeRef> inboundMutatedRefs = new HashSet<>();
+                ? RepoUtils.getChildrenByAssoc(baseNodeRef, assocType, nodeService)
+                : RepoUtils.getTargetAssoc(baseNodeRef, assocType, nodeService);
 
-        for (DataValue jsonNode : jsonNodes) {
-            String tempRefStr = jsonNode.get(MODEL_DATA).get(MODEL_NODE_REF).asText();
-            NodeRef fileRef = new NodeRef(tempRefStr);
+        Set<NodeRef> inboundMutatedRefs = new HashSet<>();
+        List<AttachmentDto> attachments = parseAttachments(jsonNodes);
+
+        for (AttachmentDto attachment : attachments) {
+
+            NodeRef fileRef = attachment.documentRef;
             inboundMutatedRefs.add(fileRef);
 
             if (currentFiles.contains(fileRef)) {
-                processTypeKind(jsonNode, fileRef);
+                if (isChild) {
+                    NodeRef primaryParentRef = nodeService.getPrimaryParent(fileRef).getParentRef();
+                    if (primaryParentRef.equals(baseNodeRef)) {
+                        processTypeKind(attachment, fileRef);
+                    }
+                }
                 continue;
             }
 
-            NodeRef createdNode;
+            NodeRef createdNode = null;
+
+            QName childAssocQName = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, GUID.generate());
+            Map<QName, Serializable> newNodeProps = new HashMap<>();
+            newNodeProps.put(ContentModel.PROP_NAME, attachment.getDocumentName());
 
             if (!isChild) {
-                createdNode = nodeService.createNode(attachmentRoot,
+
+                NodeRef targetRef;
+
+                if (attachment.isTempFile()) {
+
+                    createdNode = nodeService.createNode(attachmentRoot,
                         ContentModel.ASSOC_CHILDREN,
-                        QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, GUID.generate()),
-                        targetName).getChildRef();
+                        childAssocQName,
+                        assocTargetType,
+                        newNodeProps).getChildRef();
 
-                RepoUtils.createAssociation(nodeRef, createdNode, assocName, true, nodeService);
+                    targetRef = createdNode;
+
+                } else {
+
+                    targetRef = attachment.documentRef;
+                }
+                RepoUtils.createAssociation(baseNodeRef, targetRef, assocType, true, nodeService);
+
             } else {
-                createdNode = nodeService.createNode(nodeRef,
-                        assocName,
-                        QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, GUID.generate()),
-                        targetName).getChildRef();
+
+                if (attachment.isTempFile()) {
+
+                    createdNode = nodeService.createNode(baseNodeRef,
+                        assocType,
+                        childAssocQName,
+                        assocTargetType,
+                        newNodeProps
+                    ).getChildRef();
+
+                } else {
+
+                    nodeService.addChild(baseNodeRef, attachment.documentRef, assocType, childAssocQName);
+                }
             }
 
-            if (log.isDebugEnabled()) {
+            if (log.isDebugEnabled() && createdNode != null) {
                 log.debug(String.format("Create file node. Source node <%s>, type <%s>, assocType <%s>, nodeRef <%s>",
-                        nodeRef.toString(), targetName, assocName, createdNode.toString()));
+                        baseNodeRef.toString(), assocTargetType, assocType, createdNode.toString()));
             }
 
-            saveFileToContentPropFromEform(jsonNode, ContentModel.PROP_CONTENT, createdNode);
-            processTypeKind(jsonNode, createdNode);
+            if (createdNode != null) {
+                saveFileToContentPropFromEform(attachment.documentRef, ContentModel.PROP_CONTENT, createdNode);
+                processTypeKind(attachment, createdNode);
+            }
         }
 
         if (isChild) {
-            processDeletion(currentFiles, inboundMutatedRefs);
+            currentFiles.stream()
+                .filter(ref -> {
+                    if (!inboundMutatedRefs.contains(ref)) {
+
+                        NodeRef primaryParentRef = nodeService.getPrimaryParent(ref).getParentRef();
+                        if (primaryParentRef != baseNodeRef) {
+                            return true;
+                        }
+
+                        QName type = nodeService.getType(ref);
+                        return type.equals(assocTargetType);
+                    }
+                    return false;
+                })
+                .forEach(ref -> nodeService.removeChild(baseNodeRef, ref));
         } else {
             currentFiles.stream()
                     .filter(ref -> !inboundMutatedRefs.contains(ref))
-                    .forEach(ref -> RepoUtils.removeAssociation(nodeRef, ref, assocName, true, nodeService));
+                    .forEach(ref -> RepoUtils.removeAssociation(baseNodeRef, ref, assocType, true, nodeService));
         }
     }
 
-    private void saveFileToContentPropFromEform(DataValue tempJsonNode, QName propName, NodeRef node) {
-        String tempRefStr = tempJsonNode.get(MODEL_DATA).get(MODEL_NODE_REF).asText();
-        if (StringUtils.isBlank(tempRefStr) || !NodeRef.isNodeRef(tempRefStr)) {
-            throw new AlfrescoRuntimeException("NodeRef of content file incorrect");
-        }
+    private void saveFileToContentPropFromEform(NodeRef contentFile, QName propName, NodeRef node) {
 
-        NodeRef tempFile = new NodeRef(tempRefStr);
-        ContentReader reader = contentService.getReader(tempFile, ContentModel.PROP_CONTENT);
+        ContentReader reader = contentService.getReader(contentFile, ContentModel.PROP_CONTENT);
         ContentWriter writer = contentService.getWriter(node, propName, true);
         writer.setEncoding(reader.getEncoding());
         writer.setMimetype(reader.getMimetype());
         writer.putContent(reader);
 
-        Serializable fileName = nodeService.getProperty(tempFile, ContentModel.PROP_NAME);
+        Serializable fileName = nodeService.getProperty(contentFile, ContentModel.PROP_NAME);
         String currentName = (String) nodeService.getProperty(node, ContentModel.PROP_NAME);
         if (StringUtils.isBlank(currentName)) {
             nodeService.setProperty(node, ContentModel.PROP_NAME, fileName);
         }
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Copy content from <%s> to <%s>, fileName: <%s>", tempFile.toString(),
+            log.debug(String.format("Copy content from <%s> to <%s>, fileName: <%s>", contentFile.toString(),
                     node.toString(), fileName));
         }
 
-        nodeService.deleteNode(tempFile);
+        QName contentFileType = nodeService.getType(contentFile);
+        if (contentFileType.getLocalName().equals("tempFile")) {
+            nodeService.deleteNode(contentFile);
+        }
     }
 
-    private void processTypeKind(DataValue jsonNode, NodeRef nodeRef) {
-        DataValue fileTypeNode = jsonNode.get(MODEL_FILE_TYPE);
-        if (fileTypeNode.isNull()) {
+    private void processTypeKind(AttachmentDto attachmentDto, NodeRef nodeRef) {
+
+        if (attachmentDto.getTypeRef() == null) {
             return;
         }
-
-        String fileType = fileTypeNode.asText();
-        if (StringUtils.isBlank(fileType)) {
-            nodeService.removeProperty(nodeRef, ClassificationModel.PROP_DOCUMENT_TYPE);
-            nodeService.removeProperty(nodeRef, ClassificationModel.PROP_DOCUMENT_KIND);
-            return;
+        Map<QName, Serializable> props = new HashMap<>();
+        props.put(ClassificationModel.PROP_DOCUMENT_TYPE, attachmentDto.getTypeRef());
+        props.put(ClassificationModel.PROP_DOCUMENT_KIND, attachmentDto.getKindRef());
+        if (StringUtils.isNotBlank(attachmentDto.getEcosType())) {
+            props.put(EcosTypeModel.PROP_TYPE, attachmentDto.getEcosType());
         }
 
-        String rawType = StringUtils.substringBefore(fileType, FILE_TYPE_DELIMITER);
-        String rawKind = StringUtils.substringAfter(fileType, FILE_TYPE_DELIMITER);
-
-        updateClassificationIfRequired(nodeRef, ClassificationModel.PROP_DOCUMENT_TYPE, rawType);
-        updateClassificationIfRequired(nodeRef, ClassificationModel.PROP_DOCUMENT_KIND, rawKind);
+        nodeService.addProperties(nodeRef, props);
     }
 
-    private void updateClassificationIfRequired(NodeRef nodeRef, QName classificationProperty, String rawValue) {
-        if (StringUtils.isBlank(rawValue)) {
-            nodeService.removeProperty(nodeRef, classificationProperty);
-            return;
+    private List<AttachmentDto> parseAttachments(DataValue jsonNode) {
+
+        List<AttachmentDto> result = new ArrayList<>();
+
+        if (jsonNode.isArray()) {
+            for (DataValue node : jsonNode) {
+                result.addAll(parseAttachments(node));
+            }
+        } else {
+
+            String documentStr = jsonNode.get(MODEL_DATA).get(MODEL_NODE_REF).asText();
+
+            if (StringUtils.isBlank(documentStr) || !documentStr.startsWith("workspace://")) {
+                return Collections.emptyList();
+            }
+            NodeRef documentRef = new NodeRef(documentStr);
+            if (!nodeService.exists(documentRef)) {
+                throw new IllegalArgumentException("Document doesn't exists: " + documentRef + " json: " + jsonNode);
+            }
+            String documentName = jsonNode.get(MODEL_FILE_NAME).asText();
+
+            if (StringUtils.isBlank(documentName)) {
+                documentName = (String) nodeService.getProperty(documentRef, ContentModel.PROP_NAME);
+            }
+
+            String ecosType = jsonNode.get(MODEL_FILE_TYPE).asText();
+
+            NodeRef typeRef = null;
+            NodeRef kindRef = null;
+
+            if (StringUtils.isNotBlank(ecosType)) {
+                typeRef = uuidToNodeRef(StringUtils.substringBefore(ecosType, FILE_TYPE_DELIMITER));
+                kindRef = uuidToNodeRef(StringUtils.substringAfter(ecosType, FILE_TYPE_DELIMITER));
+            }
+
+            QName type = nodeService.getType(documentRef);
+            boolean isTempFile = type.getLocalName().equals("tempFile");
+            result.add(new AttachmentDto(ecosType, typeRef, kindRef, documentRef, documentName, isTempFile));
         }
-        NodeRef classification = new NodeRef(WORKSPACE_PREFIX + rawValue);
-        Serializable currentClassification = nodeService.getProperty(nodeRef, classificationProperty);
-        if (!Objects.equals(currentClassification, classification)) {
-            nodeService.setProperty(nodeRef, classificationProperty, classification);
+
+        return result;
+    }
+
+    private NodeRef uuidToNodeRef(String uuid) {
+
+        if (StringUtils.isBlank(uuid)) {
+            return null;
         }
+        NodeRef ref = new NodeRef(WORKSPACE_PREFIX + uuid);
+        return nodeService.exists(ref) ? ref : null;
     }
 
-    private void processDeletion(List<NodeRef> currentChilds, Set<NodeRef> inboundMutatedRefs) {
-        currentChilds.stream()
-                .filter(ref -> !inboundMutatedRefs.contains(ref))
-                .forEach(nodeService::deleteNode);
+    @Data
+    @AllArgsConstructor
+    private static class AttachmentDto {
+        private String ecosType;
+        private NodeRef typeRef;
+        private NodeRef kindRef;
+        private NodeRef documentRef;
+        private String documentName;
+        private boolean isTempFile;
     }
-
 }
