@@ -29,6 +29,7 @@ import ru.citeck.ecos.records2.request.rest.RestHandler;
 import ru.citeck.ecos.records2.resolver.RecordsResolver;
 import ru.citeck.ecos.records2.resolver.RemoteRecordsResolver;
 import ru.citeck.ecos.records2.rest.*;
+import ru.citeck.ecos.records2.source.dao.local.MetaRecordsDaoAttsProvider;
 
 import java.util.function.Supplier;
 
@@ -49,6 +50,8 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     private RecordsProperties properties;
     @Autowired(required = false)
     private RecordsResolverWrapper resolverWrapper;
+    @Autowired
+    private AlfMetaRecordsDaoAttsProvider metaAttsProvider;
 
     @Autowired
     @Qualifier(EurekaContextConfig.REST_TEMPLATE_ID)
@@ -168,5 +171,10 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     @Override
     protected RecordsMetaGql createRecordsMetaGql() {
         return super.createRecordsMetaGql();
+    }
+
+    @Override
+    protected MetaRecordsDaoAttsProvider createMetaRecordsDaoAttsProvider() {
+        return metaAttsProvider;
     }
 }
