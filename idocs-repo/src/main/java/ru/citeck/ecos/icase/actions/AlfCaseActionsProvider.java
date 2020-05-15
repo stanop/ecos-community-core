@@ -134,7 +134,7 @@ public class AlfCaseActionsProvider implements CaseActionsProvider {
 
         NodeRef person = repositoryHelper.getPerson();
         String userName = (String) nodeService.getProperty(person, ContentModel.PROP_USERNAME);
-        Set<String> userAuthorities = new HashSet<>(authorityService.getAuthoritiesForUser(userName));
+        Set<String> userAuthorities = new HashSet<>(authorityService.getAuthorities());
         userAuthorities.add(userName);
 
         userAuthorities.retainAll(authorizedAuthorities);
