@@ -19,8 +19,10 @@
 package ru.citeck.ecos.processor.report;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFHyperlink;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import ru.citeck.ecos.processor.AbstractDataBundleLine;
 import ru.citeck.ecos.processor.DataBundle;
@@ -45,58 +47,57 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
     private static final String REPORT_COLUMNS = "reportColumns";
     private static final String COLUMN_TITLE = "title";
     private static final String XLSX_MIMETYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-    
+
     private String template;
 
     @Override
     public DataBundle process(DataBundle input) {
         Map<String, Object> model = input.needModel();
-        HashMap<String, Object> newModel = new HashMap<>();
-        newModel.putAll(model);
+        Map<String, Object> newModel = new HashMap<>(model);
         newModel.put(ProcessorConstants.KEY_MIMETYPE, XLSX_MIMETYPE);
-        
+
         ByteArrayOutputStream os = getExcelReportStream(getTemplate(), model);
         InputStream excelIS = null;
         if (os != null) {
             excelIS = new ByteArrayInputStream(os.toByteArray());
             IOUtils.closeQuietly(os);
         }
-        
+
         return new DataBundle(excelIS, newModel);
     }
-    
+
     @SuppressWarnings("unchecked")
     private ByteArrayOutputStream getExcelReportStream(String template, Map<String, Object> model) {
         InputStream is = null;
         try {
             is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + template);
             Workbook wb = WorkbookFactory.create(is);
-            
+
             Sheet sheet = wb.getSheetAt(0);
             Header header = sheet.getHeader();
             Header firstHeader = ((XSSFSheet) sheet).getFirstHeader();
-            
+
             // set titles
             if (model.get(REPORT_TITLE) != null) {
                 String reportTitle = (String) model.get(REPORT_TITLE);
                 wb.setSheetName(wb.getSheetIndex(sheet), replaceIllegalChars(reportTitle));
-                
-                String firstCenter = firstHeader.getCenter(); 
+
+                String firstCenter = firstHeader.getCenter();
                 if (firstCenter != null) {
                     firstCenter = firstCenter.replace("{reportTitle}", reportTitle);
                     firstHeader.setCenter(firstCenter);
                 }
-                
-                String otherCenter = header.getCenter(); 
+
+                String otherCenter = header.getCenter();
                 if (otherCenter != null) {
                     otherCenter = otherCenter.replace("{reportTitle}", reportTitle);
                     header.setCenter(otherCenter);
                 }
             }
-            
+
             List<Map<String, String>> reportColumns = (List<Map<String, String>>) model.get(REPORT_COLUMNS);
             List<List<Map<String, Object>>> reportData = (List<List<Map<String, Object>>>) model.get(REPORT_DATA);
-            
+
             createColumnTitlesRow(wb, sheet, reportColumns);
 
             createSheetData(wb, sheet, reportColumns, reportData);
@@ -107,8 +108,8 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
                 removeRow(sheet, 0);
             } else if ((reportData == null) || (reportData.isEmpty())) {
                 removeRow(sheet, 1);
-            }    
-            
+            }
+
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             wb.write(baos);
             return baos;
@@ -120,7 +121,7 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
 
         return null;
     }
-    
+
     private void createColumnTitlesRow(Workbook wb, Sheet sheet, List<Map<String, String>> reportColumns) {
         if ((reportColumns == null) || (reportColumns.isEmpty())) {
             return;
@@ -173,7 +174,7 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
         int i = 0;
         for (List<Map<String, Object>> rowData : reportData) {
             if (rowData != null) {
-                Row newRow = sheet.createRow(i+2);
+                Row newRow = sheet.createRow(i + 2);
 
                 int j = 0;
                 for (Map<String, Object> cellData : rowData) {
@@ -182,8 +183,8 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
 
                     String dataType = (String) cellData.get(ReportProducer.DATA_TYPE_ATTR);
                     String valStr = String.valueOf(cellData.get(ReportProducer.DATA_VALUE_ATTR));
-                    if (valStr != null && !valStr.isEmpty()) {
-                        if ("Integer".equals(dataType)) {
+                    if (StringUtils.isNotEmpty(valStr)) {
+                        if (ReportProducer.DATA_TYPE_INTEGER.equals(dataType)) {
                             try {
                                 Integer val = Integer.parseInt(valStr);
                                 newCell.setCellType(Cell.CELL_TYPE_NUMERIC);
@@ -191,7 +192,7 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
                             } catch (NumberFormatException e) {
                                 appendStringValue(newCell, valStr);
                             }
-                        } else if ("Double".equals(dataType)) {
+                        } else if (ReportProducer.DATA_TYPE_DOUBLE.equals(dataType)) {
                             try {
                                 double val = Double.parseDouble(valStr);
                                 newCell.setCellStyle(doubleCellStyle);
@@ -200,8 +201,17 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
                             } catch (NumberFormatException e) {
                                 appendStringValue(newCell, valStr);
                             }
-                        } else if ("String".equals(dataType)) {
+                        } else if (ReportProducer.DATA_TYPE_STRING.equals(dataType)) {
                             appendStringValue(newCell, valStr);
+                        } else if (ReportProducer.DATA_TYPE_HYPERLINK.equals(dataType)) {
+                            String url = String.valueOf(cellData.get(ReportProducer.DATA_HYPERLINK_URL_ATTR));
+                            if (StringUtils.isNotBlank(url)) {
+                                // after upgrade version of apache poi - use Hyperelink class instead of formula
+                                newCell.setCellType(Cell.CELL_TYPE_FORMULA);
+                                newCell.setCellFormula(String.format("HYPERLINK(\"%s\", \"%s\")", url, valStr));
+                            } else {
+                                appendStringValue(newCell, valStr);
+                            }
                         }
                     }
                     j++;
@@ -221,7 +231,7 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
 
         removeRow(sheet, 1);
     }
-    
+
     private void autoSizeColumns(Sheet sheet) {
         short columnsCount = sheet.getRow(0).getLastCellNum();
         for (short s = 0; s < columnsCount; s++)
@@ -247,13 +257,13 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
                 ? source.replaceAll("[\\\\/:*?\"<>|]", "_")
                 : null;
     }
-    
+
     public void removeRow(Sheet sheet, int rowIndex) {
         int lastRowNum = sheet.getLastRowNum();
         if (rowIndex >= 0 && rowIndex < lastRowNum) {
             sheet.shiftRows(rowIndex + 1, lastRowNum, -1);
         }
-        
+
         if (rowIndex == lastRowNum) {
             Row removingRow = sheet.getRow(rowIndex);
             if (removingRow != null) {
@@ -261,7 +271,7 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
             }
         }
     }
-    
+
     public String getTemplate() {
         return template;
     }
