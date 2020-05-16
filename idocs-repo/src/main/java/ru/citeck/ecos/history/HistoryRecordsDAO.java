@@ -17,10 +17,11 @@ import java.util.stream.Collectors;
 
 @Component
 public class HistoryRecordsDAO extends LocalRecordsDAO
-                               implements RecordsQueryWithMetaLocalDAO<MetaValue> {
+    implements RecordsQueryWithMetaLocalDAO<MetaValue> {
 
     private static final String ID = "history";
     private static final String LANGUAGE_DOCUMENT = "document";
+    private static final String LANGUAGE_CRITERIA = "criteria";
 
     private DocumentHistoryGet historyGet;
 
@@ -32,28 +33,37 @@ public class HistoryRecordsDAO extends LocalRecordsDAO
     public RecordsQueryResult<MetaValue> getMetaValues(RecordsQuery query) {
 
         String language = query.getLanguage();
+        List<ObjectNode> events;
 
         if (StringUtils.isBlank(language)) {
             language = LANGUAGE_DOCUMENT;
         }
-        if (!LANGUAGE_DOCUMENT.equals(language)) {
+        if (!LANGUAGE_DOCUMENT.equals(language) && !LANGUAGE_CRITERIA.equals(language)) {
             throw new IllegalArgumentException("Language '" + language + "' is not supported!");
         }
 
-        Query queryData = query.getQuery(Query.class);
+        if (LANGUAGE_DOCUMENT.equals(language)) {
+            Query queryData = query.getQuery(Query.class);
 
-        String nodeRef = queryData.nodeRef;
-        if (nodeRef != null){
-            int idx = nodeRef.lastIndexOf('@');
-            if (idx > -1 && idx < nodeRef.length() - 1) {
-                nodeRef = nodeRef.substring(idx + 1);
+            String nodeRef = queryData.nodeRef;
+            if (nodeRef != null) {
+                int idx = nodeRef.lastIndexOf('@');
+                if (idx > -1 && idx < nodeRef.length() - 1) {
+                    nodeRef = nodeRef.substring(idx + 1);
+                }
             }
-        }
 
-        List<ObjectNode> events = historyGet.getHistoryEvents(nodeRef,
+            events = historyGet.getHistoryEvents(nodeRef,
                 queryData.filter,
                 queryData.events,
                 queryData.taskTypes);
+        } else {
+            int skipCount = query.getSkipCount();
+            int maxItems = query.getMaxItems();
+            int page = skipCount / maxItems;
+
+            events = historyGet.getAllHistoryEvents(page, maxItems, null, null, null);
+        }
 
         RecordsQueryResult<MetaValue> result = new RecordsQueryResult<>();
         result.setHasMore(false);
@@ -65,8 +75,8 @@ public class HistoryRecordsDAO extends LocalRecordsDAO
 
     private List<MetaValue> getEventsMetaValues(List<ObjectNode> events) {
         return events.stream()
-                     .map(e -> new MetaJsonNodeValue(e.get("nodeRef").asText(), e.get("attributes")))
-                     .collect(Collectors.toList());
+            .map(e -> new MetaJsonNodeValue(e.get("nodeRef").asText(), e.get("attributes")))
+            .collect(Collectors.toList());
     }
 
     @Autowired
