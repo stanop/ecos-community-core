@@ -9,11 +9,13 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.PermissionService;
+import org.alfresco.service.cmr.site.SiteInfo;
+import org.alfresco.service.cmr.site.SiteService;
+import org.alfresco.service.cmr.site.SiteVisibility;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.commons.data.ObjectData;
 import ru.citeck.ecos.model.EcosTypeModel;
@@ -21,7 +23,6 @@ import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
-import ru.citeck.ecos.utils.NodeUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -33,17 +34,14 @@ public class EcosTypeService {
 
     public static final QName QNAME = QName.createQName("", "ecosTypeService");
 
-    private static final String ECOS_TYPES_DOCS_ROOT_NAME = "ecos-types-docs";
+    private static final String ECOS_TYPES_DOCS_ROOT_NAME = "documentLibrary";
 
     private EvaluatorsByAlfNode<RecordRef> evaluators;
     private PermissionService permissionService;
     private RecordsService recordsService;
     private SearchService searchService;
+    private SiteService siteService;
     private NodeService nodeService;
-    private NodeUtils nodeUtils;
-
-    @Value("/${spaces.company_home.childname}")
-    private String companyHomePath;
 
     @Autowired
     public EcosTypeService(PermissionService permissionService,
@@ -51,14 +49,14 @@ public class EcosTypeService {
                            RecordsService recordsService,
                            SearchService searchService,
                            NodeService nodeService,
-                           NodeUtils nodeUtils) {
+                           SiteService siteService) {
 
         evaluators = new EvaluatorsByAlfNode<>(serviceRegistry, node -> null);
         this.permissionService = permissionService;
         this.recordsService = recordsService;
         this.searchService = searchService;
         this.nodeService = nodeService;
-        this.nodeUtils = nodeUtils;
+        this.siteService = siteService;
     }
 
     public void register(QName nodeType, Function<AlfNodeInfo, RecordRef> evaluator) {
@@ -112,37 +110,42 @@ public class EcosTypeService {
             return rootRef;
         }
 
-        NodeRef companyHomeRef = nodeUtils.getNodeRef(companyHomePath);
+        String tenantSiteName = "tenant_" + currentTenant;
+
+        SiteInfo site = siteService.getSite(tenantSiteName);
+        if (site == null) {
+            String title = "Site for tenant '" + currentTenant + "'";
+            site = siteService.createSite(
+                "document-site-dashboard",
+                tenantSiteName,
+                title,
+                title,
+                SiteVisibility.PRIVATE
+            );
+        }
+
+        NodeRef siteRoot = site.getNodeRef();
+
         NodeRef typesFolder = findOrCreateFolder(
-            companyHomeRef,
+            siteRoot,
             ECOS_TYPES_DOCS_ROOT_NAME,
             null,
-            true,
-            null
-        );
-
-        String tenantFolderName = "tenant_" + currentTenant;
-
-        NodeRef tenantFolder = findOrCreateFolder(
-            typesFolder,
-            tenantFolderName,
-            Collections.singletonMap(EcosTypeModel.PROP_TENANT, currentTenant),
-            false,
-            Collections.singletonMap(EcosTypeModel.PROP_TENANT, currentTenant)
+            null,
+            true
         );
 
         Map<QName, Serializable> props = new HashMap<>();
         props.put(EcosTypeModel.PROP_ROOT_FOR_TYPE, typeRef.getId());
         props.put(EcosTypeModel.PROP_TENANT, currentTenant);
 
-        return findOrCreateFolder(tenantFolder, typeRef.getId(), props, false, props);
+        return findOrCreateFolder(typesFolder, typeRef.getId(), props, props, false);
     }
 
     private NodeRef findOrCreateFolder(NodeRef parent,
                                        String name,
                                        Map<QName, Serializable> props,
-                                       boolean isRoot,
-                                       Map<QName, Serializable> expectedProps) {
+                                       Map<QName, Serializable> expectedProps,
+                                       boolean isTypesRoot) {
 
         name = getValidName(name);
 
@@ -173,6 +176,7 @@ public class EcosTypeService {
 
         QName assocName = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, name);
         props.put(ContentModel.PROP_NAME, name);
+
         NodeRef result = nodeService.createNode(
             parent,
             ContentModel.ASSOC_CONTAINS,
@@ -181,7 +185,7 @@ public class EcosTypeService {
             props
         ).getChildRef();
 
-        if (isRoot) {
+        if (isTypesRoot) {
             permissionService.setInheritParentPermissions(result, false);
             permissionService.setPermission(
                 result,
