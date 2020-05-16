@@ -152,6 +152,7 @@
                     <property name="language" value="fts-alfresco"/>
                 </bean>
                 <bean parent="dbp.report.producer" />
+                <bean class="ru.citeck.ecos.processor.DataBundleExpanderProcessor"/>
                 <bean parent="dbp.switch">
                     <property name="expression" value="${reportType!'html'}" />
                     <property name="cases">

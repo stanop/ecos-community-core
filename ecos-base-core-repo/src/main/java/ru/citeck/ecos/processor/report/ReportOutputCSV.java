@@ -1,5 +1,6 @@
 package ru.citeck.ecos.processor.report;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import ru.citeck.ecos.processor.AbstractDataBundleLine;
 import ru.citeck.ecos.processor.DataBundle;
@@ -9,7 +10,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -17,18 +17,18 @@ import java.util.Map;
 
 /**
  * Create CSV Report from DataBundle
- * 
+ *
  * @author Andrew Timokhin
  */
 public class ReportOutputCSV extends AbstractDataBundleLine {
-    
-    private static final String CSV_MIMETYPE      = "text/csv";
-    private static final String REPORT_COLUMNS    = "reportColumns";
-    private static final String REPORT_DATA       = "reportData";
-    private static final String COLUMN_TITLE      = "title";
+
+    private static final String CSV_MIMETYPE = "text/csv";
+    private static final String REPORT_COLUMNS = "reportColumns";
+    private static final String REPORT_DATA = "reportData";
+    private static final String COLUMN_TITLE = "title";
     private static final String DEFAULT_DELIMETER = "\t";
     private static final String DEFAULT_SEPARATOR = "\r\n";
-    
+
     private String delimeter = DEFAULT_DELIMETER;
     private String separator = DEFAULT_SEPARATOR;
 
@@ -55,20 +55,20 @@ public class ReportOutputCSV extends AbstractDataBundleLine {
         if (baos != null) {
             csvIS = new ByteArrayInputStream(baos.toByteArray());
         }
-        
+
         return new DataBundle(csvIS, newModel);
     }
 
     @SuppressWarnings("unchecked")
     private ByteArrayOutputStream getCSVReportStream(Map<String, Object> model) {
         StringBuilder builder = new StringBuilder();
-        
+
         List<Map<String, String>> reportColumns = (List<Map<String, String>>) model.get(REPORT_COLUMNS);
         List<List<Map<String, Object>>> reportData = (List<List<Map<String, Object>>>) model.get(REPORT_DATA);
 
         createColumnTitlesRow(builder, reportColumns);
         createSheetData(builder, reportData);
-        
+
         try {
             ByteArrayOutputStream result = new ByteArrayOutputStream();
             result.write(builder.toString().getBytes(StandardCharsets.UTF_8));
@@ -76,10 +76,10 @@ public class ReportOutputCSV extends AbstractDataBundleLine {
         } catch (IOException exc) {
             Logger.getLogger(getClass()).error(exc.getMessage(), exc);
         }
-        
+
         return null;
     }
-    
+
     private void createColumnTitlesRow(StringBuilder builder, List<Map<String, String>> reportColumns) {
         if (reportColumns != null && !reportColumns.isEmpty()) {
             for (int i = 0; i < reportColumns.size(); i++) {
@@ -103,7 +103,7 @@ public class ReportOutputCSV extends AbstractDataBundleLine {
             }
         }
     }
-    
+
     private void createSheetData(StringBuilder builder, List<List<Map<String, Object>>> reportData) {
         if (reportData == null || reportData.isEmpty()) {
             return;
@@ -119,13 +119,7 @@ public class ReportOutputCSV extends AbstractDataBundleLine {
             for (int j = 0; j < rowData.size(); j++) {
                 Map<String, Object> cellData = rowData.get(j);
 
-                String value;
-                if (cellData != null && cellData.get(ReportProducer.DATA_VALUE_ATTR) != null) {
-                    value = cellData.get(ReportProducer.DATA_VALUE_ATTR).toString();
-                } else {
-                    value = "";
-                }
-
+                String value = getCellValue(cellData);
                 builder.append(clean(value));
 
                 // add delimeter between cells in the row only if the cell is not the last
@@ -139,6 +133,28 @@ public class ReportOutputCSV extends AbstractDataBundleLine {
                 builder.append(separator);
             }
         }
+    }
+
+    private String getCellValue(Map<String, Object> cellData) {
+        if (cellData == null) {
+            return "";
+        }
+
+        String value = cellData.get(ReportProducer.DATA_VALUE_ATTR) != null ? cellData.get(ReportProducer.DATA_VALUE_ATTR).toString() : "";
+
+        String dataType = getStr(cellData, ReportProducer.DATA_TYPE_ATTR);
+        if (ReportProducer.DATA_TYPE_HYPERLINK.equals(dataType)) {
+            String url = getStr(cellData, ReportProducer.DATA_HYPERLINK_URL_ATTR);
+            if (StringUtils.isNotBlank(url)) {
+                return value + " (" + url + ")";
+            }
+        }
+
+        return value;
+    }
+
+    private String getStr(Map<String, Object> cellData, String attName) {
+        return cellData.get(attName) != null ? cellData.get(attName).toString() : "";
     }
 
     /**

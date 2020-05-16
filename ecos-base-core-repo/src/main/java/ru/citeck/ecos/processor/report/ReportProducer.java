@@ -58,6 +58,12 @@ public class ReportProducer extends AbstractDataBundleLine {
 
     public static final String DATA_TYPE_ATTR = "type";
     public static final String DATA_VALUE_ATTR = "value";
+    public static final String DATA_HYPERLINK_URL_ATTR = "url";
+
+    public static final String DATA_TYPE_STRING = "String";
+    public static final String DATA_TYPE_DOUBLE = "Double";
+    public static final String DATA_TYPE_INTEGER = "Integer";
+    public static final String DATA_TYPE_HYPERLINK = "Hyperlink";
 
     private static final String ROW_NUM = "rowNum";
     private static final String TASK_TYPE = "wfm:taskType";
@@ -120,14 +126,14 @@ public class ReportProducer extends AbstractDataBundleLine {
                 Map<String, Object> data = new HashMap<>();
 
                 // default type
-                data.put(DATA_TYPE_ATTR, "String");
+                data.put(DATA_TYPE_ATTR, DATA_TYPE_STRING);
 
                 String colAttribute = col.get(COLUMN_ATTR);
                 String colDateFormat = col.get(COLUMN_DATE_FORMAT);
 
                 if (colAttribute != null) {
                     if (colAttribute.equals(ROW_NUM)) {
-                        data.put(DATA_TYPE_ATTR, "Integer");
+                        data.put(DATA_TYPE_ATTR, DATA_TYPE_INTEGER);
                         data.put(DATA_VALUE_ATTR, i + 1);
                     } else {
                         QName colAttrQName = QName.resolveToQName(namespaceService, colAttribute);
@@ -135,15 +141,15 @@ public class ReportProducer extends AbstractDataBundleLine {
                         QName typeQName = getAttributeTypeName(colAttrQName);
                         if (typeQName != null) {
                             if (typeQName.equals(DataTypeDefinition.DOUBLE)) {
-                                data.put(DATA_TYPE_ATTR, "Double");
+                                data.put(DATA_TYPE_ATTR, DATA_TYPE_DOUBLE);
                             } else if (typeQName.equals(DataTypeDefinition.INT)) {
-                                data.put(DATA_TYPE_ATTR, "Integer");
+                                data.put(DATA_TYPE_ATTR, DATA_TYPE_INTEGER);
                             }
                         }
-                                if (colAttribute.equals(TASK_TYPE)) {
-                                    value = recordsService.getAttribute(RecordRef.valueOf(node.toString()),
-                                                                        TASK_TYPE).asText();
-                                }
+                        if (colAttribute.equals(TASK_TYPE)) {
+                            value = recordsService.getAttribute(RecordRef.valueOf(node.toString()),
+                                    TASK_TYPE).asText();
+                        }
 
                         data.put(DATA_VALUE_ATTR, getFormattedValue(colAttrQName, value, colDateFormat));
                     }
