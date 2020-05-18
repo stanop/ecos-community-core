@@ -705,7 +705,7 @@
         </headers>
     </journal>
 
-    <journal id="history_all">
+    <journal id="audit-history-all">
         <datasource>history</datasource>
         <headers>
             <header key="historyEventId" default="true" />

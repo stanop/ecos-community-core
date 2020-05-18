@@ -707,10 +707,10 @@
         </property>
     </bean>
 
-    <bean id="audit.journals.history_all" parent="idocs.import-spaces"
+    <bean id="idocs.module-component.main-journals.audit-history-all" parent="idocs.import-spaces"
           depends-on="idocs.dictionaryBootstrap">
-        <property name="name" value="audit-history_all" />
-        <property name="description" value="audit-history_all" />
+        <property name="name" value="audit-history-all" />
+        <property name="description" value="All history events list" />
         <property name="dependsOn">
             <list>
                 <ref bean="idocs.module-component.journals-meta-root" />
@@ -721,19 +721,19 @@
                 <props>
                     <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
                     <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
-                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/audit/history_all</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/audit/audit-history-all</prop>
                     <prop key="encoding">UTF-8</prop>
                 </props>
                 <props>
-                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:history_all</prop>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:audit-history-all</prop>
                     <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
-                    <prop key="messages">alfresco/module/${artifactId}/bootstrap/journals/audit/history_all</prop>
+                    <prop key="messages">alfresco/module/${artifactId}/bootstrap/journals/audit/audit-history-all</prop>
                     <prop key="encoding">UTF-8</prop>
                 </props>
                 <props>
                     <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
                     <prop key="location">alfresco/module/${artifactId}/bootstrap/journals/audit/journal-in-list.xml</prop>
-                    <prop key="messages">alfresco/module/${artifactId}/bootstrap/journals/audit/history_all</prop>
+                    <prop key="messages">alfresco/module/${artifactId}/bootstrap/journals/audit/audit-history-all</prop>
                     <prop key="encoding">UTF-8</prop>
                 </props>
             </list>
