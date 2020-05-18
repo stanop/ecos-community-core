@@ -55,13 +55,10 @@ public class CaseCommandsServiceImpl implements CaseCommandsService {
 
         Object commandDto = caseCommandsProvider.provideCommandDto(activityRef);
         CommandResult commandResult = commandsService.executeSync(commandDto);
-        if (CollectionUtils.isNotEmpty(commandResult.getErrors())) {
-            CommandError error = commandResult.getErrors().get(0);
-            throw new RuntimeException("Exception while processing action '" + activityRef +
-                    "', exceptionMessage='" + error.getMessage() +
-                    "', exceptionType='" + error.getType() + "'. " +
-                    "StackTrace of root exception may be fount in logs");
+        if (commandResult.getPrimaryError() != null) {
+            log.error("Exception while processing action '" + activityRef + "'");
         }
+        commandResult.throwPrimaryErrorIfNotNull();
     }
 
     private String getType(ActivityRef actionActivityRef) {
