@@ -273,6 +273,10 @@ public class CaseTaskListener implements BeforeStartedActivityListener, OnResetA
         String key = source.getLocalName();
         String[] roleVarNames = EProcUtils.getAnyAttribute(instance, key, String[].class);
         if (ArrayUtils.isEmpty(roleVarNames)) {
+            roleVarNames = EProcUtils.getAnyAttribute(instance,
+                    CmmnDefinitionConstants.TASK_ROLE_VAR_NAMES_SET_KEY, String[].class);
+        }
+        if (ArrayUtils.isEmpty(roleVarNames)) {
             throw new AlfrescoRuntimeException(source + " for assoc not found any roles in definition");
         }
 
