@@ -67,6 +67,7 @@ public class RemoteTimerServiceImpl implements RemoteTimerService {
 
     private CreateTimerCommandRes sendScheduleCommand(CreateTimerCommand command) {
         CommandResult commandResult = commandsService.executeSync(command, EPROC_TARGET_APP_NAME);
+        commandResult.throwPrimaryErrorIfNotNull();
         if (CollectionUtils.isNotEmpty(commandResult.getErrors())) {
             throw new RuntimeException("Exception while scheduling of timer, command=" + command + ". " +
                     "For detailed information see logs");
@@ -96,11 +97,11 @@ public class RemoteTimerServiceImpl implements RemoteTimerService {
 
     private CancelTimerCommandRes sendCancelCommand(CancelTimerCommand command) {
         CommandResult commandResult = commandsService.executeSync(command, EPROC_TARGET_APP_NAME);
+        commandResult.throwPrimaryErrorIfNotNull();
         if (CollectionUtils.isNotEmpty(commandResult.getErrors())) {
             log.warn("Exception while cancelling of timer, command=" + command + ". " +
                     "For detailed information see logs");
         }
-
         return commandResult.getResultAs(CancelTimerCommandRes.class);
     }
 }
