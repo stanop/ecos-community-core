@@ -104,6 +104,16 @@ public class SearchCriteriaParser {
                     addCriteriaTriplet(searchCriteria, criteria, name);
                 } else if (name.equals(SORT_BY)) {
                     addCriteriaSort(searchCriteria, criteria, name);
+                } else if (name.equals("triplets")) {
+                    JSONArray triplets = criteria.getJSONArray("triplets");
+                    for (int i = 0; i < triplets.length(); i++) {
+                        JSONObject obj = triplets.getJSONObject(i);
+                        searchCriteria.addCriteriaTriplet(
+                            obj.getString("field"),
+                            obj.getString("predicate"),
+                            obj.getString("value")
+                        );
+                    }
                 }
             } catch (JSONException ex) {
                 throw new IllegalArgumentException(ex.getMessage());
