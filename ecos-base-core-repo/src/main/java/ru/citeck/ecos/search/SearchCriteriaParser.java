@@ -25,8 +25,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.commons.data.ObjectData;
+import ru.citeck.ecos.commons.json.Json;
 
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @author Anton Fateev <anton.fateev@citeck.ru>
@@ -59,7 +61,11 @@ public class SearchCriteriaParser {
         if (something instanceof JSONObject) {
             return parse((JSONObject) something);
         }
-        if (something instanceof ObjectNode) {
+        if (something instanceof Map) {
+
+            something = Json.getMapper().toString(something);
+
+        } else if (something instanceof ObjectNode) {
 
             something = something.toString();
 
