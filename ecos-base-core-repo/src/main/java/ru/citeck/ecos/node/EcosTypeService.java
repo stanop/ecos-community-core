@@ -83,7 +83,6 @@ public class EcosTypeService {
         return AuthenticationUtil.runAsSystem(() -> getRootForTypeImpl(typeRef));
     }
 
-    //TODO: get from cache
     public <T> T getEcosTypeConfig(RecordRef configRef, Class<T> configClass) {
         EcosTypeConfig typeConfig = recordsService.getMeta(configRef, EcosTypeConfig.class);
         return typeConfig.getData().getAs(configClass);
