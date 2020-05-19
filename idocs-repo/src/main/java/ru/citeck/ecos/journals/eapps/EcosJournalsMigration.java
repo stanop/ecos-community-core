@@ -95,7 +95,7 @@ public class EcosJournalsMigration implements ModuleMigration {
             .id(journalNodeRef.getId())
             .metaRecord(RecordRef.valueOf(journalMeta.getMetaRecord()))
             .name(nodeUtils.getDisplayName(journalNodeRef))
-            .predicate(new ObjectData(journalType.getPredicate()))
+            .predicate(ObjectData.create(journalType.getPredicate()))
             .actions(journalType.getActions())
             .columnsJSONStr(Json.getMapper().toJson(columns).toString())
             .attributes(journalType.getOptions())

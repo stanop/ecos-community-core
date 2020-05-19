@@ -11,7 +11,7 @@ public class ActionModule {
     private String type;
     private String key;
     private String icon;
-    private ObjectData config = new ObjectData();
+    private ObjectData config = ObjectData.create();
     private RecordEvaluatorDto evaluator;
     private ObjectData attributes;
 }

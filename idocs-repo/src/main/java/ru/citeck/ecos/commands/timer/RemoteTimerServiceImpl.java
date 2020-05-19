@@ -60,7 +60,7 @@ public class RemoteTimerServiceImpl implements RemoteTimerService {
         commandDto.setId(UUID.randomUUID().toString());
         commandDto.setTargetApp(targetApp);
         commandDto.setType(commandType);
-        commandDto.setBody(new ObjectData(callbackData));
+        commandDto.setBody(ObjectData.create(callbackData));
         command.setCommand(commandDto);
         return command;
     }

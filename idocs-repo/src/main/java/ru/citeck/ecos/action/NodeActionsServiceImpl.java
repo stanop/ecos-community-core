@@ -91,7 +91,7 @@ public class NodeActionsServiceImpl implements NodeActionsService {
                     .filter(x -> !EXCLUDE_FROM_CONFIG.contains(x.getKey()))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-            action.setConfig(new ObjectData(config));
+            action.setConfig(ObjectData.create(config));
             result.add(action);
         }
 

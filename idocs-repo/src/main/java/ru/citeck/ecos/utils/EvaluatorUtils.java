@@ -9,7 +9,7 @@ public class EvaluatorUtils {
         RecordEvaluatorDto evaluatorDto = new RecordEvaluatorDto();
         evaluatorDto.setType(type);
         evaluatorDto.setInverse(inverse);
-        ObjectData objectData = new ObjectData(config);
+        ObjectData objectData = ObjectData.create(config);
         evaluatorDto.setConfig(objectData);
         return evaluatorDto;
     }

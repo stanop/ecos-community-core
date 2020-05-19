@@ -5,12 +5,15 @@ import org.alfresco.service.ServiceRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.extensions.surf.util.AbstractLifecycleBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import ru.citeck.ecos.eureka.EcosEurekaClient;
 import ru.citeck.ecos.eureka.EurekaContextConfig;
@@ -87,7 +90,11 @@ public class RecordsConfiguration extends RecordsServiceFactory {
 
     @Override
     protected RemoteRecordsResolver createRemoteRecordsResolver() {
-        RemoteRecordsRestApi restApi = new RemoteRecordsRestApi(this::jsonPost, remoteAppInfoProvider(), properties);
+        RemoteRecordsRestApi restApi = new RemoteRecordsRestApiImpl(
+            this::jsonPost,
+            remoteAppInfoProvider(),
+            properties
+        );
         return new RemoteRecordsResolver(this, restApi);
     }
 
@@ -176,5 +183,25 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     @Override
     protected MetaRecordsDaoAttsProvider createMetaRecordsDaoAttsProvider() {
         return metaAttsProvider;
+    }
+
+    @Component
+    public static class JobsInitializer extends AbstractLifecycleBean {
+
+        @Autowired
+        private RecordsServiceFactory serviceFactory;
+
+        @Override
+        protected void onBootstrap(ApplicationEvent event) {
+            try {
+                serviceFactory.initJobs(null);
+            } catch (Exception e) {
+                log.error("JobsInitializer initialization failed", e);
+            }
+        }
+
+        @Override
+        protected void onShutdown(ApplicationEvent applicationEvent) {
+        }
     }
 }

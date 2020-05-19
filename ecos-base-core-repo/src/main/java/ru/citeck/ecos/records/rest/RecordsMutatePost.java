@@ -48,7 +48,7 @@ public class RecordsMutatePost extends AbstractWebScript {
         if (contentType.contains(WebScriptRequestImpl.MULTIPART_FORM_DATA)) {
 
             RecordMeta recordMeta = new RecordMeta();
-            ObjectData attributes = new ObjectData();
+            ObjectData attributes = ObjectData.create();
 
             FormData data = (FormData) req.parseContent();
 
@@ -67,7 +67,7 @@ public class RecordsMutatePost extends AbstractWebScript {
                 } else {
 
                     if (field.getIsFile()) {
-                        ObjectData fileData = new ObjectData();
+                        ObjectData fileData = ObjectData.create();
                         fileData.set(FILE_FIELD_MIMETYPE, field.getMimetype());
                         fileData.set(FILE_FIELD_FILENAME, field.getFilename());
                         fileData.set(FILE_FIELD_CONTENT, field.getContent().getContent());

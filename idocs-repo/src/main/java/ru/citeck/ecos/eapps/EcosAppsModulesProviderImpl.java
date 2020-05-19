@@ -84,8 +84,8 @@ public class EcosAppsModulesProviderImpl implements EcosAppsProvider, ModuleType
 
     @NotNull
     @Override
-    public EcosFile getModulesRoot(@NotNull String appName) {
-        return getDir("module/" + appName);
+    public List<EcosFile> getModulesRoots(@NotNull String appName) {
+        return Collections.singletonList(getDir("module/" + appName));
     }
 
     private EcosFile getDir(String path) {
