@@ -4,6 +4,7 @@ import lombok.Data;
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.model.ClassificationModel;
@@ -73,13 +74,15 @@ public class TypeKindContentDAO<T> extends RepoContentDAOImpl<T> {
 
         //  ecos type
         RecordRef ecosTypeRef = ecosTypeService.getEcosType(nodeRef);
-        while (RecordRef.isEmpty(ecosTypeRef)) {
-            EcosTypeDto dto = recordsService.getMeta(ecosTypeRef, EcosTypeDto.class);
-            ecosTypeRef = dto.getParentRef();
-        }
-        if (RecordRef.isNotEmpty(ecosTypeRef)) {
-            Map<QName, Serializable> keys = Collections.singletonMap(EcosTypeModel.PROP_TYPE, ecosTypeRef);
+        while (CollectionUtils.isEmpty(configs) && RecordRef.isNotEmpty(ecosTypeRef)) {
+
+            Map<QName, Serializable> keys = Collections.singletonMap(EcosTypeModel.PROP_TYPE, ecosTypeRef.getId());
             configs = getContentData(keys);
+
+            if (CollectionUtils.isEmpty(configs)) {
+                EcosTypeDto dto = recordsService.getMeta(ecosTypeRef, EcosTypeDto.class);
+                ecosTypeRef = dto.getParentRef();
+            }
         }
 
         NodeRef type = (NodeRef) nodeService.getProperty(nodeRef, ClassificationModel.PROP_DOCUMENT_TYPE);
