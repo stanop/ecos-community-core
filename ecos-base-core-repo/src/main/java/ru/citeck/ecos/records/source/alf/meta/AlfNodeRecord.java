@@ -68,6 +68,7 @@ public class AlfNodeRecord implements MetaValue {
     private static final String ATTR_ETYPE = "_etype";
     private static final String VIRTUAL_SCRIPT_ATTS_ID = "virtualScriptAttributesProvider";
     private static final String DEFAULT_VERSION_LABEL = "1.0";
+    private static final String ATTR_DICT = "dict";
 
     private NodeRef nodeRef;
     private RecordRef recordRef;
@@ -303,6 +304,15 @@ public class AlfNodeRecord implements MetaValue {
                     attribute = Collections.singletonList(statusMeta);
                 }
 
+                break;
+
+            case ATTR_DICT:
+                QName fullName = context.getNodeService().getType(nodeRef);
+                String shortName = fullName.toPrefixString();
+                String formKey = "alf_" + shortName;
+                MetaValue dictMeta = new DictRecord(fullName, shortName, formKey);
+                dictMeta.init(context, field);
+                attribute = Collections.singletonList(dictMeta);
                 break;
 
             default:
