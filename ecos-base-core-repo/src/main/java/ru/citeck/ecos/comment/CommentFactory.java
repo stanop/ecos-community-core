@@ -12,10 +12,10 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AccessStatus;
 import org.alfresco.service.cmr.security.AuthorityService;
-import org.alfresco.service.cmr.security.MutableAuthenticationService;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.comment.model.CommentDTO;
 import ru.citeck.ecos.comment.model.CommentPermissions;
@@ -47,6 +47,9 @@ public class CommentFactory {
     private final ServiceRegistry serviceRegistry;
 
     private final ObjectMapper mapper = new ObjectMapper();
+
+    @Value("${ecos.comments.editing.disabled}")
+    private String isCommentsEditingDisabled;
 
     @Autowired
     public CommentFactory(LockService lockService, RecordsService recordsService,
@@ -103,8 +106,17 @@ public class CommentFactory {
         return reader != null ? reader.getContentString() : null;
     }
 
-
+    //todo: use DTO instead of JsonNode
     private JsonNode getPermissions(NodeRef commentRef) {
+
+        Map<String, Boolean> permissions = new HashMap<>();
+
+        if (Boolean.parseBoolean(isCommentsEditingDisabled)) {
+            permissions.put(CommentPermissions.CAN_EDIT.getValue(), false);
+            permissions.put(CommentPermissions.CAN_DELETE.getValue(), false);
+            return mapper.convertValue(permissions, JsonNode.class);
+        }
+
         boolean canEdit;
         boolean canDelete;
         boolean isNodeLocked = false;
@@ -133,7 +145,6 @@ public class CommentFactory {
             canDelete = permissionService.hasPermission(commentRef, PermissionService.DELETE) == AccessStatus.ALLOWED;
         }
 
-        Map<String, Boolean> permissions = new HashMap<>();
         permissions.put(CommentPermissions.CAN_EDIT.getValue(), canEdit);
         permissions.put(CommentPermissions.CAN_DELETE.getValue(), canDelete);
 

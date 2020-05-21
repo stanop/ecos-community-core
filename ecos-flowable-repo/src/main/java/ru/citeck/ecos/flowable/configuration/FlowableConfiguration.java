@@ -167,7 +167,9 @@ public class FlowableConfiguration {
                                                                                 flowableScriptNodeListVariableType,
                                                                         @Qualifier("transactionManager")
                                                                                 PlatformTransactionManager
-                                                                                transactionManager) {
+                                                                                transactionManager,
+                                                                        ProcessBpmnParseHandler processBpmnParseHandler,
+                                                                        UserTaskBpmnParseHandler taskBpmnParseHandler) {
         if (dataSource != null) {
             SpringProcessEngineConfiguration engineConfiguration = new SpringProcessEngineConfiguration();
             engineConfiguration.setDataSource(dataSource);
@@ -194,8 +196,8 @@ public class FlowableConfiguration {
             setMailConfiguration(engineConfiguration);
 
             List<BpmnParseHandler> parseHandlers = new ArrayList<>(2);
-            parseHandlers.add(new ProcessBpmnParseHandler());
-            parseHandlers.add(new UserTaskBpmnParseHandler());
+            parseHandlers.add(processBpmnParseHandler);
+            parseHandlers.add(taskBpmnParseHandler);
             engineConfiguration.setPreBpmnParseHandlers(parseHandlers);
 
             List<VariableType> types = engineConfiguration.getCustomPreVariableTypes();
