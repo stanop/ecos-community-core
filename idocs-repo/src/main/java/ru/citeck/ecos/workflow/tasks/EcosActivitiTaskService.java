@@ -12,6 +12,8 @@ import org.alfresco.repo.workflow.activiti.properties.ActivitiPropertyConverter;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.workflow.WorkflowInstance;
+import org.alfresco.service.cmr.workflow.WorkflowPath;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.NamespaceService;
@@ -279,6 +281,13 @@ public class EcosActivitiTaskService implements EngineTaskService {
         @Override
         public Object getAttribute(String name) {
             return EcosActivitiTaskService.this.getVariable(getId(), name);
+        }
+
+        @Override
+        public WorkflowInstance getWorkflow() {
+            WorkflowTask wfTask = workflowService.getTaskById(ENGINE_PREFIX + this.getId());
+            WorkflowPath wfPath = wfTask.getPath();
+            return wfPath.getInstance();
         }
     }
 }

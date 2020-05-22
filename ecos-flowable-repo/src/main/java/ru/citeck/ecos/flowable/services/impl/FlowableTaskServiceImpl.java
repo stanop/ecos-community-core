@@ -4,6 +4,8 @@ import lombok.extern.log4j.Log4j;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.workflow.WorkflowInstance;
+import org.alfresco.service.cmr.workflow.WorkflowPath;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.NamespaceService;
@@ -327,6 +329,13 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
         @Override
         public Object getAttribute(String name) {
             return FlowableTaskServiceImpl.this.getVariable(getId(), name);
+        }
+
+        @Override
+        public WorkflowInstance getWorkflow() {
+            WorkflowTask wfTask = workflowService.getTaskById(this.getId());
+            WorkflowPath wfPath = wfTask.getPath();
+            return wfPath.getInstance();
         }
     }
 }

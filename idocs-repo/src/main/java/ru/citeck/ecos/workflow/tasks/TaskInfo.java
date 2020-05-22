@@ -1,5 +1,6 @@
 package ru.citeck.ecos.workflow.tasks;
 
+import org.alfresco.service.cmr.workflow.WorkflowInstance;
 import ru.citeck.ecos.records2.RecordRef;
 
 import java.util.List;
@@ -28,4 +29,6 @@ public interface TaskInfo {
     RecordRef getDocument();
 
     Object getAttribute(String name);
+
+    WorkflowInstance getWorkflow();
 }

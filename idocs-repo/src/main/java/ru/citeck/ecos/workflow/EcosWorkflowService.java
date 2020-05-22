@@ -1,12 +1,19 @@
 package ru.citeck.ecos.workflow;
 
 import lombok.Getter;
+import lombok.NonNull;
+import org.alfresco.repo.web.scripts.workflow.WorkflowInstancesGet;
+import org.alfresco.rest.framework.core.exceptions.NotFoundException;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.workflow.WorkflowInstance;
+import org.alfresco.service.cmr.workflow.WorkflowInstanceQuery;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.citeck.ecos.workflow.records.WorkflowRecordsDAO;
+import ru.citeck.ecos.workflow.tasks.EcosTaskService;
+import ru.citeck.ecos.workflow.tasks.TaskInfo;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,8 +27,7 @@ public class EcosWorkflowService {
     private WorkflowService workflowService;
 
     @Autowired
-    public EcosWorkflowService(@Qualifier("WorkflowService")
-                                   WorkflowService workflowService) {
+    public EcosWorkflowService(@Qualifier("WorkflowService") WorkflowService workflowService) {
         this.workflowService = workflowService;
     }
 
@@ -65,6 +71,21 @@ public class EcosWorkflowService {
             throw new IllegalArgumentException("Workflow service for engine '" + engineId + "' is not registered");
         }
         return workflowService;
+    }
+
+    /**
+     * Getting instance of workflow
+     */
+    public WorkflowInstance getInstanceById(@NonNull String workflowId) {
+        return workflowService.getWorkflowById(workflowId);
+    }
+
+    public List<WorkflowInstance> getAllInstances(WorkflowInstanceQuery query, int max, int skipCount) {
+        return workflowService.getWorkflows(query, max, skipCount);
+    }
+
+    public WorkflowInstance cancelWorkflowInstance(String workflowId) {
+        return workflowService.cancelWorkflow(workflowId);
     }
 
     private static class WorkflowId {
