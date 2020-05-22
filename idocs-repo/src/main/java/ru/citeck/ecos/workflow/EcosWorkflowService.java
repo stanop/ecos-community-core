@@ -2,8 +2,6 @@ package ru.citeck.ecos.workflow;
 
 import lombok.Getter;
 import lombok.NonNull;
-import org.alfresco.repo.web.scripts.workflow.WorkflowInstancesGet;
-import org.alfresco.rest.framework.core.exceptions.NotFoundException;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.workflow.WorkflowInstance;
 import org.alfresco.service.cmr.workflow.WorkflowInstanceQuery;
@@ -11,9 +9,6 @@ import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.citeck.ecos.workflow.records.WorkflowRecordsDAO;
-import ru.citeck.ecos.workflow.tasks.EcosTaskService;
-import ru.citeck.ecos.workflow.tasks.TaskInfo;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -90,14 +85,16 @@ public class EcosWorkflowService {
 
     private static class WorkflowId {
 
-        @Getter private final String engineId;
-        @Getter private final String localId;
+        @Getter
+        private final String engineId;
+        @Getter
+        private final String localId;
 
         WorkflowId(String workflowId) {
             int delimIdx = workflowId.indexOf('$');
             if (delimIdx == -1) {
                 throw new IllegalArgumentException("Workflow id should has engine " +
-                                                   "prefix. Workflow: '" + workflowId + "'");
+                    "prefix. Workflow: '" + workflowId + "'");
             }
             this.engineId = workflowId.substring(0, delimIdx);
             this.localId = workflowId.substring(delimIdx + 1);

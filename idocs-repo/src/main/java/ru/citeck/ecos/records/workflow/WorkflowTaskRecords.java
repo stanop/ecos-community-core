@@ -550,8 +550,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 new NodeRef(documentRefId) : null;
 
             switch (name) {
-                case WORKFLOW_ATTR:
-                    return RecordRef.create(WORKFLOW_ATTR, this.taskInfo.getWorkflow().getId());
+                case ATT_WORKFLOW:
+                    return RecordRef.create(ATT_WORKFLOW, this.taskInfo.getWorkflow().getId());
                 case ATT_SENDER:
                     String userName = (String) attributes.get("cwf_sender");
                     NodeRef userRef = authorityService.getAuthorityNodeRef(userName);
