@@ -305,8 +305,26 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
     @Data
     @AllArgsConstructor
     private static class DocInfo {
+
         private RecordRef ref;
         private long order;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            DocInfo docInfo = (DocInfo) o;
+            return Objects.equals(ref, docInfo.ref);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(ref);
+        }
     }
 
     @Data
