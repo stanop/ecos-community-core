@@ -9,7 +9,10 @@ import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.commons.data.MLText;
 import ru.citeck.ecos.commons.data.ObjectData;
 import ru.citeck.ecos.commons.json.Json;
+import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
+import ru.citeck.ecos.records2.type.ComputedAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +36,10 @@ public class TypeDto {
     private String dashboardType;
     private boolean inheritActions;
 
+    private MLText dispNameTemplate;
+    private String autoNumTemplate;
+    private boolean inheritAutoNum;
+
     private List<String> aliases = new ArrayList<>();
 
     private List<RecordRef> actions = new ArrayList<>();
@@ -44,25 +51,5 @@ public class TypeDto {
     private RecordRef configForm;
     private ObjectData config = ObjectData.create();
 
-    public TypeDto(TypeDto dto) {
-
-        this.id = dto.id;
-        this.sourceId = dto.sourceId;
-        this.name = Json.getMapper().copy(dto.name);
-        this.description = Json.getMapper().copy(dto.description);
-        this.parent = dto.parent;
-        this.form = dto.form;
-        this.journal = dto.journal;
-        this.system = dto.system;
-        this.dashboardType = dto.dashboardType;
-        this.inheritActions = dto.inheritActions;
-        this.tenant = dto.tenant;
-        this.configForm = dto.configForm;
-        this.config = ObjectData.deepCopy(dto.config);
-        this.aliases = DataValue.create(dto.aliases).toList(String.class);
-        this.associations = DataValue.create(dto.associations).toList(AssociationDto.class);
-        this.actions = DataValue.create(dto.actions).toList(RecordRef.class);
-        this.createVariants = DataValue.create(dto.createVariants).toList(CreateVariantDto.class);
-        this.attributes = ObjectData.deepCopy(dto.attributes);
-    }
+    private List<ComputedAttribute> computedAttributes = new ArrayList<>();
 }

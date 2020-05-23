@@ -80,7 +80,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
     }
 
     @Override
-    public RecordsMutResult mutate(RecordsMutation mutation) {
+    public RecordsMutResult mutateImpl(RecordsMutation mutation) {
 
         List<RecordMeta> handledMeta = mutation.getRecords().stream()
             .map(this::handleMeta)

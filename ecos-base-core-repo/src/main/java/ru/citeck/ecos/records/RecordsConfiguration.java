@@ -33,6 +33,7 @@ import ru.citeck.ecos.records2.resolver.RecordsResolver;
 import ru.citeck.ecos.records2.resolver.RemoteRecordsResolver;
 import ru.citeck.ecos.records2.rest.*;
 import ru.citeck.ecos.records2.source.dao.local.MetaRecordsDaoAttsProvider;
+import ru.citeck.ecos.records2.type.RecordTypeService;
 
 import java.util.function.Supplier;
 
@@ -183,6 +184,12 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     @Override
     protected MetaRecordsDaoAttsProvider createMetaRecordsDaoAttsProvider() {
         return metaAttsProvider;
+    }
+
+    @Bean
+    @Override
+    protected RecordTypeService createRecordTypeService() {
+        return new RecordsTypeServiceImpl(getRecordsService());
     }
 
     @Component

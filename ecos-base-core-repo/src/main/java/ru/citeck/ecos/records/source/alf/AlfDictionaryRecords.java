@@ -51,7 +51,7 @@ public class AlfDictionaryRecords extends LocalRecordsDAO
     }
 
     @Override
-    public RecordsMutResult mutate(RecordsMutation mutation) {
+    public RecordsMutResult mutateImpl(RecordsMutation mutation) {
 
         RecordsMutation alfNodesMut = new RecordsMutation(mutation, m -> {
             RecordMeta alfNodeMeta = new RecordMeta(m, id -> RecordRef.EMPTY);
