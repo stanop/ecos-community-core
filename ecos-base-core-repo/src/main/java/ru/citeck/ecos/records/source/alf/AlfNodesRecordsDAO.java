@@ -438,40 +438,40 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         }
 
         Map<QName, Serializable> props = nodeService.getProperties(nodeRef);
-        boolean isTitleExists = props.get(ContentModel.PROP_TITLE) != null;
 
         Map<Locale, String> dispName;
 
         if (typeDto.getDispNameTemplate() != null) {
             dispName = typeDto.getDispNameTemplate().getAsMap();
-        } else if (!isTitleExists && typeDto.getName() != null) {
-            dispName = typeDto.getName().getAsMap();
         } else {
             dispName = Collections.emptyMap();
         }
 
-        if (dispName.isEmpty()) {
-            return false;
+        if (!dispName.isEmpty()) {
+
+            DataValue resolvedTemplate = recordsTemplateService.resolve(DataValue.create(dispName), recordRef);
+
+            if (resolvedTemplate != null && !resolvedTemplate.isNull()) {
+                dispName = resolvedTemplate.asMap(Locale.class, String.class);
+            }
+
+            MLText mlText = new MLText();
+            dispName.forEach(mlText::put);
+
+            nodeService.setProperty(nodeRef, ContentModel.PROP_TITLE, mlText);
         }
-
-        DataValue resolvedTemplate = recordsTemplateService.resolve(DataValue.create(dispName), recordRef);
-
-        if (resolvedTemplate != null && !resolvedTemplate.isNull()) {
-            dispName = resolvedTemplate.asMap(Locale.class, String.class);
-        }
-
-        MLText mlText = new MLText();
-        dispName.forEach(mlText::put);
-
-        nodeService.setProperty(nodeRef, ContentModel.PROP_TITLE, mlText);
 
         String name = (String) props.get(ContentModel.PROP_NAME);
 
         if ((name == null || UUID_PATTERN.matcher(name).matches())) {
 
+            if (dispName.isEmpty() && typeDto.getName() != null) {
+                dispName = typeDto.getName().getAsMap();
+            }
+
             String newName;
-            if (mlText.containsKey(Locale.ENGLISH)) {
-                newName = mlText.get(Locale.ENGLISH);
+            if (dispName.containsKey(Locale.ENGLISH)) {
+                newName = dispName.get(Locale.ENGLISH);
             } else {
                 newName = typeDto.getId();
             }
