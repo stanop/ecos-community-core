@@ -5,10 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.commons.data.MLText;
 import ru.citeck.ecos.commons.data.ObjectData;
-import ru.citeck.ecos.commons.json.Json;
 import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
@@ -52,4 +50,7 @@ public class TypeDto {
     private ObjectData config = ObjectData.create();
 
     private List<ComputedAttribute> computedAttributes = new ArrayList<>();
+
+    @MetaAtt(RecordConstants.ATT_ECOS_TYPE)
+    private RecordRef ecosType;
 }

@@ -72,7 +72,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     private static final String CONTENT_ATTRIBUTE_NAME = "_content";
     private static final String CM_CONTENT_ATTRIBUTE_NAME = "cm:content";
 
-    private Map<String, AlfNodesSearch> searchByLanguage = new ConcurrentHashMap<>();
+    private final Map<String, AlfNodesSearch> searchByLanguage = new ConcurrentHashMap<>();
 
     private NodeUtils nodeUtils;
     private NodeService nodeService;
@@ -84,7 +84,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     private AlfNodeContentFileHelper contentFileHelper;
     private EcosPermissionService ecosPermissionService;
 
-    private Map<QName, NodeRef> defaultParentByType = new ConcurrentHashMap<>();
+    private final Map<QName, NodeRef> defaultParentByType = new ConcurrentHashMap<>();
 
     public AlfNodesRecordsDAO() {
         setId(ID);

@@ -4,11 +4,11 @@ import ecos.com.google.common.cache.CacheBuilder;
 import ecos.com.google.common.cache.CacheLoader;
 import ecos.com.google.common.cache.LoadingCache;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import ru.citeck.ecos.records.type.TypeDto;
+import ru.citeck.ecos.records.type.TypeInfoProvider;
 import ru.citeck.ecos.records2.RecordRef;
-import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.type.ComputedAttribute;
 import ru.citeck.ecos.records2.type.RecordTypeService;
 
@@ -18,13 +18,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class RecordsTypeServiceImpl implements RecordTypeService {
 
-    private final RecordsService recordsService;
     private final LoadingCache<RecordRef, Map<String, ComputedAttribute>> computedAttributes;
+    private final TypeInfoProvider typeInfoProvider;
 
-    public RecordsTypeServiceImpl(RecordsService recordsService) {
-        this.recordsService = recordsService;
+    public RecordsTypeServiceImpl(TypeInfoProvider typeInfoProvider) {
+
+        this.typeInfoProvider = typeInfoProvider;
+        if (typeInfoProvider == null) {
+            log.warn("TypeInfoProvider is null. Some features of ECOS types won't be allowed");
+        }
 
         computedAttributes = CacheBuilder.newBuilder()
                                         .expireAfterWrite(10, TimeUnit.SECONDS)
@@ -44,15 +49,23 @@ public class RecordsTypeServiceImpl implements RecordTypeService {
 
     private Map<String, ComputedAttribute> getComputedAttributesImpl(RecordRef type) {
 
-        Attributes meta = recordsService.getMeta(type, Attributes.class);
-        if (meta == null || meta.computedAttributes == null) {
+        if (typeInfoProvider == null) {
+            return Collections.emptyMap();
+        }
+
+        TypeDto typeDto = typeInfoProvider.getType(type);
+
+        if (typeDto == null) {
+            return Collections.emptyMap();
+        }
+        List<ComputedAttribute> atts = typeDto.getComputedAttributes();
+
+        if (atts == null || atts.isEmpty()) {
             return Collections.emptyMap();
         }
 
         Map<String, ComputedAttribute> attributes = new HashMap<>();
-        meta.computedAttributes.forEach(att -> {
-            attributes.put(att.getId(), att);
-        });
+        atts.forEach(att -> attributes.put(att.getId(), att));
 
         return attributes;
     }

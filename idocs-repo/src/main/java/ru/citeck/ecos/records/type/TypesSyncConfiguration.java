@@ -11,4 +11,9 @@ public class TypesSyncConfiguration {
     public RemoteSyncRecordsDAO<TypeDto> createRemoteSyncRecordsDao() {
         return new RemoteSyncRecordsDAO<>("emodel/type", TypeDto.class);
     }
+
+    @Bean
+    public TypeInfoProvider createInfoProvider() {
+        return createRemoteSyncRecordsDao()::getRecord;
+    }
 }
