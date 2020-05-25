@@ -21,6 +21,7 @@ import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.records.type.TypeInfoProvider;
 import ru.citeck.ecos.records2.RecordsProperties;
 import ru.citeck.ecos.records2.evaluator.RecordEvaluatorService;
+import ru.citeck.ecos.records2.meta.RecordsTemplateService;
 import ru.citeck.ecos.records2.predicate.PredicateService;
 import ru.citeck.ecos.records2.querylang.QueryLangService;
 import ru.citeck.ecos.records2.QueryContext;
@@ -194,6 +195,12 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     @Override
     protected RecordTypeService createRecordTypeService() {
         return new RecordsTypeServiceImpl(typeInfoProvider);
+    }
+
+    @Bean
+    @Override
+    protected RecordsTemplateService createRecordsTemplateService() {
+        return super.createRecordsTemplateService();
     }
 
     @Component
