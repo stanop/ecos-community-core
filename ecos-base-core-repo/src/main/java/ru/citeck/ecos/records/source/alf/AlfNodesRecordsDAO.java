@@ -482,15 +482,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     }
 
     private String getValidNameForNode(NodeRef nodeRef, String name) {
-
-        NodeRef parentRef = nodeService.getPrimaryParent(nodeRef).getParentRef();
-
-        name = name.replaceAll("[^a-zA-Z-_0-9№# ]", "_").trim();
-        if (name.endsWith(".")) {
-            name = name.substring(0, name.length() - 1);
-        }
-
-        return nodeUtils.getValidChildName(parentRef, name);
+        ChildAssociationRef parentAssoc = nodeService.getPrimaryParent(nodeRef);
+        return nodeUtils.getValidChildName(parentAssoc.getParentRef(), parentAssoc.getTypeQName(), name);
     }
 
     @Override

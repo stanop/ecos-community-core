@@ -89,9 +89,17 @@ public class NodeUtils {
         return getValidChildName(parentRef, ContentModel.ASSOC_CONTAINS, name);
     }
 
+    public static String getValidName(String name) {
+        return name.replaceAll("[\"*\\\\><?/:|]", "_")
+            .trim()
+            .replaceAll("[.]+$", "");
+    }
+
     public String getValidChildName(NodeRef parentRef, QName childAssoc, String name) {
 
         AssociationDefinition assoc = dictionaryService.getAssociation(childAssoc);
+
+        name = getValidName(name);
 
         if (!(assoc instanceof ChildAssociationDefinition) ||
                 ((ChildAssociationDefinition) assoc).getDuplicateChildNamesAllowed()) {
