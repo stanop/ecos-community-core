@@ -4,10 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.*;
-import org.alfresco.service.cmr.repository.MLText;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
@@ -475,15 +472,25 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             String newName;
             if (mlText.containsKey(Locale.ENGLISH)) {
                 newName = mlText.get(Locale.ENGLISH);
-                newName = newName.replaceAll("[^a-zA-Z-_0-9№# ]", "_").trim();
             } else {
                 newName = typeDto.getId();
             }
 
-            nodeService.setProperty(nodeRef, ContentModel.PROP_NAME, newName);
+            nodeService.setProperty(nodeRef, ContentModel.PROP_NAME, getValidNameForNode(nodeRef, newName));
+        }
+        return true;
+    }
+
+    private String getValidNameForNode(NodeRef nodeRef, String name) {
+
+        NodeRef parentRef = nodeService.getPrimaryParent(nodeRef).getParentRef();
+
+        name = name.replaceAll("[^a-zA-Z-_0-9№# ]", "_").trim();
+        if (name.endsWith(".")) {
+            name = name.substring(0, name.length() - 1);
         }
 
-        return true;
+        return nodeUtils.getValidChildName(parentRef, name);
     }
 
     @Override
