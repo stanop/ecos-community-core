@@ -85,6 +85,26 @@ public class NodeUtils {
         return result;
     }
 
+    public void moveNode(NodeRef nodeRef, NodeRef destinationRef, QName assocType) {
+
+        ChildAssociationRef parentAssoc = nodeService.getPrimaryParent(nodeRef);
+        if (parentAssoc.getParentRef().equals(destinationRef)) {
+            return;
+        }
+
+        if (assocType == null) {
+            assocType = ContentModel.ASSOC_CONTAINS;
+        }
+
+        String name = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_NAME);
+        String validName = getValidChildName(destinationRef, assocType, name);
+
+        if (!name.equals(validName)) {
+            nodeService.setProperty(nodeRef, ContentModel.PROP_NAME, name);
+        }
+        nodeService.moveNode(nodeRef, destinationRef, assocType, parentAssoc.getQName());
+    }
+
     public String getValidChildName(NodeRef parentRef, String name) {
         return getValidChildName(parentRef, ContentModel.ASSOC_CONTAINS, name);
     }

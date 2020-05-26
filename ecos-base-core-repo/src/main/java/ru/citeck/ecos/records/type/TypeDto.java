@@ -30,26 +30,25 @@ public class TypeDto {
     private RecordRef parent;
     private RecordRef form;
     private RecordRef journal;
+    private RecordRef numTemplateRef;
     private boolean system;
     private String dashboardType;
     private boolean inheritActions;
 
     private MLText dispNameTemplate;
-    private String autoNumTemplate;
-    private boolean inheritAutoNum;
+    private boolean inheritNumTemplate;
 
     private List<String> aliases = new ArrayList<>();
 
     private List<RecordRef> actions = new ArrayList<>();
     private List<AssociationDto> associations = new ArrayList<>();
     private List<CreateVariantDto> createVariants = new ArrayList<>();
+    private List<ComputedAttribute> computedAttributes = new ArrayList<>();
 
     private ObjectData attributes = ObjectData.create();
 
     private RecordRef configForm;
     private ObjectData config = ObjectData.create();
-
-    private List<ComputedAttribute> computedAttributes = new ArrayList<>();
 
     @MetaAtt(RecordConstants.ATT_ECOS_TYPE)
     private RecordRef ecosType;

@@ -18,7 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import ru.citeck.ecos.eureka.EcosEurekaClient;
 import ru.citeck.ecos.eureka.EurekaContextConfig;
 import ru.citeck.ecos.graphql.AlfGqlContext;
-import ru.citeck.ecos.records.type.TypeInfoProvider;
+import ru.citeck.ecos.records.type.TypesManager;
 import ru.citeck.ecos.records2.RecordsProperties;
 import ru.citeck.ecos.records2.evaluator.RecordEvaluatorService;
 import ru.citeck.ecos.records2.meta.RecordsTemplateService;
@@ -60,7 +60,7 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     private AlfMetaRecordsDaoAttsProvider metaAttsProvider;
 
     @Autowired(required = false)
-    private TypeInfoProvider typeInfoProvider;
+    private TypesManager typeInfoProvider;
 
     @Autowired
     @Qualifier(EurekaContextConfig.REST_TEMPLATE_ID)

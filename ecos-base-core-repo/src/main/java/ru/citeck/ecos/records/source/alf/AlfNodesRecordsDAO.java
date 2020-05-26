@@ -17,6 +17,7 @@ import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.commons.data.ObjectData;
+import ru.citeck.ecos.model.EcosModel;
 import ru.citeck.ecos.model.EcosTypeModel;
 import ru.citeck.ecos.model.InvariantsModel;
 import ru.citeck.ecos.node.EcosTypeService;
@@ -25,7 +26,7 @@ import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
 import ru.citeck.ecos.records.source.alf.search.AlfNodesSearch;
 import ru.citeck.ecos.records.source.dao.RecordsActionExecutor;
 import ru.citeck.ecos.records.type.TypeDto;
-import ru.citeck.ecos.records.type.TypeInfoProvider;
+import ru.citeck.ecos.records.type.TypesManager;
 import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
@@ -92,7 +93,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     private GroupActionService groupActionService;
     private AlfNodeContentFileHelper contentFileHelper;
     private EcosPermissionService ecosPermissionService;
-    private TypeInfoProvider typeInfoProvider;
+    private TypesManager typeInfoProvider;
     private RecordsTemplateService recordsTemplateService;
 
     private final Map<QName, NodeRef> defaultParentByType = new ConcurrentHashMap<>();
@@ -322,6 +323,11 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
             resultRecord = new RecordMeta(RecordRef.valueOf(nodeRef.toString()));
 
+            Long number = ecosTypeService.getNumberForDocument(RecordRef.valueOf(nodeRef.toString()));
+            if (number != null) {
+                nodeService.setProperty(nodeRef, EcosModel.PROP_DOC_NUM, number);
+            }
+
         } else {
 
             Map<QName, Serializable> currentProps = nodeService.getProperties(nodeRef);
@@ -463,7 +469,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
         String name = (String) props.get(ContentModel.PROP_NAME);
 
-        if ((name == null || UUID_PATTERN.matcher(name).matches())) {
+        if (name == null) {
 
             if (dispName.isEmpty() && typeDto.getName() != null) {
                 dispName = typeDto.getName().getAsMap();
@@ -689,7 +695,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     }
 
     @Autowired
-    public void setTypeInfoProvider(TypeInfoProvider typeInfoProvider) {
+    public void setTypeInfoProvider(TypesManager typeInfoProvider) {
         this.typeInfoProvider = typeInfoProvider;
     }
 

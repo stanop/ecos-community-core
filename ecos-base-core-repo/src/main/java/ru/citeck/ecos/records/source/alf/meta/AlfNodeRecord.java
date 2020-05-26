@@ -21,6 +21,7 @@ import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
+import ru.citeck.ecos.model.EcosModel;
 import ru.citeck.ecos.node.AlfNodeContentPathRegistry;
 import ru.citeck.ecos.node.AlfNodeInfo;
 import ru.citeck.ecos.node.DisplayNameService;
@@ -107,6 +108,10 @@ public class AlfNodeRecord implements MetaValue {
     @Override
     public boolean has(String name) {
 
+        if (RecordConstants.ATT_DOC_NUM.equals(name)) {
+            name = EcosModel.PROP_DOC_NUM.toPrefixString(context.getNamespaceService());
+        }
+
         if ("_content".equals(name)) {
             AlfNodeContentPathRegistry contentPath = context.getService(AlfNodeContentPathRegistry.QNAME);
             String path = contentPath.getContentPath(new NodeInfo());
@@ -162,11 +167,16 @@ public class AlfNodeRecord implements MetaValue {
         List<? extends MetaValue> attribute = null;
 
         if (StringUtils.equals(name, CONTENT_ATTRIBUTE_NAME)) {
-            name = CM_CONTENT_ATTRIBUTE_NAME;
-        }
 
-        if (StringUtils.equals(ATTR_MODIFIED, name)) {
+            name = CM_CONTENT_ATTRIBUTE_NAME;
+
+        } else if (StringUtils.equals(ATTR_MODIFIED, name)) {
+
             name = ATTR_CM_MODIFIED;
+
+        } else if (RecordConstants.ATT_DOC_NUM.equals(name)) {
+
+            name = EcosModel.PROP_DOC_NUM.toPrefixString(context.getNamespaceService());
         }
 
         switch (name) {

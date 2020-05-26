@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import ru.citeck.ecos.records.type.TypeDto;
-import ru.citeck.ecos.records.type.TypeInfoProvider;
+import ru.citeck.ecos.records.type.TypesManager;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.type.ComputedAttribute;
 import ru.citeck.ecos.records2.type.RecordTypeService;
@@ -22,9 +22,9 @@ import java.util.concurrent.TimeUnit;
 public class RecordsTypeServiceImpl implements RecordTypeService {
 
     private final LoadingCache<RecordRef, Map<String, ComputedAttribute>> computedAttributes;
-    private final TypeInfoProvider typeInfoProvider;
+    private final TypesManager typeInfoProvider;
 
-    public RecordsTypeServiceImpl(TypeInfoProvider typeInfoProvider) {
+    public RecordsTypeServiceImpl(TypesManager typeInfoProvider) {
 
         this.typeInfoProvider = typeInfoProvider;
         if (typeInfoProvider == null) {
