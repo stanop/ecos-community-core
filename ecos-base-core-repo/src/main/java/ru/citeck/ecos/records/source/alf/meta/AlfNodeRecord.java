@@ -143,18 +143,11 @@ public class AlfNodeRecord implements MetaValue {
         return values != null && !values.isEmpty();
     }
 
-    private MetaValue getMetaValueForEcosType(MetaField field) {
+    @Override
+    public RecordRef getRecordType() {
         NodeRef nodeRef = new NodeRef(node.nodeRef());
         EcosTypeService ecosTypeService = context.getService(EcosTypeService.QNAME);
-        RecordRef etypeRecordRef = ecosTypeService.getEcosType(nodeRef);
-        if (etypeRecordRef == null) {
-            return null;
-        }
-        MetaValue metaValue = context.getServiceFactory()
-            .getMetaValuesConverter()
-            .toMetaValue(etypeRecordRef);
-        metaValue.init(context, field);
-        return metaValue;
+        return ecosTypeService.getEcosType(nodeRef);
     }
 
     @Override
@@ -198,16 +191,6 @@ public class AlfNodeRecord implements MetaValue {
                 }
                 return null;
             }
-
-            case ATTR_ETYPE:
-
-                MetaValue metaValue = this.getMetaValueForEcosType(field);
-                if (metaValue == null) {
-                    attribute = null;
-                } else {
-                    attribute = Collections.singletonList(metaValue);
-                }
-                break;
 
             case RecordConstants.ATT_TYPE:
 

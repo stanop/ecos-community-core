@@ -15,6 +15,7 @@ import ru.citeck.ecos.records2.RecordsService;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * TypeKind config registry helps to search configs by EcoS type and kind
@@ -72,26 +73,36 @@ public class TypeKindContentDAO<T> extends RepoContentDAOImpl<T> {
 
         List<ContentData<T>> configs = Collections.emptyList();
 
-        //  ecos type
+        // ECOS type
         RecordRef ecosTypeRef = ecosTypeService.getEcosType(nodeRef);
-        while (CollectionUtils.isEmpty(configs) && RecordRef.isNotEmpty(ecosTypeRef)) {
 
-            Map<QName, Serializable> keys = Collections.singletonMap(EcosTypeModel.PROP_TYPE, ecosTypeRef.getId());
-            configs = getContentData(keys);
+        if (RecordRef.isNotEmpty(ecosTypeRef)) {
 
-            if (CollectionUtils.isEmpty(configs)) {
-                EcosTypeDto dto = recordsService.getMeta(ecosTypeRef, EcosTypeDto.class);
-                ecosTypeRef = dto.getParentRef();
+            AtomicReference<List<ContentData<T>>> configsByType = new AtomicReference<>();
+
+            ecosTypeService.forEachAsc(ecosTypeRef, dto -> {
+
+                Map<QName, Serializable> keys = Collections.singletonMap(EcosTypeModel.PROP_TYPE, dto.getId());
+                List<ContentData<T>> configsByKeys = getContentData(keys);
+                if (configsByKeys != null && !configsByKeys.isEmpty()) {
+                    configsByType.set(configsByKeys);
+                    return true;
+                }
+                return false;
+            });
+
+            if (configsByType.get() != null) {
+                configs = configsByType.get();
             }
         }
 
         NodeRef type = (NodeRef) nodeService.getProperty(nodeRef, ClassificationModel.PROP_DOCUMENT_TYPE);
-        //case type/kind
+        // case type/kind
         if (configs.isEmpty() && type != null) {
             NodeRef kind = (NodeRef) nodeService.getProperty(nodeRef, ClassificationModel.PROP_DOCUMENT_KIND);
             configs = getContentDataByTypeKind(type, kind);
         }
-        //  alfresco type
+        // alfresco type
         if (configs.isEmpty()) {
             QName nodeType = nodeService.getType(nodeRef);
             configs = getContentDataByClassName(nodeType, true);
@@ -146,10 +157,5 @@ public class TypeKindContentDAO<T> extends RepoContentDAOImpl<T> {
 
     public void setClassField(QName classField) {
         this.classField = classField;
-    }
-
-    @Data
-    public class EcosTypeDto {
-        private RecordRef parentRef;
     }
 }
