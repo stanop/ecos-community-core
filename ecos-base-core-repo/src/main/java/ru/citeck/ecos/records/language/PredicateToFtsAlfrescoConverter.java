@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.model.EcosTypeModel;
 import ru.citeck.ecos.node.EcosTypeService;
+import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records2.predicate.PredicateService;
 import ru.citeck.ecos.records2.predicate.model.*;
 import ru.citeck.ecos.records2.querylang.QueryLangConverter;
@@ -49,8 +50,6 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter<Predi
     private static final String SLASH_DELIMITER = "/";
     private static final String WORKSPACE_PREFIX = "workspace://SpacesStore/";
     private static final int INNER_QUERY_MAX_ITEMS = 20;
-    private static final String MODIFIER_ATTRIBUTE = "_modifier";
-    private static final String MODIFIED_ATTRIBUTE = "_modified";
     private static final String CM_MODIFIED_ATTRIBUTE = "cm:modified";
     private static final String CM_MODIFIER_ATTRIBUTE = "cm:modifier";
 
@@ -158,13 +157,13 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter<Predi
 
                     break;
 
-                case MODIFIER_ATTRIBUTE:
+                case RecordConstants.ATT_MODIFIER:
                     ValuePredicate predCopyForModifierAttr = valuePred.copy();
                     predCopyForModifierAttr.setAttribute(CM_MODIFIER_ATTRIBUTE);
                     processPredicate(predCopyForModifierAttr, query);
                     break;
 
-                case MODIFIED_ATTRIBUTE:
+                case RecordConstants.ATT_MODIFIED:
                     ValuePredicate predCopyForModifiedAttr = valuePred.copy();
                     predCopyForModifiedAttr.setAttribute(CM_MODIFIED_ATTRIBUTE);
                     processPredicate(predCopyForModifiedAttr, query);

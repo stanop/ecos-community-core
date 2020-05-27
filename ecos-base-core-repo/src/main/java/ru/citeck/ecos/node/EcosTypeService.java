@@ -83,7 +83,10 @@ public class EcosTypeService {
 
     public List<RecordRef> getDescendantTypes(RecordRef typeRef) {
         List<RecordRef> result = new ArrayList<>();
-        forEachDesc(typeRef, type -> result.add(RecordRef.create("emodel", "type", type.getId())));
+        forEachDesc(typeRef, type -> {
+            result.add(RecordRef.create("emodel", "type", type.getId()));
+            return false;
+        });
         return result;
     }
 
