@@ -71,10 +71,6 @@ public class SiteRecordsDAO extends LocalRecordsDAO
         public Object getAttribute(String name, MetaField field) {
 
             switch (name) {
-                case RecordConstants.ATT_DASHBOARD_KEY:
-                    return "site_" + id;
-                case RecordConstants.ATT_DASHBOARD_TYPE:
-                    return "site-dashboard";
                 case "uiType":
                     return newUIUtils.getUITypeForRecord(RecordRef.create(ID, id));
             }

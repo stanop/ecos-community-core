@@ -252,8 +252,6 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
                     return authorityService.isAdminAuthority(userName);
                 case PROP_AUTHORITIES:
                     return getUserAuthorities();
-                case RecordConstants.ATT_DASHBOARD_TYPE:
-                    return "profile-details";
                 case RecordConstants.ATT_ECOS_TYPE:
                     return ETYPE;
                 case "nodeRef":
