@@ -139,7 +139,7 @@ public class CardTemplateActionsProvider implements NodeActionsV2Provider {
 
         String url = String.format(URL, nodeRef.toString(), templateType, format);
 
-        ObjectData config = new ObjectData();
+        ObjectData config = ObjectData.create();
         config.set("url", TextNode.valueOf(url));
         config.set("filename", TextNode.valueOf("template." + format));
 

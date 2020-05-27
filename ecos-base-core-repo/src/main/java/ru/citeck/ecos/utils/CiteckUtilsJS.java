@@ -42,6 +42,7 @@ public class CiteckUtilsJS extends AlfrescoScopableProcessorExtension implements
     private ValueConverter converter = new ValueConverter();
     private NamespacePrefixResolver prefixResolver;
 
+    private NodeUtils nodeUtils;
     private JsUtils jsUtils;
 
     public QName createQName(String s) {
@@ -112,9 +113,18 @@ public class CiteckUtilsJS extends AlfrescoScopableProcessorExtension implements
         return new String(str.getBytes(), UTF8);
     }
 
+    public void moveNode(ScriptNode node, ScriptNode destination) {
+        nodeUtils.moveNode(node.getNodeRef(), destination.getNodeRef(), null);
+    }
+
     @Autowired
     public void setJsUtils(JsUtils jsUtils) {
         this.jsUtils = jsUtils;
+    }
+
+    @Autowired
+    public void setNodeUtils(NodeUtils nodeUtils) {
+        this.nodeUtils = nodeUtils;
     }
 
     @Override

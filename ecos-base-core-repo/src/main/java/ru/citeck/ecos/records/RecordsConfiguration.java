@@ -5,18 +5,23 @@ import org.alfresco.service.ServiceRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.extensions.surf.util.AbstractLifecycleBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import ru.citeck.ecos.eureka.EcosEurekaClient;
 import ru.citeck.ecos.eureka.EurekaContextConfig;
 import ru.citeck.ecos.graphql.AlfGqlContext;
+import ru.citeck.ecos.records.type.TypesManager;
 import ru.citeck.ecos.records2.RecordsProperties;
 import ru.citeck.ecos.records2.evaluator.RecordEvaluatorService;
+import ru.citeck.ecos.records2.meta.RecordsTemplateService;
 import ru.citeck.ecos.records2.predicate.PredicateService;
 import ru.citeck.ecos.records2.querylang.QueryLangService;
 import ru.citeck.ecos.records2.QueryContext;
@@ -30,6 +35,7 @@ import ru.citeck.ecos.records2.resolver.RecordsResolver;
 import ru.citeck.ecos.records2.resolver.RemoteRecordsResolver;
 import ru.citeck.ecos.records2.rest.*;
 import ru.citeck.ecos.records2.source.dao.local.MetaRecordsDaoAttsProvider;
+import ru.citeck.ecos.records2.type.RecordTypeService;
 
 import java.util.function.Supplier;
 
@@ -52,6 +58,9 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     private RecordsResolverWrapper resolverWrapper;
     @Autowired
     private AlfMetaRecordsDaoAttsProvider metaAttsProvider;
+
+    @Autowired(required = false)
+    private TypesManager typeInfoProvider;
 
     @Autowired
     @Qualifier(EurekaContextConfig.REST_TEMPLATE_ID)
@@ -87,7 +96,11 @@ public class RecordsConfiguration extends RecordsServiceFactory {
 
     @Override
     protected RemoteRecordsResolver createRemoteRecordsResolver() {
-        RemoteRecordsRestApi restApi = new RemoteRecordsRestApi(this::jsonPost, remoteAppInfoProvider(), properties);
+        RemoteRecordsRestApi restApi = new RemoteRecordsRestApiImpl(
+            this::jsonPost,
+            remoteAppInfoProvider(),
+            properties
+        );
         return new RemoteRecordsResolver(this, restApi);
     }
 
@@ -176,5 +189,37 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     @Override
     protected MetaRecordsDaoAttsProvider createMetaRecordsDaoAttsProvider() {
         return metaAttsProvider;
+    }
+
+    @Bean
+    @Override
+    protected RecordTypeService createRecordTypeService() {
+        return new RecordsTypeServiceImpl(typeInfoProvider);
+    }
+
+    @Bean
+    @Override
+    protected RecordsTemplateService createRecordsTemplateService() {
+        return super.createRecordsTemplateService();
+    }
+
+    @Component
+    public static class JobsInitializer extends AbstractLifecycleBean {
+
+        @Autowired
+        private RecordsServiceFactory serviceFactory;
+
+        @Override
+        protected void onBootstrap(ApplicationEvent event) {
+            try {
+                serviceFactory.initJobs(null);
+            } catch (Exception e) {
+                log.error("JobsInitializer initialization failed", e);
+            }
+        }
+
+        @Override
+        protected void onShutdown(ApplicationEvent applicationEvent) {
+        }
     }
 }

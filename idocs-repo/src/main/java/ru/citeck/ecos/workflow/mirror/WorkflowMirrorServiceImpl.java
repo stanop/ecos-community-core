@@ -90,6 +90,9 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     private NodeRef taskMirrorRoot;
     private QName taskMirrorAssoc;
 
+    @Autowired(required = false)
+    private final List<MirrorAdditionalPropertiesFiller> additionalPropertiesFillers = new ArrayList<>();
+
     @Override
     public void mirrorTask(String taskId) {
         mirrorTaskBeforeCommit(new RawTaskInfo(taskId, true));
@@ -296,6 +299,9 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             }
             nodeInfo.createSourceAssociation(document, WorkflowMirrorModel.ASSOC_MIRROR_TASK);
         }
+
+        additionalPropertiesFillers.forEach(mirrorAdditionalPropertiesFiller -> mirrorAdditionalPropertiesFiller
+            .fill(task, document, nodeInfo));
     }
 
     private String getEcosType(NodeRef document) {

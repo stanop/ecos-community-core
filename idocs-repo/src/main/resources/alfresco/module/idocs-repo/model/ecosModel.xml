@@ -96,6 +96,15 @@
 
     <aspects>
 
+        <aspect name="ecos:docNum">
+            <properties>
+                <property name="ecos:docNum">
+                    <title>Document Number</title>
+                    <type>d:long</type>
+                </property>
+            </properties>
+        </aspect>
+
         <aspect name="ecos:hasStartStopDate">
             <properties>
                 <property name="ecos:startDate">

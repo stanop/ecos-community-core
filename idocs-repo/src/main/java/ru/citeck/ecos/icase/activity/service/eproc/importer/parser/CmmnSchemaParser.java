@@ -294,7 +294,7 @@ public class CmmnSchemaParser {
     private ObjectData parseCommonElementData(TCmmnElement element) {
         Map<javax.xml.namespace.QName, String> otherAttributes = element.getOtherAttributes();
 
-        ObjectData data = new ObjectData();
+        ObjectData data = ObjectData.create();
         for (Map.Entry<javax.xml.namespace.QName, String> otherAttribute : otherAttributes.entrySet()) {
             javax.xml.namespace.QName key = otherAttribute.getKey();
             if (!key.getNamespaceURI().equals(CMMNUtils.NAMESPACE)) {
@@ -634,7 +634,7 @@ public class CmmnSchemaParser {
         EvaluatorDefinition evaluator = new EvaluatorDefinition();
         evaluator.setId(getNextEvaluatorDefinitionId());
         evaluator.setInverse(false);
-        evaluator.setData(new ObjectData(composeCompletenessLevelsEvaluatorData(completenessLevels)));
+        evaluator.setData(ObjectData.create(composeCompletenessLevelsEvaluatorData(completenessLevels)));
         transition.setEvaluator(evaluator);
     }
 
@@ -746,7 +746,7 @@ public class CmmnSchemaParser {
             EvaluatorDefinition evaluatorDef = new EvaluatorDefinition();
             evaluatorDef.setId(getNextEvaluatorDefinitionId());
             evaluatorDef.setInverse(false);
-            evaluatorDef.setData(new ObjectData(composeEvaluatorDefinitionData(conditions)));
+            evaluatorDef.setData(ObjectData.create(composeEvaluatorDefinitionData(conditions)));
             return evaluatorDef;
         } catch (JAXBException e) {
             throw new RuntimeException("Error of parsing condition of sentry " + sentry.getId(), e);

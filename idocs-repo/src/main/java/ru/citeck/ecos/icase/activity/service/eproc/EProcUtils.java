@@ -47,7 +47,7 @@ public class EProcUtils {
     public static void setAttribute(ActivityInstance instance, String key, Object value) {
         ObjectData variables = instance.getVariables();
         if (variables == null) {
-            variables = new ObjectData();
+            variables = ObjectData.create();
             instance.setVariables(variables);
         }
 

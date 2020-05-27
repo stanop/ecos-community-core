@@ -80,7 +80,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
     }
 
     @Override
-    public RecordsMutResult mutate(RecordsMutation mutation) {
+    public RecordsMutResult mutateImpl(RecordsMutation mutation) {
 
         List<RecordMeta> handledMeta = mutation.getRecords().stream()
             .map(this::handleMeta)
@@ -252,8 +252,6 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
                     return authorityService.isAdminAuthority(userName);
                 case PROP_AUTHORITIES:
                     return getUserAuthorities();
-                case RecordConstants.ATT_DASHBOARD_TYPE:
-                    return "profile-details";
                 case RecordConstants.ATT_ECOS_TYPE:
                     return ETYPE;
                 case "nodeRef":

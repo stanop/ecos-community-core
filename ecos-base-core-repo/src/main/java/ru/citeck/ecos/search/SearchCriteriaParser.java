@@ -25,8 +25,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.commons.data.ObjectData;
+import ru.citeck.ecos.commons.json.Json;
 
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @author Anton Fateev <anton.fateev@citeck.ru>
@@ -59,7 +61,11 @@ public class SearchCriteriaParser {
         if (something instanceof JSONObject) {
             return parse((JSONObject) something);
         }
-        if (something instanceof ObjectNode) {
+        if (something instanceof Map) {
+
+            something = Json.getMapper().toString(something);
+
+        } else if (something instanceof ObjectNode) {
 
             something = something.toString();
 
@@ -98,6 +104,16 @@ public class SearchCriteriaParser {
                     addCriteriaTriplet(searchCriteria, criteria, name);
                 } else if (name.equals(SORT_BY)) {
                     addCriteriaSort(searchCriteria, criteria, name);
+                } else if (name.equals("triplets")) {
+                    JSONArray triplets = criteria.getJSONArray("triplets");
+                    for (int i = 0; i < triplets.length(); i++) {
+                        JSONObject obj = triplets.getJSONObject(i);
+                        searchCriteria.addCriteriaTriplet(
+                            obj.getString("field"),
+                            obj.getString("predicate"),
+                            obj.getString("value")
+                        );
+                    }
                 }
             } catch (JSONException ex) {
                 throw new IllegalArgumentException(ex.getMessage());

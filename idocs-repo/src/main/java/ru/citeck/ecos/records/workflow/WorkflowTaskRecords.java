@@ -100,7 +100,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     }
 
     @Override
-    public RecordsMutResult mutate(RecordsMutation mutation) {
+    public RecordsMutResult mutateImpl(RecordsMutation mutation) {
 
         RecordsMutResult result = new RecordsMutResult();
 

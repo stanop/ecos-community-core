@@ -93,7 +93,7 @@ public class VersionRecords extends CrudRecordsDAO<VersionDTO> {
     }
 
     @Override
-    public RecordsMutResult mutate(RecordsMutation mutation) {
+    public RecordsMutResult mutateImpl(RecordsMutation mutation) {
         RecordsMutResult result = new RecordsMutResult();
 
         for (RecordMeta meta : mutation.getRecords()) {

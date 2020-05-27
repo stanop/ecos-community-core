@@ -7,22 +7,25 @@ import org.flowable.bpmn.model.UserTask;
 import org.flowable.engine.delegate.TaskListener;
 import org.flowable.engine.impl.bpmn.parser.BpmnParse;
 import org.flowable.engine.parse.BpmnParseHandler;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 import ru.citeck.ecos.flowable.listeners.global.*;
-import ru.citeck.ecos.providers.ApplicationContextProvider;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 /**
  * User task bpmn parse handler. Add global task listeners to every user tasks
  */
-public class UserTaskBpmnParseHandler implements BpmnParseHandler {
+@Component
+public class UserTaskBpmnParseHandler implements BpmnParseHandler, ApplicationContextAware {
 
-    /**
-     * Get handler types
-     * @return List of handled classes
-     */
+    private ApplicationContext applicationContext;
+
     @Override
     public Collection<Class<? extends BaseElement>> getHandledTypes() {
         List<Class<? extends BaseElement>> result = new ArrayList<>();
@@ -30,54 +33,58 @@ public class UserTaskBpmnParseHandler implements BpmnParseHandler {
         return result;
     }
 
-    /**
-     * Parse element
-     * @param bpmnParse Bpmn parse
-     * @param baseElement Parse element (process)
-     */
     @Override
     public void parse(BpmnParse bpmnParse, BaseElement baseElement) {
         UserTask userTask = (UserTask) baseElement;
         List<FlowableListener> listeners = userTask.getTaskListeners();
+
         /* All */
-        Collection<String> allTaskListeners = ApplicationContextProvider.getBeansNames(GlobalAllTaskListener.class);
+        Collection<String> allTaskListeners = getBeansNames(GlobalAllTaskListener.class);
         for (String taskListener : allTaskListeners) {
             listeners.add(createFlowableListener(taskListener, TaskListener.EVENTNAME_ALL_EVENTS));
         }
+
         /* Assignment */
-        Collection<String> assignmentTaskListeners = ApplicationContextProvider.getBeansNames(GlobalAssignmentTaskListener.class);
+        Collection<String> assignmentTaskListeners = getBeansNames(GlobalAssignmentTaskListener.class);
         for (String taskListener : assignmentTaskListeners) {
             listeners.add(createFlowableListener(taskListener, TaskListener.EVENTNAME_ASSIGNMENT));
         }
+
         /* Complete */
-        Collection<String> completeTaskListeners = ApplicationContextProvider.getBeansNames(GlobalCompleteTaskListener.class);
+        Collection<String> completeTaskListeners = getBeansNames(GlobalCompleteTaskListener.class);
         for (String taskListener : completeTaskListeners) {
             listeners.add(createFlowableListener(taskListener, TaskListener.EVENTNAME_COMPLETE));
         }
+
         /* Create */
-        Collection<String> createTaskListeners = ApplicationContextProvider.getBeansNames(GlobalCreateTaskListener.class);
+        Collection<String> createTaskListeners = getBeansNames(GlobalCreateTaskListener.class);
         for (String taskListener : createTaskListeners) {
             listeners.add(createFlowableListener(taskListener, TaskListener.EVENTNAME_CREATE));
         }
+
         /* Delete */
-        Collection<String> deleteTaskListeners = ApplicationContextProvider.getBeansNames(GlobalDeleteTaskListener.class);
+        Collection<String> deleteTaskListeners = getBeansNames(GlobalDeleteTaskListener.class);
         for (String taskListener : deleteTaskListeners) {
             listeners.add(createFlowableListener(taskListener, TaskListener.EVENTNAME_DELETE));
         }
+
         userTask.setTaskListeners(listeners);
     }
 
-    /**
-     * Create flowable listener
-     * @param taskListener Task listener bean
-     * @param event Event type
-     * @return Flowable listener
-     */
+    private List<String> getBeansNames(Class<?> beansClass) {
+        return Arrays.asList(applicationContext.getBeanNamesForType(beansClass));
+    }
+
     private FlowableListener createFlowableListener(String taskListener, String event) {
         FlowableListener result = new FlowableListener();
         result.setEvent(event);
         result.setImplementationType(ImplementationType.IMPLEMENTATION_TYPE_DELEGATEEXPRESSION);
         result.setImplementation("${" + taskListener + "}");
         return result;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }
