@@ -2,7 +2,6 @@ package ru.citeck.ecos.service;
 
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.QName;
-import ru.citeck.ecos.cmmn.service.CaseTemplateRegistry;
 import ru.citeck.ecos.icase.element.CaseElementService;
 import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.icase.activity.service.CaseActivityService;
@@ -23,10 +22,6 @@ public final class EcosCoreServices {
 
     public static CaseTimerService getCaseTimerService(ServiceRegistry services) {
         return (CaseTimerService) services.getService(CASE_TIMER_SERVICE);
-    }
-
-    public static CaseTemplateRegistry getCaseTemplateRegistry(ServiceRegistry services) {
-        return (CaseTemplateRegistry) services.getService(CASE_TEMPLATE_REGISTRY);
     }
 
     public static CaseElementService getCaseElementService(ServiceRegistry services) {

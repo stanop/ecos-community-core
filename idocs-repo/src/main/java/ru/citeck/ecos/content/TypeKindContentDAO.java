@@ -1,17 +1,13 @@
 package ru.citeck.ecos.content;
 
-import lombok.Data;
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.EcosTypeModel;
 import ru.citeck.ecos.node.EcosTypeService;
 import ru.citeck.ecos.records2.RecordRef;
-import ru.citeck.ecos.records2.RecordsService;
 
 import java.io.Serializable;
 import java.util.*;
@@ -30,11 +26,7 @@ public class TypeKindContentDAO<T> extends RepoContentDAOImpl<T> {
     private QName classField = null;
 
     @Autowired
-    @Qualifier("ecosTypeService")
     private EcosTypeService ecosTypeService;
-
-    @Autowired
-    private RecordsService recordsService;
 
     /**
      * Get configs by EcoS type kind
@@ -80,9 +72,9 @@ public class TypeKindContentDAO<T> extends RepoContentDAOImpl<T> {
 
             AtomicReference<List<ContentData<T>>> configsByType = new AtomicReference<>();
 
-            ecosTypeService.forEachAsc(ecosTypeRef, dto -> {
+            ecosTypeService.forEachAsc(ecosTypeRef, typeDto -> {
 
-                Map<QName, Serializable> keys = Collections.singletonMap(EcosTypeModel.PROP_TYPE, dto.getId());
+                Map<QName, Serializable> keys = Collections.singletonMap(EcosTypeModel.PROP_TYPE, typeDto.getId());
                 List<ContentData<T>> configsByKeys = getContentData(keys);
                 if (configsByKeys != null && !configsByKeys.isEmpty()) {
                     configsByType.set(configsByKeys);
@@ -94,6 +86,10 @@ public class TypeKindContentDAO<T> extends RepoContentDAOImpl<T> {
             if (configsByType.get() != null) {
                 configs = configsByType.get();
             }
+        }
+
+        if (!configs.isEmpty()) {
+            return configs;
         }
 
         NodeRef type = (NodeRef) nodeService.getProperty(nodeRef, ClassificationModel.PROP_DOCUMENT_TYPE);

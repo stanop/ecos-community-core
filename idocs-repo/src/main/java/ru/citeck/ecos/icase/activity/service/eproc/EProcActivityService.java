@@ -1,6 +1,7 @@
 package ru.citeck.ecos.icase.activity.service.eproc;
 
 import org.alfresco.util.Pair;
+import ru.citeck.ecos.cmmn.model.Definitions;
 import ru.citeck.ecos.icase.activity.dto.*;
 import ru.citeck.ecos.icase.activity.service.eproc.importer.pojo.OptimizedProcessDefinition;
 import ru.citeck.ecos.records2.RecordRef;
@@ -12,6 +13,8 @@ public interface EProcActivityService {
     Pair<String, OptimizedProcessDefinition> getOptimizedDefinitionWithRevisionId(RecordRef caseRef);
 
     ProcessDefinition getFullDefinition(RecordRef caseRef);
+
+    Definitions getXmlProcDefinition(RecordRef caseRef);
 
     ProcessInstance createDefaultState(RecordRef caseRef);
 

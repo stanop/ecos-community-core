@@ -13,11 +13,12 @@ import ru.citeck.ecos.cmmn.model.Definitions;
 import ru.citeck.ecos.cmmn.service.util.CaseElementImport;
 import ru.citeck.ecos.cmmn.service.util.CasePlanModelImport;
 import ru.citeck.ecos.cmmn.service.util.CaseRolesImport;
+import ru.citeck.ecos.icase.activity.service.eproc.EProcActivityService;
 import ru.citeck.ecos.icase.element.CaseElementService;
+import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.service.EcosCoreServices;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Service("caseXmlService")
 @DependsOn("idocs.dictionaryBootstrap")
@@ -27,15 +28,17 @@ public class CaseXmlService {
 
     private NodeService nodeService;
     private AuthorityService authorityService;
-    private CaseTemplateRegistry caseTemplateRegistry;
     private CaseElementService caseElementService;
+    private EProcActivityService eProcActivityService;
 
     @Autowired
     private CMMNUtils utils;
 
     public void fillCaseFromTemplate(NodeRef targetNodeRef) {
-        Optional<Definitions> definition = caseTemplateRegistry.getDefinitionForCase(targetNodeRef);
-        definition.ifPresent(definitions -> copyTemplateToCase(definitions, targetNodeRef));
+        Definitions definitions = eProcActivityService.getXmlProcDefinition(RecordRef.valueOf(targetNodeRef.toString()));
+        if (definitions != null) {
+            copyTemplateToCase(definitions, targetNodeRef);
+        }
     }
 
     public void copyTemplateToCase(Definitions definition, NodeRef caseRef) {
@@ -52,11 +55,15 @@ public class CaseXmlService {
     }
 
     @Autowired
+    public void setEProcActivityService(EProcActivityService eProcActivityService) {
+        this.eProcActivityService = eProcActivityService;
+    }
+
+    @Autowired
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
         this.nodeService = serviceRegistry.getNodeService();
         this.authorityService = serviceRegistry.getAuthorityService();
-        this.caseTemplateRegistry = EcosCoreServices.getCaseTemplateRegistry(serviceRegistry);
         this.caseElementService = EcosCoreServices.getCaseElementService(serviceRegistry);
     }
 }

@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.citeck.ecos.cmmn.model.Definitions;
 import ru.citeck.ecos.commands.CommandsService;
 import ru.citeck.ecos.commands.dto.CommandResult;
 import ru.citeck.ecos.commons.json.Json;
@@ -34,10 +35,8 @@ import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.utils.TransactionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.io.Serializable;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -49,15 +48,15 @@ public class EProcActivityServiceImpl implements EProcActivityService {
     private static final String EPROC_SAVE_STATE_TRANSACTION_KEY = EProcActivityServiceImpl.class.getName() + ".save-state";
     private static final String EPROC_CASE_STATE_BY_ID_KEY_PREFIX = "eproc-case-state-by-id";
 
-    private CmmnSchemaParser cmmnSchemaParser;
-    private CommandsService commandsService;
-    private EcosTypeService ecosTypeService;
-    private DictionaryService dictionaryService;
-    private NodeService nodeService;
-    private BehaviourFilter behaviourFilter;
+    private final CmmnSchemaParser cmmnSchemaParser;
+    private final CommandsService commandsService;
+    private final EcosTypeService ecosTypeService;
+    private final DictionaryService dictionaryService;
+    private final NodeService nodeService;
+    private final BehaviourFilter behaviourFilter;
 
-    private LoadingCache<EcosAlfTypesKey, String> typesToRevisionIdCache;
-    private LoadingCache<String, OptimizedProcessDefinition> revisionIdToProcessDefinitionCache;
+    private final LoadingCache<EcosAlfTypesKey, String> typesToRevisionIdCache;
+    private final LoadingCache<String, OptimizedProcessDefinition> revisionIdToProcessDefinitionCache;
 
     @Autowired
     public EProcActivityServiceImpl(CmmnSchemaParser cmmnSchemaParser,
@@ -100,15 +99,23 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         return getFullDefinitionImpl(caseRef).getProcessDefinition();
     }
 
+    @Override
+    public Definitions getXmlProcDefinition(RecordRef caseRef) {
+        return getFullDefinitionImpl(caseRef).getXmlProcessDefinition();
+    }
+
     private OptimizedProcessDefinition getFullDefinitionImpl(RecordRef caseRef) {
+
         NodeRef caseNodeRef = RecordsUtils.toNodeRef(caseRef);
 
-        String defRevId = (String) nodeService.getProperty(caseNodeRef, EcosProcessModel.PROP_DEFINITION_REVISION_ID);
+        Map<QName, Serializable> props = nodeService.getProperties(caseNodeRef);
+
+        String defRevId = (String) props.get(EcosProcessModel.PROP_DEFINITION_REVISION_ID);
         if (StringUtils.isNotBlank(defRevId)) {
             return getFullDefinitionByRevisionId(defRevId);
         }
 
-        String stateId = (String) nodeService.getProperty(caseNodeRef, EcosProcessModel.PROP_STATE_ID);
+        String stateId = (String) props.get(EcosProcessModel.PROP_STATE_ID);
         if (StringUtils.isNotBlank(stateId)) {
             return getFullDefinitionForExistingByStateId(stateId);
         }
@@ -175,13 +182,13 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         if (CollectionUtils.isEmpty(alfQNames)) {
             return Collections.emptyList();
         }
-
         return alfQNames.stream()
                 .map(QName::toString)
                 .collect(Collectors.toList());
     }
 
     private String findProcDefRevIdFromMicroservice(EcosAlfTypesKey key) {
+
         FindProcDef findProcDefCommand = new FindProcDef();
         findProcDefCommand.setProcType(CMMN_PROCESS_TYPE);
         findProcDefCommand.setEcosTypeRef(key.getEcosType());
@@ -315,6 +322,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
 
     @Override
     public ProcessInstance getFullState(RecordRef caseRef) {
+
         NodeRef caseNodeRef = RecordsUtils.toNodeRef(caseRef);
         String stateId = (String) nodeService.getProperty(caseNodeRef, EcosProcessModel.PROP_STATE_ID);
         String procId = (String) nodeService.getProperty(caseNodeRef, EcosProcessModel.PROP_PROCESS_ID);
