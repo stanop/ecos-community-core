@@ -30,6 +30,7 @@ import ru.citeck.ecos.records.type.TypesManager;
 import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.graphql.meta.value.EmptyValue;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records2.meta.RecordsTemplateService;
 import ru.citeck.ecos.records2.request.delete.RecordsDelResult;
@@ -64,13 +65,6 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     RecordsMetaLocalDAO<MetaValue>,
     RecordsQueryWithMetaLocalDAO<Object>,
     MutableRecordsDAO, RecordsActionExecutor {
-
-    private static final Pattern UUID_PATTERN = Pattern.compile(
-        "^[0-9a-fA-F]{8}" +
-        "-[0-9a-fA-F]{4}" +
-        "-[0-9a-fA-F]{4}" +
-        "-[0-9a-fA-F]{4}" +
-        "-[0-9a-fA-F]{12}$");
 
     public static final String ID = "";
     private static final String ADD_CMD_PREFIX = "att_add_";
@@ -663,7 +657,11 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         if (recordRef == RecordRef.EMPTY) {
             return new EmptyAlfNode();
         }
-        return new AlfNodeRecord(recordRef);
+        String id = recordRef.getId();
+        if (NodeRef.isNodeRef(id) && nodeService.exists(new NodeRef(id))) {
+            return new AlfNodeRecord(recordRef);
+        }
+        return EmptyValue.INSTANCE;
     }
 
     public ActionResults<RecordRef> executeAction(List<RecordRef> records, GroupActionConfig config) {
