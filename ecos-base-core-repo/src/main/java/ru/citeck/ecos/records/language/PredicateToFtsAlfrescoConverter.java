@@ -2,6 +2,7 @@ package ru.citeck.ecos.records.language;
 
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -22,6 +23,7 @@ import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.search.AssociationIndexPropertyRegistry;
 import ru.citeck.ecos.search.ftsquery.BinOperator;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
+import ru.citeck.ecos.utils.AuthorityUtils;
 import ru.citeck.ecos.utils.DictUtils;
 
 import java.io.Serializable;
@@ -29,12 +31,10 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static ru.citeck.ecos.model.ClassificationModel.PROP_DOCUMENT_KIND;
 import static ru.citeck.ecos.model.ClassificationModel.PROP_DOCUMENT_TYPE;
@@ -48,15 +48,20 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter<Predi
     private static final String COMMA_DELIMITER = ",";
     private static final String SLASH_DELIMITER = "/";
     private static final String WORKSPACE_PREFIX = "workspace://SpacesStore/";
+    private static final String CURRENT_USER = "$CURRENT";
     private static final int INNER_QUERY_MAX_ITEMS = 20;
+
     private static final String MODIFIER_ATTRIBUTE = "_modifier";
     private static final String MODIFIED_ATTRIBUTE = "_modified";
     private static final String CM_MODIFIED_ATTRIBUTE = "cm:modified";
     private static final String CM_MODIFIER_ATTRIBUTE = "cm:modifier";
+    private static final String ACTORS_ATTRIBUTE = "_actors";
+
 
     private final DictUtils dictUtils;
     private final NodeService nodeService;
     private final SearchService searchService;
+    private final AuthorityUtils authorityUtils;
     private final EcosTypeService ecosTypeService;
     private final NamespaceService namespaceService;
     private final AssociationIndexPropertyRegistry associationIndexPropertyRegistry;
@@ -65,7 +70,7 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter<Predi
     public PredicateToFtsAlfrescoConverter(DictUtils dictUtils,
                                            SearchService searchService,
                                            QueryLangService queryLangService,
-                                           ServiceRegistry serviceRegistry,
+                                           AuthorityUtils authorityUtils, ServiceRegistry serviceRegistry,
                                            AssociationIndexPropertyRegistry associationIndexPropertyRegistry,
                                            NodeService nodeService,
                                            EcosTypeService ecosTypeService) {
@@ -73,6 +78,7 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter<Predi
         this.dictUtils = dictUtils;
         this.nodeService = nodeService;
         this.searchService = searchService;
+        this.authorityUtils = authorityUtils;
         this.ecosTypeService = ecosTypeService;
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.associationIndexPropertyRegistry = associationIndexPropertyRegistry;
@@ -168,6 +174,32 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter<Predi
                     ValuePredicate predCopyForModifiedAttr = valuePred.copy();
                     predCopyForModifiedAttr.setAttribute(CM_MODIFIED_ATTRIBUTE);
                     processPredicate(predCopyForModifiedAttr, query);
+                    break;
+
+                case ACTORS_ATTRIBUTE:
+                    String actor = valueStr;
+
+                    if (CURRENT_USER.equals(actor)) {
+                        actor = AuthenticationUtil.getFullyAuthenticatedUser();
+                    } else if (NodeRef.isNodeRef(actor)) {
+                        actor = authorityUtils.getAuthorityName(new NodeRef(actor));
+                    }
+
+                    Set<String> actorRefs = Stream.concat(
+                        authorityUtils.getContainingAuthoritiesRefs(actor).stream(),
+                        Stream.of(authorityUtils.getNodeRef(actor)))
+                        .map(NodeRef::toString).collect(Collectors.toSet());
+
+                    OrPredicate orPred = new OrPredicate();
+                    actorRefs.forEach(a -> {
+                        ValuePredicate valuePredicate = new ValuePredicate();
+                        valuePredicate.setType(ValuePredicate.Type.CONTAINS);
+                        valuePredicate.setAttribute("wfm:actors");
+                        valuePredicate.setValue(a);
+                        orPred.addPredicate(valuePredicate);
+                    });
+
+                    processPredicate(orPred, query);
                     break;
 
                 default:
