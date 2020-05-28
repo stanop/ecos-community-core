@@ -76,8 +76,8 @@ public class EProcCaseImporter {
     }
 
     public void importCase(RecordRef caseRef) {
-        Pair<String, OptimizedProcessDefinition> data = eprocActivityService.getOptimizedDefinitionWithRevisionId(caseRef);
-        importCaseImpl(caseRef, data);
+        eprocActivityService.getOptimizedDefinitionWithRevisionId(caseRef)
+            .ifPresent(definition -> importCaseImpl(caseRef, definition));
     }
 
     private void importCaseImpl(RecordRef caseRef, Pair<String, OptimizedProcessDefinition> data) {

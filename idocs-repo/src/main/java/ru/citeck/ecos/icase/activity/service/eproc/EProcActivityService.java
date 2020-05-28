@@ -7,20 +7,21 @@ import ru.citeck.ecos.icase.activity.service.eproc.importer.pojo.OptimizedProces
 import ru.citeck.ecos.records2.RecordRef;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface EProcActivityService {
 
-    Pair<String, OptimizedProcessDefinition> getOptimizedDefinitionWithRevisionId(RecordRef caseRef);
+    Optional<Pair<String, OptimizedProcessDefinition>> getOptimizedDefinitionWithRevisionId(RecordRef caseRef);
 
-    ProcessDefinition getFullDefinition(RecordRef caseRef);
+    Optional<ProcessDefinition> getFullDefinition(RecordRef caseRef);
 
-    Definitions getXmlProcDefinition(RecordRef caseRef);
+    Optional<Definitions> getXmlProcDefinition(RecordRef caseRef);
 
     ProcessInstance createDefaultState(RecordRef caseRef);
 
     ProcessInstance createDefaultState(RecordRef caseRef, String revisionId, OptimizedProcessDefinition definition);
 
-    ProcessInstance getFullState(RecordRef caseRef);
+    Optional<ProcessInstance> getFullState(RecordRef caseRef);
 
     void saveState(ProcessInstance processInstance);
 
@@ -31,5 +32,4 @@ public interface EProcActivityService {
     SentryDefinition getSentryDefinition(EventRef eventRef);
 
     List<SentryDefinition> findSentriesBySourceRefAndEventType(RecordRef caseRef, String sourceRef, String eventType);
-
 }

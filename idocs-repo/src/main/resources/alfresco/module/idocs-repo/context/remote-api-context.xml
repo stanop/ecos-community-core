@@ -378,18 +378,6 @@
           parent="abstractWorkflowWebScript">
     </bean>
 
-    <bean id="webscript.ru.citeck.case.export-case.get"
-          class="ru.citeck.ecos.webscripts.icase.ExportCaseWebScript"
-          parent="webscript">
-        <property name="caseExportService" ref="cmmnExportService"/>
-    </bean>
-
-    <bean id="webscript.ru.citeck.case.import-case.post"
-          class="ru.citeck.ecos.webscripts.icase.ImportCaseWebScript"
-          parent="webscript">
-        <property name="caseImportService" ref="cmmnImportService"/>
-    </bean>
-
     <bean id="webscript.ru.citeck.cases.case-levels.get"
           class="ru.citeck.ecos.webscripts.icase.CaseLevelsGet"
           parent="webscript">

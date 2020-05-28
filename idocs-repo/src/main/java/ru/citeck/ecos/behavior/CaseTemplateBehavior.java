@@ -181,6 +181,7 @@ public class CaseTemplateBehavior implements NodeServicePolicies.OnCreateNodePol
     }
 
     private void eprocCopyFromTemplateImpl(NodeRef caseNode) {
+
         TransactionUtils.doAfterCommit(() -> {
             itemsUpdateState.startUpdate(CaseTemplateBehavior.class, caseNode);
             RecordRef caseRef = RecordRef.valueOf(caseNode.toString());

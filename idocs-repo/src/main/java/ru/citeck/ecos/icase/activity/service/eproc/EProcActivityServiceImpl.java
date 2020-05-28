@@ -15,6 +15,7 @@ import org.alfresco.util.Pair;
 import org.alfresco.util.transaction.TransactionSupportUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -55,7 +56,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
     private final NodeService nodeService;
     private final BehaviourFilter behaviourFilter;
 
-    private final LoadingCache<EcosAlfTypesKey, String> typesToRevisionIdCache;
+    private final LoadingCache<EcosAlfTypesKey, Optional<String>> typesToRevisionIdCache;
     private final LoadingCache<String, OptimizedProcessDefinition> revisionIdToProcessDefinitionCache;
 
     @Autowired
@@ -83,28 +84,29 @@ public class EProcActivityServiceImpl implements EProcActivityService {
     }
 
     @Override
-    public Pair<String, OptimizedProcessDefinition> getOptimizedDefinitionWithRevisionId(RecordRef caseRef) {
+    public Optional<Pair<String, OptimizedProcessDefinition>> getOptimizedDefinitionWithRevisionId(RecordRef caseRef) {
+
         NodeRef caseNodeRef = RecordsUtils.toNodeRef(caseRef);
-        String procRevId = getRevisionIdForNode(caseNodeRef);
-
-        OptimizedProcessDefinition result = revisionIdToProcessDefinitionCache.getUnchecked(procRevId);
-        if (result == null) {
-            return null;
-        }
-        return new Pair<>(procRevId, result);
+        return getRevisionIdForNode(caseNodeRef).map(procRevId -> {
+            OptimizedProcessDefinition result = revisionIdToProcessDefinitionCache.getUnchecked(procRevId);
+            if (result == null) {
+                return null;
+            }
+            return new Pair<>(procRevId, result);
+        });
     }
 
     @Override
-    public ProcessDefinition getFullDefinition(RecordRef caseRef) {
-        return getFullDefinitionImpl(caseRef).getProcessDefinition();
+    public Optional<ProcessDefinition> getFullDefinition(RecordRef caseRef) {
+        return getFullDefinitionImpl(caseRef).map(OptimizedProcessDefinition::getProcessDefinition);
     }
 
     @Override
-    public Definitions getXmlProcDefinition(RecordRef caseRef) {
-        return getFullDefinitionImpl(caseRef).getXmlProcessDefinition();
+    public Optional<Definitions> getXmlProcDefinition(RecordRef caseRef) {
+        return getFullDefinitionImpl(caseRef).map(OptimizedProcessDefinition::getXmlProcessDefinition);
     }
 
-    private OptimizedProcessDefinition getFullDefinitionImpl(RecordRef caseRef) {
+    private Optional<OptimizedProcessDefinition> getFullDefinitionImpl(RecordRef caseRef) {
 
         NodeRef caseNodeRef = RecordsUtils.toNodeRef(caseRef);
 
@@ -112,12 +114,12 @@ public class EProcActivityServiceImpl implements EProcActivityService {
 
         String defRevId = (String) props.get(EcosProcessModel.PROP_DEFINITION_REVISION_ID);
         if (StringUtils.isNotBlank(defRevId)) {
-            return getFullDefinitionByRevisionId(defRevId);
+            return Optional.of(getFullDefinitionByRevisionId(defRevId));
         }
 
         String stateId = (String) props.get(EcosProcessModel.PROP_STATE_ID);
         if (StringUtils.isNotBlank(stateId)) {
-            return getFullDefinitionForExistingByStateId(stateId);
+            return Optional.of(getFullDefinitionForExistingByStateId(stateId));
         }
 
         return getFullDefinitionForNewCase(caseNodeRef);
@@ -133,9 +135,8 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         return getFullDefinitionByRevisionId(procDefRevId);
     }
 
-    private OptimizedProcessDefinition getFullDefinitionForNewCase(NodeRef caseNodeRef) {
-        String processRevisionId = getRevisionIdForNode(caseNodeRef);
-        return getFullDefinitionByRevisionId(processRevisionId);
+    private Optional<OptimizedProcessDefinition> getFullDefinitionForNewCase(NodeRef caseNodeRef) {
+        return getRevisionIdForNode(caseNodeRef).map(this::getFullDefinitionByRevisionId);
     }
 
     private OptimizedProcessDefinition getFullDefinitionByRevisionId(String processRevisionId) {
@@ -146,13 +147,9 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         return result;
     }
 
-    private String getRevisionIdForNode(NodeRef caseNodeRef) {
+    private Optional<String> getRevisionIdForNode(NodeRef caseNodeRef) {
         EcosAlfTypesKey ecosAlfTypesKey = composeEcosAlfTypesKey(caseNodeRef);
-        String processRevisionId = typesToRevisionIdCache.getUnchecked(ecosAlfTypesKey);
-        if (StringUtils.isBlank(processRevisionId)) {
-            throw new RuntimeException("Can not find processRevisionId for caseRef=" + caseNodeRef);
-        }
-        return processRevisionId;
+        return typesToRevisionIdCache.getUnchecked(ecosAlfTypesKey);
     }
 
     private EcosAlfTypesKey composeEcosAlfTypesKey(NodeRef caseNodeRef) {
@@ -187,7 +184,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
                 .collect(Collectors.toList());
     }
 
-    private String findProcDefRevIdFromMicroservice(EcosAlfTypesKey key) {
+    private Optional<String> findProcDefRevIdFromMicroservice(EcosAlfTypesKey key) {
 
         FindProcDef findProcDefCommand = new FindProcDef();
         findProcDefCommand.setProcType(CMMN_PROCESS_TYPE);
@@ -203,9 +200,9 @@ public class EProcActivityServiceImpl implements EProcActivityService {
 
         FindProcDefResp response = commandResult.getResultAs(FindProcDefResp.class);
         if (response == null) {
-            return null;
+            return Optional.empty();
         }
-        return response.getProcDefRevId();
+        return Optional.ofNullable(response.getProcDefRevId());
     }
 
     private OptimizedProcessDefinition getProcessDefByRevIdFromMicroservice(String definitionRevisionId) {
@@ -234,16 +231,20 @@ public class EProcActivityServiceImpl implements EProcActivityService {
 
     @Override
     public ProcessInstance createDefaultState(RecordRef caseRef) {
+
         NodeRef caseNodeRef = RecordsUtils.toNodeRef(caseRef);
 
         EcosAlfTypesKey ecosAlfTypesKey = composeEcosAlfTypesKey(caseNodeRef);
-        String definitionRevisionId = typesToRevisionIdCache.getUnchecked(ecosAlfTypesKey);
+        String definitionRevisionId = typesToRevisionIdCache.getUnchecked(ecosAlfTypesKey)
+            .orElseThrow(() -> new IllegalStateException("Def revision ID is null. CaseRef: " + caseRef));
+
         CreateProcResp createProcResp = createProcessInstanceInMicroservice(definitionRevisionId, caseRef);
         nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_PROCESS_ID, createProcResp.getProcId());
         nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_STATE_ID, createProcResp.getProcStateId());
         nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_DEFINITION_REVISION_ID, definitionRevisionId);
 
-        OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionForNewCase(caseNodeRef);
+        OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionForNewCase(caseNodeRef)
+            .orElseThrow(() -> new IllegalStateException("Proc definition is null. CaseRef: " + caseRef));
         ProcessInstance processInstance = createProcessInstanceFromDefinition(createProcResp.getProcId(),
                 caseRef, optimizedProcessDefinition.getProcessDefinition());
 
@@ -321,21 +322,25 @@ public class EProcActivityServiceImpl implements EProcActivityService {
     }
 
     @Override
-    public ProcessInstance getFullState(RecordRef caseRef) {
+    public Optional<ProcessInstance> getFullState(RecordRef caseRef) {
 
         NodeRef caseNodeRef = RecordsUtils.toNodeRef(caseRef);
         String stateId = (String) nodeService.getProperty(caseNodeRef, EcosProcessModel.PROP_STATE_ID);
         String procId = (String) nodeService.getProperty(caseNodeRef, EcosProcessModel.PROP_PROCESS_ID);
         if (StringUtils.isBlank(stateId) || StringUtils.isBlank(procId)) {
-            return null;
+            return Optional.empty();
         }
 
         ProcessInstance transactionProcessInstance = getProcessStateFromTransactionByStateId(caseRef);
         if (transactionProcessInstance != null) {
-            return transactionProcessInstance;
+            return Optional.of(transactionProcessInstance);
         }
 
-        OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionImpl(caseRef);
+        Optional<OptimizedProcessDefinition> optOptimizedProcessDefinition = getFullDefinitionImpl(caseRef);
+        if (!optOptimizedProcessDefinition.isPresent()) {
+            return Optional.empty();
+        }
+        OptimizedProcessDefinition optimizedProcessDefinition = optOptimizedProcessDefinition.get();
 
         GetProcStateResp processState = getProcessStateFromMicroservice(stateId);
         byte[] stateData = processState.getStateData();
@@ -356,7 +361,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
 
         putInstanceToTransactionScopeByStateId(caseRef, instance);
 
-        return instance;
+        return Optional.of(instance);
     }
 
     private GetProcStateResp getProcessStateFromMicroservice(String stateId) {
@@ -480,11 +485,11 @@ public class EProcActivityServiceImpl implements EProcActivityService {
 
     @Override
     public ActivityInstance getStateInstance(ActivityRef activityRef) {
-        ProcessInstance instance = getFullState(activityRef.getProcessId());
+        ProcessInstance instance = getFullState(activityRef.getProcessId())
+            .orElseThrow(() -> new IllegalStateException("Process instance is not found for activity: " + activityRef));
         if (activityRef.isRoot()) {
             return instance.getRootActivity();
         }
-
         return getStateInstanceRecursively(instance.getRootActivity(), activityRef.getId());
     }
 
@@ -508,19 +513,32 @@ public class EProcActivityServiceImpl implements EProcActivityService {
 
     @Override
     public ActivityDefinition getActivityDefinition(ActivityRef activityRef) {
-        OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionImpl(activityRef.getProcessId());
-        return optimizedProcessDefinition.getIdToActivityCache().get(activityRef.getId());
+        return getFullDefinitionImpl(activityRef.getProcessId())
+            .map(OptimizedProcessDefinition::getIdToActivityCache)
+            .map(cache -> cache.get(activityRef.getId()))
+            .orElseThrow(() -> new IllegalStateException("Activity def is not found: " + activityRef));
     }
 
     @Override
+    @NotNull
     public SentryDefinition getSentryDefinition(EventRef eventRef) {
-        OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionImpl(eventRef.getProcessId());
-        return optimizedProcessDefinition.getIdToSentryCache().get(eventRef.getId());
+        return getFullDefinitionImpl(eventRef.getProcessId())
+            .map(OptimizedProcessDefinition::getIdToSentryCache)
+            .map(cache -> cache.get(eventRef.getId()))
+            .orElseThrow(() -> new IllegalStateException("Sentry is not found: " + eventRef));
     }
 
     @Override
-    public List<SentryDefinition> findSentriesBySourceRefAndEventType(RecordRef caseRef, String sourceRef, String eventType) {
-        OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionImpl(caseRef);
+    public List<SentryDefinition> findSentriesBySourceRefAndEventType(RecordRef caseRef,
+                                                                      String sourceRef,
+                                                                      String eventType) {
+
+        OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionImpl(caseRef)
+            .orElseThrow(() -> new IllegalStateException("Process definition is not found!. "
+                + "CaseRef: " + caseRef
+                + " sourceRef: " + sourceRef
+                + " eventType: " + eventType));
+
         SourceRef sourceRefObj = new SourceRef();
         sourceRefObj.setRef(sourceRef);
         SentrySearchKey sentrySearchKey = new SentrySearchKey(sourceRefObj, eventType);

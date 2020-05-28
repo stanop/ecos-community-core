@@ -35,10 +35,8 @@ public class CaseXmlService {
     private CMMNUtils utils;
 
     public void fillCaseFromTemplate(NodeRef targetNodeRef) {
-        Definitions definitions = eProcActivityService.getXmlProcDefinition(RecordRef.valueOf(targetNodeRef.toString()));
-        if (definitions != null) {
-            copyTemplateToCase(definitions, targetNodeRef);
-        }
+        eProcActivityService.getXmlProcDefinition(RecordRef.valueOf(targetNodeRef.toString()))
+            .ifPresent(definitions -> copyTemplateToCase(definitions, targetNodeRef));
     }
 
     public void copyTemplateToCase(Definitions definition, NodeRef caseRef) {

@@ -49,8 +49,7 @@ public class HistoricalPropertiesBehaviour implements
 		NodeServicePolicies.OnDeleteAssociationPolicy,
 		NodeServicePolicies.OnCreateChildAssociationPolicy,
 		NodeServicePolicies.OnDeleteChildAssociationPolicy,
-		NodeServicePolicies.BeforeDeleteNodePolicy
-{
+		NodeServicePolicies.BeforeDeleteNodePolicy {
 
 	private PolicyComponent policyComponent;
 	private NodeService nodeService;
@@ -60,7 +59,7 @@ public class HistoricalPropertiesBehaviour implements
 	private List<QName> allowedProperties;
 	private List<QName> ignoreAssocsWithTypes;
 	private DictionaryService dictionaryService;
-	private static Map<String,Long> createdNodes = new HashMap<>();
+	private static final Map<String,Long> createdNodes = new HashMap<>();
 	protected boolean enableHistoryOnCreateNode;
 	protected boolean enableHistoryOnUpdateProps;
 	protected boolean enableHistoryOnAddAssocs;
@@ -146,26 +145,35 @@ public class HistoricalPropertiesBehaviour implements
 	}
 
 	@Override
-	public void onUpdateProperties(final NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after)
-	{
+	public void onUpdateProperties(final NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
+
 		logger.debug("HistoricalPropertiesBehaviour onUpdateProperties="+this);
 		logger.debug("HistoricalPropertiesBehaviour onUpdateProperties="+nodeRef);
 		logger.debug("HistoricalPropertiesBehaviour onUpdateProperties="+isNewNode(nodeRef));
 
 		logger.debug("onUpdateProperties event");
-		if(!isNewNode(nodeRef) && enableHistoryOnUpdateProps && nodeService.exists(nodeRef) && className!=null && className.equals(nodeService.getType(nodeRef)))
-		{
-			if(before.get(ContentModel.PROP_NODE_UUID)!=null )
-			{
+
+		if (!isNewNode(nodeRef)
+            && enableHistoryOnUpdateProps
+            && nodeService.exists(nodeRef)
+            && className!=null
+            && className.equals(nodeService.getType(nodeRef))) {
+
+		    if (before.get(ContentModel.PROP_NODE_UUID)!=null ) {
+
 				logger.debug("onUpdateProperties edit mode");
 				Map<QName, Serializable> properties = nodeService.getProperties(nodeRef);
+
 				for(Map.Entry<QName, Serializable> entry : properties.entrySet()) {
-					Object propBefore = (Object) before.get(entry.getKey());
-					Object propAfter = (Object) after.get(entry.getKey());
-					if(allowedProperties!=null && allowedProperties.contains(entry.getKey()))
-					{
-						if((propBefore!=null && !propBefore.equals(propAfter))||(propBefore==null && (propAfter!=null && !"".equals(propAfter))))
-						{
+
+				    Object propBefore = before.get(entry.getKey());
+					Object propAfter = after.get(entry.getKey());
+
+					if (allowedProperties!=null && allowedProperties.contains(entry.getKey())) {
+
+						if ((propBefore != null && !propBefore.equals(propAfter))
+                            || (propBefore == null && (propAfter != null && !"".equals(propAfter)))) {
+
 							logger.debug("onUpdateProperties propBefore "+propBefore+" propAfter "+propAfter);
 							String comment = HistoryUtils.getKeyValue(entry.getKey(), dictionaryService)
 									+ ": "
@@ -176,7 +184,13 @@ public class HistoricalPropertiesBehaviour implements
 								comment = HistoryUtils.getKeyValue(entry.getKey(), dictionaryService);
 							}
 							historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, HistoryUtils.eventProperties(
-									HistoryUtils.NODE_UPDATED, nodeRef, entry.getKey(), String.valueOf(propAfter), comment, null, null
+								HistoryUtils.NODE_UPDATED,
+                                nodeRef,
+                                entry.getKey(),
+                                String.valueOf(propAfter),
+                                comment,
+                                null,
+                                null
 							));
 						}
 					}
@@ -187,79 +201,156 @@ public class HistoricalPropertiesBehaviour implements
 
 	@Override
 	public void onCreateAssociation(AssociationRef nodeAssocRef) {
-		logger.debug("HistoricalPropertiesBehaviour onCreateAssociation="+this);
+
+	    logger.debug("HistoricalPropertiesBehaviour onCreateAssociation="+this);
 		logger.debug("onCreateAssociation event");
-        AssociationDefinition assoc = dictionaryService.getAssociation(nodeAssocRef.getTypeQName());
+
+		AssociationDefinition assoc = dictionaryService.getAssociation(nodeAssocRef.getTypeQName());
         NodeRef nodeSource = nodeAssocRef.getSourceRef();
         NodeRef nodeTarget = nodeAssocRef.getTargetRef();
-        if (!isNewNode(nodeAssocRef.getSourceRef()) && enableHistoryOnAddAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(nodeAssocRef.getTypeQName())) {
+
+        if (!isNewNode(nodeAssocRef.getSourceRef())
+            && enableHistoryOnAddAssocs
+            && nodeService.exists(nodeSource)
+            && className != null
+            && className.equals(nodeService.getType(nodeSource))
+            && allowedProperties!=null
+            && allowedProperties.contains(nodeAssocRef.getTypeQName())) {
+
             HistoryUtils.addResourceTransaction(HistoryUtils.ASSOC_ADDED, nodeAssocRef);
             if (assoc != null) {
 				historyService.persistEvent(
 						HistoryModel.TYPE_BASIC_EVENT,
 						HistoryUtils.eventProperties(
-								HistoryUtils.ASSOC_ADDED, nodeSource, assoc.getName(), nodeTarget.toString(), HistoryUtils.getAssocComment(nodeAssocRef, null, dictionaryService, nodeService), null, null
+							HistoryUtils.ASSOC_ADDED,
+                            nodeSource,
+                            assoc.getName(),
+                            nodeTarget.toString(),
+                            HistoryUtils.getAssocComment(
+                                nodeAssocRef,
+                                null,
+                                dictionaryService,
+                                nodeService
+                            ),
+                            null,
+                            null
 						));
-				HistoryUtils.addUpdateResourseToTransaction(HistoryUtils.ASSOC_ADDED, historyService, dictionaryService, nodeService);
+				HistoryUtils.addUpdateResourseToTransaction(
+				    HistoryUtils.ASSOC_ADDED,
+                    historyService,
+                    dictionaryService,
+                    nodeService
+                );
 			}
 		}
 	}
 
 	@Override
 	public void onDeleteAssociation(AssociationRef nodeAssocRef) {
-		logger.debug("onDeleteAssociation event");
+
+	    logger.debug("onDeleteAssociation event");
+
 		NodeRef nodeSource = nodeAssocRef.getSourceRef();
 		AssociationDefinition assoc = dictionaryService.getAssociation(nodeAssocRef.getTypeQName());
-		if (!isNewNode(nodeAssocRef.getSourceRef()) && enableHistoryOnDeleteAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(nodeAssocRef.getTypeQName())) {
-            HistoryUtils.addResourceTransaction(HistoryUtils.ASSOC_REMOVED, nodeAssocRef);
+
+		if (!isNewNode(nodeAssocRef.getSourceRef())
+            && enableHistoryOnDeleteAssocs
+            && nodeService.exists(nodeSource)
+            && className != null
+            && className.equals(nodeService.getType(nodeSource))
+            && allowedProperties!=null
+            && allowedProperties.contains(nodeAssocRef.getTypeQName())) {
+
+		    HistoryUtils.addResourceTransaction(HistoryUtils.ASSOC_REMOVED, nodeAssocRef);
 			if  (assoc != null) {
 				historyService.persistEvent(
 						HistoryModel.TYPE_BASIC_EVENT,
 						HistoryUtils.eventProperties(
-								HistoryUtils.ASSOC_REMOVED, nodeSource, assoc.getName(), null, HistoryUtils.getAssocComment(null, nodeAssocRef, dictionaryService, nodeService), null, null
+						    HistoryUtils.ASSOC_REMOVED,
+                            nodeSource, assoc.getName(),
+                            null,
+                            HistoryUtils.getAssocComment(
+                                null,
+                                nodeAssocRef,
+                                dictionaryService,
+                                nodeService
+                            ),
+                            null,
+                            null
 						));
-				HistoryUtils.addUpdateResourseToTransaction(HistoryUtils.ASSOC_REMOVED, historyService, dictionaryService, nodeService);
+				HistoryUtils.addUpdateResourseToTransaction(
+				    HistoryUtils.ASSOC_REMOVED, historyService, dictionaryService, nodeService);
 			}
 		}
 	}
 
 	@Override
 	public void onCreateChildAssociation(ChildAssociationRef childAssociationRef, boolean isNew) {
-		logger.debug("HistoricalPropertiesBehaviour onCreateChildAssociation="+this);
+
+	    logger.debug("HistoricalPropertiesBehaviour onCreateChildAssociation=" + this);
 		logger.debug("onCreateChildAssociation event");
+
 		AssociationDefinition assoc = dictionaryService.getAssociation(childAssociationRef.getTypeQName());
         NodeRef nodeSource = childAssociationRef.getParentRef();
         NodeRef nodeTarget = childAssociationRef.getChildRef();
-        if(enableHistoryOnAddChildAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(childAssociationRef.getTypeQName()) && nodeService.exists(nodeTarget))
-		{
+
+        if (enableHistoryOnAddChildAssocs
+            && nodeService.exists(nodeSource)
+            && className!=null
+            && className.equals(nodeService.getType(nodeSource))
+            && allowedProperties!=null
+            && allowedProperties.contains(childAssociationRef.getTypeQName())
+            && nodeService.exists(nodeTarget)) {
+
             HistoryUtils.addResourceTransaction(HistoryUtils.CHILD_ASSOC_ADDED, childAssociationRef);
-            if (assoc != null && (ignoreAssocsWithTypes == null || !ignoreAssocsWithTypes.contains(nodeService.getType(nodeTarget)))) {
+            if (assoc != null
+                && (ignoreAssocsWithTypes == null
+                    || !ignoreAssocsWithTypes.contains(nodeService.getType(nodeTarget)))) {
+
                 historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, HistoryUtils.eventProperties(
 						HistoryUtils.ASSOC_ADDED, nodeSource, assoc.getName(), nodeTarget.toString(), null,
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_TYPE),
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_KIND)
 				));
-                HistoryUtils.addUpdateChildAsscosResourseToTransaction(HistoryUtils.CHILD_ASSOC_ADDED, historyService, dictionaryService, nodeService, "");
+                HistoryUtils.addUpdateChildAsscosResourseToTransaction(
+                    HistoryUtils.CHILD_ASSOC_ADDED, historyService, dictionaryService, nodeService, "");
 			}
 		}
 	}
 
 	@Override
 	public void onDeleteChildAssociation(ChildAssociationRef childAssociationRef) {
+
 		logger.debug("onDeleteChildAssociation event");
+
 		AssociationDefinition assoc = dictionaryService.getAssociation(childAssociationRef.getTypeQName());
 		NodeRef nodeSource = childAssociationRef.getParentRef();
 		NodeRef nodeTarget = childAssociationRef.getChildRef();
-		if(enableHistoryOnDeleteChildAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(childAssociationRef.getTypeQName()))
-		{
+
+		if (enableHistoryOnDeleteChildAssocs
+            && nodeService.exists(nodeSource)
+            && className!=null
+            && className.equals(nodeService.getType(nodeSource))
+            && allowedProperties != null
+            && allowedProperties.contains(childAssociationRef.getTypeQName())) {
+
             HistoryUtils.addResourceTransaction(HistoryUtils.CHILD_ASSOC_REMOVED, childAssociationRef);
-			if (assoc != null && (ignoreAssocsWithTypes == null || nodeService.exists(nodeTarget) && !ignoreAssocsWithTypes.contains(nodeService.getType(nodeTarget)))) {
+			if (assoc != null
+                && (ignoreAssocsWithTypes == null || nodeService.exists(nodeTarget)
+                && !ignoreAssocsWithTypes.contains(nodeService.getType(nodeTarget)))) {
+
 				historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, HistoryUtils.eventProperties(
 						HistoryUtils.ASSOC_REMOVED, nodeSource, assoc.getName(), null, null,
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_TYPE),
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_KIND)
 				));
-                HistoryUtils.addUpdateChildAsscosResourseToTransaction(HistoryUtils.CHILD_ASSOC_REMOVED, historyService, dictionaryService, nodeService, "");
+                HistoryUtils.addUpdateChildAsscosResourseToTransaction(
+                    HistoryUtils.CHILD_ASSOC_REMOVED,
+                    historyService,
+                    dictionaryService,
+                    nodeService,
+                    ""
+                );
 			}
 		}
 	}
@@ -267,7 +358,9 @@ public class HistoricalPropertiesBehaviour implements
 
 	@Override
 	public void beforeDeleteNode(NodeRef nodeTarget) {
+
 		logger.debug("beforeDeleteNode event");
+
 		ChildAssociationRef childAssociationRef = nodeService.getPrimaryParent(nodeTarget);
 		NodeRef nodeSource = childAssociationRef.getParentRef();
 		if (!nodeService.exists(nodeSource)) {
@@ -275,16 +368,30 @@ public class HistoricalPropertiesBehaviour implements
 		}
 		AssociationDefinition assoc = dictionaryService.getAssociation(childAssociationRef.getTypeQName());
 
-		if(enableHistoryOnDeleteChildAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(childAssociationRef.getTypeQName()))
-		{
+		if (enableHistoryOnDeleteChildAssocs
+            && nodeService.exists(nodeSource)
+            && className != null
+            && className.equals(nodeService.getType(nodeSource))
+            && allowedProperties!=null
+            && allowedProperties.contains(childAssociationRef.getTypeQName())) {
+
 			HistoryUtils.addResourceTransaction(HistoryUtils.CHILD_ASSOC_REMOVED, childAssociationRef);
-			if (assoc != null && (ignoreAssocsWithTypes == null || nodeService.exists(nodeTarget) && !ignoreAssocsWithTypes.contains(nodeService.getType(nodeTarget)))) {
-				historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, HistoryUtils.eventProperties(
+			if (assoc != null
+                && (ignoreAssocsWithTypes == null || nodeService.exists(nodeTarget)
+                && !ignoreAssocsWithTypes.contains(nodeService.getType(nodeTarget)))) {
+
+			    historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, HistoryUtils.eventProperties(
 						HistoryUtils.ASSOC_REMOVED, nodeSource, assoc.getName(), null, null,
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_TYPE),
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_KIND)
 				));
-				HistoryUtils.addUpdateChildAsscosResourseToTransaction(HistoryUtils.CHILD_ASSOC_REMOVED, historyService, dictionaryService, nodeService, String.valueOf(nodeService.getProperty(nodeTarget, ContentModel.PROP_NAME)));
+				HistoryUtils.addUpdateChildAsscosResourseToTransaction(
+				    HistoryUtils.CHILD_ASSOC_REMOVED,
+                    historyService,
+                    dictionaryService,
+                    nodeService,
+                    String.valueOf(nodeService.getProperty(nodeTarget, ContentModel.PROP_NAME))
+                );
 			}
 		}
 	}
@@ -302,40 +409,23 @@ public class HistoricalPropertiesBehaviour implements
 		this.ignoreAssocsWithTypes = ignoreAssocsWithTypes;
 	}
 
-	/**
-	 * enabled
-	 * @param true or false
-	 */
 	public void setEnableHistoryOnUpdateProps(Boolean enableHistoryOnUpdateProps) {
-		this.enableHistoryOnUpdateProps = enableHistoryOnUpdateProps.booleanValue();
-	}
-	/**
-	 * enabled
-	 * @param true or false
-	 */
-	public void setEnableHistoryOnAddAssocs(Boolean enableHistoryOnAddAssocs) {
-		this.enableHistoryOnAddAssocs = enableHistoryOnAddAssocs.booleanValue();
-	}
-	/**
-	 * enabled
-	 * @param true or false
-	 */
-	public void setEnableHistoryOnDeleteAssocs(Boolean enableHistoryOnDeleteAssocs) {
-		this.enableHistoryOnDeleteAssocs = enableHistoryOnDeleteAssocs.booleanValue();
-	}
-	/**
-	 * enabled
-	 * @param true or false
-	 */
-	public void setEnableHistoryOnAddChildAssocs(Boolean enableHistoryOnAddChildAssocs) {
-		this.enableHistoryOnAddChildAssocs = enableHistoryOnAddChildAssocs.booleanValue();
-	}
-	/**
-	 * enabled
-	 * @param true or false
-	 */
-	public void setEnableHistoryOnDeleteChildAssocs(Boolean enableHistoryOnDeleteChildAssocs) {
-		this.enableHistoryOnDeleteChildAssocs = enableHistoryOnDeleteChildAssocs.booleanValue();
+		this.enableHistoryOnUpdateProps = enableHistoryOnUpdateProps;
 	}
 
+	public void setEnableHistoryOnAddAssocs(Boolean enableHistoryOnAddAssocs) {
+		this.enableHistoryOnAddAssocs = enableHistoryOnAddAssocs;
+	}
+
+	public void setEnableHistoryOnDeleteAssocs(Boolean enableHistoryOnDeleteAssocs) {
+		this.enableHistoryOnDeleteAssocs = enableHistoryOnDeleteAssocs;
+	}
+
+	public void setEnableHistoryOnAddChildAssocs(Boolean enableHistoryOnAddChildAssocs) {
+		this.enableHistoryOnAddChildAssocs = enableHistoryOnAddChildAssocs;
+	}
+
+	public void setEnableHistoryOnDeleteChildAssocs(Boolean enableHistoryOnDeleteChildAssocs) {
+		this.enableHistoryOnDeleteChildAssocs = enableHistoryOnDeleteChildAssocs;
+	}
 }

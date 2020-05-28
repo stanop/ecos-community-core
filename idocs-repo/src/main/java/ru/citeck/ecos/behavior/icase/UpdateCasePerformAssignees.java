@@ -218,8 +218,12 @@ public class UpdateCasePerformAssignees implements CaseRolePolicies.OnRoleAssign
     }
 
     private Set<ActivityDefinition> getTaskDefinitionsByRole(RecordRef caseRef, NodeRef roleRef) {
+
         Pair<String, OptimizedProcessDefinition> optimizedDefinitionWithRevisionId =
-                eprocActivityService.getOptimizedDefinitionWithRevisionId(caseRef);
+                eprocActivityService.getOptimizedDefinitionWithRevisionId(caseRef)
+                    .orElseThrow(() -> new IllegalStateException("Definition is not found. "
+                                                               + "CaseRef: " + caseRef + " roleRef: " + roleRef));
+
         OptimizedProcessDefinition optimizedProcessDefinition = optimizedDefinitionWithRevisionId.getSecond();
 
         String varName = (String) nodeService.getProperty(roleRef, ICaseRoleModel.PROP_VARNAME);

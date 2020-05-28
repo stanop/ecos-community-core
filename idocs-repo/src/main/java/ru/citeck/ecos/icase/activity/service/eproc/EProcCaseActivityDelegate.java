@@ -93,7 +93,8 @@ public class EProcCaseActivityDelegate implements CaseActivityDelegate {
         listenerManager.beforeStartedActivity(activityRef);
         listenerManager.onStartedActivity(activityRef);
 
-        eprocActivityService.saveState(eprocActivityService.getFullState(activityRef.getProcessId()));
+        eprocActivityService.saveState(eprocActivityService.getFullState(activityRef.getProcessId())
+            .orElseThrow(() -> new IllegalStateException("State is not found")));
     }
 
     private boolean needResetBeforeStart(ActivityInstance instance) {
@@ -131,7 +132,9 @@ public class EProcCaseActivityDelegate implements CaseActivityDelegate {
         listenerManager.beforeStoppedActivity(activityRef);
         listenerManager.onStoppedActivity(activityRef);
 
-        eprocActivityService.saveState(eprocActivityService.getFullState(caseRef));
+        eprocActivityService.saveState(eprocActivityService.getFullState(caseRef)
+            .orElseThrow(() -> new IllegalStateException("Full state can't be found. CaseRef: "
+                + caseRef + " activity: " + instance)));
     }
 
     private boolean transitionIsNotAllowed(ActivityInstance instance, ActivityTransitionDefinition transitionDefinition) {

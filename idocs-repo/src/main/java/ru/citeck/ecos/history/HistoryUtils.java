@@ -34,7 +34,14 @@ public class HistoryUtils {
     public static final Serializable CHILD_ASSOC_ADDED = "child.assoc.added";
     public static final Serializable CHILD_ASSOC_REMOVED = "child.assoc.removed";
 
-    public static Map<QName, Serializable> eventProperties(Serializable name, Serializable assocDocument, Serializable propertyName, Serializable propertyValue, Serializable taskComment, Serializable propTargetNodeType, Serializable propTargetNodeKind) {
+    public static Map<QName, Serializable> eventProperties(Serializable name,
+                                                           Serializable assocDocument,
+                                                           Serializable propertyName,
+                                                           Serializable propertyValue,
+                                                           Serializable taskComment,
+                                                           Serializable propTargetNodeType,
+                                                           Serializable propTargetNodeKind) {
+
         Map<QName, Serializable> eventProperties = new HashMap<>(7);
         eventProperties.put(HistoryModel.PROP_NAME, name);
         eventProperties.put(HistoryModel.ASSOC_DOCUMENT, assocDocument);
