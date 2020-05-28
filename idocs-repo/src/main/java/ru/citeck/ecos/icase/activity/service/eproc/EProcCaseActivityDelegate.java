@@ -269,13 +269,14 @@ public class EProcCaseActivityDelegate implements CaseActivityDelegate {
             instances = new ArrayList<>();
         }
 
+        List<ActivityInstance> foundedInstances = new ArrayList<>();
         if (recurse) {
             for (ActivityInstance childInstance : instances) {
-                instances.addAll(getActivitiesImpl(childInstance, true));
+                foundedInstances.addAll(getActivitiesImpl(childInstance, true));
             }
         }
 
-        return instances;
+        return foundedInstances;
     }
 
     @Override
