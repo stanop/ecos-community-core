@@ -26,8 +26,8 @@ public class ActivityEventTriggeringListener implements
         OnStartedActivityListener,
         OnStoppedActivityListener {
 
-    private static final String ACTIVITY_EVENT_TRIGGER_DATA_KEY = "case-activity-event-trigger-data";
-    private static final String STAGE_CHILDREN_COMPLETED_TXN_KEY = "case-activity-stage-children-completed";
+    private static final String ACTIVITY_EVENT_TRIGGER_DATA_KEY = "eproc-case-activity-event-trigger-data";
+    private static final String STAGE_CHILDREN_COMPLETED_TXN_KEY = "eproc-case-activity-stage-children-completed";
     private static final int STAGE_COMPLETE_LIMIT = 40;
 
     private EProcCaseActivityListenerManager manager;
