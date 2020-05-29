@@ -59,7 +59,6 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
             new OrderedBehaviour(this, "onCreateNode", Behaviour.NotificationFrequency.TRANSACTION_COMMIT, order));
     }
 
-
     @Override
     public void onCreateNode(ChildAssociationRef childAssocRef) {
         if (logger.isDebugEnabled()) {

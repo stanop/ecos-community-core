@@ -88,7 +88,7 @@ public class EProcCaseImporter {
 
         Definitions definitions = optimizedProcessDefinition.getXmlProcessDefinition();
         if (definitions == null || CollectionUtils.isEmpty(definitions.getCase())) {
-            throw new RuntimeException("Definition is absent for caseRef=" + caseRef);
+            throw new RuntimeException("Definition is absent for caseRef = " + caseRef);
         }
 
         Case caseItem = definitions.getCase().get(0);

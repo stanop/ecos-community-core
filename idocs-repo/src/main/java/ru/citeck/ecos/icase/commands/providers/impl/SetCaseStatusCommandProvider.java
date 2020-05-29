@@ -48,8 +48,12 @@ public class SetCaseStatusCommandProvider extends AlfEprocCaseCommandsProvider {
 
         NodeRef activityNodeRef = alfActivityUtils.getActivityNodeRef(activityRef);
         NodeRef statusRef = RepoUtils.getFirstTargetAssoc(activityNodeRef, ActionModel.SetCaseStatus.ASSOC_STATUS, nodeService);
-        String statusName = (String) nodeService.getProperty(statusRef, ContentModel.PROP_NAME);
 
+        if (statusRef == null) {
+            throw new IllegalStateException("Status is not found in activity: " + activityRef);
+        }
+
+        String statusName = (String) nodeService.getProperty(statusRef, ContentModel.PROP_NAME);
         return new SetCaseStatusCommand(caseRef, statusName);
     }
 
@@ -63,5 +67,4 @@ public class SetCaseStatusCommandProvider extends AlfEprocCaseCommandsProvider {
 
         return new SetCaseStatusCommand(caseRef, statusName);
     }
-
 }

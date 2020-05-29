@@ -74,11 +74,13 @@ public class EcosTypeService {
     }
 
     public RecordRef getEcosType(NodeRef nodeRef) {
-        return evaluators.eval(nodeRef);
+        RecordRef result = evaluators.eval(nodeRef);
+        return result != null ? result : RecordRef.EMPTY;
     }
 
     public RecordRef getEcosType(AlfNodeInfo nodeInfo) {
-        return evaluators.eval(nodeInfo);
+        RecordRef result = evaluators.eval(nodeInfo);
+        return result != null ? result : RecordRef.EMPTY;
     }
 
     public List<RecordRef> getDescendantTypes(RecordRef typeRef) {
