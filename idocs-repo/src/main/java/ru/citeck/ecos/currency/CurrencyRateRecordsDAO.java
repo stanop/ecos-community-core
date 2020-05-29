@@ -110,7 +110,7 @@ public class CurrencyRateRecordsDAO extends LocalRecordsDAO implements
     private RecordMeta composeCurrencyRecordMeta(String id, CurrencyRateRecord currencyRate) {
         RecordMeta recordMeta = new RecordMeta(id);
 
-        recordMeta.set("_type", "idocs:currencyRateRecord");
+        recordMeta.set("type", "idocs:currencyRateRecord");
         recordMeta.set("_parent", "/app:company_home/app:dictionary/cm:dataLists/cm:currency-rates");
         recordMeta.set("_parentAtt", "cm:contains");
 

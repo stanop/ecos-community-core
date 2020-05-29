@@ -52,8 +52,6 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter<Predi
     private static final String CURRENT_USER = "$CURRENT";
     private static final int INNER_QUERY_MAX_ITEMS = 20;
 
-    private static final String MODIFIER_ATTRIBUTE = "_modifier";
-    private static final String MODIFIED_ATTRIBUTE = "_modified";
     private static final String CM_MODIFIED_ATTRIBUTE = "cm:modified";
     private static final String CM_MODIFIER_ATTRIBUTE = "cm:modifier";
     private static final String ACTORS_ATTRIBUTE = "_actors";
@@ -137,11 +135,16 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter<Predi
 
                     break;
                 case "TYPE":
-                case "_type":
+                case "type":
+
                     consumeQName(valueStr, query::type);
+
                     break;
+                case "_type":
                 case "_etype":
+
                     handleETypeAttribute(query, valueStr);
+
                     break;
                 case "ASPECT":
                 case "aspect":
@@ -322,6 +325,8 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter<Predi
             String attribute = ((EmptyPredicate) predicate).getAttribute();
             consumeQueryField(attribute, query::empty);
 
+        } else if (predicate instanceof VoidPredicate) {
+            //do nothing
         } else {
             throw new RuntimeException("Unknown predicate type: " + predicate);
         }
@@ -534,6 +539,10 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter<Predi
 
     @Override
     public String convert(Predicate predicate) {
+
+        if (predicate instanceof VoidPredicate) {
+            return "";
+        }
 
         FTSQuery query = FTSQuery.createRaw();
         processPredicate(predicate, query);

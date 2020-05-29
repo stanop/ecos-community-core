@@ -512,7 +512,17 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
         QName typeQName;
 
-        String type = record.getAttribute(RecordConstants.ATT_TYPE, "");
+        String type = record.getAttribute(AlfNodeRecord.ATTR_TYPE, "");
+        if (type.isEmpty()) {
+            type = record.getAttribute(AlfNodeRecord.ATTR_TYPE_UPPER, "");
+        }
+        if (type.isEmpty()) {
+            type = record.getAttribute(RecordConstants.ATT_TYPE, "");
+            if (type.startsWith("emodel")) {
+                type = "";
+            }
+        }
+
         if (!type.isEmpty()) {
             typeQName = QName.resolveToQName(namespaceService, type);
         } else {

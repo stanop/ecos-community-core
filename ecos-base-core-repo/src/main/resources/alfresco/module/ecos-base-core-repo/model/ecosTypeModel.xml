@@ -26,6 +26,9 @@
             </properties>
         </aspect>
 
+        <aspect name="etype:tenantSite">
+        </aspect>
+
         <aspect name="etype:typeRootAspect">
             <properties>
                 <property name="etype:rootForType">

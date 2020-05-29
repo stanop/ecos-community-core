@@ -228,6 +228,7 @@ public class EcosTypeService {
         }
 
         NodeRef siteRoot = site.getNodeRef();
+        nodeService.addAspect(siteRoot, EcosTypeModel.ASPECT_TENANT_SITE, new HashMap<>());
 
         NodeRef typesFolder = findOrCreateFolder(
             siteRoot,

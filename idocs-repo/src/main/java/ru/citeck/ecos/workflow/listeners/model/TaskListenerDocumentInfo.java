@@ -5,7 +5,7 @@ import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
 
 @Data
 public class TaskListenerDocumentInfo {
-    @MetaAtt("_type")
+    @MetaAtt("type")
     private String documentType;
 
     @MetaAtt("icase:caseStatusAssoc.cm:name")

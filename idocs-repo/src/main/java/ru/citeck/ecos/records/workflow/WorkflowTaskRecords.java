@@ -20,7 +20,7 @@ import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.document.CounterpartyResolver;
 import ru.citeck.ecos.document.sum.DocSumService;
 import ru.citeck.ecos.node.EcosTypeService;
-import ru.citeck.ecos.records.RecordConstants;
+import ru.citeck.ecos.records.AlfRecordConstants;
 import ru.citeck.ecos.records.models.AuthorityDTO;
 import ru.citeck.ecos.records.models.UserDTO;
 import ru.citeck.ecos.records2.QueryContext;
@@ -447,7 +447,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                         customAttributes.add(ATT_DOC_STATUS);
                         break;
                     case ATT_DOC_TYPE:
-                        documentAttributes.put(ATT_DOC_TYPE, "_type");
+                        documentAttributes.put(ATT_DOC_TYPE, "type");
                         customAttributes.add(ATT_DOC_TYPE);
                         break;
                     default:
@@ -515,7 +515,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 return new InnerMetaValue(node);
             }
 
-            if (RecordConstants.ATT_FORM_KEY.equals(name)) {
+            if (AlfRecordConstants.ATT_FORM_KEY.equals(name)) {
                 String formKey = taskInfo.getFormKey();
                 if (StringUtils.isBlank(formKey)) {
                     return null;

@@ -175,7 +175,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
 
     public class UserValue implements MetaValue {
 
-        private AlfNodeRecord alfNode;
+        private final AlfNodeRecord alfNode;
         private String userName;
         private UserAuthorities userAuthorities;
 
@@ -252,19 +252,22 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
                     return authorityService.isAdminAuthority(userName);
                 case PROP_AUTHORITIES:
                     return getUserAuthorities();
-                case RecordConstants.ATT_ECOS_TYPE:
-                    return ETYPE;
                 case "nodeRef":
                     return alfNode != null ? alfNode.getId() : null;
             }
 
             return alfNode.getAttribute(name, field);
         }
+
+        @Override
+        public RecordRef getRecordType() {
+            return ETYPE;
+        }
     }
 
     private class UserAuthorities implements MetaValue {
 
-        private String userName;
+        private final String userName;
         private Set<String> authorities;
 
         UserAuthorities(String userName) {

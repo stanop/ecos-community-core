@@ -49,6 +49,9 @@ import java.util.stream.Collectors;
 public class AlfNodeRecord implements MetaValue {
 
     public static final String ATTR_DOC_SUM = "docSum";
+    public static final String ATTR_TYPE = "type";
+    public static final String ATTR_TYPE_UPPER = "TYPE";
+
     private static final String ATTR_UI_TYPE = "uiType";
     private static final String ATTR_ASPECTS = "attr:aspects";
     private static final String ATTR_IS_DOCUMENT = "attr:isDocument";
@@ -58,20 +61,17 @@ public class AlfNodeRecord implements MetaValue {
     private static final String ATTR_PENDING_UPDATE = "pendingUpdate";
     private static final String ATTR_VERSION = "version";
     private static final String ATTR_CASE_STATUS = "caseStatus";
-    private static final String ATTR_MODIFIER = "_modifier";
-    private static final String ATTR_MODIFIED = "_modified";
     private static final String ATTR_CM_MODIFIED = "cm:modified";
     private static final String CASE_STATUS_NAME_SCHEMA = "icase:caseStatusAssoc.cm:name";
     private static final String ASSOC_SRC_ATTR_PREFIX = "assoc_src_";
     private static final String CONTENT_ATTRIBUTE_NAME = "_content";
     private static final String CM_CONTENT_ATTRIBUTE_NAME = "cm:content";
     private static final String PEOPLE_SOURCE_ID = "people";
-    private static final String ATTR_ETYPE = "_etype";
     private static final String VIRTUAL_SCRIPT_ATTS_ID = "virtualScriptAttributesProvider";
     private static final String DEFAULT_VERSION_LABEL = "1.0";
 
     private NodeRef nodeRef;
-    private RecordRef recordRef;
+    private final RecordRef recordRef;
     private GqlAlfNode node;
     private AlfGqlContext context;
 
@@ -163,7 +163,7 @@ public class AlfNodeRecord implements MetaValue {
 
             name = CM_CONTENT_ATTRIBUTE_NAME;
 
-        } else if (StringUtils.equals(ATTR_MODIFIED, name)) {
+        } else if (StringUtils.equals(RecordConstants.ATT_MODIFIED, name)) {
 
             name = ATTR_CM_MODIFIED;
 
@@ -180,7 +180,7 @@ public class AlfNodeRecord implements MetaValue {
                 attribute = Collections.singletonList(new AlfNodeAttValue(utils.getUITypeForRecord(recordRef)));
                 break;
 
-            case ATTR_MODIFIER: {
+            case RecordConstants.ATT_MODIFIER: {
                 NodeRef nodeRef = new NodeRef(node.nodeRef());
                 String propertyValue = (String) context.getNodeService().getProperty(nodeRef,
                     ContentModel.PROP_MODIFIER);
@@ -192,7 +192,8 @@ public class AlfNodeRecord implements MetaValue {
                 return null;
             }
 
-            case RecordConstants.ATT_TYPE:
+            case ATTR_TYPE:
+            case ATTR_TYPE_UPPER:
 
                 attribute = MetaUtils.toMetaValues(node.type(), context, field);
                 break;

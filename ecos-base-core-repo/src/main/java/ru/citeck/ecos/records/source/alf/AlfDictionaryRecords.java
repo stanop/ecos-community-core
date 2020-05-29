@@ -5,6 +5,7 @@ import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.graphql.AlfGqlContext;
+import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
 import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records2.RecordMeta;
@@ -31,7 +32,7 @@ public class AlfDictionaryRecords extends LocalRecordsDAO
 
     public static final String ID = "dict";
 
-    private AlfNodesRecordsDAO alfNodesRecordsDAO;
+    private final AlfNodesRecordsDAO alfNodesRecordsDAO;
     private NamespaceService namespaceService;
 
     @Autowired
@@ -55,7 +56,7 @@ public class AlfDictionaryRecords extends LocalRecordsDAO
 
         RecordsMutation alfNodesMut = new RecordsMutation(mutation, m -> {
             RecordMeta alfNodeMeta = new RecordMeta(m, id -> RecordRef.EMPTY);
-            alfNodeMeta.setAttribute(RecordConstants.ATT_TYPE, m.getId().getId());
+            alfNodeMeta.setAttribute(AlfNodeRecord.ATTR_TYPE, m.getId().getId());
             return alfNodeMeta;
         });
         return alfNodesRecordsDAO.mutate(alfNodesMut);
@@ -73,9 +74,9 @@ public class AlfDictionaryRecords extends LocalRecordsDAO
 
     public static class DictRecord implements MetaValue {
 
-        private QName fullName;
-        private String formKey;
-        private String shortName;
+        private final QName fullName;
+        private final String formKey;
+        private final String shortName;
 
         private AlfGqlContext context;
         private DictUtils dictUtils;

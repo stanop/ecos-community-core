@@ -10,7 +10,7 @@ import ru.citeck.ecos.icase.completeness.CaseCompletenessService;
 import ru.citeck.ecos.icase.completeness.dto.CaseDocumentDto;
 import ru.citeck.ecos.journals.CreateVariant;
 import ru.citeck.ecos.journals.variants.resolver.CreateVariantsResolver;
-import ru.citeck.ecos.records.RecordConstants;
+import ru.citeck.ecos.records.AlfRecordConstants;
 import ru.citeck.ecos.records2.RecordRef;
 
 import java.util.*;
@@ -59,10 +59,10 @@ public class CaseDocumentsCreateVariantsResolver implements CreateVariantsResolv
             createVariant.setTitle(title);
 
             Map<String, String> attributes = new HashMap<>();
-            attributes.put(RecordConstants.ATT_PARENT, recordRef.toString());
-            attributes.put(RecordConstants.ATT_PARENT_ATT, ICASE_DOCUMENTS_ATTRIBUTE);
-            attributes.put(RecordConstants.ATT_TK_TYPE, convertTypeToTKType(documentType));
-            attributes.put(RecordConstants.ATT_TK_KIND, convertTypeToTKKind(documentType));
+            attributes.put(AlfRecordConstants.ATT_PARENT, recordRef.toString());
+            attributes.put(AlfRecordConstants.ATT_PARENT_ATT, ICASE_DOCUMENTS_ATTRIBUTE);
+            attributes.put(AlfRecordConstants.ATT_TK_TYPE, convertTypeToTKType(documentType));
+            attributes.put(AlfRecordConstants.ATT_TK_KIND, convertTypeToTKKind(documentType));
             createVariant.setAttributes(attributes);
 
             resultVariants.add(createVariant);
