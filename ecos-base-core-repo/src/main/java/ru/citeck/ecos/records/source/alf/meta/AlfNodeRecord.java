@@ -192,6 +192,16 @@ public class AlfNodeRecord implements MetaValue {
                 return null;
             }
 
+            case "_etype":
+
+                MetaValue metaValue = this.getMetaValueForEcosType(field);
+                if (metaValue == null) {
+                    attribute = null;
+                } else {
+                    attribute = Collections.singletonList(metaValue);
+                }
+                break;
+
             case ATTR_TYPE:
             case ATTR_TYPE_UPPER:
 
@@ -321,6 +331,20 @@ public class AlfNodeRecord implements MetaValue {
         }
 
         return attribute != null ? attribute : Collections.emptyList();
+    }
+
+    private MetaValue getMetaValueForEcosType(MetaField field) {
+        NodeRef nodeRef = new NodeRef(node.nodeRef());
+        EcosTypeService ecosTypeService = context.getService(EcosTypeService.QNAME);
+        RecordRef etypeRecordRef = ecosTypeService.getEcosType(nodeRef);
+        if (etypeRecordRef == null) {
+            return null;
+        }
+        MetaValue metaValue = context.getServiceFactory()
+            .getMetaValuesConverter()
+            .toMetaValue(etypeRecordRef);
+        metaValue.init(context, field);
+        return metaValue;
     }
 
     private String getCaseStatusName(RecordsService recordsService) {
