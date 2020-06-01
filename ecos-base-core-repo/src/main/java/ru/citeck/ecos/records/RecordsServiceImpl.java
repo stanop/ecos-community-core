@@ -5,10 +5,7 @@ import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.ActionStatus;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.records.source.dao.*;
-import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.RecordRef;
-import ru.citeck.ecos.records2.meta.RecordsMetaService;
-import ru.citeck.ecos.records2.resolver.RecordsResolver;
 import ru.citeck.ecos.records2.RecordsServiceFactory;
 import ru.citeck.ecos.records2.source.dao.*;
 
@@ -18,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class RecordsServiceImpl extends ru.citeck.ecos.records2.RecordsServiceImpl {
 
-    private Map<String, RecordsActionExecutor> actionExecutors = new ConcurrentHashMap<>();
+    private final Map<String, RecordsActionExecutor> actionExecutors = new ConcurrentHashMap<>();
 
     public RecordsServiceImpl(RecordsServiceFactory factory) {
         super(factory);
@@ -49,7 +46,7 @@ public class RecordsServiceImpl extends ru.citeck.ecos.records2.RecordsServiceIm
     }
 
     @Override
-    public void register(RecordsDAO recordsSource) {
+    public void register(RecordsDao recordsSource) {
 
         super.register(recordsSource);
 

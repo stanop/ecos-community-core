@@ -193,7 +193,7 @@ public class EcosTypeService {
         }
 
         while (typeDto != null && !action.apply(typeDto)) {
-            typeDto = typeDto.getParent() != null ? typesManager.getType(typeDto.getParent()) : null;
+            typeDto = typeDto.getParentRef() != null ? typesManager.getType(typeDto.getParentRef()) : null;
         }
     }
 

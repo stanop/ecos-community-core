@@ -27,9 +27,9 @@ public class TypeDto {
     private MLText description;
     private String tenant;
     private String sourceId;
-    private RecordRef parent;
-    private RecordRef form;
-    private RecordRef journal;
+    private RecordRef parentRef;
+    private RecordRef formRef;
+    private RecordRef journalRef;
     private RecordRef numTemplateRef;
     private boolean system;
     private String dashboardType;
@@ -47,7 +47,7 @@ public class TypeDto {
 
     private ObjectData attributes = ObjectData.create();
 
-    private RecordRef configForm;
+    private RecordRef configFormRef;
     private ObjectData config = ObjectData.create();
 
     @MetaAtt(RecordConstants.ATT_ECOS_TYPE)

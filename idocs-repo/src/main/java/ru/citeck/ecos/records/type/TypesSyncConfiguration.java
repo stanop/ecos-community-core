@@ -8,7 +8,7 @@ import ru.citeck.ecos.commands.CommandsService;
 import ru.citeck.ecos.commands.dto.CommandResult;
 import ru.citeck.ecos.commons.data.ObjectData;
 import ru.citeck.ecos.records2.RecordRef;
-import ru.citeck.ecos.records2.source.dao.local.RemoteSyncRecordsDAO;
+import ru.citeck.ecos.records2.source.dao.local.RemoteSyncRecordsDao;
 
 @Slf4j
 @Configuration
@@ -18,30 +18,30 @@ public class TypesSyncConfiguration {
     private CommandsService commandsService;
 
     @Bean
-    public RemoteSyncRecordsDAO<TypeDto> createRemoteTypesSyncRecordsDao() {
-        return new RemoteSyncRecordsDAO<>("emodel/type", TypeDto.class);
+    public RemoteSyncRecordsDao<TypeDto> createRemoteTypesSyncRecordsDao() {
+        return new RemoteSyncRecordsDao<>("emodel/type", TypeDto.class);
     }
 
     @Bean
-    public RemoteSyncRecordsDAO<NumTemplateDto> createRemoteNumTemplatesSyncRecordsDao() {
-        return new RemoteSyncRecordsDAO<>("emodel/num-template", NumTemplateDto.class);
+    public RemoteSyncRecordsDao<NumTemplateDto> createRemoteNumTemplatesSyncRecordsDao() {
+        return new RemoteSyncRecordsDao<>("emodel/num-template", NumTemplateDto.class);
     }
 
     @Bean
     public TypesManager createInfoProvider() {
 
-        RemoteSyncRecordsDAO<TypeDto> typesDao = createRemoteTypesSyncRecordsDao();
-        RemoteSyncRecordsDAO<NumTemplateDto> numTemplatesDao = createRemoteNumTemplatesSyncRecordsDao();
+        RemoteSyncRecordsDao<TypeDto> typesDao = createRemoteTypesSyncRecordsDao();
+        RemoteSyncRecordsDao<NumTemplateDto> numTemplatesDao = createRemoteNumTemplatesSyncRecordsDao();
 
         return new TypesManager() {
 
             @Override
             public TypeDto getType(RecordRef typeRef) {
-                return typesDao.getRecord(typeRef);
+                return typesDao.getRecord(typeRef).orElse(null);
             }
             @Override
             public NumTemplateDto getNumTemplate(RecordRef templateRef) {
-                return numTemplatesDao.getRecord(templateRef);
+                return numTemplatesDao.getRecord(templateRef).orElse(null);
             }
 
             @Override
