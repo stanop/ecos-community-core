@@ -61,7 +61,6 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
     private static final String DOCUMENT_FIELD_PREFIX = "_ECM_";
     private static final String OUTCOME_PREFIX = "outcome_";
-    private static final String WORKFLOW_PREFIX = "workflow@";
 
     private static final String ID = "wftask";
 
@@ -297,22 +296,10 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         return null;
     }
 
-    private void handleQuery(TasksQuery tasksQuery) {
-
-        String document = tasksQuery.getDocument();
-        if (StringUtils.isNotEmpty(document)) {
-            tasksQuery.setWorkflowId(document.replaceAll(WORKFLOW_PREFIX, StringUtils.EMPTY));
-            tasksQuery.setDocument(StringUtils.EMPTY);
-        }
-    }
-
     @Override
     public RecordsQueryResult<RecordRef> getLocalRecords(RecordsQuery query) {
 
         WorkflowTaskRecords.TasksQuery tasksQuery = query.getQuery(WorkflowTaskRecords.TasksQuery.class);
-
-        handleQuery(tasksQuery);
-
         //try to search by workflow service to avoid problems with solr
         List<WorkflowTask> tasks = getRecordsByWfService(tasksQuery);
 
@@ -527,6 +514,10 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 return new InnerMetaValue(node);
             }
 
+            if (this.taskInfo == null) {
+                return null;
+            }
+
             if (AlfRecordConstants.ATT_FORM_KEY.equals(name)) {
                 String formKey = taskInfo.getFormKey();
                 if (StringUtils.isBlank(formKey)) {
@@ -551,6 +542,9 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
             switch (name) {
                 case ATT_WORKFLOW:
+                    if (this.taskInfo.getWorkflow() == null) {
+                        return null;
+                    }
                     return RecordRef.create(ATT_WORKFLOW, this.taskInfo.getWorkflow().getId());
                 case ATT_SENDER:
                     String userName = (String) attributes.get("cwf_sender");

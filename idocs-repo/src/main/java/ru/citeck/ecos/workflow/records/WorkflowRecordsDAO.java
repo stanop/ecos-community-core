@@ -99,14 +99,14 @@ public class WorkflowRecordsDAO extends LocalRecordsDAO
         RecordsMutResult result = new RecordsMutResult();
 
         List<RecordMeta> handledMeta = mutation.getRecords().stream()
-            .map(this::handleMeta)
+            .map(this::cancelWorkflow)
             .collect(Collectors.toList());
 
         result.setRecords(handledMeta);
         return result;
     }
 
-    private RecordMeta handleMeta(RecordMeta meta) {
+    private RecordMeta cancelWorkflow(RecordMeta meta) {
         if (meta.hasAttribute("id") && meta.hasAttribute("cancel")) {
             boolean cancel = meta.getAttribute("cancel").asBoolean();
             if (cancel) {
