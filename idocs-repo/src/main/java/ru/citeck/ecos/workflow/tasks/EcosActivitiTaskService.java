@@ -19,6 +19,7 @@ import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -283,9 +284,18 @@ public class EcosActivitiTaskService implements EngineTaskService {
         }
 
         @Override
+        @Nullable
         public WorkflowInstance getWorkflow() {
             WorkflowTask wfTask = workflowService.getTaskById(ENGINE_PREFIX + this.getId());
+            if (wfTask == null) {
+                return null;
+            }
+
             WorkflowPath wfPath = wfTask.getPath();
+            if (wfPath == null) {
+                return null;
+            }
+
             return wfPath.getInstance();
         }
     }

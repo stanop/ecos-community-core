@@ -20,8 +20,8 @@ import ru.citeck.ecos.records2.request.mutation.RecordsMutResult;
 import ru.citeck.ecos.records2.request.mutation.RecordsMutation;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records2.source.dao.MutableRecordsDAO;
-import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
+import ru.citeck.ecos.records2.source.dao.MutableRecordsDao;
+import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDao;
 import ru.citeck.ecos.records2.source.dao.local.v2.LocalRecordsMetaDAO;
 import ru.citeck.ecos.records2.source.dao.local.v2.LocalRecordsQueryWithMetaDAO;
 import ru.citeck.ecos.workflow.EcosWorkflowService;
@@ -31,10 +31,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class WorkflowRecordsDAO extends LocalRecordsDAO
-    implements LocalRecordsQueryWithMetaDAO<WorkflowRecordsDAO.WorkflowRecord>,
-    LocalRecordsMetaDAO<WorkflowRecordsDAO.WorkflowRecord>,
-    MutableRecordsDAO {
+public class WorkflowRecordsDao extends LocalRecordsDao
+    implements LocalRecordsQueryWithMetaDAO<WorkflowRecordsDao.WorkflowRecord>,
+    LocalRecordsMetaDAO<WorkflowRecordsDao.WorkflowRecord>,
+    MutableRecordsDao {
 
     private static final String ID = "workflow";
     private static final int MIN_RECORDS_SIZE = 0;
@@ -45,7 +45,7 @@ public class WorkflowRecordsDAO extends LocalRecordsDAO
     private final NodeService nodeService;
 
     @Autowired
-    public WorkflowRecordsDAO(EcosWorkflowService ecosWorkflowService,
+    public WorkflowRecordsDao(EcosWorkflowService ecosWorkflowService,
                               NodeService nodeService) {
         setId(ID);
         this.ecosWorkflowService = ecosWorkflowService;
@@ -69,7 +69,7 @@ public class WorkflowRecordsDAO extends LocalRecordsDAO
 
         RecordsQueryResult<WorkflowRecord> result = new RecordsQueryResult<>();
 
-        WorkflowRecordsDAO.WorkflowQuery queryData = recordsQuery.getQuery(WorkflowRecordsDAO.WorkflowQuery.class);
+        WorkflowRecordsDao.WorkflowQuery queryData = recordsQuery.getQuery(WorkflowRecordsDao.WorkflowQuery.class);
 
         WorkflowInstanceQuery query = new WorkflowInstanceQuery();
         if (queryData != null && queryData.active != null) {
@@ -94,7 +94,7 @@ public class WorkflowRecordsDAO extends LocalRecordsDAO
     }
 
     @Override
-    public RecordsMutResult mutate(RecordsMutation mutation) {
+    public RecordsMutResult mutateImpl(RecordsMutation mutation) {
 
         RecordsMutResult result = new RecordsMutResult();
 
@@ -136,8 +136,6 @@ public class WorkflowRecordsDAO extends LocalRecordsDAO
         @Override
         public Object getAttribute(String name, MetaField field) {
             switch (name) {
-                case "_etype":
-                    return RecordRef.create("emodel", "type", "workflow");
                 case "previewInfo":
                     WorkflowContentInfo contentInfo = new WorkflowContentInfo();
                     String url = "/share/proxy/alfresco/api/workflow-instances/" + instance.getId() + "/diagram";
@@ -148,6 +146,11 @@ public class WorkflowRecordsDAO extends LocalRecordsDAO
                     return nodeService.getProperty(wfPackageNodeRef, CiteckWorkflowModel.PROP_ATTACHED_DOCUMENT);
             }
             return null;
+        }
+
+        @Override
+        public RecordRef getRecordType() {
+            return RecordRef.create("emodel", "type", "workflow");
         }
     }
 

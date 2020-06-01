@@ -37,8 +37,8 @@ import ru.citeck.ecos.records2.request.mutation.RecordsMutResult;
 import ru.citeck.ecos.records2.request.mutation.RecordsMutation;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records2.source.dao.MutableRecordsDAO;
-import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
+import ru.citeck.ecos.records2.source.dao.MutableRecordsDao;
+import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDao;
 import ru.citeck.ecos.records2.source.dao.local.RecordsMetaLocalDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsQueryLocalDAO;
 import ru.citeck.ecos.utils.AuthorityUtils;
@@ -54,9 +54,9 @@ import java.util.stream.Collectors;
 import static ru.citeck.ecos.records.workflow.WorkflowTaskRecordsConstants.*;
 
 @Component
-public class WorkflowTaskRecords extends LocalRecordsDAO
+public class WorkflowTaskRecords extends LocalRecordsDao
     implements RecordsMetaLocalDAO<MetaValue>,
-    MutableRecordsDAO,
+    MutableRecordsDao,
     RecordsQueryLocalDAO {
 
     private static final String DOCUMENT_FIELD_PREFIX = "_ECM_";
