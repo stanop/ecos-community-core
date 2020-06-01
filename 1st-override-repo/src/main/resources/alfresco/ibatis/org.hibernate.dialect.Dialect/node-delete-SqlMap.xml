@@ -6,13 +6,15 @@
 
     <delete id="delete_NodesByTxnCommitTime" parameterType="TransactionQuery">
         <![CDATA[
-        delete from alf_node
+        delete from alf_node node
         where
-            type_qname_id = #{typeQNameId} and
-            transaction_id <=
-            (
-                select max(txn.id) from alf_transaction txn
+            node.type_qname_id = #{typeQNameId} and
+            exists (
+                select 1
+                from
+                    alf_transaction txn
                 where
+                    node.transaction_id = txn.id and
                     txn.commit_time_ms >= #{minCommitTime} and
                     txn.commit_time_ms < #{maxCommitTime}
             )
