@@ -4,7 +4,6 @@ import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.site.SiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
@@ -73,11 +72,14 @@ public class SiteRecordsDAO extends LocalRecordsDAO
             switch (name) {
                 case "uiType":
                     return newUIUtils.getUITypeForRecord(RecordRef.create(ID, id));
-                case RecordConstants.ATT_ECOS_TYPE:
-                    return RecordRef.create("emodel", "type", "site");
             }
 
             return null;
+        }
+
+        @Override
+        public RecordRef getRecordType() {
+            return RecordRef.create("emodel", "type", "site");
         }
 
         @Override
