@@ -77,6 +77,8 @@ public class SiteRecordsDAO extends LocalRecordsDAO
                     return "site-dashboard";
                 case "uiType":
                     return newUIUtils.getUITypeForRecord(RecordRef.create(ID, id));
+                case RecordConstants.ATT_ECOS_TYPE:
+                    return RecordRef.create("emodel", "type", "site");
             }
 
             return null;
