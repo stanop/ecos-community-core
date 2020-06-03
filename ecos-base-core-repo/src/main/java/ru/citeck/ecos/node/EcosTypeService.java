@@ -154,22 +154,10 @@ public class EcosTypeService {
     }
 
     public void forEachAscRef(RecordRef typeRef, Function<RecordRef, Boolean> action) {
-
-        if (action.apply(typeRef)) {
-            return;
-        }
-
-        TypeParents typeInfo = recordsService.getMeta(typeRef, TypeParents.class);
-        if (typeInfo == null || typeInfo.parents == null) {
-            log.error("ECOS type parents can't be resolved");
-            return;
-        }
-
-        for (RecordRef parentRef : typeInfo.parents) {
-            if (action.apply(parentRef)) {
-                return;
-            }
-        }
+        forEachAsc(typeRef, dto -> {
+            RecordRef ref = RecordRef.create("emodel", "type", dto.getId());
+            return action.apply(ref);
+        });
     }
 
     private List<RecordRef> getChildren(RecordRef typeRef) {
