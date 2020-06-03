@@ -6,6 +6,7 @@
     <version>1.0</version>
 
     <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
         <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
     </imports>
 
@@ -14,6 +15,7 @@
     </namespaces>
 
     <aspects>
+
         <aspect name="etype:hasType">
             <properties>
                 <property name="etype:type">
@@ -23,6 +25,33 @@
                 </property>
             </properties>
         </aspect>
+
+        <aspect name="etype:tenantSite">
+        </aspect>
+
+        <aspect name="etype:typeRootAspect">
+            <properties>
+                <property name="etype:rootForType">
+                    <title>Root for type</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+            </properties>
+            <mandatory-aspects>
+                <aspect>etype:hasTenant</aspect>
+            </mandatory-aspects>
+        </aspect>
+
+        <aspect name="etype:hasTenant">
+            <properties>
+                <property name="etype:tenant">
+                    <title>Tenant</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+            </properties>
+        </aspect>
+
     </aspects>
 
 </model>
