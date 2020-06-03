@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.icase.completeness.CaseCompletenessService;
+import ru.citeck.ecos.node.EcosTypeService;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
@@ -49,6 +50,7 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
     private final DictUtils dictUtils;
     private final CaseCompletenessService caseCompletenessService;
     private final SearchService searchService;
+    private final EcosTypeService ecosTypeService;
 
     private final Map<QName, Map<RecordRef, QName>> assocTypesRegistry = new ConcurrentHashMap<>();
     private final LoadingCache<QName, Map<RecordRef, QName>> assocTypesByCaseAlfTypeCache;
@@ -56,12 +58,14 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
     @Autowired
     public CaseDocumentRecordsDAO(@Qualifier("caseCompletenessService")
                                       CaseCompletenessService caseCompletenessService,
+                                  EcosTypeService ecosTypeService,
                                   SearchService searchService,
                                   NodeService nodeService,
                                   NodeUtils nodeUtils,
                                   DictUtils dictUtils) {
         setId(ID);
         this.caseCompletenessService = caseCompletenessService;
+        this.ecosTypeService = ecosTypeService;
         this.searchService = searchService;
         this.nodeService = nodeService;
         this.nodeUtils = nodeUtils;
@@ -173,6 +177,18 @@ public class CaseDocumentRecordsDAO extends LocalRecordsDAO implements LocalReco
             Set<DocInfo> docsSet = docsByType.computeIfAbsent(type, t -> new HashSet<>());
             docs.stream().filter(d -> !allDocuments.contains(d)).forEach(docsSet::add);
         });
+
+        Set<RecordRef> typeRefs = new HashSet<>(docsByType.keySet());
+        for (RecordRef typeRef : typeRefs) {
+            Set<DocInfo> documents = docsByType.get(typeRef);
+            ecosTypeService.forEachAscRef(typeRef, ref -> {
+                if (typeRef == null || typeRef.getId().isEmpty() || typeRef.equals(ref)) {
+                    return false;
+                }
+                docsByType.computeIfAbsent(ref, t -> new HashSet<>()).addAll(documents);
+                return false;
+            });
+        }
 
         Map<RecordRef, List<DocInfo>> orderedDocsByType = new HashMap<>();
         docsByType.forEach((type, docs) -> {
