@@ -1,6 +1,7 @@
 package ru.citeck.ecos.records.source.alf.meta;
 
 import lombok.Getter;
+import lombok.NonNull;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.MLPropertyInterceptor;
 import org.alfresco.service.cmr.repository.MLText;
@@ -107,13 +108,13 @@ public class AlfNodeRecord implements MetaValue {
     }
 
     @Override
-    public boolean has(String name) {
+    public boolean has(@NonNull String name) {
 
         if (RecordConstants.ATT_DOC_NUM.equals(name)) {
             name = EcosModel.PROP_DOC_NUM.toPrefixString(context.getNamespaceService());
         }
 
-        if (StringUtils.isNotEmpty(name) && name.contains(ASSOC_SRC_ATTR_PREFIX)) {
+        if (StringUtils.isNotEmpty(name) && name.startsWith(ASSOC_SRC_ATTR_PREFIX)) {
             List<MetaValue> sourceAssocs = getSourceAssocs(node.nodeRef(), name, null);
             return CollectionUtils.isNotEmpty(sourceAssocs);
         }
