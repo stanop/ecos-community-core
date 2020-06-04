@@ -108,7 +108,7 @@ public class AlfNodeRecord implements MetaValue {
     }
 
     @Override
-    public boolean has(@NonNull String name) {
+    public boolean has(String name) {
 
         if (RecordConstants.ATT_DOC_NUM.equals(name)) {
             name = EcosModel.PROP_DOC_NUM.toPrefixString(context.getNamespaceService());
