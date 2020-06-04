@@ -18,13 +18,14 @@ import java.util.function.Function;
 public class EcosTypeService {
 
     public static final QName QNAME = QName.createQName("", "ecosTypeService");
+    private static final RecordRef DEFAULT_TYPE = RecordRef.create("emodel", "type", "base");
 
     private EvaluatorsByAlfNode<RecordRef> evaluators;
     private RecordsService recordsService;
 
     @Autowired
     public EcosTypeService(ServiceRegistry serviceRegistry, RecordsService recordsService) {
-        evaluators = new EvaluatorsByAlfNode<>(serviceRegistry, node -> null);
+        evaluators = new EvaluatorsByAlfNode<>(serviceRegistry, node -> DEFAULT_TYPE);
         this.recordsService = recordsService;
     }
 
