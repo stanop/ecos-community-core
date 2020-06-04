@@ -99,15 +99,15 @@ public class WorkflowRecordsDao extends LocalRecordsDao
         RecordsMutResult result = new RecordsMutResult();
 
         List<RecordMeta> handledMeta = mutation.getRecords().stream()
-            .map(this::cancelWorkflow)
+            .map(this::cancelWorkflowIfRequired)
             .collect(Collectors.toList());
 
         result.setRecords(handledMeta);
         return result;
     }
 
-    private RecordMeta cancelWorkflow(RecordMeta meta) {
-        if (meta.hasAttribute("id") && meta.hasAttribute("cancel")) {
+    private RecordMeta cancelWorkflowIfRequired(RecordMeta meta) {
+        if (meta.hasAttribute("cancel")) {
             boolean cancel = meta.getAttribute("cancel").asBoolean();
             if (cancel) {
                 WorkflowInstance mutatedInstance = ecosWorkflowService.cancelWorkflowInstance(meta.getId().getId());

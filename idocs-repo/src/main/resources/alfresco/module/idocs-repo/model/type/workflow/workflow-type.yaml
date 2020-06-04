@@ -1,4 +1,5 @@
-id: emodel/type@workflow
+id: workflow
 
 name:
     en: Workflow
+    ru: Бизнес-процесс

@@ -9,6 +9,7 @@ import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
+import org.alfresco.service.cmr.workflow.WorkflowInstance;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
@@ -542,10 +543,11 @@ public class WorkflowTaskRecords extends LocalRecordsDao
 
             switch (name) {
                 case ATT_WORKFLOW:
-                    if (this.taskInfo.getWorkflow() == null) {
+                    WorkflowInstance workflowInstance = this.taskInfo.getWorkflow();
+                    if (workflowInstance == null) {
                         return null;
                     }
-                    return RecordRef.create(ATT_WORKFLOW, this.taskInfo.getWorkflow().getId());
+                    return RecordRef.create(ATT_WORKFLOW, workflowInstance.getId());
                 case ATT_SENDER:
                     String userName = (String) attributes.get("cwf_sender");
                     NodeRef userRef = authorityService.getAuthorityNodeRef(userName);
