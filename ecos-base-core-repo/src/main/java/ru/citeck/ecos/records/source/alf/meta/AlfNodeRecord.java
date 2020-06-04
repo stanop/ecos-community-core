@@ -379,7 +379,7 @@ public class AlfNodeRecord implements MetaValue {
     }
 
     private String getNodeRefDisplayName(NodeRef nodeRef) {
-        if (nodeRef == null) workflow-type.yaml{
+        if (nodeRef == null) {
             return "null";
         }
         RecordRef ref = RecordRef.create("", nodeRef.toString());
