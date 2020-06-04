@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.util.ParameterCheck;
+import org.mozilla.javascript.JavaScriptException;
+import org.mozilla.javascript.NativeJavaObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.stereotype.Service;
@@ -77,9 +79,32 @@ public class EcosTaskService {
         Map<String, Object> finalVariables = new HashMap<>(variables);
         Map<String, Object> finalTransientVariables = new HashMap<>(transientVariables);
 
-        lockUtils.doWithLock(String.format(TASKS_PREFIX, taskId), () -> {
-            taskService.endTask(task.getLocalId(), transition, finalVariables, finalTransientVariables);
-        });
+        try {
+            lockUtils.doWithLock(String.format(TASKS_PREFIX, taskId), () -> {
+                taskService.endTask(task.getLocalId(), transition, finalVariables, finalTransientVariables);
+            });
+        } catch (RuntimeException exception) {
+            unwrapJsExceptionAndThrow(exception);
+        }
+    }
+
+    private void unwrapJsExceptionAndThrow(RuntimeException exception) {
+
+        Throwable ex = exception;
+
+        while (ex.getCause() != null) {
+            ex = ex.getCause();
+        }
+
+        if (ex instanceof JavaScriptException) {
+            Object value = ((JavaScriptException) ex).getValue();
+            if (value instanceof NativeJavaObject) {
+                value = ((NativeJavaObject) value).unwrap();
+            }
+            exception = new RuntimeException(String.valueOf(value), exception);
+        }
+
+        throw exception;
     }
 
     private void validateStrFields(Map<String, Object> variables) {
