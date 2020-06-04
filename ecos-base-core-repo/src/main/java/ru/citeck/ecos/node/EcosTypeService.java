@@ -41,6 +41,7 @@ import java.util.function.Function;
 public class EcosTypeService {
 
     public static final QName QNAME = QName.createQName("", "ecosTypeService");
+    private static final RecordRef DEFAULT_TYPE = RecordRef.create("emodel", "type", "base");
 
     private static final String ECOS_TYPES_DOCS_ROOT_NAME = "documentLibrary";
 
@@ -61,7 +62,7 @@ public class EcosTypeService {
                            NodeService nodeService,
                            SiteService siteService) {
 
-        evaluators = new EvaluatorsByAlfNode<>(serviceRegistry, node -> null);
+        evaluators = new EvaluatorsByAlfNode<>(serviceRegistry, node -> DEFAULT_TYPE);
         this.permissionService = permissionService;
         this.recordsService = recordsService;
         this.searchService = searchService;
