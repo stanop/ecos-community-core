@@ -1,7 +1,6 @@
 package ru.citeck.ecos.records.source.alf.meta;
 
 import lombok.Getter;
-import lombok.NonNull;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.MLPropertyInterceptor;
 import org.alfresco.service.cmr.repository.MLText;
