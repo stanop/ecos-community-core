@@ -17,6 +17,7 @@ public class ActionStatus {
     public static final String STATUS_OK = "OK";
     public static final String STATUS_ERROR = "ERROR";
     public static final String STATUS_SKIPPED = "SKIPPED";
+    public static final String STATUS_PERMISSION_DENIED = "PERMISSION_DENIED";
 
     @Getter @Setter
     private String key = STATUS_OK;
