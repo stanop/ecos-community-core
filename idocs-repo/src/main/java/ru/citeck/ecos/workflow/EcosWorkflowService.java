@@ -1,8 +1,10 @@
 package ru.citeck.ecos.workflow;
 
 import lombok.Getter;
+import lombok.NonNull;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.workflow.WorkflowInstance;
+import org.alfresco.service.cmr.workflow.WorkflowInstanceQuery;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,8 +22,7 @@ public class EcosWorkflowService {
     private WorkflowService workflowService;
 
     @Autowired
-    public EcosWorkflowService(@Qualifier("WorkflowService")
-                                   WorkflowService workflowService) {
+    public EcosWorkflowService(@Qualifier("WorkflowService") WorkflowService workflowService) {
         this.workflowService = workflowService;
     }
 
@@ -67,16 +68,33 @@ public class EcosWorkflowService {
         return workflowService;
     }
 
+    /**
+     * Getting instance of workflow
+     */
+    public WorkflowInstance getInstanceById(@NonNull String workflowId) {
+        return workflowService.getWorkflowById(workflowId);
+    }
+
+    public List<WorkflowInstance> getAllInstances(WorkflowInstanceQuery query, int max, int skipCount) {
+        return workflowService.getWorkflows(query, max, skipCount);
+    }
+
+    public WorkflowInstance cancelWorkflowInstance(String workflowId) {
+        return workflowService.cancelWorkflow(workflowId);
+    }
+
     private static class WorkflowId {
 
-        @Getter private final String engineId;
-        @Getter private final String localId;
+        @Getter
+        private final String engineId;
+        @Getter
+        private final String localId;
 
         WorkflowId(String workflowId) {
             int delimIdx = workflowId.indexOf('$');
             if (delimIdx == -1) {
                 throw new IllegalArgumentException("Workflow id should has engine " +
-                                                   "prefix. Workflow: '" + workflowId + "'");
+                    "prefix. Workflow: '" + workflowId + "'");
             }
             this.engineId = workflowId.substring(0, delimIdx);
             this.localId = workflowId.substring(delimIdx + 1);

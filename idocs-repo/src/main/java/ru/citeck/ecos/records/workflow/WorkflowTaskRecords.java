@@ -9,6 +9,7 @@ import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
+import org.alfresco.service.cmr.workflow.WorkflowInstance;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
@@ -37,8 +38,8 @@ import ru.citeck.ecos.records2.request.mutation.RecordsMutResult;
 import ru.citeck.ecos.records2.request.mutation.RecordsMutation;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records2.source.dao.MutableRecordsDAO;
-import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
+import ru.citeck.ecos.records2.source.dao.MutableRecordsDao;
+import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDao;
 import ru.citeck.ecos.records2.source.dao.local.RecordsMetaLocalDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsQueryLocalDAO;
 import ru.citeck.ecos.utils.AuthorityUtils;
@@ -54,9 +55,9 @@ import java.util.stream.Collectors;
 import static ru.citeck.ecos.records.workflow.WorkflowTaskRecordsConstants.*;
 
 @Component
-public class WorkflowTaskRecords extends LocalRecordsDAO
+public class WorkflowTaskRecords extends LocalRecordsDao
     implements RecordsMetaLocalDAO<MetaValue>,
-    MutableRecordsDAO,
+    MutableRecordsDao,
     RecordsQueryLocalDAO {
 
     private static final String DOCUMENT_FIELD_PREFIX = "_ECM_";
@@ -300,7 +301,6 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     public RecordsQueryResult<RecordRef> getLocalRecords(RecordsQuery query) {
 
         WorkflowTaskRecords.TasksQuery tasksQuery = query.getQuery(WorkflowTaskRecords.TasksQuery.class);
-
         //try to search by workflow service to avoid problems with solr
         List<WorkflowTask> tasks = getRecordsByWfService(tasksQuery);
 
@@ -515,6 +515,10 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 return new InnerMetaValue(node);
             }
 
+            if (this.taskInfo == null) {
+                return null;
+            }
+
             if (AlfRecordConstants.ATT_FORM_KEY.equals(name)) {
                 String formKey = taskInfo.getFormKey();
                 if (StringUtils.isBlank(formKey)) {
@@ -538,6 +542,12 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 new NodeRef(documentRefId) : null;
 
             switch (name) {
+                case ATT_WORKFLOW:
+                    WorkflowInstance workflowInstance = this.taskInfo.getWorkflow();
+                    if (workflowInstance == null) {
+                        return null;
+                    }
+                    return RecordRef.create(ATT_WORKFLOW, workflowInstance.getId());
                 case ATT_SENDER:
                     String userName = (String) attributes.get("cwf_sender");
                     NodeRef userRef = authorityService.getAuthorityNodeRef(userName);
