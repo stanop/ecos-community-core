@@ -30,6 +30,7 @@ class WorkflowTaskRecordsConstants {
     static final String ATT_CLAIMABLE = "claimable";
     static final String ATT_ACTIVE = "active";
     static final String ATT_ASSIGNABLE = "assignable";
+    static final String ATT_ETYPE = "_etype";
 
     static final String ATT_CHANGE_OWNER = "changeOwner";
     static final String ATT_ACTION = "action";

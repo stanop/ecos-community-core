@@ -624,6 +624,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                         return ecosTypeService.getEcosType(documentNodeRef);
                     }
                     return null;
+                case ATT_ETYPE:
+                    return RecordRef.create("emodel", "type", "workflow-task");
             }
 
             return attributes.get(name);
