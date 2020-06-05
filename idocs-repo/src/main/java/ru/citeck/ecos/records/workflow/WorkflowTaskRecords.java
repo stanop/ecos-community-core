@@ -631,6 +631,14 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             return attributes.get(name);
         }
 
+        @Override
+        public String getDisplayName() {
+            if (taskInfo != null) {
+                return taskInfo.getTitle();
+            }
+            return null;
+        }
+
         private RecordRef getDocumentRef() {
             if (documentRef == null) {
                 documentRef = taskInfo.getDocument();
