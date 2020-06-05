@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -36,6 +37,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -44,8 +47,11 @@ public class CmmnSchemaParser {
 
     private static final String USER_ACTION_EVENT_NAME = "user-action";
 
+    private static final Pattern qnamePattern = Pattern.compile("^\\{http.*\\}.*$");
+
     private XmlContentDAO<Definitions> xmlContentDAO;
     private DictionaryService dictionaryService;
+    private NamespaceService namespaceService;
     private CMMNUtils utils;
 
     // Parsing execution thread cache
@@ -63,10 +69,12 @@ public class CmmnSchemaParser {
     @Autowired
     public CmmnSchemaParser(@Qualifier("caseTemplateContentDAO") XmlContentDAO<Definitions> xmlContentDAO,
                             DictionaryService dictionaryService,
+                            NamespaceService namespaceService,
                             CMMNUtils utils) {
 
         this.xmlContentDAO = xmlContentDAO;
         this.dictionaryService = dictionaryService;
+        this.namespaceService = namespaceService;
         this.utils = utils;
     }
 
@@ -298,13 +306,34 @@ public class CmmnSchemaParser {
         for (Map.Entry<javax.xml.namespace.QName, String> otherAttribute : otherAttributes.entrySet()) {
             javax.xml.namespace.QName key = otherAttribute.getKey();
             if (!key.getNamespaceURI().equals(CMMNUtils.NAMESPACE)) {
-                data.set(key.getLocalPart(), otherAttribute.getValue());
+                String value = otherAttribute.getValue();
+                data.set(key.getLocalPart(), convertAttributeValue(value));
             }
         }
 
         data.set(CmmnDefinitionConstants.TITLE, otherAttributes.get(CMMNUtils.QNAME_TITLE));
 
         return data;
+    }
+
+    private String convertAttributeValue(String value) {
+        try {
+            if (isFullQName(value)) {
+                return consumeValueAsShortQNameString(value);
+            }
+        } catch (Exception ignored) { // will be logged in ObjectData's json mapper
+        }
+        return value;
+    }
+
+    private boolean isFullQName(String value) {
+        Matcher matcher = qnamePattern.matcher(value);
+        return matcher.matches();
+    }
+
+    private String consumeValueAsShortQNameString(String value) {
+        QName qname = QName.resolveToQName(namespaceService, value);
+        return qname.toPrefixString(namespaceService);
     }
 
     private void addAttributeIfExists(TCmmnElement element, javax.xml.namespace.QName qname, ObjectData objectData) {
