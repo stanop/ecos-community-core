@@ -12,8 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.dictionary.ClassAttributeDefinition;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.TemplateService;
@@ -77,7 +76,6 @@ public class JournalConfigGet extends AbstractWebScript {
     private NamespaceService namespaceService;
     private DictionaryService dictionaryService;
     private CreateVariantsGet createVariantsGet;
-    private PredicateService predicateService;
 
     public JournalConfigGet() {
         journalRefById = CacheBuilder.newBuilder()
@@ -126,8 +124,9 @@ public class JournalConfigGet extends AbstractWebScript {
         String type = MapUtils.getString(options, "type");
 
         JournalMeta journalMeta = getJournalMeta(journalType, type, journalRef);
-
         Map<String, AttInfo> columnInfo = getAttributesInfo(journalMeta.getMetaRecord(), attributes);
+        journalMeta.setGroupActions(getGroupActions(journalType, columnInfo));
+
         for (String name : attributes) {
 
             Column column = new Column();
@@ -248,7 +247,6 @@ public class JournalConfigGet extends AbstractWebScript {
         JournalMeta meta = new JournalMeta();
 
         meta.setActions(journal.getActions());
-        meta.setGroupActions(getGroupActions(journal));
 
         if (StringUtils.isNotBlank(journal.getGroupBy())) {
             meta.setGroupBy(Json.getMapper().read(journal.getGroupBy()));
@@ -333,7 +331,7 @@ public class JournalConfigGet extends AbstractWebScript {
         }
     }
 
-    private List<GroupAction> getGroupActions(JournalType type) {
+    private List<GroupAction> getGroupActions(JournalType type, Map<String, AttInfo> columnInfo) {
 
         List<GroupAction> resultActions = new ArrayList<>();
 
@@ -354,6 +352,12 @@ public class JournalConfigGet extends AbstractWebScript {
         for (String attribute : type.getAttributes()) {
 
             List<JournalBatchEdit> batchEdits = type.getBatchEdit(attribute);
+            AttInfo attInfo = columnInfo.get(attribute);
+            if (attInfo == null) {
+                attInfo = new AttInfo();
+                attInfo.setType("text");
+                attInfo.setJavaClass(String.class);
+            }
 
             for (JournalBatchEdit batchEdit : batchEdits) {
 
@@ -361,10 +365,12 @@ public class JournalConfigGet extends AbstractWebScript {
                 action.setTitle(batchEdit.getTitle());
 
                 Map<String, String> params = new HashMap<>(batchEdit.getOptions());
-                params.put("attribute", attribute);
+                params.put("form_option_batch-edit-attribute", attribute);
+
                 action.setParams(params);
-                action.setId("batch-edit");
+                action.setId("records-mutation");
                 action.setType("selected");
+                action.setFormKey("batch-edit-" + attInfo.getType());
 
                 resultActions.add(action);
             }
@@ -476,11 +482,6 @@ public class JournalConfigGet extends AbstractWebScript {
     @Autowired
     public void setQueryLangService(QueryLangService queryLangService) {
         this.queryLangService = queryLangService;
-    }
-
-    @Autowired
-    public void setPredicateService(PredicateService predicateService) {
-        this.predicateService = predicateService;
     }
 
     @Autowired
