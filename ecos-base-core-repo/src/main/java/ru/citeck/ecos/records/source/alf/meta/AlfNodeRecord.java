@@ -10,6 +10,7 @@ import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.cmr.version.Version;
 import org.alfresco.service.cmr.version.VersionService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.action.ActionModule;
@@ -107,6 +108,11 @@ public class AlfNodeRecord implements MetaValue {
 
     @Override
     public boolean has(String name) {
+
+        if (StringUtils.isNotEmpty(name) && name.startsWith(ASSOC_SRC_ATTR_PREFIX)) {
+            List<MetaValue> sourceAssocs = getSourceAssocs(node.nodeRef(), name, null);
+            return CollectionUtils.isNotEmpty(sourceAssocs);
+        }
 
         if ("_content".equals(name)) {
             AlfNodeContentPathRegistry contentPath = context.getService(AlfNodeContentPathRegistry.QNAME);
@@ -422,7 +428,7 @@ public class AlfNodeRecord implements MetaValue {
         return value != null && NodeRef.isNodeRef(value) ? new NodeRef(value) : null;
     }
 
-    private List<? extends MetaValue> getSourceAssocs(String nodeRefStr, String attrName, MetaField field) {
+    private List<MetaValue> getSourceAssocs(String nodeRefStr, String attrName, MetaField field) {
         if (StringUtils.isBlank(attrName) || !NodeRef.isNodeRef(nodeRefStr)) {
             return Collections.emptyList();
         }
