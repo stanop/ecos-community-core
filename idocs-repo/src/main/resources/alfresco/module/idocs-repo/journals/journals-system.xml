@@ -17,7 +17,7 @@
 
     <journal id="search">
         <headers>
-            <header key="name" default="true" />
+            <header key="cm:name" default="true" />
             <header key="cm:modified" default="true" />
             <header key="cm:modifier" default="true" />
             <header key="cm:created" default="true" />
