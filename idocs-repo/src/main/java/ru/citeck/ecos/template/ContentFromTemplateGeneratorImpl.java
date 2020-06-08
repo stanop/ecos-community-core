@@ -21,19 +21,26 @@ package ru.citeck.ecos.template;
 import org.alfresco.model.ContentModel;
 import org.alfresco.model.RenditionModel;
 import org.alfresco.repo.version.VersionModel;
+import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.model.FileFolderServiceType;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.version.VersionService;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.extensions.surf.util.I18NUtil;
-
-import ru.citeck.ecos.model.DmsModel;
-import ru.citeck.ecos.utils.RepoUtils;
+import org.springframework.stereotype.Service;
 import ru.citeck.ecos.exception.ExceptionService;
 import ru.citeck.ecos.exception.ExceptionTranslator;
+import ru.citeck.ecos.model.DmsModel;
+import ru.citeck.ecos.utils.RepoUtils;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Serializable;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +51,7 @@ import java.util.Objects;
  * @author Alexander Nemerov <alexander.nemerov@citeck.ru>
  * date: 06.05.14
  */
+@Service("contentFromTemplateGenerator")
 class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator {
 
     private static final String MESSAGE_AUTO_GENERATED = "version.auto.generated";
@@ -54,12 +62,21 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator {
     private static final String KEY_DOCUMENT = "document";
     private static final String DOCX_EXTENSION = "docx";
 
+    @Autowired
     private NodeService nodeService;
+    @Autowired
     private VersionService versionService;
+    @Autowired
     private ContentService contentService;
+    @Autowired
     private TemplateService templateService;
+    @Autowired
+    @Qualifier("citeckExceptionService")
     private ExceptionService exceptionService;
+    @Autowired
     private MimetypeService mimetypeService;
+    @Autowired
+    private ServiceRegistry serviceRegistry;
 
     @Override
     public void generateContentByTemplate(NodeRef nodeRef) {
@@ -101,6 +118,20 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator {
 
         String mimetype = templateContent.getMimetype();
 
+        Map<String, Object> model = new HashMap<>();
+        model.put(KEY_DOCUMENT, nodeRef);
+
+        FileFolderServiceType type = serviceRegistry.getFileFolderService().getType(nodeService.getType(nodeRef));
+        if (type.equals(FileFolderServiceType.FOLDER)) {
+            String nodeName = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_NAME);
+            NodeRef childNodeRef = RepoUtils.getChildByName(nodeRef, ContentModel.ASSOC_CONTAINS, nodeName, nodeService);
+            if (childNodeRef == null) {
+                childNodeRef = RepoUtils.createChildWithName(nodeRef, ContentModel.ASSOC_CONTAINS,
+                    ContentModel.TYPE_CONTENT, nodeName, nodeService);
+            }
+            nodeRef = childNodeRef;
+        }
+
         ContentWriter contentWriter;
         Writer writer = null;
         try {
@@ -118,8 +149,6 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator {
             writer = new OutputStreamWriter(contentWriter.getContentOutputStream(), Charset.forName(encoding));
 
             // process template
-            Map<String, Object> model = new HashMap<>();
-            model.put(KEY_DOCUMENT, nodeRef);
             try {
                 templateService.processTemplate(template.toString(), model, writer);
             } catch (Exception e) {

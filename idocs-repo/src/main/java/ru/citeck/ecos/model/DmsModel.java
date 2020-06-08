@@ -115,4 +115,8 @@ public final class DmsModel {
 	public static final QName ASSOC_APPLICATION_FILES = QName.createQName(DMS_NAMESPACE, "applicationFiles");
 	public static final QName ASSOC_VERSIONED_APPLICATION_FILES = QName.createQName(DMS_NAMESPACE, "versionedApplicationFiles");
 
+    public static final QName ASPECT_HAS_PREDICATE = QName.createQName(DMS_NAMESPACE, "hasPredicate");
+    public static final QName PROP_PREDICATE = QName.createQName(DMS_NAMESPACE, "predicate");
+    public static final QName ASPECT_HAS_PRIORITY = QName.createQName(DMS_NAMESPACE, "hasPriority");
+    public static final QName PROP_PRIORITY = QName.createQName(DMS_NAMESPACE, "priority");
 }

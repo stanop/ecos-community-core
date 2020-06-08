@@ -21,7 +21,6 @@ package ru.citeck.ecos.behavior.common;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
-import ru.citeck.ecos.behavior.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.action.Action;
@@ -34,8 +33,10 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.behavior.OrderedBehaviour;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.DmsModel;
+import ru.citeck.ecos.template.EcosSelectTemplateService;
 import ru.citeck.ecos.template.GenerateContentActionExecuter;
 
 import java.io.Serializable;
@@ -50,6 +51,7 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
     private PolicyComponent policyComponent;
     private NodeService nodeService;
     private ServiceRegistry serviceRegistry;
+    private EcosSelectTemplateService selectTemplateService;
     private QName className;
     private Boolean enabled = null;
     private int order = 500;
@@ -75,39 +77,41 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
             return;
         }
 
-        Set<NodeRef> tags = new HashSet<>();
-
-        List<AssociationRef> associations = nodeService.getTargetAssocs(childAssocRef.getChildRef(), RegexQNamePattern.MATCH_ALL);
-        for (AssociationRef association : associations) {
-            NodeRef assocNodeRef = association.getTargetRef();
-            fillWithTags(assocNodeRef, tags);
-        }
-
-        Map<QName, Serializable> properties = nodeService.getProperties(node);
-        for (Map.Entry<QName, Serializable> entry : properties.entrySet()) {
-            Serializable value = entry.getValue();
-            if (value != null) {
-                if (value instanceof NodeRef) {
-                    NodeRef nodeRef = (NodeRef) value;
-                    fillWithTags(nodeRef, tags);
-                } else if (value instanceof List) {
-                    fillWithTags((List<?>) value, tags);
-                }
-            }
-        }
-        for (NodeRef tag : tags) {
-            logger.info(tag);
-        }
-
         NodeRef template;
-        if (!nodeService.getTargetAssocs(node, DmsModel.ASSOC_TEMPLATE).isEmpty()) {
-            template = nodeService.getTargetAssocs(node, DmsModel.ASSOC_TEMPLATE).get(0).getTargetRef();
+        List<AssociationRef> relatedTemplates = nodeService.getTargetAssocs(node, DmsModel.ASSOC_TEMPLATE);
+        if (!relatedTemplates.isEmpty()) {
+            template = relatedTemplates.get(0).getTargetRef();
             nodeService.setProperty(node, DmsModel.PROP_UPDATE_CONTENT, true);
         } else {
-            template = getTemplateBasedOnKind(node)!= null ? getTemplateBasedOnKind(node) : getTemplateBasedOnType(node);
+            NodeRef templateBasedOnKind = getTemplateBasedOnKind(node);
+            template = templateBasedOnKind != null ? templateBasedOnKind : getTemplateBasedOnType(node);
         }
 
         if (template == null) {
+            Set<NodeRef> tags = new HashSet<>();
+
+            List<AssociationRef> associations = nodeService.getTargetAssocs(childAssocRef.getChildRef(), RegexQNamePattern.MATCH_ALL);
+            for (AssociationRef association : associations) {
+                NodeRef assocNodeRef = association.getTargetRef();
+                fillWithTags(assocNodeRef, tags);
+            }
+
+            Map<QName, Serializable> properties = nodeService.getProperties(node);
+            for (Map.Entry<QName, Serializable> entry : properties.entrySet()) {
+                Serializable value = entry.getValue();
+                if (value != null) {
+                    if (value instanceof NodeRef) {
+                        NodeRef nodeRef = (NodeRef) value;
+                        fillWithTags(nodeRef, tags);
+                    } else if (value instanceof List) {
+                        fillWithTags((List<?>) value, tags);
+                    }
+                }
+            }
+            for (NodeRef tag : tags) {
+                logger.info(tag);
+            }
+
             template = getTemplateBasedOnTag(node, tags);
         }
         if (template != null) {
@@ -165,24 +169,20 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
 
     private NodeRef getTemplateBasedOnType(NodeRef node)
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append("TYPE:\"").append(DmsModel.TYPE_TEMPLATE).append("\" AND (");
-        sb.append("@tk\\:appliesToType:\"")
-                .append((NodeRef)nodeService.getProperty(node, ClassificationModel.PROP_DOCUMENT_TYPE))
-                .append("\" AND (ISNULL:\"" + ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND + "\"")
-                .append("OR ISUNSET:\"" + ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND + "\")")
-                .append(")");
-        return getTemplate(sb);
+        List<NodeRef> docTemplatesForNode = selectTemplateService.getNodeOrderedTemplates(node);
+        if (!docTemplatesForNode.isEmpty()) {
+            return docTemplatesForNode.get(0);
+        }
+        return null;
     }
 
     private NodeRef getTemplateBasedOnKind(NodeRef node)
     {
         NodeRef template = null;
-        if(nodeService.getProperty(node, ClassificationModel.PROP_DOCUMENT_KIND)!=null)
-        {
+        if (nodeService.getProperty(node, ClassificationModel.PROP_DOCUMENT_KIND) != null) {
             StringBuilder sb = new StringBuilder();
             sb.append("TYPE:\"").append(DmsModel.TYPE_TEMPLATE).append("\"");
-            sb.append(" AND (@tk\\:appliesToKind:\"").append((NodeRef)nodeService.getProperty(node, ClassificationModel.PROP_DOCUMENT_KIND)).append("\" )");
+            sb.append(" AND (@tk\\:appliesToKind:\"").append(nodeService.getProperty(node, ClassificationModel.PROP_DOCUMENT_KIND)).append("\" )");
             template =  getTemplate(sb);
         }
         return template;
@@ -250,4 +250,7 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
         this.order = order;
     }
 
+    public void setSelectTemplateService(EcosSelectTemplateService selectTemplateService) {
+        this.selectTemplateService = selectTemplateService;
+    }
 }

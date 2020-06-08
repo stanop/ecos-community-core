@@ -955,5 +955,24 @@
 			</associations>
 		</aspect>
 
+        <aspect name="dms:hasPredicate">
+            <properties>
+                <property name="dms:predicate">
+                    <title>Predicate</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="dms:hasPriority">
+            <properties>
+                <property name="dms:priority">
+                    <title>Priority</title>
+                    <type>d:int</type>
+                    <default>0</default>
+                </property>
+            </properties>
+        </aspect>
+
 	</aspects>
 </model>
