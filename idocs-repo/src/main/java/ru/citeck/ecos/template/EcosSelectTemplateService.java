@@ -87,11 +87,8 @@ public class EcosSelectTemplateService {
             .type(DmsModel.TYPE_TEMPLATE).and()
             .value(ClassificationModel.PROP_DOCUMENT_APPLIES_TO_TYPE, category)
             .and()
-            .open()
-            .isNull(ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND).or()
-            .isUnset(ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND)
-            .close()
-            .eventual()
+            .empty(ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND)
+            .transactional()
             .query(searchService);
     }
 }
