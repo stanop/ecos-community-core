@@ -14,7 +14,6 @@ import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.predicate.PredicateService;
 import ru.citeck.ecos.records2.predicate.RecordElement;
-import ru.citeck.ecos.records2.predicate.RecordElements;
 import ru.citeck.ecos.records2.predicate.model.Predicate;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 
@@ -52,8 +51,7 @@ public class EcosSelectTemplateService {
             return Collections.emptyList();
         }
 
-        RecordElements element = new RecordElements(recordsService,
-            Collections.singletonList(RecordRef.valueOf(nodeRef.toString())));
+        RecordElement element = new RecordElement(recordsService, RecordRef.valueOf(nodeRef.toString()));
         return templateBasedOnType.stream()
             .filter(tNodeRef -> filter(element, tNodeRef))
             .sorted(Comparator.comparingInt(item -> {
@@ -63,14 +61,13 @@ public class EcosSelectTemplateService {
             .collect(Collectors.toList());
     }
 
-    private boolean filter(RecordElements elements, NodeRef tNodeRef) {
+    private boolean filter(RecordElement element, NodeRef tNodeRef) {
         if (nodeService.hasAspect(tNodeRef, DmsModel.ASPECT_HAS_PREDICATE)) {
             String predicateStr = (String) nodeService.getProperty(tNodeRef, DmsModel.PROP_PREDICATE);
             if (predicateStr != null && !predicateStr.isEmpty()) {
                 Predicate predicate = Json.getMapper().read(predicateStr, Predicate.class);
                 if (predicate != null) {
-                    List<RecordElement> filter = predicateService.filter(elements, predicate);
-                    return !filter.isEmpty();
+                    return predicateService.isMatch(element, predicate);
                 }
             }
         } else {
@@ -83,13 +80,14 @@ public class EcosSelectTemplateService {
         String categoryId = ecosType.getId();
         int index = categoryId.indexOf("/");
         if (index != -1) {
-            categoryId = categoryId.substring(0, index - 1);
+            categoryId = categoryId.substring(0, index);
         }
         NodeRef category = new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, categoryId);
         return FTSQuery.create()
             .type(DmsModel.TYPE_TEMPLATE).and()
             .value(ClassificationModel.PROP_DOCUMENT_APPLIES_TO_TYPE, category)
-            .and().open()
+            .and()
+            .open()
             .isNull(ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND).or()
             .isUnset(ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND)
             .close()

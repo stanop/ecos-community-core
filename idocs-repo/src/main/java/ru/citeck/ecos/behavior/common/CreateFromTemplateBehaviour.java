@@ -78,8 +78,9 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
         }
 
         NodeRef template;
-        if (!nodeService.getTargetAssocs(node, DmsModel.ASSOC_TEMPLATE).isEmpty()) {
-            template = nodeService.getTargetAssocs(node, DmsModel.ASSOC_TEMPLATE).get(0).getTargetRef();
+        List<AssociationRef> relatedTemplates = nodeService.getTargetAssocs(node, DmsModel.ASSOC_TEMPLATE);
+        if (!relatedTemplates.isEmpty()) {
+            template = relatedTemplates.get(0).getTargetRef();
             nodeService.setProperty(node, DmsModel.PROP_UPDATE_CONTENT, true);
         } else {
             NodeRef templateBasedOnKind = getTemplateBasedOnKind(node);
