@@ -469,6 +469,7 @@
         <property name="policyComponent" ref="policyComponent"/>
         <property name="serviceRegistry" ref="ServiceRegistry"/>
         <property name="nodeService" ref="nodeService"/>
+        <property name="selectTemplateService" ref="ecosSelectTemplateService"/>
         <property name="className" value="dms:templateable"/>
         <property name="enabled" value="true"/>
     </bean>
