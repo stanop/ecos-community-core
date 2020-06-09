@@ -19,15 +19,18 @@ import org.springframework.stereotype.Component;
 import ru.citeck.ecos.commons.data.DataValue;
 import ru.citeck.ecos.document.CounterpartyResolver;
 import ru.citeck.ecos.document.sum.DocSumService;
+import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.node.EcosTypeService;
 import ru.citeck.ecos.records.RecordConstants;
 import ru.citeck.ecos.records.models.AuthorityDTO;
 import ru.citeck.ecos.records.models.UserDTO;
+import ru.citeck.ecos.records.source.alf.AlfNodeMetaEdge;
 import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
 import ru.citeck.ecos.records2.graphql.meta.value.InnerMetaValue;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaEdge;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records2.predicate.model.ComposedPredicate;
@@ -145,22 +148,27 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 }
             } else {
 
+                String name = n;
+                if (name.contains(":")) {
+                    name = name.replaceFirst(":", "_");
+                }
+
                 if (v.isTextual()) {
                     String value = v.asText();
-                    if (isDate(n) && StringUtils.isEmpty(value)) {
+                    if (isDate(name) && StringUtils.isEmpty(value)) {
                         value = null;
                     }
-                    taskProps.put(n, value);
+                    taskProps.put(name, value);
                 } else if (v.isBoolean()) {
-                    taskProps.put(n, v.asBoolean());
+                    taskProps.put(name, v.asBoolean());
                 } else if (v.isDouble()) {
-                    taskProps.put(n, v.asDouble());
+                    taskProps.put(name, v.asDouble());
                 } else if (v.isInt()) {
-                    taskProps.put(n, v.asInt());
+                    taskProps.put(name, v.asInt());
                 } else if (v.isLong()) {
-                    taskProps.put(n, v.asLong());
+                    taskProps.put(name, v.asLong());
                 } else if (v.isNull()) {
-                    taskProps.put(n, null);
+                    taskProps.put(name, null);
                 } else if (v.isArray()) {
                     Set<NodeRef> nodeRefs = new HashSet<>();
                     for (DataValue jsonNode : v) {
@@ -169,7 +177,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                             nodeRefs.add(new NodeRef(stringNode));
                         }
                     }
-                    taskProps.put(n, nodeRefs);
+                    taskProps.put(name, nodeRefs);
                 }
             }
         });
@@ -421,9 +429,12 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         private RecordRef documentRef;
         private RecordMeta documentInfo;
         private TaskInfo taskInfo;
+        private AlfGqlContext context;
 
         @Override
         public <T extends QueryContext> void init(T context, MetaField field) {
+
+            this.context = (AlfGqlContext) context;
 
             Map<String, String> documentAttributes = new HashMap<>();
             RecordRef documentRef = getDocumentRef();
@@ -628,6 +639,9 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     return RecordRef.create("emodel", "type", "workflow-task");
             }
 
+            if (name.contains(":")) {
+                name = name.replaceFirst(":", "_");
+            }
             return attributes.get(name);
         }
 
@@ -637,6 +651,17 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 return taskInfo.getTitle();
             }
             return null;
+        }
+
+        @Override
+        public MetaEdge getEdge(String name, MetaField field) {
+            if (name.startsWith(DOCUMENT_FIELD_PREFIX)) {
+                name = name.replaceFirst(DOCUMENT_FIELD_PREFIX, "");
+            }
+            if (!name.contains(":") && name.contains("_")) {
+                name = name.replaceFirst("_", ":");
+            }
+            return new AlfNodeMetaEdge(context, null, name, this);
         }
 
         private RecordRef getDocumentRef() {
