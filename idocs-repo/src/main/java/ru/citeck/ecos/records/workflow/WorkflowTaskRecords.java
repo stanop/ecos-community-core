@@ -637,6 +637,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     return null;
                 case ATT_ETYPE:
                     return RecordRef.create("emodel", "type", "workflow-task");
+                case ATT_PERMISSIONS:
+                    return new Permissions();
             }
 
             if (name.contains(":")) {
@@ -669,6 +671,13 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 documentRef = taskInfo.getDocument();
             }
             return documentRef;
+        }
+    }
+
+    public static class Permissions implements MetaValue {
+        @Override
+        public boolean has(String name) {
+            return true;
         }
     }
 }
