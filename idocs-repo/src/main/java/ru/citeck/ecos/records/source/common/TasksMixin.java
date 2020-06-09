@@ -16,6 +16,7 @@ import ru.citeck.ecos.utils.WorkflowUtils;
 import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -77,7 +78,7 @@ public class TasksMixin implements AttributesMixin<Class<RecordRef>, RecordRef> 
             if (ACTIVE_HASH.equals(name)) {
                 List<WorkflowTask> tasks = workflowUtils.getDocumentTasks(nodeRef, true);
                 return tasks.stream()
-                    .map(WorkflowTask::getId)
+                    .map(t -> Objects.hash(t.getId(), t.getProperties()))
                     .collect(Collectors.toList())
                     .hashCode();
             }
