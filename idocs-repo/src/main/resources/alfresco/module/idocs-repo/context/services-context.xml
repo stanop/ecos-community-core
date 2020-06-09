@@ -346,15 +346,6 @@
         <property name="actionService" ref="actionService" />
     </bean>
 
-    <bean id="contentFromTemplateGenerator" class="ru.citeck.ecos.template.ContentFromTemplateGeneratorImpl">
-        <property name="contentService" ref="ContentService" />
-        <property name="exceptionService" ref="citeckExceptionService" />
-        <property name="nodeService" ref="NodeService" />
-        <property name="templateService" ref="TemplateService" />
-        <property name="versionService" ref="VersionService" />
-        <property name="mimetypeService" ref="mimetypeService" />
-    </bean>
-
     <bean name="contentFromTemplateGeneratorJS" class="ru.citeck.ecos.template.ContentFromTemplateGeneratorImplJS"
             parent="baseJavaScriptExtension">
         <property name="extensionName" value="contentFromTemplate" />
