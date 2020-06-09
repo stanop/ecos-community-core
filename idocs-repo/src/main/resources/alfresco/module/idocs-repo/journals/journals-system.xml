@@ -15,16 +15,6 @@
         <import uri="http://www.citeck.ru/model/menu/config/1.0" prefix="menuconfig"/>
     </imports>
 
-    <journal id="search">
-        <headers>
-            <header key="cm:name" default="true" />
-            <header key="cm:modified" default="true" />
-            <header key="cm:modifier" default="true" />
-            <header key="cm:created" default="true" />
-            <header key="cm:creator" default="true" />
-        </headers>
-    </journal>
-
     <journal id="cardlets">
         <option name="type">cardlet:cardlet</option>
         <headers>
