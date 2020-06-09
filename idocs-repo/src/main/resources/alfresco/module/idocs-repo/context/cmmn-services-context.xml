@@ -21,4 +21,18 @@
         </property>
     </bean>
 
+    <bean id="cmmnExportService" class="ru.citeck.ecos.cmmn.service.CaseExportService" depends-on="idocs.dictionaryBootstrap"
+          init-method="init">
+        <property name="nodeService" ref="nodeService"/>
+        <property name="caseActivityService" ref="caseActivityService"/>
+        <property name="dictionaryService" ref="dictionaryService"/>
+    </bean>
+
+    <bean id="cmmnExportServiceJS" class="ru.citeck.ecos.cmmn.service.CaseExportServiceJS" parent="baseJavaScriptExtension"
+          depends-on="cmmnExportService">
+        <property name="extensionName" value="cmmnExportServiceJS"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="caseExportService" ref="cmmnExportService"/>
+    </bean>
+
 </beans>
