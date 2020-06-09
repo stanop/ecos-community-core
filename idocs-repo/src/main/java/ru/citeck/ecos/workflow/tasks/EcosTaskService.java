@@ -2,6 +2,7 @@ package ru.citeck.ecos.workflow.tasks;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.util.ParameterCheck;
 import org.mozilla.javascript.JavaScriptException;
@@ -102,6 +103,9 @@ public class EcosTaskService {
                 value = ((NativeJavaObject) value).unwrap();
             }
             exception = new RuntimeException(String.valueOf(value), exception);
+        } else if (ex instanceof AlfrescoRuntimeException) {
+            String msg = ((AlfrescoRuntimeException) ex).getMsgId();
+            exception = new RuntimeException(msg, exception);
         }
 
         throw exception;
