@@ -1,24 +1,24 @@
 <#escape x as jsonUtils.encodeJSONString(x)>
 {
   <#-- Details of the response code -->
-  "status" : 
+  "status" :
   {
     "code" : ${status.code},
     "name" : "${status.codeName}",
     "description" : "${status.codeDescription}"
-  },  
-  
+  },
+
   <#-- Exception details -->
   "message" : <@renderMessage status.message />,
   "originalMessage" : "${status.message}",
   "exception" : "<#if status.exception??>${status.exception.class.name}<#if status.exception.message??> - ${status.exception.message}</#if></#if>",
-  
-  <#-- Exception call stack --> 
-  "callstack" : 
-  [ 
-  	  <#if status.exception??>""<@recursestack exception=status.exception/></#if> 
+
+  <#-- Exception call stack -->
+  "callstack" :
+  [
+  	  <#if status.exception??>""<@recursestack exception=status.exception/></#if>
   ],
-  
+
   <#-- Server details and time stamp -->
   "server" : "${server.edition?xml} v${server.version?xml} schema ${server.schema?xml}",
   "time" : "${date?string('dd.MM.yyyy HH:mm:ss')}"
@@ -41,6 +41,7 @@
           ?replace("in <eval> at line number *[0-9]+ at column number *[0-9]+ *", "", 'r')
           ?replace(".*Exception while processing action '.*\\$.*%.*', exceptionMessage='", "", "r")
           ?replace("', exceptionType='.*'. StackTrace of root exception may be fount in logs", "", "r")
+          ?replace("\\s*\\(classpath.*?\\)\\s*", "", "r")
 }"
 </#escape>
 </#macro>
