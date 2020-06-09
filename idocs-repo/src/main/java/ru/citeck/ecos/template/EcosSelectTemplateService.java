@@ -88,7 +88,6 @@ public class EcosSelectTemplateService {
             .value(ClassificationModel.PROP_DOCUMENT_APPLIES_TO_TYPE, category)
             .and()
             .empty(ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND)
-            .transactional()
             .query(searchService);
     }
 }
