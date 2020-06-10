@@ -9,6 +9,7 @@ import org.alfresco.service.cmr.workflow.WorkflowPath;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.NamespaceService;
+import org.apache.commons.lang.StringUtils;
 import org.flowable.engine.TaskService;
 import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.identitylink.api.IdentityLinkType;
@@ -228,6 +229,11 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
             String formOutcomeField = "form_" + formKey + "_outcome";
             taskVariables.put(formOutcomeField, transition);
             taskVariables.put(OUTCOME_FIELD, transition);
+
+            if (StringUtils.isNotBlank(formKey) && formKey.contains(":")) {
+                workflowUtils.getOutcomePropFromModel(formKey)
+                    .ifPresent(outcomeProp -> taskVariables.put(outcomeProp, transition));
+            }
         }
 
         Map<String, Object> executionVariables = new HashMap<>(transientVariables);

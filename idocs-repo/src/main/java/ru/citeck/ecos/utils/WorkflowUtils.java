@@ -4,6 +4,8 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -47,6 +49,8 @@ public class WorkflowUtils {
     private final PersonService personService;
     private final WorkflowAdminService workflowAdminService;
     private final WorkflowQNameConverter qnameConverter;
+    private final NamespaceService namespaceService;
+    private final DictionaryService dictionaryService;
 
     @Autowired
     public WorkflowUtils(
@@ -56,7 +60,8 @@ public class WorkflowUtils {
         AuthorityService authorityService,
         PersonService personService,
         WorkflowAdminService workflowAdminService,
-        NamespaceService namespaceService
+        NamespaceService namespaceService,
+        DictionaryService dictionaryService
     ) {
         this.workflowService = workflowService;
         this.authorityUtils = authorityUtils;
@@ -64,6 +69,8 @@ public class WorkflowUtils {
         this.authorityService = authorityService;
         this.personService = personService;
         this.workflowAdminService = workflowAdminService;
+        this.namespaceService = namespaceService;
+        this.dictionaryService = dictionaryService;
         this.qnameConverter = new WorkflowQNameConverter(namespaceService);
     }
 
@@ -354,4 +361,28 @@ public class WorkflowUtils {
         return res.intValue() == 0 ? 1 : res.intValue();
     }
 
+    public Optional<String> getOutcomePropFromModel(String formKey) {
+
+        if (StringUtils.isBlank(formKey)) {
+            return Optional.empty();
+        }
+        QName formKeyQName = QName.resolveToQName(namespaceService, formKey);
+        if (formKeyQName == null) {
+            return Optional.empty();
+        }
+
+        PropertyDefinition prop = dictionaryService.getProperty(formKeyQName, WorkflowModel.PROP_OUTCOME_PROPERTY_NAME);
+        String value = prop != null ? prop.getDefaultValue() : null;
+
+        if (value == null) {
+            return Optional.empty();
+        }
+
+        QName propQName = QName.resolveToQName(namespaceService, value);
+        if (propQName == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(propQName.toPrefixString(namespaceService).replaceAll(":", "_"));
+    }
 }
