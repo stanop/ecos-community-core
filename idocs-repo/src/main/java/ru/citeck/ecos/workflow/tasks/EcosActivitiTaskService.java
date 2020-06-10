@@ -5,21 +5,17 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.Task;
-import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.activiti.ActivitiConstants;
 import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
 import org.alfresco.repo.workflow.activiti.properties.ActivitiPropertyConverter;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.NamespaceService;
-import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.records2.RecordRef;
@@ -120,7 +116,8 @@ public class EcosActivitiTaskService implements EngineTaskService {
         Map<String, Object> taskVariables = new HashMap<>(variables);
 
         if (transition != null) {
-            String outcomeProp = getOutcomeProperty(taskId);
+            String formKey = getRawFormKey(taskId);
+            String outcomeProp = workflowUtils.getOutcomePropFromModel(formKey).orElse(null);
             if (StringUtils.isBlank(outcomeProp)) {
                 outcomeProp = DEFAULT_OUTCOME_FIELD;
             }
@@ -179,33 +176,6 @@ public class EcosActivitiTaskService implements EngineTaskService {
     @Override
     public TaskInfo getTaskInfo(String taskId) {
         return new ActivitiTaskInfo(taskId);
-    }
-
-    private String getOutcomeProperty(String taskId) {
-
-        String rawFormKey = getRawFormKey(taskId);
-
-        if (rawFormKey == null) {
-            return null;
-        }
-        QName formKeyQName = QName.resolveToQName(namespaceService, rawFormKey);
-        if (formKeyQName == null) {
-            return null;
-        }
-
-        PropertyDefinition prop = dictionaryService.getProperty(formKeyQName, WorkflowModel.PROP_OUTCOME_PROPERTY_NAME);
-        String value = prop != null ? prop.getDefaultValue() : null;
-
-        if (value == null) {
-            return null;
-        }
-
-        QName propQName = QName.resolveToQName(namespaceService, value);
-        if (propQName == null) {
-            return null;
-        }
-
-        return propQName.toPrefixString(namespaceService).replaceAll(":", "_");
     }
 
     private boolean taskExists(String taskId) {
