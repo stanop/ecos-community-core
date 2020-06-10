@@ -18,7 +18,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Component
-public class ReportsDataRecords extends LocalRecordsDao implements LocalRecordsQueryWithMetaDao<ReportsDataRecords.ReportResult> {
+public class ReportsDataRecords extends LocalRecordsDao
+    implements LocalRecordsQueryWithMetaDao<ReportsDataRecords.ReportResult> {
 
     private static final String ID = "reports-data";
     private static final int DEFAULT_MAX_ITEMS = 1000;
