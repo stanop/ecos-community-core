@@ -24,6 +24,11 @@
         <option name="clickLinkAttribute">cm:name, contracts:agreementNumber</option>
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
         <option name="disableTableEditing">true</option>
+        <actions>
+            <action ref="uiserv/action@view-task" />
+            <action ref="uiserv/action@view-task-in-background" />
+            <action ref="uiserv/action@edit-task" />
+        </actions>
         <headers>
             <!-- cm:name is used for double-click -->
             <header key="cm:name" visible="false" searchable="false" />
@@ -88,6 +93,11 @@
         <option name="clickLinkAttribute">cm:name, cm:title, contracts:agreementNumber</option>
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
         <option name="disableTableEditing">true</option>
+        <actions>
+            <action ref="uiserv/action@view-task" />
+            <action ref="uiserv/action@view-task-in-background" />
+            <action ref="uiserv/action@edit-task" />
+        </actions>
         <headers>
             <!-- cm:name is used for double-click -->
             <header key="cm:name" visible="false" searchable="false" />
@@ -145,6 +155,10 @@
         <option name="clickLinkAttribute">cm:name, cm:title, contracts:agreementNumber</option>
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
         <option name="disableTableEditing">true</option>
+        <actions>
+            <action ref="uiserv/action@view-task" />
+            <action ref="uiserv/action@view-task-in-background" />
+        </actions>
         <headers>
             <!-- cm:name is used for double-click -->
             <header key="cm:name" visible="false" searchable="false" />
@@ -193,6 +207,10 @@
         <option name="clickLinkAttribute">cm:name, cm:title, contracts:agreementNumber</option>
         <option name="defaultSortBy">[{id: 'event:date', order: 'desc'}]</option>
         <option name="disableTableEditing">true</option>
+        <actions>
+            <action ref="uiserv/action@view-task" />
+            <action ref="uiserv/action@view-task-in-background" />
+        </actions>
         <headers>
             <header key="event:taskType" default="true" searchable="false" sortable="false">
                 <option name="customLabel">journal.task.statistics.task_type.title</option>
@@ -242,6 +260,11 @@
         <option name="clickLinkAttribute">cm:name, cm:title, contracts:agreementNumber</option>
         <option name="defaultSortBy">[{id: 'event:date', order: 'desc'}]</option>
         <option name="disableTableEditing">true</option>
+        <actions>
+            <action ref="uiserv/action@view-task" />
+            <action ref="uiserv/action@view-task-in-background" />
+            <action ref="uiserv/action@edit-task" />
+        </actions>
         <headers>
             <!-- cm:name is used for double-click -->
             <header key="cm:name" visible="false" searchable="false" />
@@ -303,6 +326,11 @@
         <option name="clickLinkAttribute">cm:name, cm:title, contracts:agreementNumber</option>
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
         <option name="disableTableEditing">true</option>
+        <actions>
+            <action ref="uiserv/action@view-task" />
+            <action ref="uiserv/action@view-task-in-background" />
+            <action ref="uiserv/action@edit-task" />
+        </actions>
         <headers>
             <!-- cm:name is used for double-click -->
             <header key="cm:name" visible="false" searchable="false" />

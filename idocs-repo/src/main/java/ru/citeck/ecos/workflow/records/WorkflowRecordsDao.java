@@ -3,15 +3,18 @@ package ru.citeck.ecos.workflow.records;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.workflow.WorkflowInstance;
 import org.alfresco.service.cmr.workflow.WorkflowInstanceQuery;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.graphql.meta.value.EmptyValue;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records2.request.delete.RecordsDelResult;
@@ -22,8 +25,8 @@ import ru.citeck.ecos.records2.request.query.RecordsQuery;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records2.source.dao.MutableRecordsDao;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDao;
-import ru.citeck.ecos.records2.source.dao.local.v2.LocalRecordsMetaDAO;
-import ru.citeck.ecos.records2.source.dao.local.v2.LocalRecordsQueryWithMetaDAO;
+import ru.citeck.ecos.records2.source.dao.local.v2.LocalRecordsMetaDao;
+import ru.citeck.ecos.records2.source.dao.local.v2.LocalRecordsQueryWithMetaDao;
 import ru.citeck.ecos.workflow.EcosWorkflowService;
 
 import java.util.Collections;
@@ -32,9 +35,9 @@ import java.util.stream.Collectors;
 
 @Component
 public class WorkflowRecordsDao extends LocalRecordsDao
-    implements LocalRecordsQueryWithMetaDAO<WorkflowRecordsDao.WorkflowRecord>,
-    LocalRecordsMetaDAO<WorkflowRecordsDao.WorkflowRecord>,
-    MutableRecordsDao {
+                                implements LocalRecordsQueryWithMetaDao<WorkflowRecordsDao.WorkflowRecord>,
+                                           LocalRecordsMetaDao<MetaValue>,
+                                           MutableRecordsDao {
 
     private static final String ID = "workflow";
     private static final int MIN_RECORDS_SIZE = 0;
@@ -53,14 +56,24 @@ public class WorkflowRecordsDao extends LocalRecordsDao
     }
 
     @Override
-    public List<WorkflowRecord> getLocalRecordsMeta(List<RecordRef> list, MetaField metaField) {
+    public List<MetaValue> getLocalRecordsMeta(List<RecordRef> list, MetaField metaField) {
 
         if (list.size() == 1 && list.get(0).getId().isEmpty()) {
             return Collections.singletonList(EMPTY_RECORD);
         }
 
         return list.stream()
-            .map(ref -> new WorkflowRecord(ecosWorkflowService.getInstanceById(ref.getId())))
+            .map(ref -> {
+                if (ref.getId().isEmpty()) {
+                    return EMPTY_RECORD;
+                }
+                WorkflowInstance instance = ecosWorkflowService.getInstanceById(ref.getId());
+                if (instance != null) {
+                    return new WorkflowRecord(ecosWorkflowService.getInstanceById(ref.getId()));
+                } else {
+                    return EmptyValue.INSTANCE;
+                }
+            })
             .collect(Collectors.toList());
     }
 
@@ -138,14 +151,25 @@ public class WorkflowRecordsDao extends LocalRecordsDao
             switch (name) {
                 case "previewInfo":
                     WorkflowContentInfo contentInfo = new WorkflowContentInfo();
-                    String url = "/share/proxy/alfresco/api/workflow-instances/" + instance.getId() + "/diagram";
+                    String url = "alfresco/api/workflow-instances/" + instance.getId() + "/diagram";
                     contentInfo.setUrl(url);
+                    contentInfo.setExt("png");
+                    contentInfo.setMimetype(MimetypeMap.MIMETYPE_IMAGE_PNG);
                     return contentInfo;
                 case "document":
                     NodeRef wfPackageNodeRef = instance.getWorkflowPackage();
                     return nodeService.getProperty(wfPackageNodeRef, CiteckWorkflowModel.PROP_ATTACHED_DOCUMENT);
             }
             return null;
+        }
+
+        @Override
+        public String getDisplayName() {
+            String dispName = instance.getDescription();
+            if (StringUtils.isBlank(dispName) && instance.getDefinition() != null) {
+                dispName = instance.getDefinition().getTitle();
+            }
+            return dispName;
         }
 
         @Override
@@ -157,23 +181,12 @@ public class WorkflowRecordsDao extends LocalRecordsDao
     @Data
     @NoArgsConstructor
     public static class WorkflowContentInfo {
-
         private String url;
         private String originalUrl;
         private String originalName;
         private String originalExt;
         private String ext;
         private String mimetype;
-
-        public WorkflowContentInfo(String url, String originalUrl, String originalName,
-                                   String originalExt, String ext, String mimetype) {
-            this.url = url;
-            this.originalUrl = originalUrl;
-            this.originalName = originalName;
-            this.originalExt = originalExt;
-            this.ext = ext;
-            this.mimetype = mimetype;
-        }
     }
 
     @Data

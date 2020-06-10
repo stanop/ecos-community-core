@@ -148,11 +148,7 @@ public class WorkflowUtils {
         }
 
         if (filterByCurrentUser) {
-            String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
-            Set<NodeRef> authorities = authorityUtils.getUserAuthoritiesRefs();
-            tasks = tasks.stream()
-                .filter(t -> isTaskActor(t, currentUser, authorities))
-                .collect(Collectors.toList());
+            tasks = filterTasksByCurrentUser(tasks);
         }
 
         return tasks;
@@ -175,7 +171,7 @@ public class WorkflowUtils {
         List<WorkflowTask> tasks = new LinkedList<>();
 
         for (WorkflowInstance workflow : workflows) {
-            tasks.addAll(AuthenticationUtil.runAsSystem(() -> getWorkflowTasks(workflow, active)));
+            tasks.addAll(getWorkflowTasks(workflow, active));
         }
 
         return tasks.stream()
@@ -233,18 +229,44 @@ public class WorkflowUtils {
         return matches;
     }
 
+    public List<WorkflowTask> getWorkflowTasks(WorkflowInstance workflow, boolean active) {
+        return getWorkflowTasks(workflow.getId(), active);
+    }
+
+    private List<WorkflowTask> filterTasksByCurrentUser(List<WorkflowTask> tasks) {
+
+        if (tasks == null) {
+            return Collections.emptyList();
+        }
+
+        String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
+        Set<NodeRef> authorities = authorityUtils.getUserAuthoritiesRefs();
+
+        return tasks.stream()
+            .filter(t -> isTaskActor(t, currentUser, authorities))
+            .collect(Collectors.toList());
+    }
+
+    public List<WorkflowTask> getWorkflowTasks(String workflowId, boolean active, boolean filterByCurrentUser) {
+        List<WorkflowTask> tasks = getWorkflowTasks(workflowId, active);
+        if (filterByCurrentUser) {
+            tasks = filterTasksByCurrentUser(tasks);
+        }
+        return tasks;
+    }
+
     /**
      * @return List of tasks, may contains tasks with prefix {@link WorkflowUtils#TASK_START_PREFIX}
      */
-    private List<WorkflowTask> getWorkflowTasks(WorkflowInstance workflow, boolean active) {
+    public List<WorkflowTask> getWorkflowTasks(String workflowId, boolean active) {
         WorkflowTaskQuery query = new WorkflowTaskQuery();
         if (!active) {
             query.setActive(null);
             query.setTaskState(WorkflowTaskState.COMPLETED);
         }
         query.setOrderBy(new WorkflowTaskQuery.OrderBy[]{WorkflowTaskQuery.OrderBy.TaskDue_Asc});
-        query.setProcessId(workflow.getId());
-        return workflowService.queryTasks(query, true);
+        query.setProcessId(workflowId);
+        return AuthenticationUtil.runAsSystem(() -> workflowService.queryTasks(query, true));
     }
 
     public String getTaskTitle(WorkflowTask task) {

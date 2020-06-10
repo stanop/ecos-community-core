@@ -1,0 +1,12 @@
+{
+  "id": "edit-task",
+  "key": "crud.edit.task",
+  "name": {
+    "ru": "Редактировать",
+    "en": "Edit"
+  },
+  "type": "edit",
+  "config": {
+    "mode": "task"
+  }
+}

@@ -266,7 +266,7 @@ public class WorkflowTaskRecords extends LocalRecordsDao
         }
 
         String document = query.document;
-        if (StringUtils.isBlank(document)) {
+        if (StringUtils.isBlank(document) && StringUtils.isBlank(query.workflowId)) {
             return null;
         }
 
@@ -275,17 +275,26 @@ public class WorkflowTaskRecords extends LocalRecordsDao
             return null;
         }
 
-        int idx = document.lastIndexOf('@');
-        if (idx > -1 && idx < document.length() - 1) {
-            document = document.substring(idx + 1);
+        NodeRef docRef = null;
+        String workflowId = null;
+
+        if (query.document != null) {
+
+            int idx = document.lastIndexOf('@');
+            if (idx > -1 && idx < document.length() - 1) {
+                document = document.substring(idx + 1);
+            }
+
+            if (NodeRef.isNodeRef(document)) {
+                docRef = new NodeRef(document);
+            } else {
+                return null;
+            }
+        } else {
+
+            workflowId = query.getWorkflowId();
         }
 
-        NodeRef docRef;
-        if (NodeRef.isNodeRef(document)) {
-            docRef = new NodeRef(document);
-        } else {
-            return null;
-        }
 
         if ((query.actors != null && query.actors.size() == 1)) {
 
@@ -293,13 +302,24 @@ public class WorkflowTaskRecords extends LocalRecordsDao
             boolean isCurrentUser = CURRENT_USER.equals(actor);
 
             if (isCurrentUser) {
-                return workflowUtils.getDocumentTasks(docRef, query.active, query.engine, isCurrentUser);
+                if (workflowId == null) {
+                    return workflowUtils.getDocumentTasks(docRef, query.active, query.engine, true);
+                } else {
+                    return workflowUtils.getWorkflowTasks(workflowId, query.active, true);
+                }
             }
         }
 
         if (query.actors == null) {
-            return AuthenticationUtil.runAsSystem(() ->
-                workflowUtils.getDocumentTasks(docRef, query.active, query.engine, false));
+            String finalWfId = workflowId;
+            NodeRef finalDocRef = docRef;
+            return AuthenticationUtil.runAsSystem(() -> {
+                if (finalWfId == null) {
+                    return workflowUtils.getDocumentTasks(finalDocRef, query.active, query.engine, false);
+                } else {
+                    return workflowUtils.getWorkflowTasks(finalWfId, query.active, false);
+                }
+            });
         }
 
         return null;
@@ -309,6 +329,15 @@ public class WorkflowTaskRecords extends LocalRecordsDao
     public RecordsQueryResult<RecordRef> getLocalRecords(RecordsQuery query) {
 
         WorkflowTaskRecords.TasksQuery tasksQuery = query.getQuery(WorkflowTaskRecords.TasksQuery.class);
+        if (tasksQuery.document != null) {
+            if (tasksQuery.document.startsWith("workflow@")) {
+                tasksQuery.setWorkflowId(tasksQuery.document.replaceFirst("workflow@", ""));
+                tasksQuery.setDocument(null);
+            } else if (!tasksQuery.document.contains("workspace")) {
+                return new RecordsQueryResult<>();
+            }
+        }
+
         //try to search by workflow service to avoid problems with solr
         List<WorkflowTask> tasks = getRecordsByWfService(tasksQuery);
 
