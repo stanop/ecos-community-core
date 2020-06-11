@@ -7,7 +7,7 @@ name:
 
 createVariants:
     - id: create-template
-      label:
+      name:
           ru: Создать шаблон
           en: Create template
       recordRef: dict@dms:template
