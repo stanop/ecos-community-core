@@ -69,6 +69,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     public static final String ID = "";
     private static final String ADD_CMD_PREFIX = "att_add_";
     private static final String REMOVE_CMD_PREFIX = "att_rem_";
+    private static final String TYPE_ATTRIBUTE_NAME = "_type";
     private static final String ETYPE_ATTRIBUTE_NAME = "_etype";
     private static final String SLASH_DELIMITER = "/";
     private static final String WORKSPACE_PREFIX = "workspace://SpacesStore/";
@@ -358,7 +359,11 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
         RecordRef etype = RecordRef.EMPTY;
 
-        DataValue attributeFieldValue = attributes.get(ETYPE_ATTRIBUTE_NAME);
+        DataValue attributeFieldValue = attributes.get(TYPE_ATTRIBUTE_NAME);
+        if (attributeFieldValue.isNull()) {
+            attributeFieldValue = attributes.get(ETYPE_ATTRIBUTE_NAME);
+        }
+
         if (!attributeFieldValue.isNull()) {
 
             String attrValue = attributeFieldValue.asText();
@@ -395,9 +400,10 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                     }
                 }
             }
-
-            attributes.remove(ETYPE_ATTRIBUTE_NAME);
         }
+
+        attributes.remove(TYPE_ATTRIBUTE_NAME);
+        attributes.remove(ETYPE_ATTRIBUTE_NAME);
 
         return etype;
     }

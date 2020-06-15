@@ -50,6 +50,11 @@ public class TypeDto {
     private RecordRef configFormRef;
     private ObjectData config = ObjectData.create();
 
-    @MetaAtt(RecordConstants.ATT_ECOS_TYPE)
+    @MetaAtt(".type{id}")
     private RecordRef ecosType;
+
+    @MetaAtt(".type")
+    public RecordRef getEcosType() {
+        return ecosType;
+    }
 }
