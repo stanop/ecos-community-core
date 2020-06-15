@@ -236,7 +236,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
 
         EcosAlfTypesKey ecosAlfTypesKey = composeEcosAlfTypesKey(caseNodeRef);
         String definitionRevisionId = typesToRevisionIdCache.getUnchecked(ecosAlfTypesKey)
-            .orElseThrow(() -> new IllegalStateException("Def revision ID is null. CaseRef: " + caseRef));
+                .orElseThrow(() -> new IllegalStateException("Def revision ID is null. CaseRef: " + caseRef));
 
         CreateProcResp createProcResp = createProcessInstanceInMicroservice(definitionRevisionId, caseRef);
         nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_PROCESS_ID, createProcResp.getProcId());
@@ -244,7 +244,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
         nodeService.setProperty(caseNodeRef, EcosProcessModel.PROP_DEFINITION_REVISION_ID, definitionRevisionId);
 
         OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionForNewCase(caseNodeRef)
-            .orElseThrow(() -> new IllegalStateException("Proc definition is null. CaseRef: " + caseRef));
+                .orElseThrow(() -> new IllegalStateException("Proc definition is null. CaseRef: " + caseRef));
         ProcessInstance processInstance = createProcessInstanceFromDefinition(createProcResp.getProcId(),
                 caseRef, optimizedProcessDefinition.getProcessDefinition());
 
@@ -438,19 +438,21 @@ public class EProcActivityServiceImpl implements EProcActivityService {
     }
 
     @Override
-    public void saveState(ProcessInstance processInstance) {
+    public void saveState(RecordRef caseRef) {
         TransactionUtils.processAfterBehaviours(
                 EPROC_SAVE_STATE_TRANSACTION_KEY,
-                processInstance.getCaseRef(),
-                (caseRef) -> saveStateImpl(processInstance));
+                caseRef,
+                this::saveStateImpl);
     }
 
-    private void saveStateImpl(ProcessInstance processInstance) {
-        RecordRef caseRef = processInstance.getCaseRef();
+    private void saveStateImpl(RecordRef caseRef) {
         MandatoryParam.check("caseRef", caseRef);
 
         NodeRef caseNodeRef = RecordsUtils.toNodeRef(caseRef);
         String prevStateId = (String) nodeService.getProperty(caseNodeRef, EcosProcessModel.PROP_STATE_ID);
+
+        ProcessInstance processInstance = getFullState(caseRef)
+                .orElseThrow(() -> new IllegalStateException("State is not found for case: " + caseRef));
 
         UpdateProcStateResp result = updateStateInMicroservice(prevStateId, processInstance);
         if (result == null || StringUtils.isBlank(result.getProcStateId())) {
@@ -486,7 +488,7 @@ public class EProcActivityServiceImpl implements EProcActivityService {
     @Override
     public ActivityInstance getStateInstance(ActivityRef activityRef) {
         ProcessInstance instance = getFullState(activityRef.getProcessId())
-            .orElseThrow(() -> new IllegalStateException("Process instance is not found for activity: " + activityRef));
+                .orElseThrow(() -> new IllegalStateException("Process instance is not found for activity: " + activityRef));
         if (activityRef.isRoot()) {
             return instance.getRootActivity();
         }
@@ -514,18 +516,18 @@ public class EProcActivityServiceImpl implements EProcActivityService {
     @Override
     public ActivityDefinition getActivityDefinition(ActivityRef activityRef) {
         return getFullDefinitionImpl(activityRef.getProcessId())
-            .map(OptimizedProcessDefinition::getIdToActivityCache)
-            .map(cache -> cache.get(activityRef.getId()))
-            .orElseThrow(() -> new IllegalStateException("Activity def is not found: " + activityRef));
+                .map(OptimizedProcessDefinition::getIdToActivityCache)
+                .map(cache -> cache.get(activityRef.getId()))
+                .orElseThrow(() -> new IllegalStateException("Activity def is not found: " + activityRef));
     }
 
     @Override
     @NotNull
     public SentryDefinition getSentryDefinition(EventRef eventRef) {
         return getFullDefinitionImpl(eventRef.getProcessId())
-            .map(OptimizedProcessDefinition::getIdToSentryCache)
-            .map(cache -> cache.get(eventRef.getId()))
-            .orElseThrow(() -> new IllegalStateException("Sentry is not found: " + eventRef));
+                .map(OptimizedProcessDefinition::getIdToSentryCache)
+                .map(cache -> cache.get(eventRef.getId()))
+                .orElseThrow(() -> new IllegalStateException("Sentry is not found: " + eventRef));
     }
 
     @Override
@@ -534,10 +536,10 @@ public class EProcActivityServiceImpl implements EProcActivityService {
                                                                       String eventType) {
 
         OptimizedProcessDefinition optimizedProcessDefinition = getFullDefinitionImpl(caseRef)
-            .orElseThrow(() -> new IllegalStateException("Process definition is not found!. "
-                + "CaseRef: " + caseRef
-                + " sourceRef: " + sourceRef
-                + " eventType: " + eventType));
+                .orElseThrow(() -> new IllegalStateException("Process definition is not found!. "
+                        + "CaseRef: " + caseRef
+                        + " sourceRef: " + sourceRef
+                        + " eventType: " + eventType));
 
         SourceRef sourceRefObj = new SourceRef();
         sourceRefObj.setRef(sourceRef);

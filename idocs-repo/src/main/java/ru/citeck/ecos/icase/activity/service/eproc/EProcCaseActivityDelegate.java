@@ -93,8 +93,7 @@ public class EProcCaseActivityDelegate implements CaseActivityDelegate {
         listenerManager.beforeStartedActivity(activityRef);
         listenerManager.onStartedActivity(activityRef);
 
-        eprocActivityService.saveState(eprocActivityService.getFullState(activityRef.getProcessId())
-            .orElseThrow(() -> new IllegalStateException("State is not found")));
+        eprocActivityService.saveState(caseRef);
     }
 
     private boolean needResetBeforeStart(ActivityInstance instance) {
@@ -132,9 +131,7 @@ public class EProcCaseActivityDelegate implements CaseActivityDelegate {
         listenerManager.beforeStoppedActivity(activityRef);
         listenerManager.onStoppedActivity(activityRef);
 
-        eprocActivityService.saveState(eprocActivityService.getFullState(caseRef)
-            .orElseThrow(() -> new IllegalStateException("Full state can't be found. CaseRef: "
-                + caseRef + " activity: " + instance)));
+        eprocActivityService.saveState(caseRef);
     }
 
     private boolean transitionIsNotAllowed(ActivityInstance instance, ActivityTransitionDefinition transitionDefinition) {
@@ -197,8 +194,12 @@ public class EProcCaseActivityDelegate implements CaseActivityDelegate {
 
     @Override
     public void reset(ActivityRef activityRef) {
+        RecordRef caseRef = activityRef.getProcessId();
+
         ActivityInstance instance = eprocActivityService.getStateInstance(activityRef);
-        resetRecursive(activityRef.getProcessId(), instance);
+        resetRecursive(caseRef, instance);
+
+        eprocActivityService.saveState(caseRef);
     }
 
     private void resetRecursive(RecordRef processId, ActivityInstance instance) {
