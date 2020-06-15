@@ -165,7 +165,7 @@ public class EcosTypeService {
 
         RecordsQuery query = new RecordsQuery();
         query.setSourceId("emodel/type");
-        query.setQuery(Predicates.eq("parent", typeRef.toString()));
+        query.setQuery(Predicates.eq("parentRef", typeRef.toString()));
         query.setLanguage(PredicateService.LANGUAGE_PREDICATE);
 
         return recordsService.queryRecords(query).getRecords();
