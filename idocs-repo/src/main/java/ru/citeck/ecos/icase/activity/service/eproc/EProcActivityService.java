@@ -23,7 +23,7 @@ public interface EProcActivityService {
 
     Optional<ProcessInstance> getFullState(RecordRef caseRef);
 
-    void saveState(ProcessInstance processInstance);
+    void saveState(RecordRef caseRef);
 
     ActivityDefinition getActivityDefinition(ActivityRef activityRef);
 
