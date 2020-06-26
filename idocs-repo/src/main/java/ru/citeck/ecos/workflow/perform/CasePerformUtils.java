@@ -9,6 +9,7 @@ import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
+import org.alfresco.repo.workflow.activiti.ActivitiScriptNodeList;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -17,6 +18,7 @@ import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import ru.citeck.ecos.model.CasePerformModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
@@ -83,12 +85,12 @@ public class CasePerformUtils {
 
     boolean isCommentMandatory(PerformExecution execution, PerformTask task) {
         return isInSplitString(execution, CasePerformModel.PROP_OUTCOMES_WITH_MANDATORY_COMMENT,
-                                  task, CasePerformModel.PROP_PERFORM_OUTCOME);
+                task, CasePerformModel.PROP_PERFORM_OUTCOME);
     }
 
     boolean isAbortOutcomeReceived(PerformExecution execution, PerformTask task) {
         return isInSplitString(execution, CasePerformModel.PROP_ABORT_OUTCOMES,
-                                  task, CasePerformModel.PROP_PERFORM_OUTCOME);
+                task, CasePerformModel.PROP_PERFORM_OUTCOME);
     }
 
     void saveTaskResult(PerformExecution execution, PerformTask task) {
@@ -111,12 +113,12 @@ public class CasePerformUtils {
 
         QName assocQName = QName.createQName(CasePerformModel.NAMESPACE, resultName);
         NodeRef result = nodeService.createNode(bpmPackage, CasePerformModel.ASSOC_PERFORM_RESULTS,
-                                                assocQName, CasePerformModel.TYPE_PERFORM_RESULT,
-                                                properties).getChildRef();
+                assocQName, CasePerformModel.TYPE_PERFORM_RESULT,
+                properties).getChildRef();
 
         nodeService.createAssociation(result, person, CasePerformModel.ASSOC_RESULT_PERSON);
 
-        NodeRef performer = (NodeRef) task.getVariable(toString(CasePerformModel.ASSOC_PERFORMER));
+        NodeRef performer = getFirstPerformer(task);
         if (performer != null) {
             nodeService.createAssociation(result, performer, CasePerformModel.ASSOC_RESULT_PERFORMER);
         }
@@ -137,7 +139,7 @@ public class CasePerformUtils {
     }
 
     boolean isInSplitString(VariableScope stringScope, QName stringKey,
-                                   VariableScope valueScope, QName valueKey) {
+                            VariableScope valueScope, QName valueKey) {
 
         String[] values = getSplitString(stringScope, stringKey);
         String value = (String) valueScope.getVariableLocal(toString(valueKey));
@@ -202,7 +204,7 @@ public class CasePerformUtils {
     }
 
     String[] getSplitString(VariableScope scope, String key) {
-        String variable = (String)scope.getVariable(key);
+        String variable = (String) scope.getVariable(key);
         if (variable == null) {
             return new String[0];
         }
@@ -276,10 +278,33 @@ public class CasePerformUtils {
         return null;
     }
 
-    void setPerformer(PerformTask task, final NodeRef performer) {
+    public NodeRef getFirstPerformer(VariableScope variableScope) {
 
         String performerKey = toString(CasePerformModel.ASSOC_PERFORMER);
-        final NodeRef currentPerformer = (NodeRef) task.getVariable(performerKey);
+        Object rawPerformer = variableScope.getVariable(performerKey);
+
+        if (rawPerformer instanceof NodeRef) {
+            return (NodeRef) rawPerformer;
+        }
+        if (rawPerformer instanceof ActivitiScriptNodeList) {
+            ActivitiScriptNodeList list = (ActivitiScriptNodeList) rawPerformer;
+            List<NodeRef> result = list.getNodeReferences();
+            return CollectionUtils.isNotEmpty(result) ? result.get(0) : null;
+        }
+        if (rawPerformer instanceof ActivitiScriptNode) {
+            return ((ActivitiScriptNode) rawPerformer).getNodeRef();
+        }
+        if (rawPerformer instanceof ScriptNode) {
+            return ((ScriptNode) rawPerformer).getNodeRef();
+        }
+
+        throw new IllegalStateException("Receive unsupported instance of performer of class: "
+                + rawPerformer.getClass());
+    }
+
+    void setPerformer(PerformTask task, final NodeRef performer) {
+
+        final NodeRef currentPerformer = getFirstPerformer(task);
         final NodeRef caseRoleRef = (NodeRef) task.getVariable(toString(CasePerformModel.ASSOC_CASE_ROLE));
 
         if (caseRoleRef != null) {
@@ -292,7 +317,7 @@ public class CasePerformUtils {
 
             Set<NodeRef> assignees = caseRoleService.getAssignees(caseRoleRef);
             if (assignees.contains(performer)) {
-                task.setVariableLocal(performerKey, performer);
+                task.setVariableLocal(toString(CasePerformModel.ASSOC_PERFORMER), performer);
                 persistReassign(caseRoleRef, task.getProcessInstanceId(), currentPerformer, performer);
             }
         }
@@ -401,7 +426,7 @@ public class CasePerformUtils {
     }
 
     public Map<NodeRef, List<NodeRef>> getRolesPool(VariableScope scope) {
-        Object result =  scope.getVariable(PERFORMERS_ROLES_POOL);
+        Object result = scope.getVariable(PERFORMERS_ROLES_POOL);
         if (result == null) {
             result = new NodeRefToNodeRefsMap();
         }
@@ -438,6 +463,7 @@ public class CasePerformUtils {
 
     private static class DummyComparator implements Serializable, Comparator<Object> {
         private static final long serialVersionUID = 2252429774415071539L;
+
         @Override
         public int compare(Object o1, Object o2) {
             if (Objects.equals(o1, o2)) {
